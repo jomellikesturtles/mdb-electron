@@ -10,6 +10,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electron": "electron .",
+    "electron2": "electron",
+    "electron-build2": "ng build --prod && npm run electron",
     "electron-build": "ng build --prod && electron .",
     "start:electron": "ng build --base-href ./ && electron ."
   },
@@ -48,7 +50,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
     "codelyzer": "~4.5.0",
-    "electron": "^5.0.2",
+    "electron": "^5.0.10",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.0.0",

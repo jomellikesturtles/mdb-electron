@@ -2,24 +2,26 @@
 <button (click)='onSearch(searchBox.value)'>Search</button>
 
 <div class="container-fluid">
-  <h2>General Settings</h2>
+  <h2>General Settingsss</h2>
   <i class='icon-question-mark' data-toggle="tooltip" title="Enter the folders where your movie files are"></i>
   <h5>Library Folders</h5>
   <button class="btn btn-primary" (click)="onScanLibrary()">Scan Library</button>
   <input #folderName type="text" />
   <button class="btn btn-success" data-toggle="modal" data-target="#addLibraryModal"
     (click)='onOpenModal()'>Add(opensmodal)</button>
+  <button class="btn btn-success" (click)='onOpenFileExplorer()'>Add(opens file explorer)</button>
+  <button class="btn btn-success" id='mockScanLibraryBtn' (click)='mockScanLibrary()'>Mock scan library</button>
+  <pre><code data-path="../../assets/scripts/scan-library.js"></code></pre>
   <!-- <button class=" btn btn-success" (click)="onAddFolder(folderName.value); folderName.value=''">Add</button> -->
-
   <!-- <div *ngFor="let folder of unsavedPreferences.libraryFolders">
     <input type="text" value="{{folder}}" />
     <button class="btn btn-primary" (click)="onEditFolder(folder)">Edit</button>
     <button class="btn btn-danger" (click)="onDeleteFolder(folder)">Delete</button>
   </div> -->
-
-
-  <h5>Offline Torrent Dump</h5>
-  <span class='icon-question-mark' data-toggle="tooltip" title="Search torrent even without internet"></span>
+  <div class='inline'>
+    <h5>Offline Torrent Dump</h5>
+    <span class='icon-question-mark' data-toggle="tooltip" title="Search torrent even without internet"></span>
+  </div>
   <p>Last update: January 1, 1970 12:00 AM</p>
   <button class="btn btn-primary" (click)="onUpdateTorrentDump()">Update Torrent Dump</button>
 
@@ -62,6 +64,5 @@
         <button class="btn" data-dismiss="modal">Cancel</button>
       </div>
     </div>
-
   </div>
 </div>

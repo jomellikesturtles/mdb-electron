@@ -1,3 +1,6 @@
+/**
+ * new ipc service (9/4)
+ */
 import { Injectable } from '@angular/core';
 declare var electron: any;
 const { ipcRenderer, clipboard, shell } = electron;
@@ -12,19 +15,11 @@ export class IpcService {
     // private ipc: IpcRenderer
   ) {
     this.ipcRenderer = (<any>window).require('electron').ipcRenderer;
-    // if ((<any>window).require) {
-    //   try {
-    //     this.ipc = (<any>window).require('electron').ipcRenderer
-    //   } catch (error) {
-    //     throw error
-    //   }
-    // } else {
-    //   console.warn('Could not load electron ipc')
-    // }
   }
+
   /**
    * All messages in logger
-  */
+   */
   sendMessage(data) {
     console.log('sendMessage')
     console.log(data)
@@ -36,8 +31,18 @@ export class IpcService {
   fileExplorer() {
     this.ipcRenderer.send('file-explorer')
   }
+  /**
+   * Opens files and folders
+   */
+  modalFileExplorer() {
+    this.ipcRenderer.send('modal-file-explorer')
+  }
   scanLibrary() {
     this.ipcRenderer.send('scan-library')
+  }
+  mockScanLibrary() {
+    console.log('mock-scan-library')
+    this.ipcRenderer.send('mock-scan-library')
   }
   openFolder(data) {
     console.log(data)
@@ -46,5 +51,14 @@ export class IpcService {
   searchQuery(data) {
     console.log('Searching ', data)
     this.ipcRenderer.send('search-query', data)
+  }
+
+  /**
+   * Searches for torrent in offline dump
+   * @param data search query
+   */
+  searchTorrent(data) {
+    console.log('searchTorrent ', data)
+    // this.ipcRenderer.send('search-torrent', data)
   }
 }

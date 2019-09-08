@@ -1,0 +1,32 @@
+// duplicated
+.circle-available {
+    height: 15px;
+    width: 15px;
+    background-color: rgb(8, 185, 8);
+    box-shadow: 0 0 10px #38ec14;
+    border-radius: 50%;
+    position: relative;
+    left: 130px;
+    top: 25px;
+    z-index: 2;
+  }
+  
+  // duplicated
+  .movie-card {
+    padding: 5px;
+    outline: none;
+    border: 2px solid #ebebeb;
+    border-radius: 7px;
+  }
+  
+  // duplicated
+  .movie-card-selected {
+    padding: 5px;
+    outline: none;
+    border-color: #e22e2e;
+    box-shadow: 0 0 10px #e22e2e;
+    border: 2px solid #dadada;
+    border-radius: 7px;
+    transition: 333ms
+  }
+  

@@ -1,12 +1,18 @@
+/**
+ * Main processor
+ */
+const cp = require('child_process');
 const { app, BrowserWindow, ipcMain, dialog, Menu, Tray, shell, session, clipboard } = require('electron')
 const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const papa = require('papaparse');
+const os = require('os')
 // import * as path from 'path'
 // import * as url from 'url'const 
-cp = require('child_process');
+// cp = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const Datastore = require('nedb');
+let procSearch;
 let win
 let mainWindow
 let currentCondition = true;
@@ -128,9 +134,51 @@ ipcMain.on('open-folder', function (folder) {
     shell.showItemInFolder(folder)
     shell.showItemInFolder(__dirname)
 })
+// opens OS' file explorer
 ipcMain.on('file-explorer', function (folder) {
-    fs.readFileSync(__dirname)
+    shell.showItemInFolder(os.homedir())
 })
+// opens modal file explorer
+ipcMain.on('modal-file-explorer', function (folder) {
+    fs.readFileSync(__dirname)
+    // shell.showItemInFolder
+})
+ipcMain.on('mock-scan-library', function () {
+    initMockScanLibrary();
+})
+
+/**
+ * Initializes scan-library.js
+ */
+function initMockScanLibrary() {
+    
+    if (!procSearch) {
+        console.log('procSearch true');
+        procSearch = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), {
+            cwd: __dirname,
+            silent: true
+        });
+        procSearch.stdout.on('data', function (data) {
+            console.log('printing data..');
+            console.log(data.toString());
+        });
+        // procSearch.on('exit', function () {
+        //     console.log('Search process ended');
+        //     procSearch = null;
+        //     if (awaitingQuit) {
+        //         process.emit('cont-quit');
+        //     }
+        // });
+        // procSearch.on('message', function (m) {
+        //     mainWindow.webContents.send(m[0], m[1]);
+        // });
+        // mainWindow.webContents.send('search-init');
+    } else {
+        console.log('procSearch false');
+        // popWarn('One Search process is already running');
+        // mainWindow.webContents.send('hide-ol');
+    }
+}
 ipcMain.on('scan-library', function (data) {
     let libraryFolders = ["D:\\workspaces\\test data folder", "C:\\Users\\Lenovo\\Downloads\\Completed Downloads"]
     libraryFolders.forEach(folder => {
@@ -229,6 +277,7 @@ function finSearch() {
     console.log('result: ', result);
     // process.exit(0);
 };
+
 ipcMain.on('search-query', function (data) {
     searchQuery['title'] = data
     console.log(searchQuery['title']);

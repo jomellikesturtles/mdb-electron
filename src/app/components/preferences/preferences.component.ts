@@ -1,15 +1,14 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ipcMain, IpcRenderer } from 'electron'
-import { IpcService } from '../ipc.service';
+import { IpcService } from '../../services/ipc.service';
 declare var jquery: any;
 declare var $: any;
 
 @Component({
-  selector: 'app-user-preferences',
-  templateUrl: './user-preferences.component.html',
-  styleUrls: ['./user-preferences.component.scss']
+  selector: 'app-preferences',
+  templateUrl: './preferences.component.html',
+  styleUrls: ['./preferences.component.scss']
 })
-export class UserPreferencesComponent implements OnInit {
+export class PreferencesComponent implements OnInit {
   // userPreferences = USERPREFERENCES;
   // unsavedPreferences: Preferences;
   constructor(
@@ -17,7 +16,6 @@ export class UserPreferencesComponent implements OnInit {
   ) { }
   title = 'angular 4 with jquery'
   ngOnInit() {
-    var title = 'angular 4 with jquery';
     $('.title').slideToggle(); //
 
     // var $j = $.noConflict();
@@ -25,12 +23,18 @@ export class UserPreferencesComponent implements OnInit {
     $('[data-toggle="tooltip"]').tooltip({ 'placement': 'top' });
     console.log(this)
   }
+
   toggleTitle() {
-    $('.title').slideToggle(); //test only
+    $('.title').slideToggle(); // test only
   }
 
   onOpenModal() {
-    console.log('onScanLibrary');
+    console.log('onOpenModal');
+    this.ipcService.modalFileExplorer()
+  }
+
+  onOpenFileExplorer() {
+    console.log('onOpenFileExplorer');
     this.ipcService.fileExplorer()
   }
   /**
@@ -40,6 +44,12 @@ export class UserPreferencesComponent implements OnInit {
     console.log('onScanLibrary');
     this.ipcService.scanLibrary()
   }
+  mockScanLibrary() {
+    this.ipcService.mockScanLibrary()
+  }
+  /**
+   * Updates thepiratebay torrent dump
+   */
   onUpdateTorrentDump() {
     console.log('onUpdateTorrentDump');
     this.ipcService.sendMessage('update-torrent-dump')
@@ -78,6 +88,11 @@ export class UserPreferencesComponent implements OnInit {
   onEditFolder(folder) {
     console.log('onEditFolder');
   }
+
+  /**
+   * Deletes folder from library
+   * @param folder folder directory to delete
+   */
   onDeleteFolder(folder) {
     console.log('onDeleteFolder');
     // this.unsavedPreferences.libraryFolders = this.unsavedPreferences.libraryFolders.filter(h => h !== folder)

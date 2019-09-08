@@ -3,12 +3,25 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { UserPreferencesComponent } from './user-preferences/user-preferences.component';
+import { BulkDownloadComponent } from './components/bulk-download/bulk-download.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { PreferencesComponent } from './components/preferences/preferences.component';
+import { DetailsComponent } from './components/details/details.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
+import { SearchAndResultsComponent } from './components/search-and-results/search-and-results.component';
+import { MagnetPipe, SimplifySizePipe } from './services/torrent.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    UserPreferencesComponent
+    BulkDownloadComponent,
+    DashboardComponent,
+    PreferencesComponent,
+    DetailsComponent,
+    NavigationComponent,
+    SearchAndResultsComponent,
+    MagnetPipe,
+    SimplifySizePipe
   ],
   imports: [
     BrowserModule,

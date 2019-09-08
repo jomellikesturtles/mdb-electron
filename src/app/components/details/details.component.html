@@ -1,0 +1,99 @@
+<!-- radial-gradient(circle at 20% 50%, rgba(9.80%, 9.80%, 43.92%, 0.98) 0%, rgba(9.80%, 9.80%, 43.92%, 0.88) 100%) -->
+
+<div [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(' + movieBackdrop + ')'}"
+  style='background-size: cover;background-repeat: no-repeat;background-position: center center'>
+  <div style='padding-top: 70px; padding-bottom: 100px'>
+    <div name="infoSidebar" id="info-sidebar" class="" *ngIf="selectedMovie"
+      style="color:white; text-shadow: 1px 1px #333333;">
+      <div class="">
+        <div class="container">
+          <div class="row">
+            <div class="col-4">
+              <!-- <img src="{{selectedMovie.imageDirectory}}" class="img-fluid" alt="" height="" width=""> -->
+              <div class='img-container'>
+                <img src="{{selectedMovie.Poster}}" id='posterImg' class="img-fluid" alt="" height="" width="">
+              </div>
+              <!-- certification -->
+
+            </div>
+            <div class="col-8">
+              <div style='display: inline'>
+                <h2 id="movie-title" class="">{{selectedMovie.Title}} ({{selectedMovie.Year}})</h2>
+                <button class='btn btn-basic btn-small'>
+                  Add to watchlist
+                </button>
+                <button class='btn btn-info btn-small'>
+                  Mark as watched
+                </button>
+              </div>
+              <p id="movie-plot" class="">{{selectedMovie.Plot}}</p>
+              <p id="movie-rated" class="">{{selectedMovie.Rated}}</p>
+              <!-- <p id="movie-year" class="">Release year: {{selectedMovie.Year}}</p> -->
+              <p id="movie-genre" class="">{{selectedMovie.Genre}}</p>
+              <p id="movie-runtime" class="">{{selectedMovie.Runtime}}</p>
+              <div class='customBtn' style='background-color:#f5de50'>
+                <span class='icon' style='background: url(../../assets/icons/imdb-logo.png);'></span>
+                <span class='buttonText'>Imdb</span>
+              </div>
+              <a href='https://www.imdb.com/title/{{selectedMovie.imdbID}}'>Imdb</a>
+              <a href='https://www.google.com/search?q={{selectedMovie.Title}} {{selectedMovie.Year}}'>Google</a>
+              <!-- <div *ngIf="selectedMovie.isAvailable"> -->
+              <button class="btn btn-success">Play</button>
+              <!-- </div> -->
+              <div *ngIf="selectedMovie.isAvailable==false">
+                <p>Movie is not available</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div id='movie-player' style='height:80vh;width:142vh;background-color: black;
+                outline: none; border-color: darkblue; box-shadow: 0 0 10px #0099FF;
+                border: 2px solid black; transition: 333ms; margin-bottom:10vh;margin-top:10vh ' class='text-center'>
+              <img src='../../assets/icons/chevron.png' style='vertical-align: middle;'>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive-lg container">
+          <table class="table">
+            <thead>
+
+            </thead>
+            <tbody>
+              <tr *ngFor="let torrent of torrents">
+                <td>
+                  <a [href]="sanitize(torrent)">{{torrent.name}}</a>
+                </td>
+                <td>
+                  <!-- <p>{{torrent.size|simplifySize}}</p> -->
+                </td>
+                <td>
+                  <p>{{torrent.seeds}}</p>
+                </td>
+                <td>
+                  <p>{{torrent.peers}}</p>
+                </td>
+                <td>
+                  <button class="btn btn-primary" (click)="copyToClipboard(torrent.magnet_link)">Copy to
+                    clipboard</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <div class='customBtn' style='text-align: center; background-color:#f5de50; display: inline-block; border-radius: 5%'>
+  <span class='icon'
+    style='background: url(../../assets/icons/imdb-logo.png);width: 50px;height:42px;vertical-align: middle;display: inline-block'></span>
+</div>
+<div class='customBtn' style='text-align: center; background-color:white; display: inline-block; border-radius: 5%'>
+  <span class='icon'
+    style='background: url(../../assets/icons/google-logo.png);width: 100px;height:100px;vertical-align: middle;display: inline-block'></span>
+</div>
+<div class='customBtn' style='text-align: center; background-color:white; display: inline-block; border-radius: 5%'>
+  <span class='icon'
+    style='background: url(../../assets/icons/google-logo.png);width: 100px;height:100px;vertical-align: middle;display: inline-block'></span>
+</div> -->
