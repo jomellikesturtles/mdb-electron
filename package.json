@@ -32,6 +32,7 @@
     "core-js": "^2.5.4",
     "fast-csv": "^3.4.0",
     "fast-levenshtein": "^2.0.6",
+    "fluent-ffmpeg": "^2.1.2",
     "jquery": "^3.4.1",
     "nedb": "^1.8.0",
     "papaparse": "^5.0.1",

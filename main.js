@@ -11,7 +11,7 @@ const os = require('os')
 // cp = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const Datastore = require('nedb');
+// const Datastore = require('nedb');
 let procSearch;
 let win
 let mainWindow
@@ -29,6 +29,7 @@ let searchQuery = {
     ratingFrom: 7.0,
     ratingTo: 9.8
 }
+// var config = new DataStore({ filename: 'src/assets/config/config.db', autoload: true })
 
 /**
  * Creates the browser window
@@ -76,47 +77,6 @@ app.on('activate', function () {
     }
 })
 
-/** Functions */
-/**
- * Checks if file is a video file
- */
-function isVideoFile(params) {
-    var isVideoFile = false
-    validExtensions.forEach(element => {
-        if (params.indexOf(element) > 0) {
-            isVideoFile = true
-            return isVideoFile
-        }
-    });
-    return isVideoFile
-}
-
-/**
- * Reads/scans the directory
- */
-function readDirectory(value) {
-    if (!fs.existsSync(value)) {
-        console.log("no dir ", value);
-        return;
-    }
-    var files = fs.readdirSync(value);
-    for (var i = 0; i < files.length; i++) {
-        var filename = path.join(value, files[i]);
-        var stat = fs.lstatSync(filename);
-
-        if (stat.isDirectory()) {
-            readDirectory(filename); //recurse
-        }
-        else {
-            if (isVideoFile(filename)) {
-                // console.log(filename);
-                // addToList(files[i])
-                // addToList2(value, files[i])
-            }
-        }
-    }
-}
-
 /* IPC Event handling
 ----------------------*/
 /* Logger */
@@ -143,15 +103,11 @@ ipcMain.on('modal-file-explorer', function (folder) {
     fs.readFileSync(__dirname)
     // shell.showItemInFolder
 })
-ipcMain.on('mock-scan-library', function () {
-    initMockScanLibrary();
-})
 
 /**
  * Initializes scan-library.js
  */
-function initMockScanLibrary() {
-    
+ipcMain.on('scan-library', function (data) {
     if (!procSearch) {
         console.log('procSearch true');
         procSearch = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), {
@@ -162,31 +118,31 @@ function initMockScanLibrary() {
             console.log('printing data..');
             console.log(data.toString());
         });
-        // procSearch.on('exit', function () {
-        //     console.log('Search process ended');
-        //     procSearch = null;
-        //     if (awaitingQuit) {
-        //         process.emit('cont-quit');
-        //     }
-        // });
-        // procSearch.on('message', function (m) {
-        //     mainWindow.webContents.send(m[0], m[1]);
-        // });
+        procSearch.on('exit', function () {
+            //     console.log('Search process ended');
+            //     procSearch = null;
+            //     if (awaitingQuit) {
+            //         process.emit('cont-quit');
+            //     }
+            // });
+            // procSearch.on('message', function (m) {
+            //     mainWindow.webContents.send(m[0], m[1]);
+        });
         // mainWindow.webContents.send('search-init');
     } else {
         console.log('procSearch false');
         // popWarn('One Search process is already running');
         // mainWindow.webContents.send('hide-ol');
     }
-}
-ipcMain.on('scan-library', function (data) {
-    let libraryFolders = ["D:\\workspaces\\test data folder", "C:\\Users\\Lenovo\\Downloads\\Completed Downloads"]
-    libraryFolders.forEach(folder => {
-        readDirectory(folder)
-    })
+
+    // let libraryFolders = ["D:\\workspaces\\test data folder", "C:\\Users\\Lenovo\\Downloads\\Completed Downloads"]
+    // libraryFolders.forEach(folder => {
+    //     readDirectory(folder)
+    // })
     // fs.readFileSync(__dirname) // illegal operation on a directory, read
 })
 
+/** Functions */
 
 function resultObjectTemplate(record) {
     console.log(record)
@@ -283,4 +239,16 @@ ipcMain.on('search-query', function (data) {
     console.log(searchQuery['title']);
     searchMovie(data)
     // cp.fork
+})
+ipcMain.on('retrieve-library-folders', function (data) {
+    // config.findOne({ type: 'libraryFolders' }, function (err, dbPref) {
+    //     if (!err) {
+    //         foldersList = dbPref.foldersList
+    //         mainWindow.webContents.send('library-folders',foldersList)
+    //         ipcMain.
+    //         resolve(foldersList)
+    //     } else {
+    //         reject()
+    //     }
+    // })
 })

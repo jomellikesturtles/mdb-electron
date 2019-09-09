@@ -1,20 +1,31 @@
 /**
  * new ipc service (9/4)
  */
-import { Injectable } from '@angular/core';
+import { Injectable
+  // , ChangeDetectorRef 
+} from '@angular/core';
+// import { BehaviorSubject } from 'rxjs';
+// import { Injectable } from '@';
 declare var electron: any;
 const { ipcRenderer, clipboard, shell } = electron;
-
 @Injectable({
   providedIn: 'root'
 })
 export class IpcService {
 
+  // libraryFolders = new BehaviorSubject<string[]>([]);
+  // directory = new BehaviorSubject<string[]>([]);
   ipcRenderer: typeof ipcRenderer;
   constructor(
     // private ipc: IpcRenderer
+    // private ref: ChangeDetectorRef
   ) {
     this.ipcRenderer = (<any>window).require('electron').ipcRenderer;
+
+    // this.ipcRenderer.on('library-folders', (data) => {
+    //   console.log(data.toString())
+    //   this.libraryFolders = data;
+    // })
   }
 
   /**
@@ -37,12 +48,17 @@ export class IpcService {
   modalFileExplorer() {
     this.ipcRenderer.send('modal-file-explorer')
   }
+  /**
+   * Opens files and folders
+   */
+  getLibraryFolders() {
+    // this.ipcRenderer.send('retrieve-library-folders')
+  }
+  /**
+   * Scans the library folders
+   */
   scanLibrary() {
     this.ipcRenderer.send('scan-library')
-  }
-  mockScanLibrary() {
-    console.log('mock-scan-library')
-    this.ipcRenderer.send('mock-scan-library')
   }
   openFolder(data) {
     console.log(data)
@@ -61,4 +77,6 @@ export class IpcService {
     console.log('searchTorrent ', data)
     // this.ipcRenderer.send('search-torrent', data)
   }
+
+
 }

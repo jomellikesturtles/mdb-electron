@@ -290,6 +290,7 @@ UI and functionalities are influenced by follows: (in descending order)
 
 ## Useful links
 
+- https://morioh.com/p/64c30140144a/build-a-desktop-application-with-angular-and-electron
 - Github readme reference https://github.com/Day8/re-frame https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46#faq
 - https://github.com/thakursc1/IMDB-Movie-DataBase
 - https://raw.githubusercontent.com/thakursc1/IMDB-Movie-DataBase/master/MOVIE%20DATABASE%20USING%20BINARY%20SEARCH%20TREE%20DOC.docx

@@ -13,7 +13,8 @@ export class PreferencesComponent implements OnInit {
   // unsavedPreferences: Preferences;
   constructor(
     private ipcService: IpcService
-  ) { }
+  ) {
+  }
   title = 'angular 4 with jquery'
   ngOnInit() {
     $('.title').slideToggle(); //
@@ -21,18 +22,33 @@ export class PreferencesComponent implements OnInit {
     // var $j = $.noConflict();
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip({ 'placement': 'top' });
-    console.log(this)
+    // console.log(this)
+    this.onGetLibraryFolders()
+    // this.ipcService.libraryFolders.subscribe((value) => {
+    //   console.log('libraryFolders', value);
+    // })
   }
-
   toggleTitle() {
     $('.title').slideToggle(); // test only
   }
 
+  /**
+   * Get list of library folders
+   */
+  onGetLibraryFolders() {
+    this.ipcService.getLibraryFolders()
+  }
+  /**
+   * Opens file explorer modal
+   */
   onOpenModal() {
     console.log('onOpenModal');
     this.ipcService.modalFileExplorer()
   }
 
+  /**
+   * Opens the folder
+   */
   onOpenFileExplorer() {
     console.log('onOpenFileExplorer');
     this.ipcService.fileExplorer()
@@ -44,8 +60,11 @@ export class PreferencesComponent implements OnInit {
     console.log('onScanLibrary');
     this.ipcService.scanLibrary()
   }
-  mockScanLibrary() {
-    this.ipcService.mockScanLibrary()
+  onGoToPreviousFolder() {
+
+  }
+  onGoToParentFolder() {
+
   }
   /**
    * Updates thepiratebay torrent dump

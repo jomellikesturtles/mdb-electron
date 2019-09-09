@@ -2,16 +2,15 @@
 <button (click)='onSearch(searchBox.value)'>Search</button>
 
 <div class="container-fluid">
-  <h2>General Settingsss</h2>
+  <h2>General Settings</h2>
   <i class='icon-question-mark' data-toggle="tooltip" title="Enter the folders where your movie files are"></i>
   <h5>Library Folders</h5>
   <button class="btn btn-primary" (click)="onScanLibrary()">Scan Library</button>
   <input #folderName type="text" />
   <button class="btn btn-success" data-toggle="modal" data-target="#addLibraryModal"
     (click)='onOpenModal()'>Add(opensmodal)</button>
-  <button class="btn btn-success" (click)='onOpenFileExplorer()'>Add(opens file explorer)</button>
-  <button class="btn btn-success" id='mockScanLibraryBtn' (click)='mockScanLibrary()'>Mock scan library</button>
-  <pre><code data-path="../../assets/scripts/scan-library.js"></code></pre>
+  <input id="myFile" type="file" webkitdirectory />
+  <!-- <button class="btn btn-success" (click)='onOpenFileExplorer()'>Add(opens file explorer)</button> -->
   <!-- <button class=" btn btn-success" (click)="onAddFolder(folderName.value); folderName.value=''">Add</button> -->
   <!-- <div *ngFor="let folder of unsavedPreferences.libraryFolders">
     <input type="text" value="{{folder}}" />
@@ -47,6 +46,8 @@
       </div>
       <div class="modal-body">
         <div>
+          <button class="btn" (click)="onGoToPreviousFolder()">Back</button>
+          <button class="btn" (click)="onGoToParentFolder()">Up</button>
           <input type="text">
           <h3>Add Folder</h3>
           <div class="row">
@@ -60,6 +61,7 @@
         </div>
       </div>
       <div class="modal-footer">
+        <p>status bar...</p>
         <button class="btn btn-success" (click)="onSave()">Save</button>
         <button class="btn" data-dismiss="modal">Cancel</button>
       </div>
