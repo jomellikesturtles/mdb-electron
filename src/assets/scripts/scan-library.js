@@ -4,7 +4,7 @@
 const promise = require('promise')
 const fs = require('fs');
 const path = require('path');
-var DataStore = require('nedb')
+// var DataStore = require('nedb')
 const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const ffmpeg = require('fluent-ffmpeg')
 var moviesList = []
@@ -52,9 +52,9 @@ function saveToLibrary(params) {
 }
 
 /**
- * create fileInfo object then add to .db file
- * @param {*} folderPath 
- * @param {*} fileName 
+ * Create fileInfo object then add to .db file
+ * @param {String} folderPath   the folder path
+ * @param {String} fileName     the file name
  */
 function addToList2(folderPath, fileName) {
     var fullFilePath = path.join(folderPath, fileName);
@@ -83,7 +83,7 @@ function addToList2(folderPath, fileName) {
     // durationMins: 123,
     // hasDuplicateTitle: false,
     console.log(fileInfo);
-    saveToLibrary(fileInfo);
+    // saveToLibrary(fileInfo);
 }
 
 /**
@@ -118,7 +118,8 @@ function getTitle(parentFolder, fullFileName) {
  */
 function checkForSiblings(startPath) {
     var videoFileCount = 0;
-    if (!fs.existsSync(startPath)) {//add error message
+    if (!fs.existsSync(startPath)) {
+        // add error message
         return;
     }
     var files = fs.readdirSync(startPath);
@@ -166,7 +167,7 @@ function readDirectory(startPath) {
         }
         else {
             if (isVideoFile(filename)) {
-                // console.log(filename);
+                console.log(filename);
                 // addToList(files[i])
                 addToList2(startPath, files[i])
             }

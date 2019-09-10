@@ -1,5 +1,6 @@
 <input #searchBox />
 <button (click)='onSearch(searchBox.value)'>Search</button>
+<button (click)='onGetLibraryFolders()'>onGetLibraryFolders</button>
 
 <div class="container-fluid">
   <h2>General Settings</h2>
@@ -9,13 +10,17 @@
   <input #folderName type="text" />
   <button class="btn btn-success" data-toggle="modal" data-target="#addLibraryModal"
     (click)='onOpenModal()'>Add(opensmodal)</button>
-  <input id="myFile" type="file" webkitdirectory />
+
+  <div class='tab' *ngFor='let folder of libraryFolders'>
+    Folder: {{folder}}
+    <button class="btn btn-primary" (click)="onEditFolder(folder)">Edit</button>
+    <button class="btn btn-danger" (click)="onDeleteFolder(folder)">Delete</button>
+  </div>
+  <!-- <input id="myFile" type="file" webkitdirectory /> -->
   <!-- <button class="btn btn-success" (click)='onOpenFileExplorer()'>Add(opens file explorer)</button> -->
   <!-- <button class=" btn btn-success" (click)="onAddFolder(folderName.value); folderName.value=''">Add</button> -->
   <!-- <div *ngFor="let folder of unsavedPreferences.libraryFolders">
     <input type="text" value="{{folder}}" />
-    <button class="btn btn-primary" (click)="onEditFolder(folder)">Edit</button>
-    <button class="btn btn-danger" (click)="onDeleteFolder(folder)">Delete</button>
   </div> -->
   <div class='inline'>
     <h5>Offline Torrent Dump</h5>
@@ -31,12 +36,9 @@
   <button class="btn btn-success" (click)="onSave()">Save</button>
   <button class="btn btn-warning" (click)="onReset()">Reset</button>
 </div>
-<!-- <h1 class="title" style="display:none">
-  {{title}}
-</h1>
-<button (click)="toggleTitle()"> clickhere </button> -->
 
-<!-- <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#addLibraryModal">Open Large Modal</button> -->
+<!-- <h1 class="title" style="display:none">{{title}}</h1>
+<button (click)="toggleTitle()"> clickhere </button> -->
 
 <div id="addLibraryModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
@@ -46,8 +48,8 @@
       </div>
       <div class="modal-body">
         <div>
-          <button class="btn" (click)="onGoToPreviousFolder()">Back</button>
-          <button class="btn" (click)="onGoToParentFolder()">Up</button>
+          <button class="btn btn-info" (click)="onGoToPreviousFolder()">Back</button>
+          <button class="btn btn-info" (click)="onGoToParentFolder()">Up</button>
           <input type="text">
           <h3>Add Folder</h3>
           <div class="row">

@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Observable } from 'rxjs'
 import { IpcService } from '../../services/ipc.service';
 declare var jquery: any;
 declare var $: any;
@@ -6,36 +7,56 @@ declare var $: any;
 @Component({
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
-  styleUrls: ['./preferences.component.scss']
+  styleUrls: ['./preferences.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreferencesComponent implements OnInit {
+  @Input() data: Observable<any>
   // userPreferences = USERPREFERENCES;
   // unsavedPreferences: Preferences;
-  constructor(
-    private ipcService: IpcService
-  ) {
-  }
   title = 'angular 4 with jquery'
+  libraryFolders = []
+  sampleFolders = ['f1', 'f2']
+  constructor(
+    private ipcService: IpcService,
+    private cdr: ChangeDetectorRef
+  ) { }
   ngOnInit() {
     $('.title').slideToggle(); //
-
     // var $j = $.noConflict();
-    $('[data-toggle="popover"]').popover();
-    $('[data-toggle="tooltip"]').tooltip({ 'placement': 'top' });
-    // console.log(this)
     this.onGetLibraryFolders()
+    this.ipcService.libraryFolders.subscribe((value) => {
+      console.log('libraryFolders: ', value);
+      console.log('libraryFolders[0]: ', value[0]);
+      const temp = this.libraryFolders
+      this.libraryFolders = value
+      console.log('this.libraryFolders: ', this.libraryFolders);
+      this.cdr.detectChanges()
+    })
     // this.ipcService.libraryFolders.subscribe((value) => {
-    //   console.log('libraryFolders', value);
+    //   console.log('libraryFolders: ', value);
+    //   console.log('libraryFolders[0]: ', value[0]);
+    //   const temp = this.libraryFolders
+    //   this.libraryFolders = [...temp, ...value]
+    //   console.log('this.libraryFolders: ', this.libraryFolders);
+    //   // this.cdr.markForCheck();
     // })
+    $('[data-toggle="popover"]').popover();
+    $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
   }
+
   toggleTitle() {
     $('.title').slideToggle(); // test only
   }
 
+  getLibraryFoldersList() {
+    return this.libraryFolders
+  }
   /**
    * Get list of library folders
    */
   onGetLibraryFolders() {
+    console.log('onGetLibraryFolders');
     this.ipcService.getLibraryFolders()
   }
   /**

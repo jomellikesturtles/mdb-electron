@@ -1,11 +1,12 @@
 /**
  * new ipc service (9/4)
+ * Service to communicate to ipc main
  */
-import { Injectable
-  // , ChangeDetectorRef 
+import {
+  Injectable
+  // , ChangeDetectionStrategy, ChangeDetectorRef, 
 } from '@angular/core';
-// import { BehaviorSubject } from 'rxjs';
-// import { Injectable } from '@';
+import { BehaviorSubject } from 'rxjs';
 declare var electron: any;
 const { ipcRenderer, clipboard, shell } = electron;
 @Injectable({
@@ -13,19 +14,17 @@ const { ipcRenderer, clipboard, shell } = electron;
 })
 export class IpcService {
 
-  // libraryFolders = new BehaviorSubject<string[]>([]);
-  // directory = new BehaviorSubject<string[]>([]);
+  libraryFolders = new BehaviorSubject<string[]>([]);
   ipcRenderer: typeof ipcRenderer;
   constructor(
-    // private ipc: IpcRenderer
     // private ref: ChangeDetectorRef
   ) {
     this.ipcRenderer = (<any>window).require('electron').ipcRenderer;
 
-    // this.ipcRenderer.on('library-folders', (data) => {
-    //   console.log(data.toString())
-    //   this.libraryFolders = data;
-    // })
+    this.ipcRenderer.on('library-folders', (event, data) => {
+      console.log('data:', data);
+      this.libraryFolders.next(data)
+    })
   }
 
   /**
@@ -52,7 +51,7 @@ export class IpcService {
    * Opens files and folders
    */
   getLibraryFolders() {
-    // this.ipcRenderer.send('retrieve-library-folders')
+    this.ipcRenderer.send('retrieve-library-folders')
   }
   /**
    * Scans the library folders
