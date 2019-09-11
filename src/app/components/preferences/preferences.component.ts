@@ -3,7 +3,6 @@ import { Observable } from 'rxjs'
 import { IpcService } from '../../services/ipc.service';
 declare var jquery: any;
 declare var $: any;
-
 @Component({
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
@@ -12,11 +11,15 @@ declare var $: any;
 })
 export class PreferencesComponent implements OnInit {
   @Input() data: Observable<any>
-  // userPreferences = USERPREFERENCES;
-  // unsavedPreferences: Preferences;
+
   title = 'angular 4 with jquery'
   libraryFolders = []
-  sampleFolders = ['f1', 'f2']
+  preferencesObject = {
+    libraryFolders: [],
+    isDarkMode: false,
+    isDirty: false,
+    isEnableCache: false
+  }
   constructor(
     private ipcService: IpcService,
     private cdr: ChangeDetectorRef
@@ -26,21 +29,9 @@ export class PreferencesComponent implements OnInit {
     // var $j = $.noConflict();
     this.onGetLibraryFolders()
     this.ipcService.libraryFolders.subscribe((value) => {
-      console.log('libraryFolders: ', value);
-      console.log('libraryFolders[0]: ', value[0]);
-      const temp = this.libraryFolders
       this.libraryFolders = value
-      console.log('this.libraryFolders: ', this.libraryFolders);
       this.cdr.detectChanges()
     })
-    // this.ipcService.libraryFolders.subscribe((value) => {
-    //   console.log('libraryFolders: ', value);
-    //   console.log('libraryFolders[0]: ', value[0]);
-    //   const temp = this.libraryFolders
-    //   this.libraryFolders = [...temp, ...value]
-    //   console.log('this.libraryFolders: ', this.libraryFolders);
-    //   // this.cdr.markForCheck();
-    // })
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
   }
@@ -49,14 +40,10 @@ export class PreferencesComponent implements OnInit {
     $('.title').slideToggle(); // test only
   }
 
-  getLibraryFoldersList() {
-    return this.libraryFolders
-  }
   /**
    * Get list of library folders
    */
   onGetLibraryFolders() {
-    console.log('onGetLibraryFolders');
     this.ipcService.getLibraryFolders()
   }
   /**
@@ -81,12 +68,6 @@ export class PreferencesComponent implements OnInit {
     console.log('onScanLibrary');
     this.ipcService.scanLibrary()
   }
-  onGoToPreviousFolder() {
-
-  }
-  onGoToParentFolder() {
-
-  }
   /**
    * Updates thepiratebay torrent dump
    */
@@ -106,7 +87,8 @@ export class PreferencesComponent implements OnInit {
    * saves config file
    */
   onSave() {
-    this.ipcService.sendMessage('save-preferences')
+    this.preferencesObject.libraryFolders = this.libraryFolders
+    this.ipcService.savePreferences(this.preferencesObject)
     console.log('onSave');
   }
 
@@ -134,12 +116,32 @@ export class PreferencesComponent implements OnInit {
    * @param folder folder directory to delete
    */
   onDeleteFolder(folder) {
-    console.log('onDeleteFolder');
-    // this.unsavedPreferences.libraryFolders = this.unsavedPreferences.libraryFolders.filter(h => h !== folder)
+    console.log('onDeleteFolder', folder);
+    this.libraryFolders = this.libraryFolders.filter(h => h !== folder)
+    console.log(this.libraryFolders)
+    this.cdr.detectChanges()
+  }
+  /**
+   * Opens folder
+   * @param folder folder directory to open
+   */
+  onOpenFolder(folder: string) {
+    console.log(folder);
+    this.ipcService.openFolder(folder)
   }
 
   /** Search query */
   onSearch(data) {
     this.ipcService.searchQuery(data)
+  }
+
+  // modal file explorer
+  // goes back to the previous folder
+  onGoToPreviousFolder() {
+
+  }
+  // goes back to the parent folder
+  onGoToParentFolder() {
+
   }
 }

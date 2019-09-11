@@ -94,7 +94,6 @@ function finSearch() {
 function initSearch() {
     console.log('initSearch');
     const titleBasicsTSV = path.join(process.cwd(), 'src', 'assets', 'movie database', 'title.basics.tsv', 'data.tsv')
-    console.log('process.cwd() ', process.cwd());
     console.log('titleBasicsTSV', titleBasicsTSV);
     stream = fs.createReadStream(titleBasicsTSV)
         .once('open', function () {

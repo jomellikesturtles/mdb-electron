@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { TorrentService } from '../../services/torrent.service'
 import { MovieService } from '../../services/movie.service'
 import { DataService } from '../../services/data.service'
+import { IpcService } from '../../services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { catchError, map, tap, retry } from 'rxjs/operators'
 declare var jquery: any
@@ -21,6 +22,7 @@ export class DashboardComponent implements OnInit {
     private torrentService: TorrentService,
     private dataService: DataService,
     private movieService: MovieService,
+    private ipcService: IpcService,
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) { }
@@ -35,14 +37,21 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.getNowShowingMovies()
     this.getTopMoviesFromYear()
+    this.getMoviesFromLibrary()
     $('[data-toggle="tooltip"]').tooltip();
   }
 
+  /**
+   * Downloads highlighted/selected movies
+   */
   onDownloadSelected() {
     this.dataService.updateSelectedMovies(this.selectedMovies)
     this.router.navigate([`/bulk-download`], { relativeTo: this.activatedRoute });
   }
 
+  /**
+   * Clears highlighted/selected movies
+   */
   onClearSelected() {
     this.selectedMovies.forEach(element => {
       element.isHighlighted = false
@@ -50,11 +59,16 @@ export class DashboardComponent implements OnInit {
     this.selectedMovies = []
   }
 
+  /**
+   * Gets movies showing in theaters in current date
+   */
   getNowShowingMovies() {
     const sDate = new Date()
-    const today = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) + '-' + ('0' + sDate.getDate()).slice(-2);
+    const today = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) + '-'
+      + ('0' + sDate.getDate()).slice(-2);
     sDate.setDate(sDate.getDate() - 21)
-    const threeWeeksAgo = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) + '-' + ('0' + sDate.getDate()).slice(-2);
+    const threeWeeksAgo = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) + '-'
+      + ('0' + sDate.getDate()).slice(-2);
     this.movieService.getMoviesByDates(threeWeeksAgo, today).subscribe(data => {
       this.nowShowingMovies = data.results;
       this.nowShowingMovies[this.nameString] = `Movies in Theatres`
@@ -62,6 +76,9 @@ export class DashboardComponent implements OnInit {
     })
   }
 
+  /**
+   * Gets top-rated movies from year
+   */
   getTopMoviesFromYear() {
     const sDate = new Date()
     const minimumYear = 1960
@@ -71,6 +88,13 @@ export class DashboardComponent implements OnInit {
       this.topMoviesFromYear[this.nameString] = `Top movies of ${randYear}`
       this.dashboardLists.push(this.topMoviesFromYear)
     })
+  }
+
+  /**
+   * Gets movies from library
+   */
+  getMoviesFromLibrary() {
+    this.ipcService.getMoviesFromLibrary()
   }
 
   /**

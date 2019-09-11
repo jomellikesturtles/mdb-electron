@@ -10,7 +10,7 @@ import { DetailsComponent } from './components/details/details.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { SearchAndResultsComponent } from './components/search-and-results/search-and-results.component';
 import { MagnetPipe, SimplifySizePipe } from './services/torrent.service';
-
+import { FormsModule } from '@angular/forms'
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,7 +25,8 @@ import { MagnetPipe, SimplifySizePipe } from './services/torrent.service';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

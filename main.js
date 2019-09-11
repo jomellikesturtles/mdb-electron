@@ -10,7 +10,6 @@ const Datastore = require('nedb')
 const datastore = new Datastore({ filename: 'src/assets/config/config.db', autoload: true });
 // import * as path from 'path'
 // import * as url from 'url'const 
-// cp = require('child_process');
 const path = require('path');
 const fs = require('fs');
 let procSearch;
@@ -18,18 +17,6 @@ let win
 let mainWindow
 let currentCondition = true;
 let stream;
-let result = [];
-let releaseFrom = 2012
-let releaseTo = 2019
-let searchQuery = {
-    title: '[',
-    genres: [''],
-    titleType: ['movie', 'tvMovie'],
-    releaseFrom: 1960,
-    releaseTo: 2019,
-    ratingFrom: 7.0,
-    ratingTo: 9.8
-}
 
 /**
  * Creates the browser window
@@ -62,7 +49,6 @@ app.on('ready', createWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
-
     // On macOS specific close process
     if (process.platform !== 'darwin') {
         app.quit()
@@ -88,10 +74,10 @@ ipcMain.on('logger', function (event, data) {
 ipcMain.on('app-max', function () {
     mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize();
 });
-
-ipcMain.on('open-folder', function (folder) {
+// open folder
+ipcMain.on('open-folder', function (event, folder) {
+    console.log('open-folder', folder);
     shell.showItemInFolder(folder)
-    shell.showItemInFolder(__dirname)
 })
 // opens OS' file explorer
 ipcMain.on('file-explorer', function (folder) {
@@ -129,19 +115,11 @@ ipcMain.on('scan-library', function (data) {
         // });
         // mainWindow.webContents.send('search-init');
     } else {
-        console.log('procSearch false');
-        // popWarn('One Search process is already running');
-        // mainWindow.webContents.send('hide-ol');
+        console.log('scan library is already running');
     }
-
-    // let libraryFolders = ["D:\\workspaces\\test data folder", "C:\\Users\\Lenovo\\Downloads\\Completed Downloads"]
-    // libraryFolders.forEach(folder => {
-    //     readDirectory(folder)
-    // })
-    // fs.readFileSync(__dirname) // illegal operation on a directory, read
 })
 
-ipcMain.on('search-query', function (data) {
+ipcMain.on('search-query', function (event, data) {
     if (!procSearch) { // if process search is not yet running
         console.log('procSearch true');
         procSearch = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'search-movie.js'), {
@@ -152,31 +130,34 @@ ipcMain.on('search-query', function (data) {
             console.log('printing data..');
             console.log(data.toString());
         });
-
     } else {
-        console.log('procSearch false');
-        // popWarn('One Search process is already running');
         console.log('One Search process is already running');
-        // mainWindow.webContents.send('hide-ol');
     }
 })
 
 /**
  * Gets list of library folders
  */
-ipcMain.on('retrieve-library-folders', function (data) {
+ipcMain.on('retrieve-library-folders', function (event, data) {
     var config = datastore
     config.findOne({ type: 'libraryFolders' }, function (err, dbPref) {
         if (!err) {
             foldersList = dbPref.foldersList
-            console.log('foldersList', foldersList);
-            // mainWindow.webContents.send('library-folders', foldersList)
             mainWindow.webContents.send('library-folders', foldersList)
-
-            // ipcMain.
-            // resolve(foldersList)
         } else {
             reject()
         }
     })
+})
+
+ipcMain.on('save-preferences', function (event, data) {
+    console.log('save-preferences ', data);
+})
+
+ipcMain.on('get-library-movies', function (event, data) {
+    console.log('get library')
+})
+
+ipcMain.on('get-torrents-title', function (event, data) {
+    
 })

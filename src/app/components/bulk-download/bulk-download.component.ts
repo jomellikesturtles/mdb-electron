@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Torrent, Movie, Test } from '../../subject'
 import { MovieService } from '../../services/movie.service'
+import { IpcService } from '../../services/ipc.service'
 import { catchError, map, tap } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 import { StartTimeStamp, DISPLAYEDMOVIES, MOVIEGENRES, SELECTEDMOVIE } from '../../mock-data'
@@ -16,7 +17,7 @@ declare var $: any
   styleUrls: ['./bulk-download.component.scss']
 })
 export class BulkDownloadComponent implements OnInit {
-  
+
   displayedMovies = DISPLAYEDMOVIES
   selectedMovie = null;
   sampleJson = `{
@@ -33,6 +34,7 @@ export class BulkDownloadComponent implements OnInit {
 
   constructor(
     private movieService: MovieService,
+    private ipcService: IpcService,
     private torrentService: TorrentService,
     private startTimeStamp: StartTimeStamp,
     private router: Router,
@@ -43,9 +45,8 @@ export class BulkDownloadComponent implements OnInit {
 
   ngOnInit() {
 
-    // $(document).ready(function () {
     $('[data-toggle="popover"]').popover();
-    $('[data-toggle="tooltip"]').tooltip({ 'placement': 'top' });
+    $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
     this.dataService.selectedMovies.subscribe(data => {
       data.forEach(element => {
         element.year = element.release_date.slice(0, element.release_date.indexOf('-'));
@@ -66,10 +67,10 @@ export class BulkDownloadComponent implements OnInit {
     // });
   }
 
-  getTorrentByTitleAlgorithm() {
-
+  getTorrentsByTitleAlgorithm(value) {
+    this.ipcService.getTorrentsByTitle(value)
   }
-  
+
   getTorrentByTitle(movie) {
     const title = movie.title;
     const year = movie.year;
@@ -236,7 +237,7 @@ export class BulkDownloadComponent implements OnInit {
     }
     return torrents
   }
-  
+
   getTorrentByQuery() {
 
   }

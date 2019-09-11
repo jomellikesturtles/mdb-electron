@@ -44,42 +44,42 @@
     </a>
   </div> -->
 
-  <div class="container-fluid" style='padding-top: 10vh'>
-    <div *ngIf="dashboardLists">
-      <div *ngFor="let list of dashboardLists">
-        <h3>{{list.name}}</h3>
-        <div class="container-fluid" id="list" style="overflow-y:hidden;overflow-x:scroll;">
-          <div class='d-inline-flex'>
-  
-            <div *ngFor="let movie of list">
-              <div class='flex-fill movie-card' [ngClass]="{'movie-card-selected': movie.isHighlighted}"
-                style="margin:3px; cursor: pointer" (click)=onHighlight(movie)>
-  
-                <div class="form-check" style="position:relative;left:15px;top:25px;z-index: 2">
-                  <input class="form-check-input" type="checkbox" [checked]="movie.isHighlighted" hidden="!isHighlighted"
-                    id="defaultCheck1">
-                </div>
-                <div class="circle-available" *ngIf='movie.isAvailable' data-toggle="tooltip" title="Available offline">
-                </div>
-  
-                <div style="width:154px;height: 231px;border:solid">
-                  <img src="https://image.tmdb.org/t/p/w154/{{movie.poster_path}}" alt="{{movie.title}}">
-                </div>
-                <h6 (click)=onSelect(movie) class='text-primary'>{{movie.title}}</h6>
+<div class="container-fluid" style='padding-top: 10vh'>
+  <div *ngIf="dashboardLists">
+    <div *ngFor="let list of dashboardLists">
+      <h3>{{list.name}}</h3>
+      <div class="container-fluid" id="list" style="overflow-y:hidden;overflow-x:scroll;">
+        <div class='d-inline-flex'>
+
+          <div *ngFor="let movie of list">
+            <div class='flex-fill movie-card' [ngClass]="{'movie-card-selected': movie.isHighlighted}"
+              style="margin:3px; cursor: pointer" (click)=onHighlight(movie)>
+
+              <div class="form-check" style="position:relative;left:15px;top:25px;z-index: 2">
+                <input class="form-check-input" type="checkbox" [checked]="movie.isHighlighted" hidden="!isHighlighted"
+                  id="defaultCheck1">
               </div>
+              <div class="circle-available" *ngIf='movie.isAvailable' data-toggle="tooltip" title="Available offline">
+              </div>
+
+              <div style="width:154px;height: 231px;border:solid">
+                <img src="https://image.tmdb.org/t/p/w154/{{movie.poster_path}}" alt="{{movie.title}}">
+              </div>
+              <h6 (click)=onSelect(movie) class='text-primary'>{{movie.title}}</h6>
             </div>
-            
-  
-            
           </div>
+
+
+
         </div>
       </div>
     </div>
-  
-    <button class='btn btn-success' (click)='onDownloadSelected()'>Download selected</button>
-    <button class='btn btn-danger' (click)='onClearSelected()'>Clear selected</button>
-  
-    <div *ngIf='!browserConnection'>
-      <h1>You are offline</h1>
-    </div>
   </div>
+
+  <button class='btn btn-success' (click)='onDownloadSelected()'>Download selected</button>
+  <button class='btn btn-danger' (click)='onClearSelected()'>Clear selected</button>
+
+  <div *ngIf='!browserConnection'>
+    <h1>You are offline</h1>
+  </div>
+</div>
