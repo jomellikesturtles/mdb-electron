@@ -1,5 +1,5 @@
 const electron = require('electron');
-const {ipcRenderer, clipboard, shell} = electron;
+const { ipcRenderer, clipboard, shell } = electron;
 // const path = require('path');
 // const fs = require('fs');
 // const Datastore = require('nedb');
@@ -19,6 +19,10 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
 //         autoload: true
 //     })
 // }
-alert('sent')
-loadPreferences()
-ipcRenderer.send('logger', data);
+// alert('sent')F
+// loadPreferences()
+// ipcRenderer.send('logger', data);
+
+ipcRenderer.on('library-folders', function (){
+    console.log('library-folders rndmainjs');
+})

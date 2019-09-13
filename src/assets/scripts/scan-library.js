@@ -9,7 +9,7 @@ const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const ffmpeg = require('fluent-ffmpeg')
 var moviesList = []
 
-var config = new DataStore({ filename: '../config/config.db', autoload: true})
+var config = new DataStore({ filename: '../config/config.db', autoload: true })
 var libraryFiles = new DataStore({ filename: 'libraryFiles.db', autoload: true })
 config.loadDatabase(function (err) {    // Callback is optional
     // Now commands will be executed

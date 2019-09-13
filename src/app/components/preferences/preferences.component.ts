@@ -1,7 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs'
 import { IpcService } from '../../services/ipc.service';
-declare var jquery: any;
 declare var $: any;
 @Component({
   selector: 'app-preferences',
@@ -14,6 +13,7 @@ export class PreferencesComponent implements OnInit {
 
   title = 'angular 4 with jquery'
   libraryFolders = []
+  libraryMovies = []
   preferencesObject = {
     libraryFolders: [],
     isDarkMode: false,
@@ -28,7 +28,12 @@ export class PreferencesComponent implements OnInit {
     $('.title').slideToggle(); //
     // var $j = $.noConflict();
     this.onGetLibraryFolders()
+    this.onGetLibraryMovies()
     this.ipcService.libraryFolders.subscribe((value) => {
+      this.libraryFolders = value
+      this.cdr.detectChanges()
+    })
+    this.ipcService.libraryMovies.subscribe((value) => {
       this.libraryFolders = value
       this.cdr.detectChanges()
     })
@@ -40,6 +45,9 @@ export class PreferencesComponent implements OnInit {
     $('.title').slideToggle(); // test only
   }
 
+  onGetLibraryMovies() {
+    this.ipcService.getMoviesFromLibrary()
+  }
   /**
    * Get list of library folders
    */

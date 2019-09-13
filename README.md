@@ -88,6 +88,12 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
   - search and results
   - dashboard
   - preferences
+- child-procesess
+  - config-db-service
+  - library-db-service
+  - search-movie
+  - search-torrent
+  - scan-library
 
 ## Development Notes
 
