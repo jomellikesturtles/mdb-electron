@@ -34,7 +34,7 @@ export class PreferencesComponent implements OnInit {
       this.cdr.detectChanges()
     })
     this.ipcService.libraryMovies.subscribe((value) => {
-      this.libraryFolders = value
+      this.libraryMovies = value
       this.cdr.detectChanges()
     })
     $('[data-toggle="popover"]').popover();

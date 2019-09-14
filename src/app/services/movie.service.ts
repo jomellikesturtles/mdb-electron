@@ -66,7 +66,7 @@ export class MovieService {
   }
 
   getMovieByImdbId(val: string): Observable<OmdbMovieDetail> {
-    let url = `${this.omdbUrl}/?i=${val}&apikey=${this.omdbApiKey}&plot=full`
+    const url = `${this.omdbUrl}/?i=${val}&apikey=${this.omdbApiKey}&plot=full`
     return this.http.get<OmdbMovieDetail>(url).pipe(
       map(data => {
         console.log(data);

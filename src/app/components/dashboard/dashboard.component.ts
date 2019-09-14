@@ -9,7 +9,7 @@ import { catchError, map, tap, retry } from 'rxjs/operators'
 declare var jquery: any
 declare var $: any
 import { Movie } from '../../subject'
-import * as subjects from '../../mock-data'
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -122,7 +122,7 @@ export class DashboardComponent implements OnInit {
       const highlightedId = data.imdb_id;
       localStorage.setItem('imdb_id', highlightedId);
       this.dataService.updateHighlightedMovie(highlightedId);
-      this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+      this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute })
     })
   }
 

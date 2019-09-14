@@ -1,3 +1,35 @@
-<p>
-  navigation works!
-</p>
+<!-- <div class="container-fluid" style="margin-bottom: 20px">
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+    <a class="navbar-brand" routerLink="./dashboard">Home</a>
+    <ul class="navbar-nav">
+      <li class="navbar-nav">
+        <a class="navbar-link" routerLink="./search-and-results">Search2</a>
+      </li>
+      <li class="navbar-nav">
+        <a class="navbar-link" routerLink="./search">Search</a>
+      </li>
+      <li class="navbar-nav">
+        <a class="navbar-link" routerLink="./preferences">Preferences</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<router-outlet></router-outlet> -->
+
+
+<div id="mySidenav" class="sidenav">
+  <!-- <a href="javascript:void(0)" class="closebtn" (click)="closeNav()">&times;</a> -->
+  <a routerLink="./dashboard">Home</a>
+  <a routerLink="./browse">Browse</a>
+  <a routerLink="./library">Library</a>
+  <a routerLink="./preferences">Preferences</a>
+</div>
+
+<!-- Use any element to open the sidenav -->
+<span (click)="openNav()">open</span>
+<div id="topNav">
+  <app-top-navigation></app-top-navigation>
+</div>
+<div id="main">
+  <router-outlet></router-outlet>
+</div>

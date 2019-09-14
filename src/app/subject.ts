@@ -98,13 +98,6 @@ export class MovieGenre {
     isChecked: boolean;
 }
 
-export class Preferences {
-    movieDirectory: string;
-    torrentDumpDirectory: string;
-    moviePostersDirectory: string;
-    libraryFolders: string[];
-}
-
 export class WatchList {
     id: number;
     movieList: string[];

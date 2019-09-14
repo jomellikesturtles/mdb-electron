@@ -1,13 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Movie, Test, OmdbMovieDetail, Rating, Torrent } from '../../subject';
-import { SELECTEDMOVIE } from '../../mock-data';
+import { SELECTEDMOVIE, TEST_MOVIE_DETAIL } from '../../mock-data';
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DataService } from '../../services/data.service';
 import { MovieService } from '../../services/movie.service';
 import { TorrentService } from '../../services/torrent.service';
-import { ActivatedRoute } from '@angular/router';
-import { log } from 'util';
+import { IpcService } from '../../services/ipc.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-details',
@@ -23,43 +23,56 @@ export class DetailsComponent implements OnInit {
 
   constructor(
     private sanitizer: DomSanitizer,
-    private movieService: MovieService,
+    private activatedRoute: ActivatedRoute,
     private dataService: DataService,
+    private movieService: MovieService,
+    private ipcService: IpcService,
     private torrentService: TorrentService,
-    private activatedRoute: ActivatedRoute
-  ) {}
+    private router: Router
+  ) { }
 
   results: any;
   str = 'this is test';
-  // selectedMovie = SELECTEDMOVIE;
   selectedMovie: OmdbMovieDetail;
   movieBackdrop;
   torrents: Torrent[] = [];
+  globalImdbId;
+  testSelectedMovie = TEST_MOVIE_DETAIL
+  testMovieBackdrop = '../../../assets/test-assets/wall-e_backdrop.jpg'
   ngOnInit() {
-    // this.torrentService.getTorrents(' tt0499549 ').subscribe(data => console.log(data[0]));
-    // this.getMovie('tt0499549')
-    // this.getTorrents('tt0499549')
-    // this.getMovie(imdb_id)
+    this.testSelectedMovie.Poster = '../../../assets/test-assets/wall-e_poster.jpg'
+    this.selectedMovie = this.testSelectedMovie
+    this.movieBackdrop = this.testMovieBackdrop
 
-    const imdbId = this.activatedRoute.snapshot.paramMap.get('imdbId');
-    // commented for harmony
-    this.dataService.currentMovie.subscribe(data => {
-      // ran twice
-      console.log('fromdataservice: ', data);
-      if (data) {
-        this.getMovie(data);
-        this.getBackdrop(data);
-      } else {
-        this.getMovie(imdbId);
-        this.getBackdrop(imdbId);
-      }
-    });
-    // end of commented for harmony
-  }
-  goToGoogle(val) {
-    console.log(val);
+    // let imdbId
+    // this.activatedRoute.params.subscribe(params => {
+    //   console.log(params);
+    //   imdbId = params.imdbId;
+    //   console.log('imdbId', imdbId); // Print the parameter to the console.
+    //   this.getMovie(imdbId);
+    //   this.getBackdrop(imdbId);
+    // });
+
+    // // commented for test
+    // const imdbId = this.activatedRoute.snapshot.paramMap;
+    // this.dataService.currentMovie.subscribe(data => {
+    //   // ran twice
+    //   console.log('fromdataservice: ', data);
+    //   if (data) {
+    //     this.getMovie(data);
+    //     this.getBackdrop(data);
+    //   } else {
+    //     this.getMovie(imdbId);
+    //     this.getBackdrop(imdbId);
+    //   }
+    // });
+    // // end of commented for test
   }
 
+  /**
+   * Gets movie details, torrents
+   * @param val imdb id
+   */
   getMovie(val: any) {
     console.log('getMovie initializing with value...', val);
     // tt2015381 is Guardians of the galaxy 2014; for testing only
@@ -105,18 +118,23 @@ export class DetailsComponent implements OnInit {
     });
   }
 
-  getTestApi(): void {
-    const str = 'thistest';
-    console.log(`HeroService: ${str}`);
-    this.movieService
-      .getTestApi(1)
-      .subscribe(testData => (this.testData = testData));
+  /**
+   * Opens link externally
+   * @param value link to open
+   */
+  goToLink(value) {
+    console.log('open this:', value)
+    this.ipcService.openLinkExternal(value)
   }
 
   sanitize(torrent: Torrent) {
     return this.torrentService.sanitize(torrent);
   }
 
+  /**
+   * Copies link to clipboard
+   * @param magnetLink link top copy
+   */
   copyToClipboard(magnetLink: string) {
     const selBox = document.createElement('textarea');
     selBox.style.position = 'fixed';

@@ -1,0 +1,20 @@
+<div class='navbar'>
+  <!-- <a class="row" routerLink="./dashboard">Home</a>
+  <a class="row" (click)='navigateBack()'>Back</a> -->
+  <div>
+    <div class="col-12">
+      <div class='input-group'>
+        <input name="searchBar" class="form-control" id="search-bar" placeholder="Search title or IMDb id"
+          [(ngModel)]="searchQuery.keywords" (keyup.enter)="onSearch(searchQuery)" />
+        <button class="btn btn-success input-group-btn" id="search-button"
+          (click)='onSearch(searchQuery)'>Search</button>
+        <button class="btn btn-outline-light input-group-btn" id="advanced-search-button" data-toggle="collapse"
+          data-target="#demo">Advanced Search</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <div> -->
+<!-- search queries: {{searchQuery.keywords}}, {{searchQuery.startYear}}, {{searchQuery.endYear}},
+    {{searchQuery.genres.description}}, {{searchQuery.type}}, {{searchQuery.isAvailable}} -->
+<!-- </div> -->

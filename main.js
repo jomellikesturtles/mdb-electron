@@ -2,17 +2,8 @@
  * Main processor
  */
 const cp = require('child_process');
-const {
-  app,
-  BrowserWindow,
-  ipcMain,
-  dialog,
-  Menu,
-  Tray,
-  shell,
-  session,
-  clipboard
-} = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, Menu,
+  Tray, shell, session, clipboard } = require('electron')
 const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const papa = require('papaparse');
 const os = require('os')
@@ -92,6 +83,10 @@ ipcMain.on('logger', function (event, data) {
 ipcMain.on('app-max', function () {
   mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize();
 });
+
+/* Operating System
+----------------------*/
+
 // open folder
 ipcMain.on('open-folder', function (event, folder) {
   console.log('open-folder', folder);
@@ -106,6 +101,15 @@ ipcMain.on('modal-file-explorer', function (folder) {
   fs.readFileSync(__dirname)
   // shell.showItemInFolder
 })
+// opens url to external browser
+ipcMain.on('open-link-external', function (event, url) {
+  shell.openExternalSync(url, {}, function (err) {
+    if (err) {
+      console.log(err)
+    }
+  })
+})
+
 
 /**
  * Initializes scan-library.js

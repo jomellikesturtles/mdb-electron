@@ -202,10 +202,8 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 - imdbId goes null/undefined if Tmdb doesn't have imdb id(especially on new movies)
 - mismatch number of search results because of filters(adults/non-movie)
 - add individual .js file for major functions
-  - search
   - update offline files
   - torrent
-  - scan library
 - add offline files into OneDrive
 
 > major
@@ -222,6 +220,12 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
     - gets and setting torrents from API
   - movie
     - gets movie info from online API
+- ipcRenderers/main
+  - config db service
+  - library db service
+- ipcRenderers subscriptions
+  - preferences
+  - library movies
 
 > minor
 
@@ -244,7 +248,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 - integrate moviefiles scan to imdbsearch
 - test Plex with following scenarios:
   - titles with '.' and without dot - both (tho.r becomes thor:ragnarok)
-  - with year and wihtout year - passed
+  - with year and without year - passed
   - with 's' and without 's' - passed (folder and name) ie. guardian of the galaxy.
   - mistyped letter in a title - passed
   - mismatch file size - passed
@@ -254,7 +258,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   - incorrect folder and name - failed
   - undash movie title with dash(spider-man) - passed
   - year first before title - passed
-
+  
 ## Offline Assets
 
 extract and import to the assets folder:

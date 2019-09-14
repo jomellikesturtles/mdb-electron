@@ -2,13 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Torrent, Movie, Test } from '../../subject'
 import { MovieService } from '../../services/movie.service'
 import { IpcService } from '../../services/ipc.service'
-import { catchError, map, tap } from 'rxjs/operators';
-import { forkJoin } from 'rxjs';
-import { StartTimeStamp, DISPLAYEDMOVIES, MOVIEGENRES, SELECTEDMOVIE } from '../../mock-data'
+import { DISPLAYEDMOVIES, MOVIEGENRES, SELECTEDMOVIE } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../services/data.service'
 import { TorrentService } from '../../services/torrent.service'
-declare var jquery: any
 declare var $: any
 
 @Component({
@@ -29,18 +26,15 @@ export class BulkDownloadComponent implements OnInit {
   result: any
   testResult: Test
   gg = new Test()
-  private globalStartTimeStamp: number
   test2: Test
 
   constructor(
     private movieService: MovieService,
     private ipcService: IpcService,
     private torrentService: TorrentService,
-    private startTimeStamp: StartTimeStamp,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private dataService: DataService) {
-    this.globalStartTimeStamp = startTimeStamp.getStartTimeStamp();
   }
 
   ngOnInit() {
@@ -313,7 +307,7 @@ export class SelectedMovie {
 }
 export class TorrentResult {
   status: string;
-  status_message: string;
+  statusMessage: string;
 }
 
 export class Test1 {

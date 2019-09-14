@@ -1,3 +1,6 @@
+/**
+ * Library db service. add comments on proccess functions to run as node js file
+ */
 var DataStore = require('nedb')
 // process.on('uncaughtException', function (error) {
 //     console.log(error);
@@ -88,8 +91,8 @@ function removeDirectoryFromMovie(imdbId, directory) {
 // findMovie('tt2015381')
 // getLibraryMovies()
 
-initializeDataAccess('insert', testLibraryMovieObject)
-initializeDataAccess('insert', testLibraryMovieObject2)
+// initializeDataAccess('insert', testLibraryMovieObject)
+// initializeDataAccess('insert', testLibraryMovieObject2)
 // initializeDataAccess('find', 'tt2015381')
 console.log('in library db')
 initializeDataAccess('find-all')

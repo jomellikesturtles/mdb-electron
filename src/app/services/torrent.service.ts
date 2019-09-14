@@ -88,7 +88,7 @@ export class TorrentService {
    */
   sanitize(torrent: Torrent) {
     let val
-    if (torrent.hash.length != 40) {
+    if (torrent.hash.length !== 40) {
       val = this.getMagnetLinkWithImproperHash(torrent.hash, torrent.name);
     } else {
       val = this.getMagnetLinkWithProperHash(torrent.hash);

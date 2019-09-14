@@ -1,8 +1,61 @@
 /**
  * Mock data. For pre-defined lists and offline data
  */
-import { Movie, MovieGenre, Preferences, SelectedMovies, Torrent, Genre } from './subject';
+import { Movie, MovieGenre, SelectedMovies, Torrent, Genre } from './subject';
 import { Injectable } from '@angular/core';
+
+export const TEST_LIBRARY_MOVIES = [
+  {
+    title: 'Titanic',
+    imdbId: 'tt0095956',
+    directory: ['D:\\titanic.mp4']
+  },
+  {
+    title: 'Guardians of the Galaxy',
+    imdbId: 'tt0133093',
+    directory: ['D:\\guardians of the galaxy.mp4']
+  },]
+
+export const TEST_MOVIE_DETAIL = {
+  Title: 'WALL·E',
+  Year: '2008',
+  Rated: 'G',
+  Released: '27 Jun 2008',
+  Runtime: '98 min',
+  Genre: 'Animation, Adventure, Family, Sci-Fi',
+  Director: 'Andrew Stanton',
+  Writer: 'Andrew Stantoyzn (original story by), Pete Docter (original story by), Andrew Stanton (screenplay by), Jim Reardon (screenplay by)',
+  Actors: 'Ben Burtt, Elissa Knight, Jeff Garlin, Fred Willard',
+  Plot: 'In the distant future, a small waste-collecting robot inadvertently embarks on a space journey that will ultimately decide the fate of mankind.',
+  Language: 'English',
+  Country: 'USA',
+  Awards: 'Won 1 Oscar. Another 89 wins & 90 nominations.',
+  Poster: 'https://m.media-amazon.com/images/M/MV5BMjExMTg5OTU0NF5BMl5BanBnXkFtZTcwMjMxMzMzMw@@._V1_SX300.jpg',
+  Ratings: [
+    {
+      Source: 'Internet Movie Database',
+      Value: '8.4/10'
+    },
+    {
+      Source: 'Rotten Tomatoes',
+      Value: '95%'
+    },
+    {
+      Source: 'Metacritic',
+      Value: '95/100'
+    }
+  ],
+  Metascore: '95',
+  imdbRating: '8.4',
+  imdbVotes: '919,942',
+  imdbID: 'tt0910970',
+  Type: 'movie',
+  DVD: '18 Nov 2008',
+  BoxOffice: '$223,749,872',
+  Production: 'Walt Disney Pictures',
+  Website: 'http://www.wall-e.com/',
+  Response: 'True'
+}
 
 export const MOCK_MOVIE_DETAIL =
 {
@@ -23,50 +76,50 @@ export const MOCK_MOVIE_DETAIL =
 }
 
 export const MOCKBULKDOWNLOADTORRENTS =
-[
-  {
-    id: 1,
-    name: 'Guardians of the Galaxy (2014) 1080p BrRip x264 - YIFY',
-    size: 1988939229,
-    hash: '11A2AC68A11634E980F265CB1433C599D017A759',
-    checked: false
-  },
-  {
-    id: 1,
-    name: 'Guardians of the Galaxy Vol. 2 (2017) 720p BrRip x264 - VPPV',
-    size: 1215947108,
-    hash: '68132C479348C1AA2618D55C8BBEC6EB2597A5BA',
-    checked: false
-  },
-  {
-    id: 1,
-    name: 'The.Wailing.2016.1080p.BluRay.10bit.HEVC-MkvCage [aka Gokseong]',
-    size: 3976321027,
-    hash: '2F157306E5114EA8044302586A89FDC4E0FAC2A1',
-    checked: false
-  },
-  {
-    id: 1,
-    name: 'First.Man.2018.HC.HDRip.XviD.AC3-EVO',
-    size: 1474599225,
-    hash: '885CCCAD7F1942A515DA564FCF62933A105931DB',
-    checked: false
-  },
-  {
-    id: 2,
-    name: 'First.Man.2018.720p.BRRip.x264.MkvCage',
-    size: 1375985558,
-    hash: '712837DCAA3F4275B89E640EB21DAE72D2E0C38B',
-    checked: false
-  },
-  {
-    id: 1,
-    name: 'Home Alone (1990) 1080p BrRip x264 - YIFY',
-    size: 1767740507,
-    hash: '5FEFAC61C0F42FFC43946B3379A540D1A38F6480',
-    checked: false
-  }
-]
+  [
+    {
+      id: 1,
+      name: 'Guardians of the Galaxy (2014) 1080p BrRip x264 - YIFY',
+      size: 1988939229,
+      hash: '11A2AC68A11634E980F265CB1433C599D017A759',
+      checked: false
+    },
+    {
+      id: 1,
+      name: 'Guardians of the Galaxy Vol. 2 (2017) 720p BrRip x264 - VPPV',
+      size: 1215947108,
+      hash: '68132C479348C1AA2618D55C8BBEC6EB2597A5BA',
+      checked: false
+    },
+    {
+      id: 1,
+      name: 'The.Wailing.2016.1080p.BluRay.10bit.HEVC-MkvCage [aka Gokseong]',
+      size: 3976321027,
+      hash: '2F157306E5114EA8044302586A89FDC4E0FAC2A1',
+      checked: false
+    },
+    {
+      id: 1,
+      name: 'First.Man.2018.HC.HDRip.XviD.AC3-EVO',
+      size: 1474599225,
+      hash: '885CCCAD7F1942A515DA564FCF62933A105931DB',
+      checked: false
+    },
+    {
+      id: 2,
+      name: 'First.Man.2018.720p.BRRip.x264.MkvCage',
+      size: 1375985558,
+      hash: '712837DCAA3F4275B89E640EB21DAE72D2E0C38B',
+      checked: false
+    },
+    {
+      id: 1,
+      name: 'Home Alone (1990) 1080p BrRip x264 - YIFY',
+      size: 1767740507,
+      hash: '5FEFAC61C0F42FFC43946B3379A540D1A38F6480',
+      checked: false
+    }
+  ]
 
 export const MOVIEGENRES: MovieGenre[] =
   [{ id: 1, code: 'ACT', description: 'Action', isChecked: true },
@@ -155,13 +208,6 @@ export const MOVIES: Movie[] = [
 ];
 
 export const SELECTEDMOVIE: Movie = { id: 4, Title: 'Valkyrie', Year: 2008, Plot: '', genre: 'Action', isAvailable: true, isHighlighted: false, imageDirectory: './assets/images/2008-valkyrie-1.jpg', Runtime: '120', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' };
-
-export const USERPREFERENCES: Preferences = {
-  movieDirectory: '../../../project assets/movies/',
-  torrentDumpDirectory: '../../../project assets/torrent_dump_full.csv',
-  moviePostersDirectory: '',
-  libraryFolders: []
-};
 
 export const SELECTEDMOVIES: SelectedMovies[] = [
   { imdbId: 'tt0477348', title: 'No Country for Old Men' },

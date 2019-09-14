@@ -4,11 +4,11 @@
  */
 import {
   Injectable
-  // , ChangeDetectionStrategy, ChangeDetectorRef,
+  //// , ChangeDetectionStrategy, ChangeDetectorRef,
 } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 declare var electron: any;
-// const { ipcRenderer } = electron;
+const { ipcRenderer } = electron;
 @Injectable({
   providedIn: 'root'
 })
@@ -17,24 +17,24 @@ export class IpcService {
   libraryFolders = new BehaviorSubject<string[]>([]);
   libraryMovies = new BehaviorSubject<string[]>([]);
   preferencesConfig = new BehaviorSubject<string[]>([]);
-  // ipcRenderer: typeof ipcRenderer;
+  ipcRenderer: typeof ipcRenderer;
   constructor(
-    // private ref: ChangeDetectorRef
+    //// private ref: ChangeDetectorRef
   ) {
-    // this.ipcRenderer = (<any>window).require('electron').ipcRenderer;
+    this.ipcRenderer = (<any>window).require('electron').ipcRenderer;
 
-    // this.ipcRenderer.on('library-folders', (event, data) => {
-    //   console.log('library-folders:', data);
-    //   this.libraryFolders.next(data)
-    // })
-    // this.ipcRenderer.on('preferences-config', (event, data) => {
-    //   console.log('preferences-config:', data);
-    //   this.preferencesConfig.next(data)
-    // })
-    // this.ipcRenderer.on('library-movies', (event, data) => {
-    //   console.log('library-movies data:', data);
-    //   this.libraryMovies.next(data)
-    // })
+    this.ipcRenderer.on('library-folders', (event, data) => {
+      console.log('library-folders:', data);
+      this.libraryFolders.next(data)
+    })
+    this.ipcRenderer.on('preferences-config', (event, data) => {
+      console.log('preferences-config:', data);
+      this.preferencesConfig.next(data)
+    })
+    this.ipcRenderer.on('library-movies', (event, data) => {
+      console.log('library-movies data:', data);
+      this.libraryMovies.next(data)
+    })
   }
 
   /**
@@ -43,31 +43,40 @@ export class IpcService {
   sendMessage(data) {
     console.log('sendMessage')
     console.log(data)
-    // this.ipcRenderer.send('logger', data)
+    this.ipcRenderer.send('logger', data)
+  }
+
+  /**
+   * Opens link to browser
+   * @param url url to open
+   */
+  openLinkExternal(url: string) {
+    url = 'https://www.google.com'
+    this.ipcRenderer.send('open-link-external', url)
   }
   /**
    * Opens files and folders
    */
   fileExplorer() {
-    // this.ipcRenderer.send('file-explorer')
+    this.ipcRenderer.send('file-explorer')
   }
   /**
    * Opens files and folders
    */
   modalFileExplorer() {
-    // this.ipcRenderer.send('modal-file-explorer')
+    this.ipcRenderer.send('modal-file-explorer')
   }
   /**
    * Opens files and folders
    */
   getLibraryFolders() {
-    // this.ipcRenderer.send('retrieve-library-folders')
+    this.ipcRenderer.send('retrieve-library-folders')
   }
   /**
    * Scans the library folders
    */
   scanLibrary() {
-    // this.ipcRenderer.send('scan-library')
+    this.ipcRenderer.send('scan-library')
   }
 
   /**
@@ -75,14 +84,14 @@ export class IpcService {
    * @param preferencesObject preferences object to save
    */
   savePreferences(preferencesObject) {
-    // this.ipcRenderer.send('save-preferences', preferencesObject)
+    this.ipcRenderer.send('save-preferences', preferencesObject)
   }
   /**
    * Gets preferences from the config file
-   * @param preferencesObject preferences object to save
+   *
    */
-  getPreferences(preferencesObject) {
-    // this.ipcRenderer.send('get-preferences', preferencesObject)
+  getPreferences() {
+    this.ipcRenderer.send('get-preferences')
   }
 
   /**
@@ -91,7 +100,7 @@ export class IpcService {
    */
   openFolder(data) {
     console.log(data)
-    // this.ipcRenderer.send('open-folder', data)
+    this.ipcRenderer.send('open-folder', data)
   }
 
   /**
@@ -99,7 +108,7 @@ export class IpcService {
    * @param value movie title or imdb id
    */
   getTorrentsByTitle(value) {
-    // this.ipcRenderer.send('get-torrents-title', value)
+    this.ipcRenderer.send('get-torrents-title', value)
   }
   /**
    * Search movie
@@ -107,7 +116,7 @@ export class IpcService {
    */
   searchQuery(data) {
     console.log('Searching ', data)
-    // this.ipcRenderer.send('search-query', data)
+    this.ipcRenderer.send('search-query', data)
   }
 
   /**
@@ -116,7 +125,7 @@ export class IpcService {
    */
   searchTorrent(data) {
     console.log('searchTorrent ', data)
-    // this.ipcRenderer.send('search-torrent', data)
+    this.ipcRenderer.send('search-torrent', data)
   }
 
   // library movies db
@@ -124,6 +133,6 @@ export class IpcService {
    * Retrieves movies from library db
    */
   getMoviesFromLibrary() {
-    // this.ipcRenderer.send('get-library-movies')
+    this.ipcRenderer.send('get-library-movies')
   }
 }
