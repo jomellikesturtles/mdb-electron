@@ -18,6 +18,7 @@ const path = require('path');
 const fs = require('fs');
 let procSearch;
 let procLibraryDb;
+let offlineMovieDataService;
 let win
 let mainWindow
 let currentCondition = true;
@@ -209,4 +210,24 @@ ipcMain.on('get-library-movies', function (event, data) {
 
 ipcMain.on('get-torrents-title', function (event, data) {
 
+})
+
+/**
+ * Gets all movies from libraryFiles.db
+ */
+ipcMain.on('set-movie-data', function (event, data) {
+  console.log('set movies into movie-data-service..')
+  offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'offline-movie-data-service.js'), [data[0], data[1]], {
+    cwd: __dirname,
+    silent: true
+  });
+  offlineMovieDataService.stdout.on('data', function (data) {
+    console.log(data.toString().slice(0, -1));
+  });
+  offlineMovieDataService.on('exit', function () {
+    console.log('Import process ended');
+  });
+  offlineMovieDataService.on('message', function (m) {
+    mainWindow.webContents.send(m[0], m[1]); // reply
+  });
 })

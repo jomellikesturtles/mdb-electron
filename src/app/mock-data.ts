@@ -14,7 +14,7 @@ export const TEST_LIBRARY_MOVIES = [
     title: 'Guardians of the Galaxy',
     imdbId: 'tt0133093',
     directory: ['D:\\guardians of the galaxy.mp4']
-  },]
+  }, ]
 
 export const TEST_MOVIE_DETAIL = {
   Title: 'WALL·E',
@@ -57,8 +57,7 @@ export const TEST_MOVIE_DETAIL = {
   Response: 'True'
 }
 
-export const MOCK_MOVIE_DETAIL =
-{
+export const MOCK_MOVIE_DETAIL = {
   id: 1,
   Title: 'Reservoir Dogs',
   Year: 1992,

@@ -29,7 +29,7 @@ export class TopNavigationComponent implements OnInit {
   minYear = 1888;
   maxYear = 2018;
   currentYear = new Date().getFullYear()
-  genres = ['Action', 'Adventure', 'Documentary', 'Drama', 'Horror', 'Sci-Fi', 'Thriller',];
+  genres = ['Action', 'Adventure', 'Documentary', 'Drama', 'Horror', 'Sci-Fi', 'Thriller'];
   movieGenres = MOVIEGENRES;
   types = ['TV Series', 'Movie', 'Short'];
   searchQuery: SearchQuery = {
@@ -106,7 +106,7 @@ export class TopNavigationComponent implements OnInit {
       console.log('searchMovieByTitle data', data);
       if (resultMovies != undefined) {
         this.movies = resultMovies.filter(obj => {
-          return obj.media_type == 'movie'
+          return obj.media_type === 'movie'
         })
         this.hasSearchResults = true
       } else {

@@ -258,7 +258,23 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   - incorrect folder and name - failed
   - undash movie title with dash(spider-man) - passed
   - year first before title - passed
-  
+- browse
+  - top year/genre
+  - mix year/genre
+  - country
+  - studio
+  - awardees
+  - upcoming
+  - decade
+  - now showing
+  - director
+  - language
+- home
+  - recommended
+  - watch again
+  - now showing
+
+
 ## Offline Assets
 
 extract and import to the assets folder:

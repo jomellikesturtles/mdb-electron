@@ -32,7 +32,7 @@ export class MovieService {
   // https://api.themoviedb.org/3/search/movie?api_key=a636ce7bd0c125045f4170644b4d3d25&page=1
   myApiFilmsApiKey = 'c7e516ed-d9fe-4f3f-b1d9-fde33f63c816'
   imdbId = 'tt0499549'
-  plot = 'full' //short
+  plot = 'full' // short
   omdbUrl = 'http://www.omdbapi.com'
   tmdbUrl = 'https://api.themoviedb.org/3'
   farnartTVUrl = 'http://webservice.fanart.tv/v3/movies'
@@ -91,54 +91,54 @@ export class MovieService {
 
   getImages(val: any): Observable<any> {
     // https://image.tmdb.org/t/p/original/mFb0ygcue4ITixDkdr7wm1Tdarx.jpg
-    let url = `${this.omdbUrl}/?t=${val}&apikey=${this.tmdbApiKey}`
+    const url = `${this.omdbUrl}/?t=${val}&apikey=${this.tmdbApiKey}`
     return this.http.get<Movie>(url).pipe(tap(_ => this.log(`getMovie ${val}`)),
       catchError(this.handleError<Movie>('getMovie')))
   }
 
   searchMovieByTitle(val: string): Observable<any> {
-    let url2 = `${this.omdbUrl}/?s=${val}&apikey=${this.omdbApiKey}`
-    let url = `${this.tmdbUrl}/search/multi?api_key=${this.tmdbApiKey}&query=${val}`
+    const url2 = `${this.omdbUrl}/?s=${val}&apikey=${this.omdbApiKey}`
+    const url = `${this.tmdbUrl}/search/multi?api_key=${this.tmdbApiKey}&query=${val}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('searchMovieByTitle')))
   }
 
   searchMovieByTitleWithPage(query: string, page: number): Observable<any> {
-    let url = `${this.tmdbUrl}/search/multi?api_key=${this.tmdbApiKey}&query=${query}&page=${page}`
+    const url = `${this.tmdbUrl}/search/multi?api_key=${this.tmdbApiKey}&query=${query}&page=${page}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('searchMovieByTitleWithPage')))
   }
 
   searchSubtitleById(val: string): Observable<Movie> {
-    let url = `${this.omdbUrl}/?t=${val}&apikey=${this.omdbApiKey}`
+    const url = `${this.omdbUrl}/?t=${val}&apikey=${this.omdbApiKey}`
     return this.http.get<Movie>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<Movie>('getMovie')))
   }
 
   /**
    * Gets IMDB id
-   * 
+   *
    * @param val tmdbId
    * @returns imdb id
    */
   getExternalId(val: any) {
-    let url = `${this.tmdbUrl}/movie/${val}/external_ids?api_key=${this.tmdbApiKey}`
+    const url = `${this.tmdbUrl}/movie/${val}/external_ids?api_key=${this.tmdbApiKey}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getExternalId')))
   }
 
   getMoviesInTheaters() {
-    let date = new Date();
-    let dateToday = date.getFullYear() + '-' + ('0' + date.getMonth()).slice(-2) + '-' + ('0' + date.getDate()).slice(-2)
-    let date2 = new Date(date.getTime() + (1000 * 60 * 60 * 24))
-    let dateTomorrow = date2.getFullYear() + '-' + ('0' + date2.getMonth()).slice(-2) + '-' + ('0' + date2.getDate()).slice(-2)
-    let url = `${this.tmdbUrl}/discover/movie?primary_release_date.${dateToday}&primary_release_date.lte=${dateTomorrow}`
+    const date = new Date();
+    const dateToday = date.getFullYear() + '-' + ('0' + date.getMonth()).slice(-2) + '-' + ('0' + date.getDate()).slice(-2)
+    const date2 = new Date(date.getTime() + (1000 * 60 * 60 * 24))
+    const dateTomorrow = date2.getFullYear() + '-' + ('0' + date2.getMonth()).slice(-2) + '-' + ('0' + date2.getDate()).slice(-2)
+    const url = `${this.tmdbUrl}/discover/movie?primary_release_date.${dateToday}&primary_release_date.lte=${dateTomorrow}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getMoviesInTheaters')))
   }
   getMovieBackdrop(val: string): Observable<any> {
     // http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
-    
+
     const url = `${this.farnartTVUrl}/${val}?api_key=${this.fanartTVApiKey}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getMovieBackdrop')))

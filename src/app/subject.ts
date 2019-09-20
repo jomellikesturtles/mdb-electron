@@ -2,7 +2,7 @@
  * Objects template
  */
 
-import { BrowserPlatformLocation } from "@angular/platform-browser/src/browser/location/browser_platform_location";
+import { BrowserPlatformLocation } from '@angular/platform-browser/src/browser/location/browser_platform_location';
 
 export class Torrent {
     id?: number;
@@ -36,14 +36,14 @@ export class Movie {
     Director: string;
     Writer: string;
     Poster: string;
-    // Ratings	
-    // 0	
+    // Ratings
+    // 0
     // Source	"Internet Movie Database"
     // Value	"7.8/10"
-    // 1	
+    // 1
     // Source	"Rotten Tomatoes"
     // Value	"82%"
-    // 2	
+    // 2
     // Source	"Metacritic"
     // Value	"83/100"
     // Metascore	"83"

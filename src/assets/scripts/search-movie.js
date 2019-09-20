@@ -89,7 +89,7 @@ function finSearch() {
 };
 
 /**
-* Search
+* Initialize search
 */
 function initSearch() {
     console.log('initSearch');
@@ -109,7 +109,7 @@ function initSearch() {
             });
         })
         .on('error', function (err) {
-            // process.send(['search-failed', 'read']); //mainWindow.webContents.send('search-failed', 'read');
+            process.send(['search-failed', 'read']); //mainWindow.webContents.send('search-failed', 'read');
             console.log(err);
         });
 }

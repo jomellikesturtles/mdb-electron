@@ -114,8 +114,6 @@ function getLevenshteinDistance() {
   }));
 }
 
-
-
 // var fileTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`
 // var folderTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*$)`
 // var titleRegex = new RegExp(fileTitleRegexStr, 'gmi')
