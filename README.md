@@ -197,7 +197,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 ## Todo
 
 - ipcRenderers
-- yts
+- torrents from online source
 - fix background image in movie-info
 - imdbId goes null/undefined if Tmdb doesn't have imdb id(especially on new movies)
 - mismatch number of search results because of filters(adults/non-movie)

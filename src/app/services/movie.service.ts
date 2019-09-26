@@ -54,6 +54,10 @@ export class MovieService {
     );
   }
 
+  /**
+   * Gets movie info. First it gets from offline source,
+   * if there is none, it gets from online source (OMDB)
+   */
   getMovieInfo(val: string): Observable<any> {
     const imdbIdRegex = new RegExp(`(^tt[0-9]{0,7})$`, `g`)
     let result
@@ -65,6 +69,10 @@ export class MovieService {
     return result
   }
 
+  /**
+   * Gets movie details by imdb id
+   * @param val imdb id
+   */
   getMovieByImdbId(val: string): Observable<OmdbMovieDetail> {
     const url = `${this.omdbUrl}/?i=${val}&apikey=${this.omdbApiKey}&plot=full`
     return this.http.get<OmdbMovieDetail>(url).pipe(
@@ -87,6 +95,10 @@ export class MovieService {
     const url = `${this.omdbUrl}/?t=${val}&apikey=${this.omdbApiKey}`
     return this.http.get<Movie>(url).pipe(tap(_ => this.log(`getMovie ${val}`)),
       catchError(this.handleError<Movie>('getMovie')))
+  }
+
+  getMovieFromLibrary(val) {
+    this.ipcService.getMovieFromLibrary(val)
   }
 
   getImages(val: any): Observable<any> {

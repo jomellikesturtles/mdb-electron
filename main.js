@@ -93,10 +93,6 @@ ipcMain.on('open-folder', function (event, folder) {
   console.log('open-folder', folder);
   shell.showItemInFolder(folder)
 })
-// opens OS' file explorer
-ipcMain.on('file-explorer', function (folder) {
-  shell.showItemInFolder(os.homedir())
-})
 // opens modal file explorer
 ipcMain.on('modal-file-explorer', function (folder) {
   fs.readFileSync(__dirname)
@@ -207,6 +203,25 @@ ipcMain.on('get-library-movies', function (event, data) {
     mainWindow.webContents.send(m[0], m[1]);
   });
 })
+/**
+ * Gets the movie from libraryFiles.db
+ */
+ipcMain.on('get-library-movie', function (event, data) {
+  console.log('get movies from library..')
+  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), ['find-one', data], {
+    cwd: __dirname,
+    silent: true
+  });
+  procLibraryDb.stdout.on('data', function (data) {
+    console.log(data.toString().slice(0, -1));
+  });
+  procLibraryDb.on('exit', function () {
+    console.log('Import process ended');
+  });
+  procLibraryDb.on('message', function (m) {
+    mainWindow.webContents.send(m[0], m[1]);
+  });
+})
 
 ipcMain.on('get-torrents-title', function (event, data) {
 
@@ -215,8 +230,8 @@ ipcMain.on('get-torrents-title', function (event, data) {
 /**
  * Gets all movies from libraryFiles.db
  */
-ipcMain.on('set-movie-data', function (event, data) {
-  console.log('set movies into movie-data-service..')
+ipcMain.on('movie-metadata', function (event, data) {
+  console.log('set movies into movie-metadata-service..')
   offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'offline-movie-data-service.js'), [data[0], data[1]], {
     cwd: __dirname,
     silent: true
@@ -231,3 +246,4 @@ ipcMain.on('set-movie-data', function (event, data) {
     mainWindow.webContents.send(m[0], m[1]); // reply
   });
 })
+

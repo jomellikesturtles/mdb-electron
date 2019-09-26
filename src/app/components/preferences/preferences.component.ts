@@ -61,14 +61,6 @@ export class PreferencesComponent implements OnInit {
     console.log('onOpenModal');
     this.ipcService.modalFileExplorer()
   }
-
-  /**
-   * Opens the folder
-   */
-  onOpenFileExplorer() {
-    console.log('onOpenFileExplorer');
-    this.ipcService.fileExplorer()
-  }
   /**
    * Scans library folders for new movies
    */

@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class DataService {
+  private dashboardData: any[];
 
   private selectedMovieSource = new BehaviorSubject<any>('');
   currentMovie = this.selectedMovieSource.asObservable();
@@ -19,6 +20,20 @@ export class DataService {
   selectedMovies = this.selectedMoviesSource.asObservable();
 
   constructor() { }
+
+  setDashboardData(data: any[]) {
+    this.dashboardData = data;
+  }
+  addDashboardData(data: any[]) {
+    this.dashboardData.push(data)
+  }
+  getDashboardData() {
+    return this.dashboardData || [];
+  }
+
+  hasData() {
+    return this.dashboardData && this.dashboardData.length;
+  }
 
   updateHighlightedMovie(val: any) {
     console.log('updatedHighlightedMovie ', val);

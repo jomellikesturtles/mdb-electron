@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Movie, Test, OmdbMovieDetail, Rating, Torrent } from '../../subject';
+import { Component, OnInit, ChangeDetectorRef, Input } from '@angular/core';
+import { Movie, Test, OmdbMovieDetail, Rating, Torrent, MdbMovieDetails } from '../../subject';
 import { SELECTEDMOVIE, TEST_MOVIE_DETAIL } from '../../mock-data';
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -28,17 +28,21 @@ export class DetailsComponent implements OnInit {
     private movieService: MovieService,
     private ipcService: IpcService,
     private torrentService: TorrentService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
   results: any;
   str = 'this is test';
-  selectedMovie: OmdbMovieDetail;
+  // selectedMovie: OmdbMovieDetail;
+  selectedMovie: MdbMovieDetails;
   movieBackdrop;
   torrents: Torrent[] = [];
   globalImdbId;
   testSelectedMovie = TEST_MOVIE_DETAIL
   testMovieBackdrop = '../../../assets/test-assets/wall-e_backdrop.jpg'
+  isAvailable = false
+
   ngOnInit() {
     this.testSelectedMovie.Poster = '../../../assets/test-assets/wall-e_poster.jpg'
     this.selectedMovie = this.testSelectedMovie
@@ -74,10 +78,13 @@ export class DetailsComponent implements OnInit {
    * @param val imdb id
    */
   getMovie(val: any) {
-    console.log('getMovie initializing with value...', val);
     // tt2015381 is Guardians of the galaxy 2014; for testing only
+    console.log('getMovie initializing with value...', val);
+    this.ipcService.getMovieMetadata(val.trim())
     this.movieService.getMovieInfo(val.trim()).subscribe(data => {
       this.selectedMovie = data;
+      // this.selectedMovie.LibraryInfo 
+      this.ipcService.setMovieMetadata(data)
       // this.getTorrents(data.Title)
     });
   }

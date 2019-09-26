@@ -16,7 +16,9 @@ export class IpcService {
 
   libraryFolders = new BehaviorSubject<string[]>([]);
   libraryMovies = new BehaviorSubject<string[]>([]);
+  libraryMovie = new BehaviorSubject<string[]>([]);
   preferencesConfig = new BehaviorSubject<string[]>([]);
+  movieMetadata = new BehaviorSubject<string[]>([]);
   ipcRenderer: typeof ipcRenderer;
   constructor(
     //// private ref: ChangeDetectorRef
@@ -27,13 +29,21 @@ export class IpcService {
       console.log('library-folders:', data);
       this.libraryFolders.next(data)
     })
+    this.ipcRenderer.on('library-movies', (event, data) => {
+      console.log('library-movies data:', data);
+      this.libraryMovies.next(data)
+    })
+    this.ipcRenderer.on('library-movie', (event, data) => {
+      console.log('library-movies data:', data);
+      this.libraryMovie.next(data)
+    })
     this.ipcRenderer.on('preferences-config', (event, data) => {
       console.log('preferences-config:', data);
       this.preferencesConfig.next(data)
     })
-    this.ipcRenderer.on('library-movies', (event, data) => {
-      console.log('library-movies data:', data);
-      this.libraryMovies.next(data)
+    this.ipcRenderer.on('movie-metadata', (event, data) => {
+      console.log('preferences-config:', data);
+      this.movieMetadata.next(data)
     })
   }
 
@@ -53,12 +63,6 @@ export class IpcService {
   openLinkExternal(url: string) {
     url = 'https://www.google.com'
     this.ipcRenderer.send('open-link-external', url)
-  }
-  /**
-   * Opens files and folders
-   */
-  fileExplorer() {
-    this.ipcRenderer.send('file-explorer')
   }
   /**
    * Opens files and folders
@@ -87,8 +91,7 @@ export class IpcService {
     this.ipcRenderer.send('save-preferences', preferencesObject)
   }
   /**
-   * Gets preferences from the config file
-   *
+   * Gets preferences from the config file.
    */
   getPreferences() {
     this.ipcRenderer.send('get-preferences')
@@ -128,11 +131,36 @@ export class IpcService {
     this.ipcRenderer.send('search-torrent', data)
   }
 
+  /**
+   * Gets movie metadata from offline source.
+   * @param data search query
+   */
+  getMovieMetadata(data) {
+    console.log('getMovieMetadata ', data)
+    this.ipcRenderer.send('movie-metadata', ['get', data])
+  }
+  /**
+   * Sets movie metadata from offline source.
+   * @param data search query
+   */
+  setMovieMetadata(data) {
+    console.log('setMovieMetadata ', data)
+    this.ipcRenderer.send('movie-metadata', ['set', data])
+  }
+
   // library movies db
   /**
-   * Retrieves movies from library db
+   * Ipc renderer that sends command to main renderer to get movies from library db.
    */
   getMoviesFromLibrary() {
     this.ipcRenderer.send('get-library-movies')
+  }
+  /**
+   * Ipc renderer that sends command to main renderer to get specified movie from library db.
+   * Replies offline directories.
+   * @param data imdb id or movie title and release year
+   */
+  getMovieFromLibrary(data) {
+    this.ipcRenderer.send('get-library-movie', [data])
   }
 }

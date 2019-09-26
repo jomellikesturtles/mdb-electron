@@ -1,12 +1,10 @@
-// tslint:disable-next-line: semicolon
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core'
 import { TorrentService } from '../../services/torrent.service'
 import { MovieService } from '../../services/movie.service'
 import { DataService } from '../../services/data.service'
 import { IpcService } from '../../services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { catchError, map, tap, retry } from 'rxjs/operators'
-declare var jquery: any
 declare var $: any
 import { Movie } from '../../subject'
 
@@ -35,9 +33,13 @@ export class DashboardComponent implements OnInit {
   isHighlighted = false
 
   ngOnInit() {
-    this.getNowShowingMovies()
-    this.getTopMoviesFromYear()
-    this.getMoviesFromLibrary()
+    if (this.dataService.hasData) {
+      this.dashboardLists = this.dataService.getDashboardData()
+    } else {
+      this.getNowShowingMovies()
+      this.getTopMoviesFromYear()
+      // this.getMoviesFromLibrary()
+    }
     $('[data-toggle="tooltip"]').tooltip();
   }
 
@@ -73,6 +75,7 @@ export class DashboardComponent implements OnInit {
       this.nowShowingMovies = data.results;
       this.nowShowingMovies[this.nameString] = `Movies in Theatres`
       this.dashboardLists.push(this.nowShowingMovies)
+      this.dataService.addDashboardData(this.nowShowingMovies)
     })
   }
 
@@ -87,6 +90,7 @@ export class DashboardComponent implements OnInit {
       this.topMoviesFromYear = data.results;
       this.topMoviesFromYear[this.nameString] = `Top movies of ${randYear}`
       this.dashboardLists.push(this.topMoviesFromYear)
+      this.dataService.addDashboardData(this.nowShowingMovies)
     })
   }
 
@@ -102,7 +106,6 @@ export class DashboardComponent implements OnInit {
    * @param movie current selected movie
    */
   onHighlight(movie: Movie) {
-
     movie.isHighlighted = !movie.isHighlighted
     if (movie.isHighlighted) {
       this.selectedMovies.push(movie)
