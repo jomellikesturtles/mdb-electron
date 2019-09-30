@@ -2,11 +2,8 @@
  * Main processor
  */
 const cp = require('child_process');
-const { app, BrowserWindow, ipcMain, dialog, Menu,
-  Tray, shell, session, clipboard } = require('electron')
+const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
-const papa = require('papaparse');
-const os = require('os')
 const Datastore = require('nedb')
 const datastore = new Datastore({
   filename: 'src/assets/config/config.db',
@@ -48,13 +45,12 @@ function createWindow() {
   mainWindow.on('closed', function () {
     mainWindow = null
   })
-
   mainWindow.once('show', function () {
     console.log('main window Show');
   });
 }
 
-// Create window on electron intialization
+// Create window on electron initialization
 app.on('ready', createWindow)
 
 // Quit when all windows are closed.
@@ -64,7 +60,9 @@ app.on('window-all-closed', function () {
     app.quit()
   }
 })
-
+app.on('before-quit', function () {
+  // save changes
+})
 app.on('activate', function () {
   // macOS specific close process
   if (mainWindow === null) {
@@ -189,7 +187,7 @@ ipcMain.on('save-preferences', function (event, data) {
  */
 ipcMain.on('get-library-movies', function (event, data) {
   console.log('get movies from library..')
-  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), {
+  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), ['find-all'], {
     cwd: __dirname,
     silent: true
   });
@@ -207,8 +205,8 @@ ipcMain.on('get-library-movies', function (event, data) {
  * Gets the movie from libraryFiles.db
  */
 ipcMain.on('get-library-movie', function (event, data) {
-  console.log('get movies from library..')
-  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), ['find-one', data], {
+  console.log('get 1 movie from library..')
+  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), ['find-one', data[0], data[1]], {
     cwd: __dirname,
     silent: true
   });
@@ -246,4 +244,3 @@ ipcMain.on('movie-metadata', function (event, data) {
     mainWindow.webContents.send(m[0], m[1]); // reply
   });
 })
-

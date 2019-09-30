@@ -5,44 +5,46 @@
 import {
   Injectable
   //// , ChangeDetectionStrategy, ChangeDetectorRef,
-} from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-declare var electron: any;
-const { ipcRenderer } = electron;
+} from '@angular/core'
+import { BehaviorSubject } from 'rxjs'
+declare var electron: any
+const { ipcRenderer } = electron
 @Injectable({
   providedIn: 'root'
 })
 export class IpcService {
-
-  libraryFolders = new BehaviorSubject<string[]>([]);
-  libraryMovies = new BehaviorSubject<string[]>([]);
-  libraryMovie = new BehaviorSubject<string[]>([]);
-  preferencesConfig = new BehaviorSubject<string[]>([]);
-  movieMetadata = new BehaviorSubject<string[]>([]);
-  ipcRenderer: typeof ipcRenderer;
-  constructor(
-    //// private ref: ChangeDetectorRef
-  ) {
-    this.ipcRenderer = (<any>window).require('electron').ipcRenderer;
+  libraryFolders = new BehaviorSubject<string[]>([])
+  libraryMovies = new BehaviorSubject<string[]>([])
+  libraryMovie = new BehaviorSubject<string[]>([])
+  preferencesConfig = new BehaviorSubject<string[]>([])
+  movieMetadata = new BehaviorSubject<string[]>([])
+  ipcRenderer: typeof ipcRenderer
+  constructor() //// private ref: ChangeDetectorRef
+  {
+    this.ipcRenderer = (<any>window).require('electron').ipcRenderer
 
     this.ipcRenderer.on('library-folders', (event, data) => {
-      console.log('library-folders:', data);
+      console.log('library-folders:', data)
       this.libraryFolders.next(data)
     })
     this.ipcRenderer.on('library-movies', (event, data) => {
-      console.log('library-movies data:', data);
+      console.log('library-movies data:', data)
       this.libraryMovies.next(data)
     })
     this.ipcRenderer.on('library-movie', (event, data) => {
-      console.log('library-movies data:', data);
+      console.log('library-movie data:', data)
+      this.libraryMovie.next(data)
+    })
+    this.ipcRenderer.on('library-movie-title-year', (event, data) => {
+      console.log('library-movie-title-year data:', data)
       this.libraryMovie.next(data)
     })
     this.ipcRenderer.on('preferences-config', (event, data) => {
-      console.log('preferences-config:', data);
+      console.log('preferences-config:', data)
       this.preferencesConfig.next(data)
     })
     this.ipcRenderer.on('movie-metadata', (event, data) => {
-      console.log('preferences-config:', data);
+      console.log('preferences-config:', data)
       this.movieMetadata.next(data)
     })
   }
@@ -80,7 +82,7 @@ export class IpcService {
    * Scans the library folders
    */
   scanLibrary() {
-    this.ipcRenderer.send('scan-library')
+    // this.ipcRenderer.send('scan-library')
   }
 
   /**
@@ -153,6 +155,7 @@ export class IpcService {
    * Ipc renderer that sends command to main renderer to get movies from library db.
    */
   getMoviesFromLibrary() {
+    console.log('get-library-movies')
     this.ipcRenderer.send('get-library-movies')
   }
   /**
@@ -161,6 +164,6 @@ export class IpcService {
    * @param data imdb id or movie title and release year
    */
   getMovieFromLibrary(data) {
-    this.ipcRenderer.send('get-library-movie', [data])
+    this.ipcRenderer.send('get-library-movie', data)
   }
 }

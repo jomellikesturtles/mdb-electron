@@ -1,8 +1,9 @@
   <div class="container">
     <div class="row">
+      <span class='icon-question-mark' ></span>
       <div id="results-panel" *ngFor="let movie of movies" class="col-md-3">
         <div class="flex-fill movie-card" [ngClass]="{'movie-card-selected': movie.isHighlighted}"
-          style="margin:3px; cursor: pointer" style="margin:3px; cursor: pointer" style="width:14rem; margin:20px"
+          style="margin:3px; cursor: pointer" style="margin:3px; cursor: pointer" style="width:14rem; margin:20px" data-toggle="tooltip" title="{{movie.overview}}"
           (click)=onSelect(movie)>
           <img class="movie-db-img card-img-top image" style=" object-fit: cover" src="{{movie.Poster}}"
             alt="{{movie.Title}}" style="height:333px">

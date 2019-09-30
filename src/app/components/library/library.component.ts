@@ -34,7 +34,7 @@ export class LibraryComponent implements OnInit {
   ngOnInit() {
     console.log('ngOnInit');
     this.libraryMovies = this.testLibraryMovies
-    this.getMoviesFromLibrary()
+    // this.getMoviesFromLibrary()
 
     // this.ipcService.libraryMovies.subscribe((value) => {
     //   this.libraryMovies = value

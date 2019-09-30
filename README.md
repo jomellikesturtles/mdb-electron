@@ -245,7 +245,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 
 > unsorted
 
-- integrate moviefiles scan to imdbsearch
+- integrate movie files scan to imdb search
 - test Plex with following scenarios:
   - titles with '.' and without dot - both (tho.r becomes thor:ragnarok)
   - with year and without year - passed
@@ -256,7 +256,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   - name with incorrect year - passed
   - name with parenthesis - passed
   - incorrect folder and name - failed
-  - undash movie title with dash(spider-man) - passed
+  - un-dash movie title with dash(spider-man) - passed
   - year first before title - passed
 - browse
   - top year/genre
@@ -273,7 +273,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   - recommended
   - watch again
   - now showing
-
 
 ## Offline Assets
 
