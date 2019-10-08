@@ -8,7 +8,7 @@
         <img class="movie-db-img card-img-top image" style=" object-fit: cover" src="{{movie.Poster}}"
           alt="{{movie.Title}}" style="height:333px">
         <div class="card-body">
-          <h6 class="card-title" (click)=goToMovie(movie) class='text-primary'>{{movie.Title}}</h6>
+          <h6 class="card-title" (click)=goToMovie(movie) class='text-primary' style='cursor: pointer'>{{movie.Title}}</h6>
           <label>{{movie.imdbRating}}</label>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { Movie, Test, OmdbMovieDetail, Rating, Torrent, MdbMovieDetails } from '../../subject';
 import { SELECTEDMOVIE, TEST_MOVIE_DETAIL } from '../../mock-data';
 import { Pipe, PipeTransform } from '@angular/core';
@@ -21,7 +21,7 @@ declare var $: any
 /**
  * Get movie info, torrent, links, get if available in local
  */
-export class DetailsComponent implements OnInit {
+export class DetailsComponent implements OnInit, OnDestroy {
   @Input() data: Observable<any>;
 
   constructor(
@@ -47,6 +47,8 @@ export class DetailsComponent implements OnInit {
   testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
   isAvailable = false
   hasData = true
+  movieMetadataSubscription
+  libraryMovieSubscription
 
   ngOnInit() {
     this.selectedMovie = null
@@ -66,7 +68,8 @@ export class DetailsComponent implements OnInit {
         this.hasData = false
       }
     });
-    this.ipcService.movieMetadata.subscribe(value => {
+
+    this.movieMetadataSubscription = this.ipcService.movieMetadata.subscribe(value => {
       // console.log('this.ipcService.movieMetadata.subscribe ', value)
       if (value.length !== 0) {
         if (String(value) === 'empty') {
@@ -83,7 +86,7 @@ export class DetailsComponent implements OnInit {
     })
 
     // get availability of movie
-    this.ipcService.libraryMovie.subscribe(value => {
+    this.libraryMovieSubscription = this.ipcService.libraryMovie.subscribe(value => {
       this.selectedMovie.isAvailable = value;
       this.cdr.detectChanges()
     })
@@ -104,6 +107,56 @@ export class DetailsComponent implements OnInit {
     // // end of commented for test
     $('[data-toggle="popover"]').popover()
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
+  }
+
+  ngOnDestroy(): void {
+    this.movieMetadataSubscription.unsubscribe()
+    this.libraryMovieSubscription.unsubscribe()
+    this.selectedMovie = null
+  }
+
+  /**
+   * Gets movie's watchlist status
+   * @param val imdb id
+   */
+  getToWatchlist(val: string) {
+    this.ipcService.getWatchlist(val)
+  }
+  /**
+   * Adds movie into user's watchlist
+   * @param val imdb id
+   */
+  addToWatchlist(val: string) {
+    this.ipcService.addToWatchlist(val)
+  }
+  /**
+   * Removes movie from user's watchlist
+   * @param val imdb id
+   */
+  removeFromWatchlist(val: string) {
+    this.ipcService.removeFromWatchlist(val)
+  }
+
+  /**
+   * Gets the mark as watched status of the movie
+   * @param val imdb id
+   */
+  getMarkAsWatched(val: string) {
+    this.ipcService.getMarkAsWatched(val)
+  }
+  /**
+   * Adds watched status of the movie
+   * @param val imdb id
+   */
+  addMarkAsWatched(val: string) {
+    this.ipcService.addMarkAsWatched(val)
+  }
+  /**
+   * Removes watched status of the movie
+   * @param val imdb id
+   */
+  removeMarkAsWatched(val: string) {
+    this.ipcService.removeMarkAsWatched(val)
   }
 
   /**

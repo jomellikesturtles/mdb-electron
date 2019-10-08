@@ -43,6 +43,7 @@ export class DashboardComponent implements OnInit {
   isHighlighted = false
 
   ngOnInit() {
+
     this.ipcService.libraryMovie.subscribe(value => {
       console.log('libraryMovie value', value)
       const data = value[0]
@@ -54,8 +55,9 @@ export class DashboardComponent implements OnInit {
       //     //   (element.original_title === data.title)) &&
       //     //   parseInt(element.release_date) === data.year)
       //   )
-      //   console.log('findResult', findResult)
+      console.log('setting availability')
       this.nowShowingMovies[0].isAvailable = true
+      console.log('setting availability')
       // }
       this.cdr.detectChanges()
     })
@@ -71,7 +73,7 @@ export class DashboardComponent implements OnInit {
 
       this.nowShowingMovies = TMDB_SEARCH_RESULTS.results
       this.nowShowingMovies[this.nameString] = `Best of 1994`
-      this.nowShowingMovies[2].isAvailable = true
+      // this.nowShowingMovies[2].isAvailable = true
       // this.nowShowingMovies.forEach(element => {
       //   const releaseYear = element.release_date.substring(0, element.release_date.indexOf('-'))
       //   const paramArray = [element.title, releaseYear]
@@ -85,7 +87,6 @@ export class DashboardComponent implements OnInit {
     }
 
     this.ipcService.libraryFolders.subscribe(value => {
-      // this.libraryFolders = value;
       console.log('dashboard libraryFolders', value)
       this.cdr.detectChanges()
     })
@@ -188,9 +189,7 @@ export class DashboardComponent implements OnInit {
       const highlightedId = data.imdb_id
       localStorage.setItem('imdb_id', highlightedId)
       this.dataService.updateHighlightedMovie(highlightedId)
-      this.router.navigate([`/details/${highlightedId}`], {
-        relativeTo: this.activatedRoute
-      })
+      this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute })
     })
   }
 

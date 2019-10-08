@@ -101,22 +101,24 @@ export class TopNavigationComponent implements OnInit {
    * @param enteredQuery query to search
    */
   searchByTitle(enteredQuery) {
-    this.movieService.searchMovieByTitle(enteredQuery).subscribe(data => {
-      this.numberOfPages = data.total_pages;
-      this.numberOfResults = data.total_results;
-      const resultMovies = data.results;
-      this.selectedMovie = data;
-      console.log('searchMovieByTitle data', data);
-      if (resultMovies != undefined) {
-        this.movies = resultMovies.filter(obj => {
-          return obj.media_type === 'movie'
-        })
-        this.hasSearchResults = true
-      } else {
-        this.hasSearchResults = false
-        // insert code for not found
-      }
-    })
+    this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
+    // this.dataService.currentSearchQuery = enteredQuery
+    // this.movieService.searchMovieByTitle(enteredQuery).subscribe(data => {
+    //   this.numberOfPages = data.total_pages;
+    //   this.numberOfResults = data.total_results;
+    //   const resultMovies = data.results;
+    //   this.selectedMovie = data;
+    //   console.log('searchMovieByTitle data', data);
+    //   if (resultMovies != undefined) {
+    //     this.movies = resultMovies.filter(obj => {
+    //       return obj.media_type === 'movie'
+    //     })
+    //     this.hasSearchResults = true
+    //   } else {
+    //     this.hasSearchResults = false
+    //     // insert code for not found
+    //   }
+    // })
   }
 }
 

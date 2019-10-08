@@ -196,7 +196,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 
 ## Todo
 
-- ipcRenderers
 - torrents from online source
 - fix background image in movie-info
 - imdbId goes null/undefined if Tmdb doesn't have imdb id(especially on new movies)
@@ -216,10 +215,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 - fix the services
   - data
     - passing/sharing global variables
-  - torrent
-    - gets and setting torrents from API
-  - movie
-    - gets movie info from online API
 - ipcRenderers/main
   - config db service
   - library db service
@@ -229,7 +224,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 
 > minor
 
-- click to external links (imdb,yts,rotten tomatoes, etc..)
 - youtube iframe for trailers
 - lazy loading
 - subtitles, trailers apis
@@ -240,8 +234,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 > bugs
 
 - fileService readFile(), searchTorrentByName() loads prematurely
-- fileService reads offline torrent file twice
-- push to config file only appends to config file
 
 > unsorted
 
@@ -273,6 +265,16 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   - recommended
   - watch again
   - now showing
+
+> todo in office
+
+- browse/explore indexing
+- file explorer
+- preferences
+
+> fonts
+
+- market deco; showtime; futura; helvetica  
 
 ## Offline Assets
 

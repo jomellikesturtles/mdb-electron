@@ -15,11 +15,10 @@
               </div>
               <div class="circle-available" *ngIf='movie.isAvailable' data-toggle="tooltip" title="Available offline">
               </div>
-
-              <div style="width:154px;height: 231px;border:solid" data-toggle="tooltip" title="{{movie.overview}}">
+              <!-- <div style="width:154px;height: 231px;border:solid" data-toggle="tooltip" title="{{movie.overview}}"> -->
                 <img src="https://image.tmdb.org/t/p/w154/{{movie.poster_path}}" alt="{{movie.title}}">
-              </div>
-              <h6 (click)=onSelect(movie) class='text-primary'>{{movie.title}}</h6>
+              <!-- </div> -->
+              <h6 (click)=onSelect(movie) class='text-primary' style='cursor: pointer'>{{movie.title}}</h6>
             </div>
           </div>
         </div>

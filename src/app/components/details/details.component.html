@@ -22,10 +22,10 @@
                   title="Available offline">
                 </div>
                 <h2 id="movie-title" class="">{{selectedMovie.Title}} ({{selectedMovie.Year}})</h2>
-                <button class='btn btn-basic btn-small'>
+                <button class='btn btn-basic btn-small' (click)='addToWatchList(selectedMovie.imdbID)'>
                   Add to watchlist
                 </button>
-                <button class='btn btn-info btn-small'>
+                <button class='btn btn-info btn-small'  (click)='markAsWatched(selectedMovie.imdbID)'>
                   Mark as watched
                 </button>
               </div>
@@ -34,14 +34,14 @@
               <!-- <p id="movie-year" class="">Release year: {{selectedMovie.Year}}</p> -->
               <p id="movie-genre" class="">{{selectedMovie.Genre}}</p>
               <p id="movie-runtime" class="">{{selectedMovie.Runtime}}</p>
-              <div class='customBtn' style='background-color:#f5de50' (click)="goToLink('imdb')">
+              <div class='customBtn' style='background-color:#f5de50;cursor: pointer' (click)="goToLink('imdb')">
                 <span class='icon' style='background: url(./assets/icons/imdb-logo.png);'></span>
                 <span class='buttonText'>Imdb</span>
               </div>
               <!-- <a (click)="goToLink(https://www.imdb.com/title/selectedMovie.imdbID)">Imdb </a> -->
               <!-- <a (click)="goToLink(https://www.google.com/search?q=selectedMovie.Title
                 selectedMovie.Year)">Google</a> -->
-              <a (click)="goToLink('google')">Google</a>
+              <a (click)="goToLink('google')" style="cursor: pointer">Google</a>
               <div *ngIf="selectedMovie.isAvailable">
                 <button class="btn btn-success">Play</button>
               </div>

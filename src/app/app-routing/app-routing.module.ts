@@ -11,7 +11,7 @@ import { PreferencesComponent } from '../components/preferences/preferences.comp
 
 const routes: Routes = [
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: '', redirectTo: '/library', pathMatch: 'full' }, // homepage
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // homepage
   { path: 'bulk-download', component: BulkDownloadComponent },
   { path: 'browse', component: BrowseComponent },
   { path: 'dashboard', component: DashboardComponent },
@@ -22,7 +22,7 @@ const routes: Routes = [
   { path: 'preferences', component: PreferencesComponent },
   { path: 'results', component: ResultsComponent },
   // { path: '**', redirectTo: '/dashboard', pathMatch: 'full' }, // not found
-  { path: '**', redirectTo: '/library', pathMatch: 'full' }, // not found
+  { path: '**', redirectTo: '/dashboard', pathMatch: 'full' }, // not found
 ];
 
 @NgModule({

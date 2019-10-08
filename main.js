@@ -2,7 +2,7 @@
  * Main processor
  */
 const cp = require('child_process');
-const { app, BrowserWindow, ipcMain, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, shell, globalShortcut } = require('electron')
 const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const Datastore = require('nedb')
 const datastore = new Datastore({
@@ -16,10 +16,7 @@ const fs = require('fs');
 let procSearch;
 let procLibraryDb;
 let offlineMovieDataService;
-let win
 let mainWindow
-let currentCondition = true;
-let stream;
 
 /**
  * Creates the browser window
@@ -30,7 +27,7 @@ function createWindow() {
     minWidth: 762,
     minHeight: 700,
     show: true,
-    // frame: false,
+    frame: false,
     backgroundColor: '#1e2a31',
     webPreferences: {
       experimentalFeatures: true,
@@ -49,6 +46,15 @@ function createWindow() {
   mainWindow.once('show', function () {
     console.log('main window Show');
   });
+
+  // globalShortcut.register('CommandOrControl+F', () => {
+  //   console.log('search');
+  //   mainWindow.webContents.send('shortcut-search');
+  // })
+  // globalShortcut.register('CommandOrControl+Shift+P', () => {
+  //   console.log('pref');
+  //   mainWindow.webContents.send('shortcut-preferences');
+  // })
 }
 
 // Create window on electron initialization
@@ -63,6 +69,7 @@ app.on('window-all-closed', function () {
 })
 app.on('before-quit', function () {
   // save changes
+  globalShortcut.unregisterAll()
 })
 app.on('activate', function () {
   // macOS specific close process

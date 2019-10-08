@@ -47,6 +47,12 @@ export class IpcService {
       console.log('movie-metadata:', data)
       this.movieMetadata.next(data)
     })
+    this.ipcRenderer.on('shortcut-search', () => {
+      console.log('shortcut-search')
+    })
+    this.ipcRenderer.on('shortcut-preferences', () => {
+      console.log('shortcut-preferences')
+    })
   }
 
   /**
@@ -173,5 +179,25 @@ export class IpcService {
 
   setImage() {
 
+  }
+
+  // user services
+  getWatchlist(val) {
+    this.ipcRenderer.send('get-watchlist', val)
+  }
+  addToWatchlist(val) {
+    this.ipcRenderer.send('add-watchlist', val)
+  }
+  removeFromWatchlist(val) {
+    this.ipcRenderer.send('remove-watchlist', val)
+  }
+  getMarkAsWatched(val) {
+    this.ipcRenderer.send('get-watched', val)
+  }
+  addMarkAsWatched(val) {
+    this.ipcRenderer.send('add-watched', val)
+  }
+  removeMarkAsWatched(val) {
+    this.ipcRenderer.send('remove-watched', val)
   }
 }
