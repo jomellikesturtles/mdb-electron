@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Movie, Test, OmdbMovieDetail, Rating, Torrent, MdbMovieDetails } from '../../subject';
 import { SELECTEDMOVIE, TEST_MOVIE_DETAIL } from '../../mock-data';
 import { Pipe, PipeTransform } from '@angular/core';
@@ -8,18 +8,21 @@ import { MovieService } from '../../services/movie.service';
 import { TorrentService } from '../../services/torrent.service';
 import { IpcService } from '../../services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+declare var $: any
 
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
-  styleUrls: ['./details.component.scss']
+  styleUrls: ['./details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 /**
  * Get movie info, torrent, links, get if available in local
  */
 export class DetailsComponent implements OnInit {
-  @Input() testData: Test;
+  @Input() data: Observable<any>;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -35,27 +38,55 @@ export class DetailsComponent implements OnInit {
   results: any;
   str = 'this is test';
   // selectedMovie: OmdbMovieDetail;
-  selectedMovie: MdbMovieDetails;
+  // selectedMovie: MdbMovieDetails;
+  selectedMovie;
   movieBackdrop;
   torrents: Torrent[] = [];
   globalImdbId;
   testSelectedMovie = TEST_MOVIE_DETAIL
-  testMovieBackdrop = '../../../assets/test-assets/wall-e_backdrop.jpg'
+  testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
   isAvailable = false
+  hasData = true
 
   ngOnInit() {
-    this.testSelectedMovie.Poster = '../../../assets/test-assets/wall-e_poster.jpg'
-    this.selectedMovie = this.testSelectedMovie
-    this.movieBackdrop = this.testMovieBackdrop
+    this.selectedMovie = null
+    // this.testSelectedMovie.Poster = './assets/test-assets/wall-e_poster.jpg'
+    // this.selectedMovie = this.testSelectedMovie
+    // this.movieBackdrop = this.testMovieBackdrop
 
-    // let imdbId
-    // this.activatedRoute.params.subscribe(params => {
-    //   console.log(params);
-    //   imdbId = params.imdbId;
-    //   console.log('imdbId', imdbId); // Print the parameter to the console.
-    //   this.getMovie(imdbId);
-    //   this.getBackdrop(imdbId);
-    // });
+    let imdbId = 0
+    this.activatedRoute.params.subscribe(params => {
+      console.log('activatedRoute.params', params);
+      if (params.imdbId) {
+        console.log('params.imdbId true');
+        imdbId = params.imdbId;
+        this.getMovieDataOffline(imdbId)
+        this.getMovieFromLibrary(imdbId)
+      } else {
+        this.hasData = false
+      }
+    });
+    this.ipcService.movieMetadata.subscribe(value => {
+      // console.log('this.ipcService.movieMetadata.subscribe ', value)
+      if (value.length !== 0) {
+        if (String(value) === 'empty') {
+          console.log('getting from online')
+          this.getMovieOnline(imdbId)
+          this.getBackdrop(imdbId);
+        } else {
+          console.log('got from offline ', value)
+          this.selectedMovie = value;
+          this.getBackdrop(imdbId);
+        }
+      }
+      this.cdr.detectChanges()
+    })
+
+    // get availability of movie
+    this.ipcService.libraryMovie.subscribe(value => {
+      this.selectedMovie.isAvailable = value;
+      this.cdr.detectChanges()
+    })
 
     // // commented for test
     // const imdbId = this.activatedRoute.snapshot.paramMap;
@@ -71,24 +102,56 @@ export class DetailsComponent implements OnInit {
     //   }
     // });
     // // end of commented for test
+    $('[data-toggle="popover"]').popover()
+    $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
   }
 
+  /**
+   * Gets movie offline
+   * @param val imdb id
+   */
+  getMovieDataOffline(val: any) {
+    this.ipcService.getMovieMetadata(val)
+  }
+
+  getMovieFromLibrary(val: any) {
+    this.ipcService.getMovieFromLibrary(val)
+  }
+  saveMovieDataOffline(val: any) {
+    console.log('setMovieMetadata ', val)
+    this.ipcService.setMovieMetadata(val)
+  }
   /**
    * Gets movie details, torrents
    * @param val imdb id
    */
-  getMovie(val: any) {
+  getMovieOnline(val: any) {
     // tt2015381 is Guardians of the galaxy 2014; for testing only
     console.log('getMovie initializing with value...', val);
-    this.ipcService.getMovieMetadata(val.trim())
+    //   // this.selectedMovie.LibraryInfo
+    //   // this.getTorrents(data.Title
     this.movieService.getMovieInfo(val.trim()).subscribe(data => {
+      console.log('got from getMovieOnline ', data)
       this.selectedMovie = data;
-      // this.selectedMovie.LibraryInfo 
-      this.ipcService.setMovieMetadata(data)
-      // this.getTorrents(data.Title)
+      this.saveMovieDataOffline(data)
     });
   }
 
+  /**
+   * Gets the movie poster
+   */
+  getMoviePoster() {
+    this.ipcService.getImage(this.selectedMovie.Poster, this.selectedMovie.imdbID, 'poster')
+    return this.selectedMovie.Poster
+  }
+
+  /**
+   * Gets the movie backdrop
+   */
+  getMovieBackdrop() {
+    // this.ipcService.getImage(this.selectedMovie.imdbID, 'backdrop')
+    return this.selectedMovie.Poster
+  }
   /**
    * Gets backdrop or background image
    * @param val IMDb id
@@ -127,11 +190,21 @@ export class DetailsComponent implements OnInit {
 
   /**
    * Opens link externally
-   * @param value link to open
+   * @param param1 link to open
    */
-  goToLink(value) {
-    console.log('open this:', value)
-    this.ipcService.openLinkExternal(value)
+  goToLink(param1) {
+    let url = ''
+    switch (param1) {
+      case 'google':
+        url = `https://www.google.com/search?q=${this.selectedMovie.Title} ${this.selectedMovie.Year}`
+        break;
+      case 'imdb':
+        url = `https://www.imdb.com/title/${this.selectedMovie.imdbID}`
+        break;
+      default:
+        break;
+    }
+    this.ipcService.openLinkExternal(url)
   }
 
   sanitize(torrent: Torrent) {

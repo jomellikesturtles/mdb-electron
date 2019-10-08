@@ -15,9 +15,7 @@
   </nav>
 </div>
 <router-outlet></router-outlet> -->
-
-
-<div id="mySidenav" class="sidenav">
+<div id="mySidenav" class="sidenav" style='z-index: 51;'>
   <!-- <a href="javascript:void(0)" class="closebtn" (click)="closeNav()">&times;</a> -->
   <a routerLink="./dashboard">Home</a>
   <a routerLink="./browse">Browse</a>
@@ -27,7 +25,7 @@
 
 <!-- Use any element to open the sidenav -->
 <span (click)="openNav()">open</span>
-<div id="topNav">
+<div id="topNav" style='z-index: 50;'>
   <app-top-navigation></app-top-navigation>
 </div>
 <div id="main">

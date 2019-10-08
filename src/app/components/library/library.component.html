@@ -1,27 +1,34 @@
-  <div class="container">
-    <div class="row">
-      <span class='icon-question-mark' ></span>
-      <div id="results-panel" *ngFor="let movie of movies" class="col-md-3">
-        <div class="flex-fill movie-card" [ngClass]="{'movie-card-selected': movie.isHighlighted}"
-          style="margin:3px; cursor: pointer" style="margin:3px; cursor: pointer" style="width:14rem; margin:20px" data-toggle="tooltip" title="{{movie.overview}}"
-          (click)=onSelect(movie)>
-          <img class="movie-db-img card-img-top image" style=" object-fit: cover" src="{{movie.Poster}}"
-            alt="{{movie.Title}}" style="height:333px">
-          <div class="card-body">
-            <h6 class="card-title" (click)=goToMovie(movie) class='text-primary'>{{movie.Title}}</h6>
-            <label>{{movie.imdbRating}}</label>
-          </div>
+<div class="container">
+  <div class="row">
+    <span class='icon-question-mark'></span>
+    <div id="results-panel" *ngFor="let movie of movies" class="col-md-3">
+      <div class="flex-fill movie-card" [ngClass]="{'movie-card-selected': movie.isHighlighted}"
+        style="margin:3px; cursor: pointer" style="margin:3px; cursor: pointer" style="width:14rem; margin:20px"
+        data-toggle="tooltip" title="{{movie.overview}}" (click)=onSelect(movie)>
+        <img class="movie-db-img card-img-top image" style=" object-fit: cover" src="{{movie.Poster}}"
+          alt="{{movie.Title}}" style="height:333px">
+        <div class="card-body">
+          <h6 class="card-title" (click)=goToMovie(movie) class='text-primary'>{{movie.Title}}</h6>
+          <label>{{movie.imdbRating}}</label>
         </div>
       </div>
     </div>
-    <div *ngIf='hasSearchResults'>
-      <label>{{currentPage}} of {{numberOfPages}}</label>
-      <button class='btn btn-primary' id='prevButton' (click)='toPreviousPage()'
-        [disabled]='currentPage <= 1'>Previous</button>
-      <button class='btn btn-primary' id='nextButton' (click)='toNextPage()'
-        [disabled]='currentPage >= numberOfPages'>Next</button>
-    </div>
-    <div *ngIf='isLibraryMoviesEmpty'>
-      <h1 class='jumbo-message'>You don't have movies saved :(</h1>
-    </div>
   </div>
+  <div *ngIf='hasSearchResults'>
+    <label>{{currentPage}} of {{numberOfPages}}</label>
+    <button class='btn btn-primary' id='prevButton' (click)='toPreviousPage()'
+      [disabled]='currentPage <= 1'>Previous</button>
+    <button class='btn btn-primary' id='nextButton' (click)='toNextPage()'
+      [disabled]='currentPage >= numberOfPages'>Next</button>
+  </div>
+  <div *ngIf='isLibraryMoviesEmpty'>
+    <h1 class='jumbo-message'>You don't have movies saved :(</h1>
+  </div>
+</div>
+
+<div *ngIf="!movies">
+  <label>No movies found, go to Preferences.</label>
+  <h1>No movie libraries found :(</h1>
+  <h3>Houston, we have a problem.</h3>
+  <h4>Apollo 13</h4>
+</div>

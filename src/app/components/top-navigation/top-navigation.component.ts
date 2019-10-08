@@ -49,6 +49,7 @@ export class TopNavigationComponent implements OnInit {
   currentSearchQuery = ''
   hasSearchResults = false
   isSearchDirty = false
+  searchHistoryList = []
 
   ngOnInit() {
   }
@@ -59,10 +60,12 @@ export class TopNavigationComponent implements OnInit {
   navigateBack() {
     this.location.back()
   }
+
   /**
    * Initialize search
    */
   onSearch(val: any) {
+    this.searchHistoryList.push(val)
     const imdbIdRegex = new RegExp(`(^tt[0-9]{0,7})$`, `g`)
     const enteredQuery = val.keywords
     this.isSearchDirty = true

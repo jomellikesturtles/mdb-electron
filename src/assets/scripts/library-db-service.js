@@ -8,14 +8,13 @@ let data2 = args[2];
 const path = require('path');
 const DataStore = require('nedb')
 var libraryDb = new DataStore({
-    filename: path.join(process.cwd(), 'src','assets','db', 'libraryFiles.db'),
-        // filename: '../dbs/libraryFiles.db',
-        autoload: true
+    filename: path.join(process.cwd(), 'src', 'assets', 'db', 'libraryFiles.db'),
+    autoload: true
 })
 
 process.on('uncaughtException', function (error) {
     console.log(error);
-    // process.send(['operation-failed', 'general']); //mainWindow.webContents.send('scrape-failed', 'general');
+    process.send(['operation-failed', 'general']); //mainWindow.webContents.send('scrape-failed', 'general');
 });
 let testLibraryMovieObject = {
     imdbId: 'tt2015381',
@@ -106,7 +105,7 @@ function getAllMovies() {
     console.log('retrieving all movies');
     libraryDb.find({}, (err, result) => {
         console.log('results ', result);
-        // process.send(['library-movies', result])
+        process.send(['library-movies', result])
     })
 }
 

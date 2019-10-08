@@ -53,7 +53,6 @@ export class DashboardComponent implements OnInit {
       //     // (((element.title === data.title) ||
       //     //   (element.original_title === data.title)) &&
       //     //   parseInt(element.release_date) === data.year)
-
       //   )
       //   console.log('findResult', findResult)
       this.nowShowingMovies[0].isAvailable = true
@@ -61,7 +60,7 @@ export class DashboardComponent implements OnInit {
       this.cdr.detectChanges()
     })
 
-    if (this.dataService.hasData()) {
+    if (this.dataService.hasDashboardData()) {
       this.dashboardLists = this.dataService.getDashboardData()
       console.log(this.dashboardLists)
     } else {
@@ -84,6 +83,7 @@ export class DashboardComponent implements OnInit {
       console.log('this.dashboardLists', this.dashboardLists)
       this.dataService.setDashboardData(this.dashboardLists)
     }
+
     this.ipcService.libraryFolders.subscribe(value => {
       // this.libraryFolders = value;
       console.log('dashboard libraryFolders', value)

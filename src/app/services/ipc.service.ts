@@ -44,7 +44,7 @@ export class IpcService {
       this.preferencesConfig.next(data)
     })
     this.ipcRenderer.on('movie-metadata', (event, data) => {
-      console.log('preferences-config:', data)
+      console.log('movie-metadata:', data)
       this.movieMetadata.next(data)
     })
   }
@@ -63,7 +63,6 @@ export class IpcService {
    * @param url url to open
    */
   openLinkExternal(url: string) {
-    url = 'https://www.google.com'
     this.ipcRenderer.send('open-link-external', url)
   }
   /**
@@ -165,5 +164,14 @@ export class IpcService {
    */
   getMovieFromLibrary(data) {
     this.ipcRenderer.send('get-library-movie', data)
+  }
+
+  getImage(url: string, imdbId: string, type: string) {
+    const param = [url, imdbId, type]
+    this.ipcRenderer.send('get-image', param)
+  }
+
+  setImage() {
+
   }
 }

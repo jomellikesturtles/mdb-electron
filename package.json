@@ -10,8 +10,10 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electron": "electron .",
+    "electron-logging": "electron . --enable-logging",
     "electron2": "electron",
     "electron-build2": "ng build --prod && npm run electron",
+    "electron-build-d": "ng build --dev && npm run electron",
     "electron-build": "ng build --prod && electron .",
     "start:electron": "ng build --base-href ./ && electron ."
   },
@@ -26,6 +28,7 @@
     "@angular/platform-browser-dynamic": "~7.2.0",
     "@angular/router": "~7.2.0",
     "@types/jquery": "^3.3.31",
+    "angular": "^1.7.8",
     "asar": "^2.0.1",
     "boostrap": "^2.0.0",
     "bootstrap": "^4.3.1",
@@ -68,5 +71,9 @@
     "*.js",
     "build",
     "node_modules"
-  ]
+  ],"electronWebpack": {
+    "externals": {
+        "nedb": "commonjs nedb"
+    }
+}
 }

@@ -9,17 +9,17 @@ import { Router, ActivatedRoute } from '@angular/router'
   selector: 'app-library',
   templateUrl: './library.component.html',
   styleUrls: ['./library.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LibraryComponent implements OnInit {
-  // @Input() data: Observable<any>
+  @Input() data: Observable<any>
 
   constructor(
     private ipcService: IpcService,
     private movieService: MovieService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    // private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) { }
 
   libraryMovies = []
@@ -33,17 +33,20 @@ export class LibraryComponent implements OnInit {
 
   ngOnInit() {
     console.log('ngOnInit');
-    this.libraryMovies = this.testLibraryMovies
-    // this.getMoviesFromLibrary()
+    // this.libraryMovies = this.testLibraryMovies
 
-    // this.ipcService.libraryMovies.subscribe((value) => {
-    //   this.libraryMovies = value
-    //   this.cdr.detectChanges()
-    // })
-    this.libraryMovies.forEach(libraryMovie => {
-      console.log('ibraryMovies.forEach', libraryMovie);
-      this.getMovieDetails(libraryMovie.imdbId)
-    });
+    this.ipcService.libraryMovies.subscribe((value) => {
+      if (value.length !== 0) {
+        this.libraryMovies = value
+        this.libraryMovies.forEach(libraryMovie => {
+          console.log('ibraryMovies.forEach', libraryMovie);
+          this.getMovieDetails(libraryMovie.imdbId)
+        });
+      }
+      this.cdr.detectChanges()
+    })
+
+    this.getMoviesFromLibrary()
   }
   /**
    * Gets details of movie
@@ -52,7 +55,6 @@ export class LibraryComponent implements OnInit {
     console.log('getMovieDetails', imdbId);
     this.movieService.getMovieInfo(imdbId).subscribe(data => {
       console.log(data);
-      // data.Poster = this.minimizeMoviePoster(data.Poster)
       this.movies.push(data)
     })
   }
@@ -88,6 +90,7 @@ export class LibraryComponent implements OnInit {
    * @param movie movie to view
    */
   goToMovie(movie) {
-    this.router.navigate([`/details/${movie.imdbId}`], { relativeTo: this.activatedRoute });
+    console.log(movie);
+    this.router.navigate([`/details/${movie.imdbID}`], { relativeTo: this.activatedRoute });
   }
 }

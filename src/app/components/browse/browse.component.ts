@@ -9,7 +9,17 @@ export class BrowseComponent implements OnInit {
 
   constructor() { }
 
+  browseLists = []
+
   ngOnInit() {
+    let academyWinnersList = {
+      name: 'Academy Winners',
+      contents: []
+    }
+    this.browseLists.push(academyWinnersList)
   }
 
+  getAcademyWinnersList() {
+
+  }
 }

@@ -2,14 +2,22 @@
   <!-- <a class="row" routerLink="./dashboard">Home</a>
   <a class="row" (click)='navigateBack()'>Back</a> -->
   <div>
+    <!-- <div class="row"> -->
     <div class="col-12">
       <div class='input-group'>
-        <input name="searchBar" class="form-control" id="search-bar" placeholder="Search title or IMDb id"
-          [(ngModel)]="searchQuery.keywords" (keyup.enter)="onSearch(searchQuery)" />
-        <button class="btn btn-success input-group-btn" id="search-button"
-          (click)='onSearch(searchQuery)'>Search</button>
-        <button class="btn btn-outline-light input-group-btn" id="advanced-search-button" data-toggle="collapse"
-          data-target="#demo">Advanced Search</button>
+        <!-- <div class="col-sm-6"> -->
+          <input name="searchBar" class="form-control" id="search-bar"
+            style='margin-right: 10px; border-radius: .25rem; min-width: 200px;' placeholder="Search title or IMDb id"
+            [(ngModel)]="searchQuery.keywords" (keyup.enter)="onSearch(searchQuery)" />
+        <!-- </div> -->
+        <!-- <div class="col-sm-3"> -->
+          <button class="btn btn-success input-group-btn" id="search-button" (click)='onSearch(searchQuery)'
+            style='margin-right: 10px'>Search</button>
+        <!-- </div> -->
+        <!-- <div class="col-sm-3"> -->
+          <button class="btn btn-outline-light input-group-btn" style='margin-right: 10px' id="advanced-search-button"
+            data-toggle="collapse" data-target="#demo">Advanced Search</button>
+        <!-- </div> -->
       </div>
     </div>
   </div>

@@ -32,7 +32,7 @@ export class DataService {
     return this.dashboardData
   }
 
-  hasData() {
+  hasDashboardData() {
     console.log(
       'dashboard data has value',
       this.dashboardData && this.dashboardData.length

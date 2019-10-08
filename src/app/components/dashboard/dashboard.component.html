@@ -7,8 +7,7 @@
 
           <div *ngFor="let movie of list">
             <div class='flex-fill movie-card' [ngClass]="{'movie-card-selected': movie.isHighlighted}"
-              style="margin:3px; cursor: pointer" data-toggle="tooltip" title="{{movie.overview}}"
-              (click)=onHighlight(movie)>
+              style="margin:3px; cursor: pointer" (click)=onHighlight(movie)>
 
               <div class="form-check" style="position:relative;left:15px;top:25px;z-index: 2">
                 <input class="form-check-input" type="checkbox" [checked]="movie.isHighlighted" hidden="!isHighlighted"
@@ -17,7 +16,7 @@
               <div class="circle-available" *ngIf='movie.isAvailable' data-toggle="tooltip" title="Available offline">
               </div>
 
-              <div style="width:154px;height: 231px;border:solid">
+              <div style="width:154px;height: 231px;border:solid" data-toggle="tooltip" title="{{movie.overview}}">
                 <img src="https://image.tmdb.org/t/p/w154/{{movie.poster_path}}" alt="{{movie.title}}">
               </div>
               <h6 (click)=onSelect(movie) class='text-primary'>{{movie.title}}</h6>

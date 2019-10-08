@@ -745,3 +745,15 @@ export let TMDB_SEARCH_RESULTS: TmdbResultObject = {
     }
   ]
 }
+
+export const TROUBLE_QUOTES = [
+  { quote: 'I see dead people.' },
+  { quote: 'Houston, we have a problem.' },
+  { quote: 'Just keep swimming.' },
+]
+export const MOVIE_QUOTES = [
+  { title: `Gone With the Wind`, year: 1939, quote: `Frankly, my dear, I don't give a damn.`, backdrop: '' },
+  { title: 'The Room', year: 2003, quote: `You are tearing me apart, Lisa!`, backdrop: '' },
+  { title: 'Dr. Strangelove', year: 1964, quote: `Gentlemen, you can't fight in here! This is the War Room!`, backdrop: '' },
+  { title: 'Titanic', year: 1997, quote: `I'm king of the world!`, backdrop: '' },
+]
