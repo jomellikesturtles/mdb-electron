@@ -25,7 +25,7 @@
                 <button class='btn btn-basic btn-small' (click)='addToWatchList(selectedMovie.imdbID)'>
                   Add to watchlist
                 </button>
-                <button class='btn btn-info btn-small'  (click)='markAsWatched(selectedMovie.imdbID)'>
+                <button class='btn btn-info btn-small' (click)='markAsWatched(selectedMovie.imdbID)'>
                   Mark as watched
                 </button>
               </div>
@@ -48,6 +48,11 @@
               <div *ngIf="selectedMovie.isAvailable==false">
                 <p>Movie is not available</p>
               </div>
+              <h1>video 1</h1>
+              <video width="320" height="240" controls>
+                <source src="D:\\workspaces\\test data folder\\Counter-Strike_ Global Offensive 8_20_2019 10_07_49 PM.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
             </div>
           </div>
         </div>
@@ -55,7 +60,8 @@
           <div id='movie-player' style='height:80vh;width:142vh;background-color: black;
                 outline: none; border-color: darkblue; box-shadow: 0 0 10px #0099FF;
                 border: 2px solid black; transition: 333ms; margin-bottom:10vh;margin-top:10vh ' class='text-center'>
-            <img src='./assets/icons/chevron.png' style='vertical-align: middle;'>
+            <!-- <img src='./assets/icons/chevron.png' style='vertical-align: middle;'> -->
+
           </div>
         </div>
       </div>

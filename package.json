@@ -35,12 +35,14 @@
     "core-js": "^2.5.4",
     "fast-csv": "^3.4.0",
     "fast-levenshtein": "^2.0.6",
+    "firebase": "^7.2.0",
     "fluent-ffmpeg": "^2.1.2",
     "jquery": "^3.4.1",
     "nedb": "^1.8.0",
     "papaparse": "^5.0.1",
     "popper": "^1.0.1",
     "rxjs": "~6.3.3",
+    "tsc": "^1.20150623.0",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
   },
@@ -65,15 +67,16 @@
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
-    "typescript": "~3.2.2"
+    "typescript": "^3.2.4"
   },
   "files": [
     "*.js",
     "build",
     "node_modules"
-  ],"electronWebpack": {
+  ],
+  "electronWebpack": {
     "externals": {
-        "nedb": "commonjs nedb"
+      "nedb": "commonjs nedb"
     }
-}
+  }
 }

@@ -32,6 +32,7 @@ function createWindow() {
     webPreferences: {
       experimentalFeatures: true,
       nodeIntegration: true,
+      webSecurity: false
     },
     title: 'MDB'
   });

@@ -19,7 +19,9 @@ export class IpcService {
   preferencesConfig = new BehaviorSubject<string[]>([])
   movieMetadata = new BehaviorSubject<string[]>([])
   ipcRenderer: typeof ipcRenderer
-  constructor() //// private ref: ChangeDetectorRef
+  constructor(
+//// private ref: ChangeDetectorRef
+  ) 
   {
     this.ipcRenderer = (<any>window).require('electron').ipcRenderer
 

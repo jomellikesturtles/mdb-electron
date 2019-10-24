@@ -53,37 +53,37 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.selectedMovie = null
     // this.testSelectedMovie.Poster = './assets/test-assets/wall-e_poster.jpg'
-    // this.selectedMovie = this.testSelectedMovie
+    this.selectedMovie = this.testSelectedMovie
     // this.movieBackdrop = this.testMovieBackdrop
 
-    let imdbId = 0
-    this.activatedRoute.params.subscribe(params => {
-      console.log('activatedRoute.params', params);
-      if (params.imdbId) {
-        console.log('params.imdbId true');
-        imdbId = params.imdbId;
-        this.getMovieDataOffline(imdbId)
-        this.getMovieFromLibrary(imdbId)
-      } else {
-        this.hasData = false
-      }
-    });
+    // let imdbId = 0
+    // this.activatedRoute.params.subscribe(params => {
+    //   console.log('activatedRoute.params', params);
+    //   if (params.imdbId) {
+    //     console.log('params.imdbId true');
+    //     imdbId = params.imdbId;
+    //     this.getMovieDataOffline(imdbId)
+    //     this.getMovieFromLibrary(imdbId)
+    //   } else {
+    //     this.hasData = false
+    //   }
+    // });
 
-    this.movieMetadataSubscription = this.ipcService.movieMetadata.subscribe(value => {
-      // console.log('this.ipcService.movieMetadata.subscribe ', value)
-      if (value.length !== 0) {
-        if (String(value) === 'empty') {
-          console.log('getting from online')
-          this.getMovieOnline(imdbId)
-          this.getBackdrop(imdbId);
-        } else {
-          console.log('got from offline ', value)
-          this.selectedMovie = value;
-          this.getBackdrop(imdbId);
-        }
-      }
-      this.cdr.detectChanges()
-    })
+    // this.movieMetadataSubscription = this.ipcService.movieMetadata.subscribe(value => {
+    //   // console.log('this.ipcService.movieMetadata.subscribe ', value)
+    //   if (value.length !== 0) {
+    //     if (String(value) === 'empty') {
+    //       console.log('getting from online')
+    //       this.getMovieOnline(imdbId)
+    //       this.getBackdrop(imdbId);
+    //     } else {
+    //       console.log('got from offline ', value)
+    //       this.selectedMovie = value;
+    //       this.getBackdrop(imdbId);
+    //     }
+    //   }
+    //   this.cdr.detectChanges()
+    // })
 
     // get availability of movie
     this.libraryMovieSubscription = this.ipcService.libraryMovie.subscribe(value => {

@@ -231,10 +231,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 - shortcut keys
 - notifications
 
-> bugs
-
-- fileService readFile(), searchTorrentByName() loads prematurely
-
 > unsorted
 
 - integrate movie files scan to imdb search

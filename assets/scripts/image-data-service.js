@@ -1,3 +1,6 @@
+/**
+ * Stores and retrieves data to and from pc
+ */
 const request = require('request');
 const fs = require('fs');
 const path = require('path')
