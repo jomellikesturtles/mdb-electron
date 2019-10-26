@@ -4,6 +4,7 @@ import { Movie, MovieGenre } from '../../subject';
 import { SELECTEDMOVIE, MOVIES, MOVIEGENRES } from '../../mock-data';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
+import { IpcService } from '../../services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
 declare var jquery: any
@@ -18,6 +19,7 @@ export class TopNavigationComponent implements OnInit {
 
   constructor(
     private dataService: DataService,
+    private ipcService: IpcService,
     private movieService: MovieService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -50,6 +52,7 @@ export class TopNavigationComponent implements OnInit {
   hasSearchResults = false
   isSearchDirty = false
   searchHistoryList = []
+  searchHistoryMaxLength = 4
 
   ngOnInit() {
   }
@@ -65,20 +68,27 @@ export class TopNavigationComponent implements OnInit {
    * Initialize search
    */
   onSearch(val: any) {
-    this.searchHistoryList.push(val)
-    const imdbIdRegex = new RegExp(`(^tt[0-9]{0,7})$`, `g`)
-    const enteredQuery = val.keywords
-    this.isSearchDirty = true
-    this.currentPage = 1
-    this.numberOfPages = 1
-    this.numberOfResults = 0
-    this.currentSearchQuery = enteredQuery
-    // tt0092099 example
-    if (enteredQuery.match(imdbIdRegex)) {
-      this.searchByImdbId(enteredQuery)
-    } else {
-      this.searchByTitle(enteredQuery)
+    console.log('unshifting',val);
+    
+    this.searchHistoryList.unshift(val)
+    console.log(this.searchHistoryList);
+    if (this.searchHistoryList.length >= this.searchHistoryMaxLength) {
+      // this.searchHistoryList = this.searchHistoryList.splice(1)
+      this.searchHistoryList = this.searchHistoryList.slice(0, this.searchHistoryMaxLength)
     }
+    // const imdbIdRegex = new RegExp(`(^tt[0-9]{0,7})$`, `g`)
+    // const enteredQuery = val.keywords
+    // this.isSearchDirty = true
+    // this.currentPage = 1
+    // this.numberOfPages = 1
+    // this.numberOfResults = 0
+    // this.currentSearchQuery = enteredQuery
+    // // tt0092099 example
+    // if (enteredQuery.match(imdbIdRegex)) {
+    //   this.searchByImdbId(enteredQuery)
+    // } else {
+    //   this.searchByTitle(enteredQuery)
+    // }
   }
 
   /**
@@ -87,7 +97,7 @@ export class TopNavigationComponent implements OnInit {
    */
   searchByImdbId(imdbId) {
     this.movieService.getMovieByImdbId(imdbId).subscribe(data => {
-      if (data.Response != 'False') {
+      if (data.Response !== 'False') {
         this.router.navigate([`/details/${imdbId}`], { relativeTo: this.activatedRoute });
       } else {
         this.hasSearchResults = false
@@ -119,6 +129,10 @@ export class TopNavigationComponent implements OnInit {
     //     // insert code for not found
     //   }
     // })
+  }
+
+  onExit() {
+    this.ipcService.exitProgram()
   }
 }
 

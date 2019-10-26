@@ -9,14 +9,14 @@
       <div class="">
         <div class="container">
           <div class="row">
-            <div class="col-4">
+            <div class="col-md-4">
               <div class='img-container'>
                 <!-- <img src="{{selectedMovie.Poster}}" id='posterImg' class="img-fluid" alt="{{selectedMovie.Title}}"> -->
                 <img [src]='getMoviePoster()' id='posterImg' class="img-fluid" alt="{{selectedMovie.Title}}">
               </div>
               <!-- certification -->
             </div>
-            <div class="col-8">
+            <div class="col-md-8">
               <div style='display: inline'>
                 <div class="circle-available" *ngIf='selectedMovie.isAvailable' data-toggle="tooltip"
                   title="Available offline">
@@ -48,11 +48,7 @@
               <div *ngIf="selectedMovie.isAvailable==false">
                 <p>Movie is not available</p>
               </div>
-              <h1>video 1</h1>
-              <video width="320" height="240" controls>
-                <source src="D:\\workspaces\\test data folder\\Counter-Strike_ Global Offensive 8_20_2019 10_07_49 PM.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
+
             </div>
           </div>
         </div>
@@ -61,9 +57,15 @@
                 outline: none; border-color: darkblue; box-shadow: 0 0 10px #0099FF;
                 border: 2px solid black; transition: 333ms; margin-bottom:10vh;margin-top:10vh ' class='text-center'>
             <!-- <img src='./assets/icons/chevron.png' style='vertical-align: middle;'> -->
-
+            <h1>AVAILABLE!</h1>
           </div>
         </div>
+        <h1>video 1</h1>
+        <video width="100%" controls>
+          <source src="D:\\workspaces\\test data folder\\Counter-Strike_ Global Offensive 8_20_2019 10_07_49 PM.mp4"
+            type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
       <div class="table-responsive-lg container">
         <table class="table">

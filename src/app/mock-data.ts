@@ -1,7 +1,7 @@
 /**
- * Mock data. For pre-defined lists and offline data
+ * Mock data and Defaults. For pre-defined lists and offline data
  */
-import { Movie, MovieGenre, SelectedMovies, Torrent, Genre, TmdbResultObject } from './subject'
+import { Movie, MovieGenre, SelectedMovies, Torrent, Genre, TmdbResultObject, Preferences } from './subject'
 import { Injectable } from '@angular/core'
 
 export const TEST_LIBRARY_MOVIES = [
@@ -757,3 +757,12 @@ export const MOVIE_QUOTES = [
   { title: 'Dr. Strangelove', year: 1964, quote: `Gentlemen, you can't fight in here! This is the War Room!`, backdrop: '' },
   { title: 'Titanic', year: 1997, quote: `I'm king of the world!`, backdrop: '' },
 ]
+
+export const DEFAULT_PREFERENCES: Preferences = {
+  frequencyUnit: 'day',
+  frequencyValue: 3,
+  isDarkMode: false,
+  isDirty: false,
+  isEnableCache: true,
+  libraryFolders: []
+}

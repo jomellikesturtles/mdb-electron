@@ -1,30 +1,30 @@
-<!-- <div class="container-fluid" style="margin-bottom: 20px">
-  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-    <a class="navbar-brand" routerLink="./dashboard">Home</a>
-    <ul class="navbar-nav">
-      <li class="navbar-nav">
-        <a class="navbar-link" routerLink="./search-and-results">Search2</a>
-      </li>
-      <li class="navbar-nav">
-        <a class="navbar-link" routerLink="./search">Search</a>
-      </li>
-      <li class="navbar-nav">
-        <a class="navbar-link" routerLink="./preferences">Preferences</a>
-      </li>
-    </ul>
-  </nav>
+<div id="mySidenav" class="sidenav" style='z-index: 51; overflow: hidden' [ngClass]="{'collapsed':isOpenNav===false}">
+  <div>
+    <a routerLink="./dashboard">
+      <img class='side-nav-icon' [src]="getHomeIcon()" />
+      <span *ngIf="isOpenNav">Home</span>
+    </a>
+    <a routerLink="./browse">
+      <img class='side-nav-icon' [src]="getBrowseIcon()" />
+      <span *ngIf="isOpenNav">Browse</span>
+    </a>
+    <a routerLink="./library">
+      <img class='side-nav-icon' src="../../assets/icons/server.svg" />
+      <span *ngIf="isOpenNav">Library</span>
+    </a>
+    <a routerLink="./preferences">
+      <img class='side-nav-icon' src="../../../assets/icons/gear.svg" />
+      <span *ngIf="isOpenNav">Preferences</span>
+    </a>
+  </div>
+  <div style='overflow: hidden; position: fixed; bottom: 0;'>
+    <a (click)="switchNav()">
+      <span *ngIf="isOpenNav">
+        <img class='side-nav-icon' src="../../../assets/icons/left-angle.svg" />Collapse</span>
+      <img class='side-nav-icon' src="../../../assets/icons/right-angle.svg" *ngIf="!isOpenNav" />
+    </a>
+  </div>
 </div>
-<router-outlet></router-outlet> -->
-<div id="mySidenav" class="sidenav" style='z-index: 51;'>
-  <!-- <a href="javascript:void(0)" class="closebtn" (click)="closeNav()">&times;</a> -->
-  <a routerLink="./dashboard">Home</a>
-  <a routerLink="./browse">Browse</a>
-  <a routerLink="./library">Library</a>
-  <a routerLink="./preferences">Preferences</a>
-</div>
-
-<!-- Use any element to open the sidenav -->
-<span (click)="openNav()">open</span>
 <div id="topNav">
   <app-top-navigation></app-top-navigation>
 </div>

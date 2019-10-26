@@ -1,7 +1,6 @@
 /**
  * Objects/Interfaces template
  */
-
 import { BrowserPlatformLocation } from '@angular/platform-browser/src/browser/location/browser_platform_location'
 
 export class Torrent {
@@ -185,6 +184,16 @@ export interface Result {
   overview: string
   release_date: string
   isAvailable?: boolean
+}
+
+
+export interface Preferences {
+  frequencyUnit: string
+  frequencyValue: number
+  isDarkMode: boolean
+  isDirty: boolean
+  isEnableCache: boolean
+  libraryFolders: string[]
 }
 
 /*

@@ -231,6 +231,10 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 - shortcut keys
 - notifications
 
+> bugs
+
+- fileService readFile(), searchTorrentByName() loads prematurely
+
 > unsorted
 
 - integrate movie files scan to imdb search
@@ -330,3 +334,19 @@ UI and functionalities are influenced by follows: (in descending order)
 - http://www.opensubtitles.org/en/downloads#exports
 - https://trac.opensubtitles.org/projects/opensubtitles/wiki/DevReadFirst
 - https://forum.opensubtitles.org/viewtopic.php?f=8&t=16453#p39771
+
+## changes from office
+
+- readme.md
+- styles.scss
+- dashboard,navigation,top-navigation
+- https://playnite.link/
+
+- adm-zip
+- bittorrent-tracker, bittorrent-dht, rimraf, moment
+
+## notes
+
+- tsv parse search is faster than nedb; ~2s vs ~15s
+- search queries: title, releaseYear, genre/s, rating, ratingcount, language, country origin/region,
+- minify tsv stream has leak

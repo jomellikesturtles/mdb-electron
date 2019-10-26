@@ -3,7 +3,6 @@
  */
 const cp = require('child_process');
 const { app, BrowserWindow, ipcMain, shell, globalShortcut } = require('electron')
-const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const Datastore = require('nedb')
 const datastore = new Datastore({
   filename: 'src/assets/config/config.db',
@@ -95,16 +94,48 @@ ipcMain.on('app-max', function () {
 /* Operating System
 ----------------------*/
 
-// open folder
+ipcMain.on('exit-program', function (event, folder) {
+  app.quit()
+})
+// Opens folder with system file explorer.
 ipcMain.on('open-folder', function (event, folder) {
   console.log('open-folder', folder);
   shell.showItemInFolder(folder)
+  shell.openItem(folder)
+})
+// go to folder folder then return list of folders inside
+ipcMain.on('go-to-folder', function (event, param) {
+  console.log('go to folder', param);
+  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'file-explorer.js'), [param[0], param[1]], {
+    cwd: __dirname,
+    silent: true
+  });
+  procLibraryDb.stdout.on('data', function (data) {
+    console.log(data.toString().slice(0, -1));
+  });
+  procLibraryDb.on('exit', function () {
+    console.log('file-explorer process ended');
+  });
+  procLibraryDb.on('message', function (m) {
+    // command, list of folders
+    mainWindow.webContents.send(m[0], m[1]);
+  });
 })
 // opens modal file explorer
 ipcMain.on('modal-file-explorer', function (folder) {
   fs.readFileSync(__dirname)
   // shell.showItemInFolder
 })
+// gets system drives
+ipcMain.on('get-drives', function () {
+  cp.exec('wmic logicaldisk get name', (error, stdout) => {
+    console.log(stdout.split('\r\r\n').filter(value => /[A-Za-z]:/.test(value))
+      .map(value => value.trim()));
+    mainWindow.webContents.send('system-drives', stdout.split('\r\r\n').filter(value => /[A-Za-z]:/.test(value))
+      .map(value => value.trim()))
+  })
+})
+
 // opens url to external browser
 ipcMain.on('open-link-external', function (event, url) {
   shell.openExternal(url)
@@ -190,9 +221,8 @@ ipcMain.on('get-preferences', function (event, data) {
 ipcMain.on('save-preferences', function (event, data) {
   console.log('save-preferences ', data);
 })
+/* Preferences---------------------*/
 
-/* Preferences
-----------------------*/
 /**
  * Gets all movies from libraryFiles.db
  */
