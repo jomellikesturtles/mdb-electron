@@ -1,6 +1,4 @@
 <input #searchBox />
-<button (click)='onSearch(searchBox.value)'>Search</button>
-<button (click)='onGetLibraryFolders()'>onGetLibraryFolders</button>
 
 <div class="container-fluid">
   <div class="form-check" style="position:relative;left:15px;top:25px;z-index: 2">
@@ -12,15 +10,25 @@
     <i class='icon-question-mark' data-toggle="tooltip" title="Enter the folders where your movie files are"></i>
   </div>
   <h5>Library Folders</h5>
-  <button class="btn btn-primary" (click)="onScanLibrary()">Scan Library</button>
-  <input #folderName type="text" />
   <button class="btn btn-success" data-toggle="modal" data-target="#addLibraryModal"
     (click)='onOpenModal()'>Add(opensmodal)</button>
-  <div class='tab container-fluid' *ngFor='let folder of libraryFolders; let i = index'>
+  <button class="btn btn-primary" (click)="onScanLibrary()">Scan Library</button>
+  <div class="form-group">
+    <label for="scanFrequencyText"></label>
+    <input [(ngModel)]="preferencesObject.frequencyValue" type="text" class="form-control" name=""
+      id="scanFrequencyText" aria-describedby="helpId" placeholder="">
+    <small id="helpId" class="form-text text-muted">Scan Frequency</small>
+  </div>
+  <select class="form-control" id="sel1" [(ngModel)]="preferencesObject.frequencyUnit">
+    <option value='min'>minutes</option>
+    <option value='hr'>hours</option>
+    <option value='day'>days</option>
+    <option value='nev'>never</option>
+  </select>
+  <div class='tab container-fluid' *ngFor='let folder of preferencesObject.libraryFolders;'>
     <div class='form-inline form-group'>
       <button class="btn btn-success" (click)="onOpenFolder(folder)">Open</button>
-      <input type='text' class="form-control" [(ngModel)]='folder' />
-      <!-- <button class="btn btn-primary" (click)="onEditFolder(folder)">Edit</button> -->
+      <input type='text' class="form-control" [(ngModel)]='folder' data-toggle="tooltip" title="{{folder}}" disabled />
       <button class="btn btn-danger" (click)="onDeleteFolder(folder)">Delete</button>
     </div>
   </div>
@@ -30,14 +38,14 @@
     <input type="text" value="{{folder}}" />
   </div> -->
   <div class='form-inline'>
-    <h5>Offline Torrent Dump  </h5>
+    <h5>Offline Torrent Dump </h5>
     <span class='icon-question-mark' data-toggle="tooltip" title="Search torrent even without internet"></span>
   </div>
   <p>Last update: January 1, 1970 12:00 AM</p>
   <button class="btn btn-primary" (click)="onUpdateTorrentDump()">Update Torrent Dump</button>
 
   <div class='form-inline'>
-    <h5>Offline Metadata  </h5>
+    <h5>Offline Metadata </h5>
     <span class='icon-question-mark' data-toggle="tooltip" title="Enter the folders where your movie files are">
     </span>
   </div>
@@ -45,29 +53,61 @@
   <button class="btn btn-primary" (click)="onUpdateOfflineMetadata()">Update Offline Metadata</button>
   <button class="btn btn-success" (click)="onSave()">Save</button>
   <button class="btn btn-warning" (click)="onReset()">Reset</button>
-</div>
 
-<!-- <h1 class="title" style="display:none">{{title}}</h1>
-<button (click)="toggleTitle()"> clickhere </button> -->
+  <div class='form-inline'>
+    <h2>Statistics</h2>
+    <i class='icon-question-mark' data-toggle="tooltip" title="Your system and library stats."></i>
+  </div>
+  <table class="table table-striped table-inverse table-responsive">
+    <thead class="thead-inverse">
+      <tr>
+        <th>Key</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td scope="row">Library Size</td>
+        <td>21.GB</td>
+      </tr>
+      <tr>
+        <td scope="row">Library Movies</td>
+        <td>30</td>
+      </tr>
+      <tr>
+        <td scope="row">Library Movies</td>
+        <td>30</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <div id="addLibraryModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="close" (click)='onCloseModal()' data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body">
         <div>
-          <button class="btn btn-info" (click)="onGoToPreviousFolder()">Back</button>
+          <button class="btn btn-info" (click)="onGoToPreviousFolder(currentFolder)">Back</button>
           <button class="btn btn-info" (click)="onGoToParentFolder()">Up</button>
-          <input type="text">
+          <input type="text" [(ngModel)]="currentFolder" #currentFolderTextbox disabled>
+          <!-- <button class="btn btn-info" (click)="onGoToFolder(currentFolderTextbox.value)">Go</button> -->
           <h3>Add Folder</h3>
           <div class="row">
-            <div class="col-6" style="background-color:yellow;">
+            <div class="col-6" style="background-color: #3d3d3d;">
               <p>Disks</p>
             </div>
-            <div class="col-6" style="background-color:pink;">
+            <div class="col-6" style="background-color:#161616;">
+              <!-- <div class="col-6" style="background-color:#fc8181;"> -->
               <p>Folders</p>
+              <ul class="list-unstyled">
+                <li *ngFor="let folder of foldersList">
+                  <a class='folder-link' style='text-decoration: underline'
+                    (click)='onGoToFolder(folder)'>{{folder}}</a>
+                  <input type="checkbox" name="selected" id="myId" autocomplete="off"></li>
+              </ul>
             </div>
           </div>
         </div>
@@ -80,3 +120,13 @@
     </div>
   </div>
 </div>
+
+<!-- limit the size of title length in card -->
+<!-- display: inline-block;
+    width: 180px;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis; -->
+
+<!-- <h1 class="title" style="display:none">{{title}}</h1>
+  <button (click)="toggleTitle()"> clickhere </button> -->

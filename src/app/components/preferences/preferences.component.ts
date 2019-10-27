@@ -1,6 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs'
 import { IpcService } from '../../services/ipc.service';
+import { DEFAULT_PREFERENCES } from '../../mock-data'
+import { Preferences } from '../../subject'
 declare var $: any;
 @Component({
   selector: 'app-preferences',
@@ -11,56 +13,97 @@ declare var $: any;
 export class PreferencesComponent implements OnInit {
   @Input() data: Observable<any>
 
+  currentDrive = 'C:\\'
+  initialFolder = 'C:\\'
+  testFoldersList = ['folder1', 'folder2']
+  testLibraryFolders = ['C:\\Users\\', 'D:\\Movies']
+  testCurrentFolder = 'D:\''
   title = 'angular 4 with jquery'
-  libraryFolders = []
   libraryMovies = []
-  preferencesObject = {
-    libraryFolders: [],
+  libraryFolders = this.testLibraryFolders
+  foldersList = this.testFoldersList
+  currentFolder = this.initialFolder
+  previousFolder = ''
+  preferencesObject: Preferences = {
     isDarkMode: false,
     isDirty: false,
-    isEnableCache: false
+    isEnableCache: false,
+    frequencyValue: 3,
+    frequencyUnit: 'day',
+    libraryFolders: this.libraryFolders
   }
   constructor(
     private ipcService: IpcService,
     private cdr: ChangeDetectorRef
   ) { }
   ngOnInit() {
-    $('.title').slideToggle(); //
-    // var $j = $.noConflict();
-    this.onGetLibraryFolders()
-    this.onGetLibraryMovies()
-    this.ipcService.libraryFolders.subscribe((value) => {
+    $('.title').slideToggle();
+    //// var $j = $.noConflict();
+
+    // this.onGetLibraryFolders()
+    // this.onGetLibraryMovies()
+    let libraryFoldersSubscription = this.ipcService.libraryFolders.subscribe((value) => {
       this.libraryFolders = value
+      console.log('libraryfolders: ', value);
+      // value.
       this.cdr.detectChanges()
     })
-    this.ipcService.libraryMovies.subscribe((value) => {
-      this.libraryMovies = value
-      this.cdr.detectChanges()
-    })
+    console.log(typeof libraryFoldersSubscription);
+
+    // this.ipcService.libraryMovies.subscribe((value) => {
+    //   this.libraryMovies = value
+    //   this.cdr.detectChanges()
+    // })
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
+    this.ipcService.getFiles().then(value => {
+      console.log('getFiles', value);
+    }).catch(e => {
+      console.log(e);
+    })
+    this.ipcService.getSystemDrives().then(value => {
+      console.log('gotsystemdrives', value);
+    }).catch(e => {
+      console.log(e);
+    })
   }
 
   toggleTitle() {
     $('.title').slideToggle(); // test only
   }
 
+  setFoldersList() {
+
+  }
+
   onGetLibraryMovies() {
     this.ipcService.getMoviesFromLibrary()
   }
+
   /**
    * Get list of library folders
    */
   onGetLibraryFolders() {
     this.ipcService.getLibraryFolders()
   }
+
   /**
    * Opens file explorer modal
    */
   onOpenModal() {
     console.log('onOpenModal');
-    this.ipcService.modalFileExplorer()
+    this.onGoToFolder(this.initialFolder)
+    this.ipcService.getSystemDrives()
   }
+
+  /**
+   * Closes file explorer modal
+   */
+  onCloseModal() {
+    console.log('onClose');
+    this.previousFolder = ''
+  }
+
   /**
    * Scans library folders for new movies
    */
@@ -93,11 +136,11 @@ export class PreferencesComponent implements OnInit {
   }
 
   /**
-   * Resets config fiile
+   * Resets preferences.
    */
   onReset() {
-    this.ipcService.sendMessage('reset-preferences')
     console.log('onReset');
+    this.preferencesObject = DEFAULT_PREFERENCES
   }
 
   onAddFolder(folderName: string) {
@@ -118,30 +161,48 @@ export class PreferencesComponent implements OnInit {
   onDeleteFolder(folder) {
     console.log('onDeleteFolder', folder);
     this.libraryFolders = this.libraryFolders.filter(h => h !== folder)
-    console.log(this.libraryFolders)
     this.cdr.detectChanges()
   }
+
   /**
-   * Opens folder
+   * Opens folder with system file explorer.
    * @param folder folder directory to open
    */
   onOpenFolder(folder: string) {
-    console.log(folder);
-    this.ipcService.openFolder(folder)
-  }
-
-  /** Search query */
-  onSearch(data) {
-    this.ipcService.searchQuery(data)
+    const prefixRegex = new RegExp(`^([a-z]:)`, 'gi') // if absolute e.g. c:/
+    let folderToOpen = ''
+    if (folder.match(prefixRegex) == null) { // not match
+      folderToOpen = this.currentFolder + folder;
+    } else {
+      folderToOpen = folder
+    }
+    this.ipcService.openFileExplorer(folderToOpen)
   }
 
   // modal file explorer
   // goes back to the previous folder
-  onGoToPreviousFolder() {
-
+  onGoToPreviousFolder(folder: string) {
+    if (this.previousFolder) {
+      this.ipcService.openFolder(folder)
+      this.currentFolder = this.previousFolder
+    }
   }
+
   // goes back to the parent folder
   onGoToParentFolder() {
 
+    if ((this.currentFolder.lastIndexOf('\\')) <= 2) {
+      console.log('isparent');
+    } else {
+      this.previousFolder = this.currentFolder
+    }
+
+    this.ipcService.openParentFolder(this.currentFolder)
+  }
+
+  onGoToFolder(folder: string) {
+    this.previousFolder = this.currentFolder
+    this.currentFolder = folder
+    this.ipcService.openFolder(folder)
   }
 }

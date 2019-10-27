@@ -196,7 +196,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 
 ## Todo
 
-- ipcRenderers
 - torrents from online source
 - fix background image in movie-info
 - imdbId goes null/undefined if Tmdb doesn't have imdb id(especially on new movies)
@@ -216,10 +215,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 - fix the services
   - data
     - passing/sharing global variables
-  - torrent
-    - gets and setting torrents from API
-  - movie
-    - gets movie info from online API
 - ipcRenderers/main
   - config db service
   - library db service
@@ -229,7 +224,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 
 > minor
 
-- click to external links (imdb,yts,rotten tomatoes, etc..)
 - youtube iframe for trailers
 - lazy loading
 - subtitles, trailers apis
@@ -240,12 +234,10 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 > bugs
 
 - fileService readFile(), searchTorrentByName() loads prematurely
-- fileService reads offline torrent file twice
-- push to config file only appends to config file
 
 > unsorted
 
-- integrate moviefiles scan to imdbsearch
+- integrate movie files scan to imdb search
 - test Plex with following scenarios:
   - titles with '.' and without dot - both (tho.r becomes thor:ragnarok)
   - with year and without year - passed
@@ -256,7 +248,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   - name with incorrect year - passed
   - name with parenthesis - passed
   - incorrect folder and name - failed
-  - undash movie title with dash(spider-man) - passed
+  - un-dash movie title with dash(spider-man) - passed
   - year first before title - passed
 - browse
   - top year/genre
@@ -274,6 +266,15 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   - watch again
   - now showing
 
+> todo in office
+
+- browse/explore indexing
+- file explorer
+- preferences
+
+> fonts
+
+- market deco; showtime; futura; helvetica  
 
 ## Offline Assets
 
@@ -333,3 +334,19 @@ UI and functionalities are influenced by follows: (in descending order)
 - http://www.opensubtitles.org/en/downloads#exports
 - https://trac.opensubtitles.org/projects/opensubtitles/wiki/DevReadFirst
 - https://forum.opensubtitles.org/viewtopic.php?f=8&t=16453#p39771
+
+## changes from office
+
+- readme.md
+- styles.scss
+- dashboard,navigation,top-navigation
+- https://playnite.link/
+
+- adm-zip
+- bittorrent-tracker, bittorrent-dht, rimraf, moment
+
+## notes
+
+- tsv parse search is faster than nedb; ~2s vs ~15s
+- search queries: title, releaseYear, genre/s, rating, ratingcount, language, country origin/region,
+- minify tsv stream has leak

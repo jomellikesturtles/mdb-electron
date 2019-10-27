@@ -2,11 +2,7 @@
  * Main processor
  */
 const cp = require('child_process');
-const { app, BrowserWindow, ipcMain, dialog, Menu,
-  Tray, shell, session, clipboard } = require('electron')
-const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
-const papa = require('papaparse');
-const os = require('os')
+const { app, BrowserWindow, ipcMain, shell, globalShortcut } = require('electron')
 const Datastore = require('nedb')
 const datastore = new Datastore({
   filename: 'src/assets/config/config.db',
@@ -19,10 +15,7 @@ const fs = require('fs');
 let procSearch;
 let procLibraryDb;
 let offlineMovieDataService;
-let win
 let mainWindow
-let currentCondition = true;
-let stream;
 
 /**
  * Creates the browser window
@@ -33,28 +26,38 @@ function createWindow() {
     minWidth: 762,
     minHeight: 700,
     show: true,
-    // frame: false,
+    frame: false,
     backgroundColor: '#1e2a31',
     webPreferences: {
       experimentalFeatures: true,
-      nodeIntegration: true
+      nodeIntegration: true,
+      webSecurity: false
     },
     title: 'MDB'
   });
   mainWindow.webContents.openDevTools()
+  mainWindow.setMenu(null)
   mainWindow.loadURL(`file://${__dirname}/dist/mdb-electron/index.html`); // It will load in production mode
 
   // Event when the window is closed.
   mainWindow.on('closed', function () {
     mainWindow = null
   })
-
   mainWindow.once('show', function () {
     console.log('main window Show');
   });
+
+  // globalShortcut.register('CommandOrControl+F', () => {
+  //   console.log('search');
+  //   mainWindow.webContents.send('shortcut-search');
+  // })
+  // globalShortcut.register('CommandOrControl+Shift+P', () => {
+  //   console.log('pref');
+  //   mainWindow.webContents.send('shortcut-preferences');
+  // })
 }
 
-// Create window on electron intialization
+// Create window on electron initialization
 app.on('ready', createWindow)
 
 // Quit when all windows are closed.
@@ -64,7 +67,10 @@ app.on('window-all-closed', function () {
     app.quit()
   }
 })
-
+app.on('before-quit', function () {
+  // save changes
+  globalShortcut.unregisterAll()
+})
 app.on('activate', function () {
   // macOS specific close process
   if (mainWindow === null) {
@@ -88,23 +94,57 @@ ipcMain.on('app-max', function () {
 /* Operating System
 ----------------------*/
 
-// open folder
+ipcMain.on('exit-program', function (event, folder) {
+  app.quit()
+})
+// Opens folder with system file explorer.
 ipcMain.on('open-folder', function (event, folder) {
   console.log('open-folder', folder);
   shell.showItemInFolder(folder)
+  shell.openItem(folder)
+})
+// go to folder folder then return list of folders inside
+ipcMain.on('go-to-folder', function (event, param) {
+  console.log('go to folder', param);
+  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'file-explorer.js'), [param[0], param[1]], {
+    cwd: __dirname,
+    silent: true
+  });
+  procLibraryDb.stdout.on('data', function (data) {
+    console.log(data.toString().slice(0, -1));
+  });
+  procLibraryDb.on('exit', function () {
+    console.log('file-explorer process ended');
+  });
+  procLibraryDb.on('message', function (m) {
+    // command, list of folders
+    mainWindow.webContents.send(m[0], m[1]);
+  });
 })
 // opens modal file explorer
 ipcMain.on('modal-file-explorer', function (folder) {
   fs.readFileSync(__dirname)
   // shell.showItemInFolder
 })
+// gets system drives
+ipcMain.on('get-drives', function () {
+  cp.exec('wmic logicaldisk get name', (error, stdout) => {
+    console.log(stdout.split('\r\r\n').filter(value => /[A-Za-z]:/.test(value))
+      .map(value => value.trim()));
+    mainWindow.webContents.send('system-drives', stdout.split('\r\r\n').filter(value => /[A-Za-z]:/.test(value))
+      .map(value => value.trim()))
+  })
+})
+
 // opens url to external browser
 ipcMain.on('open-link-external', function (event, url) {
-  shell.openExternalSync(url, {}, function (err) {
-    if (err) {
-      console.log(err)
-    }
-  })
+  shell.openExternal(url)
+  // shell.openExternalSync(url, {}, function (err) {
+  //   console.log(err)
+  //   if (err) {
+  //     console.log(err)
+  //   }
+  // })
 })
 
 
@@ -181,15 +221,14 @@ ipcMain.on('get-preferences', function (event, data) {
 ipcMain.on('save-preferences', function (event, data) {
   console.log('save-preferences ', data);
 })
+/* Preferences---------------------*/
 
-/* Preferences
-----------------------*/
 /**
  * Gets all movies from libraryFiles.db
  */
 ipcMain.on('get-library-movies', function (event, data) {
   console.log('get movies from library..')
-  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), {
+  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), ['find-all'], {
     cwd: __dirname,
     silent: true
   });
@@ -197,7 +236,7 @@ ipcMain.on('get-library-movies', function (event, data) {
     console.log(data.toString().slice(0, -1));
   });
   procLibraryDb.on('exit', function () {
-    console.log('Import process ended');
+    console.log('get-library-movies process ended');
   });
   procLibraryDb.on('message', function (m) {
     mainWindow.webContents.send(m[0], m[1]);
@@ -207,8 +246,8 @@ ipcMain.on('get-library-movies', function (event, data) {
  * Gets the movie from libraryFiles.db
  */
 ipcMain.on('get-library-movie', function (event, data) {
-  console.log('get movies from library..')
-  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), ['find-one', data], {
+  console.log('get 1 movie from library..')
+  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), ['find-one', data[0], data[1]], {
     cwd: __dirname,
     silent: true
   });
@@ -216,7 +255,7 @@ ipcMain.on('get-library-movie', function (event, data) {
     console.log(data.toString().slice(0, -1));
   });
   procLibraryDb.on('exit', function () {
-    console.log('Import process ended');
+    console.log('get-library-movie process ended');
   });
   procLibraryDb.on('message', function (m) {
     mainWindow.webContents.send(m[0], m[1]);
@@ -228,11 +267,37 @@ ipcMain.on('get-torrents-title', function (event, data) {
 })
 
 /**
- * Gets all movies from libraryFiles.db
+ * Gets all movies from movieData.db
  */
 ipcMain.on('movie-metadata', function (event, data) {
-  console.log('set movies into movie-metadata-service..')
-  offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'offline-movie-data-service.js'), [data[0], data[1]], {
+  // console.log('movies into movie-metadata-service..', data[0], data[1])
+  let param2 = ''
+  if (data[0] == 'set') {
+    param2 = JSON.stringify(data[1])
+  } else {
+    param2 = data[1]
+  }
+  offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'offline-movie-data-service.js'), [data[0], param2], {
+    cwd: __dirname,
+    silent: true
+  });
+  offlineMovieDataService.stdout.on('data', function (data) {
+    // console.log(data.toString().slice(0, -1));
+  });
+  offlineMovieDataService.on('exit', function () {
+    console.log('movie-metadata process ended');
+  });
+  offlineMovieDataService.on('message', function (m) {
+    mainWindow.webContents.send(m[0], m[1]); // reply
+  });
+})
+
+/**
+ * Procesess images.
+ */
+ipcMain.on('get-image', function (event, data) {
+  console.log('image-data-service..', data[0], data[1])
+  offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'image-data-service.js'), [data[0], data[1], data[2], data[3]], {
     cwd: __dirname,
     silent: true
   });
@@ -240,10 +305,9 @@ ipcMain.on('movie-metadata', function (event, data) {
     console.log(data.toString().slice(0, -1));
   });
   offlineMovieDataService.on('exit', function () {
-    console.log('Import process ended');
+    console.log('image-data process ended');
   });
   offlineMovieDataService.on('message', function (m) {
     mainWindow.webContents.send(m[0], m[1]); // reply
   });
 })
-

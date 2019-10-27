@@ -10,8 +10,10 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "electron": "electron .",
+    "electron-logging": "electron . --enable-logging",
     "electron2": "electron",
     "electron-build2": "ng build --prod && npm run electron",
+    "electron-build-d": "ng build --dev && npm run electron",
     "electron-build": "ng build --prod && electron .",
     "start:electron": "ng build --base-href ./ && electron ."
   },
@@ -26,18 +28,21 @@
     "@angular/platform-browser-dynamic": "~7.2.0",
     "@angular/router": "~7.2.0",
     "@types/jquery": "^3.3.31",
+    "angular": "^1.7.8",
     "asar": "^2.0.1",
     "boostrap": "^2.0.0",
     "bootstrap": "^4.3.1",
     "core-js": "^2.5.4",
     "fast-csv": "^3.4.0",
     "fast-levenshtein": "^2.0.6",
+    "firebase": "^7.2.0",
     "fluent-ffmpeg": "^2.1.2",
     "jquery": "^3.4.1",
     "nedb": "^1.8.0",
     "papaparse": "^5.0.1",
     "popper": "^1.0.1",
     "rxjs": "~6.3.3",
+    "tsc": "^1.20150623.0",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
   },
@@ -49,7 +54,7 @@
     "@types/electron": "^1.6.10",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
-    "@types/node": "~8.9.4",
+    "@types/node": "^8.9.5",
     "codelyzer": "~4.5.0",
     "electron": "^5.0.10",
     "jasmine-core": "~2.99.1",
@@ -62,11 +67,16 @@
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
-    "typescript": "~3.2.2"
+    "typescript": "^3.2.4"
   },
   "files": [
     "*.js",
     "build",
     "node_modules"
-  ]
+  ],
+  "electronWebpack": {
+    "externals": {
+      "nedb": "commonjs nedb"
+    }
+  }
 }

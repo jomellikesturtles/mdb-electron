@@ -1,3 +1,9 @@
-<p>
-  browse works!
-</p>
+<div class="container-fluid" style='padding-top: 10vh'>
+  <div *ngIf="browseLists">
+
+    <div *ngFor="let list of browseLists">
+      <h3>{{list.name}}</h3>
+
+    </div>
+  </div>
+</div>
