@@ -184,6 +184,7 @@ export interface Result {
   overview: string
   release_date: string
   isAvailable?: boolean
+  isHighlighted?: boolean
 }
 
 

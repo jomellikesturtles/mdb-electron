@@ -8,7 +8,7 @@ import {
 } from '@angular/core'
 import { BehaviorSubject } from 'rxjs'
 declare var electron: any
-const { ipcRenderer } = electron
+// const { ipcRenderer } = electron
 @Injectable({
   providedIn: 'root'
 })
@@ -18,10 +18,10 @@ export class IpcService {
   libraryMovie = new BehaviorSubject<string[]>([])
   preferencesConfig = new BehaviorSubject<string[]>([])
   movieMetadata = new BehaviorSubject<string[]>([])
-  private ipcRenderer: typeof ipcRenderer
+  // private ipcRenderer: typeof ipcRenderer
   constructor() //// private ref: ChangeDetectorRef
   {
-    this.ipcRenderer = (<any>window).require('electron').ipcRenderer
+    // this.ipcRenderer = (<any>window).require('electron').ipcRenderer
 
     this.libraryFolders.next(['test', 'test2'])
     // this.ipcRenderer.on('library-folders', (event, data) => {
@@ -62,12 +62,12 @@ export class IpcService {
   // }
 
   async getFiles() {
-    return new Promise<string[]>((resolve, reject) => {
-      this.ipcRenderer.once('library-folders', (event, arg) => {
-        resolve(arg);
-      });
-      this.ipcRenderer.send('retrieve-library-folders');
-    });
+    // return new Promise<string[]>((resolve, reject) => {
+    //   this.ipcRenderer.once('library-folders', (event, arg) => {
+    //     resolve(arg);
+    //   });
+    //   this.ipcRenderer.send('retrieve-library-folders');
+    // });
   }
   /**
    * All messages in logger
@@ -122,12 +122,12 @@ export class IpcService {
    * Gets the drives in the system.
    */
   async getSystemDrives() {
-    return new Promise<string[]>((resolve, reject) => {
-      this.ipcRenderer.once('system-drives', (event, arg) => {
-        resolve(arg);
-      });
-      this.ipcRenderer.send('get-drives');
-    });
+    // return new Promise<string[]>((resolve, reject) => {
+    //   this.ipcRenderer.once('system-drives', (event, arg) => {
+    //     resolve(arg);
+    //   });
+    //   this.ipcRenderer.send('get-drives');
+    // });
     // console.log('get system drives')
     // this.ipcRenderer.send('get-drives')
   }
@@ -137,7 +137,7 @@ export class IpcService {
    */
   openFolder(data: string) {
     console.log('open', data)
-    this.ipcRenderer.send('go-to-folder', ['open', data])
+    // this.ipcRenderer.send('go-to-folder', ['open', data])
   }
 
   /**
@@ -146,7 +146,7 @@ export class IpcService {
    */
   openParentFolder(data: string) {
     console.log('up', data)
-    this.ipcRenderer.send('go-to-folder', ['up', data])
+    // this.ipcRenderer.send('go-to-folder', ['up', data])
   }
 
   /**
@@ -155,7 +155,7 @@ export class IpcService {
    */
   openFileExplorer(data: string) {
     console.log(data)
-    this.ipcRenderer.send('open-folder', data)
+    // this.ipcRenderer.send('open-folder', data)
   }
 
   /**
@@ -245,7 +245,16 @@ export class IpcService {
   removeMarkAsWatched(val) {
     // this.ipcRenderer.send('remove-watched', val)
   }
+  minimizeWindow() {
+    // this.ipcRenderer.send('minimize-window')
+  }
+  maximizeWindow() {
+    // this.ipcRenderer.send('maximize-window')
+  }
+  restoreWindow() {
+    // this.ipcRenderer.send('restore-window')
+  }
   exitProgram() {
-    this.ipcRenderer.send('exit-program')
+    // this.ipcRenderer.send('exit-program')
   }
 }

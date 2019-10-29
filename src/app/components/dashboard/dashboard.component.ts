@@ -10,9 +10,11 @@ import { TorrentService } from '../../services/torrent.service'
 import { MovieService } from '../../services/movie.service'
 import { DataService } from '../../services/data.service'
 import { IpcService } from '../../services/ipc.service'
+import { UtilsService } from '../../services/utils.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Movie, Result, LibraryInfo, LibraryInfo2 } from '../../subject'
 import { TMDB_SEARCH_RESULTS } from '../../mock-data'
+import { utils } from 'protractor'
 declare var $: any
 
 @Component({
@@ -29,6 +31,7 @@ export class DashboardComponent implements OnInit {
     private dataService: DataService,
     private movieService: MovieService,
     private ipcService: IpcService,
+    private utilsService: UtilsService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private cdr: ChangeDetectorRef
@@ -41,50 +44,55 @@ export class DashboardComponent implements OnInit {
   dashboardLists = []
   selectedMovie = null
   isHighlighted = false
-
+  cardWidth = '130px'
   ngOnInit() {
 
-    this.ipcService.libraryMovie.subscribe(value => {
-      console.log('libraryMovie value', value)
-      const data = value[0]
-      // if (this.nowShowingMovies.length) {
-      //   const findResult = this.nowShowingMovies.find(
-      //     element =>
-      //       element.title === data.title
-      //     // (((element.title === data.title) ||
-      //     //   (element.original_title === data.title)) &&
-      //     //   parseInt(element.release_date) === data.year)
-      //   )
-      console.log('setting availability')
-      this.nowShowingMovies[0].isAvailable = true
-      console.log('setting availability')
-      // }
-      this.cdr.detectChanges()
-    })
+    this.nowShowingMovies = TMDB_SEARCH_RESULTS.results
+    this.nowShowingMovies[this.nameString] = `Best of 1994`
+    this.dashboardLists.push(this.nowShowingMovies)
 
-    if (this.dataService.hasDashboardData()) {
-      this.dashboardLists = this.dataService.getDashboardData()
-      console.log(this.dashboardLists)
-    } else {
-      // commented for test values only
-      // this.getNowShowingMovies();
-      // this.getTopMoviesFromYear();
-      // commented for test values only
+    // COMMENTED FOR TEST DATA ONLY
+    // this.ipcService.libraryMovie.subscribe(value => {
+    //   console.log('libraryMovie value', value)
+    //   const data = value[0]
+    //   // if (this.nowShowingMovies.length) {
+    //   //   const findResult = this.nowShowingMovies.find(
+    //   //     element =>
+    //   //       element.title === data.title
+    //   //     // (((element.title === data.title) ||
+    //   //     //   (element.original_title === data.title)) &&
+    //   //     //   parseInt(element.release_date) === data.year)
+    //   //   )
+    //   console.log('setting availability')
+    //   this.nowShowingMovies[0].isAvailable = true
+    //   console.log('setting availability')
+    //   // }
+    //   this.cdr.detectChanges()
+    // })
 
-      this.nowShowingMovies = TMDB_SEARCH_RESULTS.results
-      this.nowShowingMovies[this.nameString] = `Best of 1994`
-      // this.nowShowingMovies[2].isAvailable = true
-      // this.nowShowingMovies.forEach(element => {
-      //   const releaseYear = element.release_date.substring(0, element.release_date.indexOf('-'))
-      //   const paramArray = [element.title, releaseYear]
-      //   element.isAvailable = this.ipcService.getMovieFromLibrary(paramArray)
-      // });
-      this.dashboardLists.push(this.nowShowingMovies)
-      const paramArray1 = ['The Shawshank Redemption', 1994]
-      this.ipcService.getMovieFromLibrary(paramArray1)
-      console.log('this.dashboardLists', this.dashboardLists)
-      this.dataService.setDashboardData(this.dashboardLists)
-    }
+    // if (this.dataService.hasDashboardData()) {
+    //   this.dashboardLists = this.dataService.getDashboardData()
+    //   console.log(this.dashboardLists)
+    // } else {
+    //   // commented for test values only
+    //   // this.getNowShowingMovies();
+    //   // this.getTopMoviesFromYear();
+    //   // commented for test values only
+
+    //   this.nowShowingMovies = TMDB_SEARCH_RESULTS.results
+    //   this.nowShowingMovies[this.nameString] = `Best of 1994`
+    //   // this.nowShowingMovies[2].isAvailable = true
+    //   // this.nowShowingMovies.forEach(element => {
+    //   //   const releaseYear = element.release_date.substring(0, element.release_date.indexOf('-'))
+    //   //   const paramArray = [element.title, releaseYear]
+    //   //   element.isAvailable = this.ipcService.getMovieFromLibrary(paramArray)
+    //   // });
+    //   this.dashboardLists.push(this.nowShowingMovies)
+    //   const paramArray1 = ['The Shawshank Redemption', 1994]
+    //   this.ipcService.getMovieFromLibrary(paramArray1)
+    //   console.log('this.dashboardLists', this.dashboardLists)
+    //   this.dataService.setDashboardData(this.dashboardLists)
+    // }
 
     this.ipcService.libraryFolders.subscribe(value => {
       console.log('dashboard libraryFolders', value)
@@ -223,5 +231,13 @@ export class DashboardComponent implements OnInit {
         window.clearInterval(Number(slideTimer))
       }
     }, speed)
+  }
+
+  /**
+   * Gets the year.
+   * @param releaseDate release date with format YYYY-MM-DD
+   */
+  getYear(releaseDate: string) {
+    return this.utilsService.getYear(releaseDate)
   }
 }

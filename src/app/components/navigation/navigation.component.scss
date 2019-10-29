@@ -1,15 +1,24 @@
 /* The side navigation menu */
 .sidenav {
-  height: 100%; /* 100% Full-height */
-  width: 25vw; /* 0 width - change this with JavaScript */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Stay on top */
-  top: 0; /* Stay at the top */
+  height: 100%;
+  /* 100% Full-height */
+  width: 25vw;
+  /* 0 width - change this with JavaScript */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Stay on top */
+  top: 0;
+  /* Stay at the top */
   left: 0;
-  background-color: #111; /* Black*/
-  overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 60px; /* Place content 60px from the top */
-  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+  background-color: #111;
+  /* Black*/
+  overflow-x: hidden;
+  /* Disable horizontal scroll */
+  padding-top: 60px;
+  /* Place content 60px from the top */
+  transition: 0.5s;
+  /* 0.5 second transition effect to slide in the sidenav */
 }
 
 /* The navigation menu links */
@@ -23,17 +32,16 @@
 }
 
 .collapsed a {
-  padding: 8px 8px 8px 0px !important
-  // transition: 0.3s;
+  padding: 8px 8px 8px 0px !important // transition: 0.3s;
 }
 
 /* When you mouse over the navigation links, change their color */
 .sidenav a:hover {
   color: #f1f1f1;
   cursor: pointer
-  
 }
-.side-nav-icon a:hover{
+
+.side-nav-icon a:hover {
   filter: invert(1) contrast(1);
 }
 
@@ -42,15 +50,80 @@
   transition: margin-left .5s;
   // padding: 20px;
 }
+
 #topNav {
   transition: .5s;
 }
+
 .side-nav-icon {
   width: 50px;
   height: 30px;
   // if icons are dark
   -webkit-filter: invert(1);
-  filter: invert(1) contrast(0);;
+  filter: invert(1) contrast(0);
+  ;
+}
+
+// film grain
+.grain {
+  // height: 100vh;
+  // background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/9632/northernlights.jpg);
+}
+
+.grain:after {
+  // animation: grain 8s steps(10) infinite;
+  // background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/9632/paper-pattern.png);
+  // content: "";
+  // height: 300%;
+  // left: -50%;
+  // opacity: 0.3;
+  // position: fixed;
+  // top: -110%;
+  // width: 300%;
+}
+
+@keyframes grain {
+
+  0%,
+  100% {
+    transform: translate(0, 0)
+  }
+
+  10% {
+    transform: translate(-5%, -10%)
+  }
+
+  20% {
+    transform: translate(-15%, 5%)
+  }
+
+  30% {
+    transform: translate(7%, -25%)
+  }
+
+  40% {
+    transform: translate(-5%, 25%)
+  }
+
+  50% {
+    transform: translate(-15%, 10%)
+  }
+
+  60% {
+    transform: translate(15%, 0%)
+  }
+
+  70% {
+    transform: translate(0%, 15%)
+  }
+
+  80% {
+    transform: translate(3%, 35%)
+  }
+
+  90% {
+    transform: translate(-10%, 10%)
+  }
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */

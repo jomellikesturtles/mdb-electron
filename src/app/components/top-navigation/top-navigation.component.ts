@@ -68,8 +68,8 @@ export class TopNavigationComponent implements OnInit {
    * Initialize search
    */
   onSearch(val: any) {
-    console.log('unshifting',val);
-    
+    console.log('unshifting', val);
+
     this.searchHistoryList.unshift(val)
     console.log(this.searchHistoryList);
     if (this.searchHistoryList.length >= this.searchHistoryMaxLength) {
@@ -131,7 +131,17 @@ export class TopNavigationComponent implements OnInit {
     // })
   }
 
+  onMinimize() {
+    this.ipcService.minimizeWindow()
+  }
+  onMaximize() {
+    this.ipcService.maximizeWindow()
+  }
+  onRestore() {
+    this.ipcService.restoreWindow()
+  }
   onExit() {
+    console.log('onexit');
     this.ipcService.exitProgram()
   }
 }

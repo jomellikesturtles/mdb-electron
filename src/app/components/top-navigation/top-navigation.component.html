@@ -14,11 +14,31 @@
           <option *ngFor="let item of searchHistoryList">
             {{item}}
         </datalist>
-        <!-- </div> -->
-        <!-- <div class="col-sm-3"> -->
         <button class="btn btn-success input-group-btn" id="search-button"
           (click)="onSearch(searchQuery.keywords);searchBar.value=''" style='margin-right: 10px'>Search</button>
-        <button class="btn btn-danger" (click)="onExit()" style='border-radius: 0%'>x</button>
+        <!-- </div> -->
+        <!-- <div class="col-sm-3"> -->
+        <div class='window-controls-container'>
+          <div class='window-icon-bg'>
+            <!-- <div class='window-icon window-minimize'>
+            </div> -->
+            <img class='icon-img' src='../../../assets/icons/minimize.svg'>
+          </div>
+          <div class='window-icon-bg'>
+            <!-- <div class='window-icon window-maximize'>
+            </div> -->
+            <img class='icon-img' src='../../../assets/icons/maximize.svg'>
+          </div>
+
+          <div class='window-icon-bg window-close'>
+            <!-- <div class='window-icon window-close'>
+            </div> -->
+            <img class='icon-img' (click)="onExit()" src='../../../assets/icons/close.svg'>
+            <!-- <button></button>
+                <button></button> -->
+            <!-- <button class="btn btn-danger" (click)="onExit()" style='border-radius: 0%'>x</button> -->
+          </div>
+        </div>
         <!-- </div> -->
         <!-- <div class="col-sm-3"> -->
         <!-- <button class="btn btn-outline-light input-group-btn" style='margin-right: 10px' id="advanced-search-button"
