@@ -341,12 +341,17 @@ UI and functionalities are influenced by follows: (in descending order)
 - styles.scss
 - dashboard,navigation,top-navigation
 - https://playnite.link/
-
 - adm-zip
 - bittorrent-tracker, bittorrent-dht, rimraf, moment
+
+- changes 2
+
+- libraryFiles.db,mock-data,subject,results
 
 ## notes
 
 - tsv parse search is faster than nedb; ~2s vs ~15s
 - search queries: title, releaseYear, genre/s, rating, ratingcount, language, country origin/region,
 - minify tsv stream has leak
+- tmdb criteria: year,region, language, vote count, vote average.
+- snackbar/toast doesnt work

@@ -90,6 +90,10 @@ ipcMain.on('logger', function (event, data) {
 ipcMain.on('app-max', function () {
   mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize();
 });
+ipcMain.on('app-min', function () {
+  mainWindow.minimize()
+  // mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize();
+});
 
 /* Operating System
 ----------------------*/

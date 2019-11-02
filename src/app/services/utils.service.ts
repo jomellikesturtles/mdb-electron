@@ -12,9 +12,17 @@ export class UtilsService {
   /**
    * Gets the year.
    * @param releaseDate release date with format YYYY-MM-DD
+   * @returns string value of year with YYYY format
    */
   getYear(releaseDate: string) {
     return releaseDate.substring(0, releaseDate.indexOf('-'))
+  }
+
+  hideSnackbar(root) {
+    setTimeout(function () {
+      root.displayMessage = ''
+      root.displaySnackbar = false
+    }, 3000);
   }
 
 }

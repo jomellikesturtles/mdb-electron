@@ -3,6 +3,7 @@ import { TMDB_SEARCH_RESULTS } from '../../mock-data';
 import { Movie } from '../../subject';
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../services/data.service'
+import { IpcService } from '../../services/ipc.service'
 import { MovieService } from '../../services/movie.service'
 import { UtilsService } from '../../services/utils.service'
 declare var $: any
@@ -20,16 +21,17 @@ export class ResultsComponent implements OnInit {
   selectedMovie = null
   selectedMovies = []
   cardWidth = '130px'
-
+  displayMessage = ''
+  displaySnackbar = false
   constructor(
     private dataService: DataService,
+    private ipcService: IpcService,
     private movieService: MovieService,
     private utilsService: UtilsService,
     private router: Router,
     private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
-    console.log(this.searchResults);
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
   }
@@ -45,12 +47,21 @@ export class ResultsComponent implements OnInit {
     this.dataService.updateSelectedMovies(this.selectedMovies)
     this.router.navigate([`/bulk-download`], { relativeTo: this.activatedRoute });
   }
+
   onAddToWatchlist() {
-    console.log('addto watchlist', this.selectedMovies);
+    const root = this
+    this.ipcService.addToWatchlist(this.selectedMovies)
+    this.displayMessage = 'Added to watchlist'
+    this.displaySnackbar = true
+    this.utilsService.hideSnackbar(root)
   }
 
   onMarkAsWatched() {
-    console.log('addto watchlist', this.selectedMovies);
+    const root = this
+    this.ipcService.addMarkAsWatched(this.selectedMovies)
+    this.displayMessage = 'Marked as watched'
+    this.displaySnackbar = true
+    this.utilsService.hideSnackbar(root)
   }
 
   onHighlight(movie) {
@@ -82,7 +93,6 @@ export class ResultsComponent implements OnInit {
    */
   getYear(releaseDate: string) {
     return this.utilsService.getYear(releaseDate)
-    // return releaseDate.substring(0, releaseDate.indexOf('-'))
   }
 
   getPoster(poster: string) {

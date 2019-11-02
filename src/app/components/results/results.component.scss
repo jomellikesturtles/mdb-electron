@@ -18,10 +18,6 @@
   text-align: center;
 }
 
-.card:hover .middle {
-  opacity: 1;
-}
-
 .text {
   background-color: #4CAF50;
   color: black;
@@ -50,19 +46,13 @@
     //   border-radius: 7px;
 }
 
-// duplicated
-.movie-card-selected img {
-  //   padding: 5px;
-  // outline: none;
-  opacity: .5;
-  //   border-color: #e22e2e;
-  // box-shadow: 0 0 10px #e22e2e;
-  // border: 2px solid #dadada;
-  //   border-radius: 7px;
-  // transition: .3s
-}
 
-.movie-card-selected .overlay {
+
+// selected-movie-card-image-container:hover .overlay-remove {
+//   opacity: .5;
+// }
+
+.movie-card-selected .overlay-add {
   opacity: .5;
 }
 
@@ -70,19 +60,15 @@
   opacity: .5;
 }
 
-selected-movie-card-image-container:hover {
-  width: 500px;
+.movie-card-image-container:hover .overlay {
+  opacity: .5;
 }
 
 selected-movie-card-image-container:hover img {
   opacity: .5;
 }
 
-.movie-card-image-container:hover .overlay {
-  opacity: .5;
-}
-
-.movie-card-image-container-container:hover .overlay {
+selected-movie-card-image-container:hover .overlay {
   opacity: .5;
 }
 
@@ -91,27 +77,51 @@ selected-movie-card-image-container:hover img {
   box-shadow: 0 0 10px black;
   position: relative;
   background-size: cover;
-  background-position: center
+  background-position: center;
+  cursor: pointer
 }
+
+// text-overflow: ;
+//     white-space: normal;
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+//     display: -webkit-flex;
+//     -webkit-flex-wrap: wrap;
+//     display: flex;
+//     flex-wrap: wrap;
+//     font-size: large;
 
 .selected-movie-card-image-container {
   background-color: rgb(32, 32, 32);
   box-shadow: 0 0 10px black;
   position: relative;
   background-size: cover;
-  background-position: center
+  background-position: center;
+  cursor: pointer
+}
+
+.movie-available {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  height: 15px;
+  width: 15px;
+  background-color: rgb(8, 185, 8);
+  border-radius: 50%;
+  box-shadow: 0 0 10px #38ec14;
+  z-index: 3;
 }
 
 .overlay {
-  // position: absolute;
-  // top: 0;
-  // bottom: 0;
-  // left: 0;
-  // right: 0;
-  // height: 100%;
-  // width: 100%;
-  // opacity: 0;
-  // transition: .5s ease;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: .5s ease;
   // z-index: -1;
 }
 
@@ -122,6 +132,7 @@ selected-movie-card-image-container:hover img {
   // bottom: 0;
   // left: 0;
   // right: 0;
+
   height: 100%;
   width: 100%;
   opacity: 0;
@@ -135,10 +146,10 @@ selected-movie-card-image-container:hover img {
   // bottom: 0;
   // left: 0;
   // right: 0;
-  height: 100%;
-  width: 100%;
-  opacity: 0;
-  transition: .5s ease;
+  // height: 100%;
+  // width: 100%;
+  // opacity: 0;
+  // transition: .5s ease;
 }
 
 .movie-card-body {

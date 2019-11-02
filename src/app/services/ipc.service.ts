@@ -7,7 +7,7 @@ import {
   //// , ChangeDetectionStrategy, ChangeDetectorRef,
 } from '@angular/core'
 import { BehaviorSubject } from 'rxjs'
-declare var electron: any
+// declare var electron: any
 // const { ipcRenderer } = electron
 @Injectable({
   providedIn: 'root'
@@ -246,15 +246,21 @@ export class IpcService {
     // this.ipcRenderer.send('remove-watched', val)
   }
   minimizeWindow() {
+    console.log('min-program')
     // this.ipcRenderer.send('minimize-window')
+    // this.ipcRenderer.send('app-min')
   }
   maximizeWindow() {
+    console.log('max-program')
     // this.ipcRenderer.send('maximize-window')
+    // this.ipcRenderer.send('app-max')
   }
   restoreWindow() {
-    // this.ipcRenderer.send('restore-window')
+    console.log('max-program')
+    // this.ipcRenderer.send('app-max')
   }
   exitProgram() {
+    console.log('exit-program')
     // this.ipcRenderer.send('exit-program')
   }
 }

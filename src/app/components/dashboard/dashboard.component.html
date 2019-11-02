@@ -1,5 +1,5 @@
 <div class='movie-selected-list' style='background-color: rgb(40,40,40);
-padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="!selectedMovies.length == 0">
+padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.length != 0">
   <div class="container-fluid" id="list" style="overflow-y:hidden; overflow-x:auto;">
     <div class='d-inline-flex'>
       <div *ngFor="let sMovie of selectedMovies" style='width: 120px'>
@@ -31,6 +31,7 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="!selectedMovies.len
     <div *ngFor="let list of dashboardLists">
       <h3>{{list.name}}</h3>
       <div class="container-fluid" id="list" style="overflow-y:hidden;overflow-x:scroll;">
+
         <div class='d-inline-flex'>
 
           <div *ngFor="let movie of list" [ngStyle]="{'width': cardWidth}">
@@ -65,7 +66,9 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="!selectedMovies.len
               </div>
             </div>
           </div>
+
         </div>
+
       </div>
     </div>
   </div>

@@ -766,3 +766,36 @@ export const DEFAULT_PREFERENCES: Preferences = {
   isEnableCache: true,
   libraryFolders: []
 }
+
+
+export const DECADES = [
+  {
+    display:
+      '1960s',
+    value: 1960
+  },
+  {
+    display:
+      '1970s',
+    value: 1970
+  },
+  {
+    display:
+      '1980s',
+    value: 1980
+  },
+  {
+    display:
+      '1990s',
+    value: 1990
+  },
+  {
+    display:
+      '2000s',
+    value: 2000
+  },
+  {
+    display:
+      '2010s',
+    value: 2010
+  }]
