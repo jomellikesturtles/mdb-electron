@@ -7,8 +7,9 @@ import {
   //// , ChangeDetectionStrategy, ChangeDetectorRef,
 } from '@angular/core'
 import { BehaviorSubject } from 'rxjs'
-// declare var electron: any
+declare var electron: any
 // const { ipcRenderer } = electron
+import { LibraryInfo } from '../subject'
 @Injectable({
   providedIn: 'root'
 })
@@ -211,10 +212,18 @@ export class IpcService {
   /**
    * Ipc renderer that sends command to main renderer to get specified movie from library db.
    * Replies offline directories.
-   * @param data imdb id or movie title and release year
+   * @param data imdb id or movie title and release year or tmdb id
    */
-  getMovieFromLibrary(data) {
-    // this.ipcRenderer.send('get-library-movie', data)
+  async getMovieFromLibrary(data) {
+    console.log('getMovieFromLibrary data', data);
+    // this.ipcRenderer.send('get-library-movie', [data]);
+    // return new Promise<LibraryInfo>((resolve, reject) => {
+    //   this.ipcRenderer.once('library-movie', (event, arg) => {
+    //     console.log('library-movie', arg);
+    //     resolve(arg);
+    //   });
+    // });
+    return null
   }
 
   getImage(url: string, imdbId: string, type: string) {
@@ -246,21 +255,15 @@ export class IpcService {
     // this.ipcRenderer.send('remove-watched', val)
   }
   minimizeWindow() {
-    console.log('min-program')
-    // this.ipcRenderer.send('minimize-window')
     // this.ipcRenderer.send('app-min')
   }
   maximizeWindow() {
-    console.log('max-program')
     // this.ipcRenderer.send('maximize-window')
-    // this.ipcRenderer.send('app-max')
   }
   restoreWindow() {
-    console.log('max-program')
     // this.ipcRenderer.send('app-max')
   }
   exitProgram() {
-    console.log('exit-program')
     // this.ipcRenderer.send('exit-program')
   }
 }

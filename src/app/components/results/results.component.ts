@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TMDB_SEARCH_RESULTS } from '../../mock-data';
-import { Movie } from '../../subject';
+import { Movie, TmdbResult } from '../../subject';
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../services/data.service'
 import { IpcService } from '../../services/ipc.service'
@@ -23,6 +23,7 @@ export class ResultsComponent implements OnInit {
   cardWidth = '130px'
   displayMessage = ''
   displaySnackbar = false
+
   constructor(
     private dataService: DataService,
     private ipcService: IpcService,
@@ -77,14 +78,19 @@ export class ResultsComponent implements OnInit {
     console.log(this.selectedMovies);
   }
 
-  onSelect(movie: Movie) {
+  onSelect(movie: TmdbResult) {
     this.selectedMovie = movie;
-    this.movieService.getExternalId(movie.id).subscribe(data => {
-      const highlightedId = data.imdb_id;
-      localStorage.setItem('imdb_id', highlightedId)
-      this.dataService.updateHighlightedMovie(highlightedId);
-      this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
-    })
+    const highlightedId = movie.id;
+    this.dataService.updateHighlightedMovie(highlightedId);
+    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+
+    // will settle for tmdb id for now
+    // this.movieService.getExternalId(movie.id).subscribe(data => {
+    //   const highlightedId = data.imdb_id;
+    //   localStorage.setItem('imdb_id', highlightedId)
+    //   this.dataService.updateHighlightedMovie(highlightedId);
+    //   this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+    // })
   }
 
   /**
@@ -96,7 +102,9 @@ export class ResultsComponent implements OnInit {
   }
 
   getPoster(poster: string) {
-
+    console.log(this.movieService.getMoviePoster(poster))
+    // return poster;
+    return false
   }
   // download, add to watchlsit, mark as watched
 }

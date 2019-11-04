@@ -13,12 +13,12 @@ export class Torrent {
   type?: string
   seeds?: number
   peers?: number
-  size_bytes?: number
+  sizeBytes?: number
   added?: string
-  date_uploaded?: string
-  date_uploaded_unix?: number
-  is_yts?: boolean
-  magnet_link?: string
+  dateUploaded?: string
+  dateUploadedUnix?: number
+  isYts?: boolean
+  magnetLink?: string
 }
 
 export class Movie {
@@ -61,7 +61,7 @@ export interface OmdbMovieDetail {
   Title: string
   Year?: string
   Rated?: string
-  Released?: string
+  Released?: string // "05 May 2017"
   Runtime?: string
   Genre?: string
   Director?: string
@@ -85,17 +85,46 @@ export interface OmdbMovieDetail {
   Response: string
 }
 
+export interface TmdbMovieDetail {
+  adult: boolean;
+  backdrop_path: string;
+  belongs_to_collection: null;
+  budget: number;
+  genres: IGenre[];
+  homepage: string;
+  id: number;
+  imdb_id: string;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  production_companies: IProductionCompany[];
+  production_countries: IProductionCountry[];
+  release_date: string;
+  revenue: number;
+  runtime: number;
+  spoken_languages: ISpokenLanguage[];
+  status: string;
+  tagline: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
+}
+
 export interface MdbMovieDetails {
-  Title: string
-  Year?: string
-  Rated?: string
-  Released?: string
-  Runtime?: string
-  Genre?: string
-  Director?: string
-  Writer?: string
+  adult?: boolean;
+  title: string
+  releaseYear?: string
+  releaseDate?: string
+  rated?: string // rated or certificate
+  runtime?: string
+  genres?: string
+  director?: string
+  writer?: string
   Actors?: string
-  Plot?: string
+  plot?: string // plot or overview
   Language?: string
   Country?: string
   Awards?: string
@@ -105,25 +134,25 @@ export interface MdbMovieDetails {
   imdbRating?: string
   imdbVotes?: string
   imdbID: string
+  tmdbID: number
   Type?: string
   DVD?: string
   BoxOffice?: string
   Production?: string
-  Website?: string
-  Response: string
-  LibraryInfo?: LibraryInfo
+  website?: string
+  response: string
+  libraryInfo?: LibraryInfo
 }
+
 export interface LibraryInfo {
+  tmdbId?: null | number | string
   imdbID?: string
   title?: string
   year?: number
-  directoryList?: []
+  directoryList?: string[]
+  _id: string
 }
-export interface LibraryInfo2 {
-  imdbID?: string
-  title?: string
-  year?: number
-}
+
 export interface Rating {
   Source: string
   Value: string
@@ -152,11 +181,11 @@ export class SelectedMovies {
   title: string
 }
 
-export interface Genres {
-  genres: Genre[]
+export interface IGenres {
+  genres: IGenre[]
 }
 
-export interface Genre {
+export interface IGenre {
   id: number
   name: string
 }
@@ -165,10 +194,10 @@ export interface TmdbResultObject {
   page: number;
   total_results: number;
   total_pages: number;
-  results: Result[];
+  results: TmdbResult[];
 }
 
-export interface Result {
+export interface TmdbResult {
   popularity: number
   vote_count: number
   video: boolean
@@ -185,10 +214,11 @@ export interface Result {
   release_date: string
   isAvailable?: boolean
   isHighlighted?: boolean
+  isWatched?: boolean
+  isInWatchList?: boolean
 }
 
-
-export interface Preferences {
+export interface IPreferences {
   frequencyUnit: string
   frequencyValue: number
   isDarkMode: boolean
@@ -196,6 +226,79 @@ export interface Preferences {
   isEnableCache: boolean
   libraryFolders: string[]
 }
+
+export interface LibraryMovie {
+  tmdbId?: number,
+  title: string,
+  year: number,
+  imdbId?: string,
+  directory: string[]
+}
+
+export interface IGenre {
+  id: number;
+  name: string;
+}
+
+export interface IProductionCompany {
+  id: number;
+  logo_path: null | string;
+  name: string;
+  origin_country: string;
+}
+
+export interface IProductionCountry {
+  iso_3166_1: string;
+  name: string;
+}
+
+export interface ISpokenLanguage {
+  iso_639_1: string;
+  name: string;
+}
+
+
+export interface Credits {
+  id: number;
+  cast: CastElement[];
+  crew: Crew[];
+}
+
+export interface CastElement {
+  cast_id: number;
+  character: string;
+  credit_id: string;
+  gender: number;
+  id: number;
+  name: string;
+  order: number;
+  profile_path: null | string;
+}
+
+export interface Crew {
+  credit_id: string;
+  department: Department;
+  gender: number;
+  id: number;
+  job: string;
+  name: string;
+  profile_path: null | string;
+}
+
+export enum Department {
+  Art = "Art",
+  Camera = "Camera",
+  CostumeMakeUp = "Costume & Make-Up",
+  Crew = "Crew",
+  Directing = "Directing",
+  Editing = "Editing",
+  Lighting = "Lighting",
+  Production = "Production",
+  Sound = "Sound",
+  VisualEffects = "Visual Effects",
+  Writing = "Writing",
+}
+
 
 /*
 Copyright Google LLC. All Rights Reserved.

@@ -213,6 +213,80 @@ export class MovieService {
       catchError(this.handleError<any>('getMoviesInTheaters')))
   }
 
+  getMoviePoster(posterLink: string) {
+
+    // const url = `https://image.tmdb.org/t/p/w600_and_h900_bestv2movie.poster_path`
+    const url = `https://image.tmdb.org/t/p/w600_and_h900_bestv2/biH5hW1BRfEr13oCizuAzpdBf2l.jpg
+    `
+    console.log(url);
+
+
+    return this.http.get<any>(url, {
+      observe: 'response'
+    }).pipe(map(data => {
+      console.log(data);
+    }, catchError(this.handleError('getposter')))
+    )
+
+    // tap(_ => this.log(``)),
+    //   catchError(this.handleError<OmdbMovieDetail>('getMovie')))
+    // return this.http.get<any>(url, {
+    //   observe: 'response'
+    // }).subscribe(res => {
+    //   console.log(res)
+    //   if (res.status === 200 || res.status === 201) {
+    //     console.log('success');
+    //   } else {
+    //     console.log('fail');
+    //   }
+    // }
+    // )
+
+
+    // return this.http.get<any>(url).pipe(tap(_ => {
+    //   console.log(url)
+    //   this.log('')
+    // }),
+    //   catchError(this.handleError<any>('getMoviesInTheaters')))
+
+    // return this.http.request(new Request(this.requestoptions))
+    //         .map((res: Response) => {
+    //             if (res) {
+    //                 if (res.status === 201) {
+    //                     return [{ status: res.status, json: res }]
+    //                 }
+    //                 else if (res.status === 200) {
+    //                     return [{ status: res.status, json: res }]
+    //                 }
+    //             }
+    //         }).catch((error: any) => {
+    //             if (error.status === 500) {
+    //                 return Observable.throw(new Error(error.status));
+    //             }
+    //             else if (error.status === 400) {
+    //                 return Observable.throw(new Error(error.status));
+    //             }
+    //             else if (error.status === 409) {
+    //                 return Observable.throw(new Error(error.status));
+    //             }
+    //             else if (error.status === 406) {
+    //                 return Observable.throw(new Error(error.status));
+    //             }
+    //         });
+    // }
+  }
+
+  /**
+   * 
+   * @param val tmdb id
+   */
+  getMovieCredits(val: number) {
+    console.log('getMovieCredits', val);
+    const url = `${this.tmdbUrl}/movie/${val}/credits?api_key=${this.tmdbApiKey}`
+    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getMovieCredits')))
+  }
+
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       // TODO: send the error to remote logging infrastructure

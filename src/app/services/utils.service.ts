@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TmdbResultObject, Result } from '../subject';
+import { TmdbResultObject, TmdbResult } from '../subject';
 import * as _ from 'lodash';
 
 @Injectable({

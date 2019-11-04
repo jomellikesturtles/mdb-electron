@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { Movie, MovieGenre, Genre } from '../../subject';
+import { Movie, MovieGenre, IGenre } from '../../subject';
 import { SELECTEDMOVIE, MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
@@ -160,5 +160,5 @@ export interface ITmdbSearchQuery {
   keywords: string,
   decade: number
   endYear: number,
-  genres: Genre[],
+  genres: IGenre[],
 }

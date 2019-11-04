@@ -9,7 +9,7 @@ const datastore = new Datastore({
   autoload: true
 });
 // import * as path from 'path'
-// import * as url from 'url'const 
+// import * as url from 'url'const
 const path = require('path');
 const fs = require('fs');
 let procSearch;

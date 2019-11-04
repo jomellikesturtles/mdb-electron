@@ -355,3 +355,4 @@ UI and functionalities are influenced by follows: (in descending order)
 - minify tsv stream has leak
 - tmdb criteria: year,region, language, vote count, vote average.
 - snackbar/toast doesnt work
+- omdb and Imdb has same genre in movies

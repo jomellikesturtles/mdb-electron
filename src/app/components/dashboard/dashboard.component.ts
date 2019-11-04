@@ -12,7 +12,7 @@ import { DataService } from '../../services/data.service'
 import { IpcService } from '../../services/ipc.service'
 import { UtilsService } from '../../services/utils.service'
 import { Router, ActivatedRoute } from '@angular/router'
-import { Movie, Result, LibraryInfo, LibraryInfo2 } from '../../subject'
+import { Movie, TmdbResult, LibraryInfo } from '../../subject'
 import { TMDB_SEARCH_RESULTS } from '../../mock-data'
 import { utils } from 'protractor'
 declare var $: any
@@ -39,7 +39,7 @@ export class DashboardComponent implements OnInit {
 
   nameString = 'name'
   selectedMovies = []
-  nowShowingMovies: Result[] = []
+  nowShowingMovies: TmdbResult[] = []
   topMoviesFromYear = []
   dashboardLists = []
   selectedMovie = null
