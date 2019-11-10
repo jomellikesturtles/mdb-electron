@@ -1,60 +1,53 @@
-<div id='contents' style="white-space: nowrap;position:relative">
+<div style='width:100%;height:100%;position:absolute'>
 
-  <div id="mySidenav" class="sidenav" style='z-index: 51; overflow: hidden; left:0px'
-    [ngClass]="{'collapsed':isOpenNav===false}">
-    <div style='display: flex; flex-wrap: wrap; top:0;left:0'>
-
-      <a routerLink="./dashboard" (click)='goPreviousPage()'>
-        <img class='side-nav-icon' src="./assets/icons/arrow-left.svg" />
-      </a>
-      <a routerLink="./dashboard" (click)='goForwardPage()'>
-        <img class='side-nav-icon' src="./assets/icons/arrow-right.svg" />
-      </a>
-    </div>
-    <div>
-      <a routerLink="./dashboard">
-        <img class='side-nav-icon' src="./assets/icons/home.svg" />
-        <span *ngIf="isOpenNav">Home</span>
-      </a>
-      <a routerLink="./browse">
-        <img class='side-nav-icon' src="./assets/icons/magnifiying-glass.svg" />
-        <span *ngIf="isOpenNav">Browse</span>
-      </a>
-      <a routerLink="./library">
-        <img class='side-nav-icon' src="./assets/icons/server.svg" />
-        <span *ngIf="isOpenNav">Library</span>
-      </a>
-      <a routerLink="./preferences">
-        <img class='side-nav-icon' src="./assets/icons/gear.svg" />
-        <span *ngIf="isOpenNav">Preferences</span>
-      </a>
-    </div>
-    <div style='overflow: hidden; position: fixed; bottom: 0;'>
-      <a (click)="switchNav()">
-        <span *ngIf="isOpenNav">
-          <img class='side-nav-icon' src="./assets/icons/left-angle.svg" />Collapse</span>
-        <img class='side-nav-icon' src="./assets/icons/right-angle.svg" *ngIf="!isOpenNav" />
-      </a>
-    </div>
+  <!-- TOP -->
+  <div style='position:fixed;top:0;height:50px;width:100%'>
+    <app-top-navigation></app-top-navigation>
   </div>
 
-  <div class='d-flex flex-column'>
+  <div style='position:fixed;top:50px;height:100%;width:100%;display: flex;'>
 
-    <div id="topNav" style='top:0px; '>
-      <app-top-navigation></app-top-navigation>
-    </div>
-    <div style='height: 54px;'>
-      <!-- only for buffer -->
+    <!-- SIDE NAV -->
+    <div id="mySidenav" class="sidenav" style='height:100%;' [ngClass]="{'collapsed':isOpenNav===false}">
+      <div>
+        <div style='display: flex; flex-wrap: wrap; top:0;left:0'>
+
+          <a (click)='goPreviousPage()'>
+            <img class='side-nav-icon' src="./assets/icons/arrow-left.svg" />
+          </a>
+          <a (click)='goForwardPage()'>
+            <img class='side-nav-icon' src="./assets/icons/arrow-right.svg" />
+          </a>
+        </div>
+        <a routerLink="./dashboard">
+          <img class='side-nav-icon' src="./assets/icons/home.svg" />
+          <span *ngIf="isOpenNav">Home</span>
+        </a>
+        <a routerLink="./browse">
+          <img class='side-nav-icon' src="./assets/icons/magnifiying-glass.svg" />
+          <span *ngIf="isOpenNav">Browse</span>
+        </a>
+        <a routerLink="./library">
+          <img class='side-nav-icon' src="./assets/icons/server.svg" />
+          <span *ngIf="isOpenNav">Library</span>
+        </a>
+        <a routerLink="./preferences">
+          <img class='side-nav-icon' src="./assets/icons/gear.svg" />
+          <span *ngIf="isOpenNav">Preferences</span>
+        </a>
+      </div>
+      <div style='overflow: hidden; position: fixed; bottom: 0;'>
+        <a (click)="switchNav()">
+          <span *ngIf="isOpenNav">
+            <img class='side-nav-icon' src="./assets/icons/left-angle.svg" />Collapse</span>
+          <img class='side-nav-icon' src="./assets/icons/right-angle.svg" *ngIf="!isOpenNav" />
+        </a>
+      </div>
     </div>
 
-    <!-- <div class='bg-image' style=' background: linear-gradient(to bottom, rgba(51, 51, 51, .8), rgba(0, 0, 0, .8)), url(https://cdn.onebauer.media/one/empire-tmdb/films/857/images/4y5TDUZlqUmWWtjTAznWb6CFpzt.jpg?quality=50&width=1800&ratio=16-9&resizeStyle=aspectfill&format=jpg);
-    filter: blur(8px);
-    -webkit-filter: blur(8px);
-        height: 100%;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;'></div> -->
-    <div id="main" style='background-color: #202020; color:#aaaaaa; top:54px'>
+    <!-- MAIN -->
+    <div id="main" style='height:100%;width:100%;overflow-y:auto; padding-bottom: 10px;'
+      [ngStyle]="{'width':'calc(100% - '+sideNavWidth+')'}">
       <router-outlet></router-outlet>
     </div>
 

@@ -16,8 +16,9 @@ import { TopNavigationComponent } from './components/top-navigation/top-navigati
 import { ResultsComponent } from './components/results/results.component';
 import { LibraryComponent } from './components/library/library.component';
 import { BrowseComponent } from './components/browse/browse.component';
-import { } from './components/details/details.component';
 import { CommaSpacePipe, MdbPipesPipe, ReleaseYearPipe, RuntimeDisplayPipe } from './mdb-pipes.pipe';
+import { PersonDetailsComponent } from './components/person-details/person-details.component';
+import { CreditsComponent } from './components/details/credits/credits.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,9 @@ import { CommaSpacePipe, MdbPipesPipe, ReleaseYearPipe, RuntimeDisplayPipe } fro
     CommaSpacePipe,
     MdbPipesPipe,
     ReleaseYearPipe,
-    RuntimeDisplayPipe
+    RuntimeDisplayPipe,
+    PersonDetailsComponent,
+    CreditsComponent
   ],
   imports: [
     BrowserModule,

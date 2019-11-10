@@ -2,14 +2,12 @@
   [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(' + movieDetails.backgroundPath + ')'}"
   style='background-size: cover;background-repeat: no-repeat;background-position: center center'>
   <div style='padding-top: 70px; padding-bottom: 100px'>
-    <div name="infoSidebar" id="info-sidebar" class="" *ngIf="movieDetails"
-      style="color:white; text-shadow: 1px 1px #333333;">
+    <div style="color:white; text-shadow: 1px 1px #333333;">
 
       <div class="container">
 
         <div class="row">
           <div class="col-sm-4">
-            <!-- 'height':'calc(1.45*130px) -->
             <div class='img-container'
               [ngStyle]="{'background-image':'url('+movieDetails.posterPath+')','height':'300px'}"
               style='background-size: cover; background-position: center; width: 100%'>
@@ -39,7 +37,8 @@
               </button>
             </div>
             <div>
-              <h2 id="movie-title" class="">{{movieDetails.title}} ({{movieDetails.releaseDate|releaseYear}})</h2>
+              <h2 id="movie-title" class='text-hyperlink'>{{movieDetails.title}}
+                ({{movieDetails.releaseDate|releaseYear}})</h2>
               <!-- <div class="circle-available" *ngIf='movieDetails.isAvailable' data-toggle="tooltip"
                   title="Available offline"> -->
               <!-- </div> -->
@@ -117,43 +116,46 @@
         </div>
       </div>
 
-      <div class="row">
-        Cast
-        <div id='featuredCastAndCrewDisplay' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
-          <div *ngFor="let cast of movieDetails.credits.cast">
-            <div (click)='goToCast(cast.cast_id)'
-              style='height: 200px; width: 185px; border-radius: 50%;background-size: cover; background-position: center;'
-              [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+cast.profile_path+')'}">
+      <div class='container'>
+        <div class="row">
+          Cast
+          <div id='featuredCastAndCrewDisplay' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
+            <h5 (click)='goToMoviePersons()'>See more...</h5>
+            <div *ngFor="let cast of movieDetails.credits.cast">
+              <div (click)='goToPerson(cast.id)'
+                style='height: 200px; width: 185px; border-radius: 50%;background-size: cover; background-position: center;'
+                [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+cast.profile_path+')'}">
+              </div>
+              <div>
+                <h6 class='text-hyperlink' (click)='goToPerson(cast.id)'>{{cast.name}}</h6>
+                <p>{{cast.character}}</p>
+              </div>
+              <!-- image -->
+              <!-- name -->
             </div>
-            <div>
-              <h6 (click)='goToCast(cast.cast_id)'>{{cast.name}}</h6>
-              <p>{{cast.character}}</p>
-            </div>
-            <!-- image -->
-            <!-- name -->
           </div>
         </div>
-      </div>
 
-      <div class="row">
-        Recommended Movies
-        <div id='recommendedMovies' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
-          <div *ngFor="let rMovie of movieDetails.recommendations.results" style='margin-right: 8px; cursor: pointer;'>
-            <!-- image -->
-            <!-- name -->
-            <div (click)='goToMovie(rMovie.id)'
-              style='height: 190px; width: 300px;background-size: cover; background-position: center;'
-              [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w300'+rMovie.backdrop_path+')'}">
-            </div>
-            <div>
-              <h6 (click)='goToMovie(rMovie.id)' style='cursor: pointer;'>{{rMovie.title}}</h6>
-              <p style='margin-left: 5px;'>{{getYear(rMovie.release_date)}}</p>
+        <div class="row">
+          Recommended Movies
+          <div id='recommendedMovies' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
+            <div *ngFor="let recommendedMovie of movieDetails.recommendations.results"
+              style='margin-right: 8px; cursor: pointer;'>
+              <!-- image -->
+              <!-- name -->
+              <div (click)='goToMovie(recommendedMovie.id)'
+                style='height: 190px; width: 300px;background-size: cover; background-position: center;'
+                [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w300'+recommendedMovie.backdrop_path+')'}">
+              </div>
+              <div>
+                <h6 (click)='goToMovie(recommendedMovie.id)' class='text-hyperlink'>{{recommendedMovie.title}}</h6>
+                <p style='margin-left: 5px;'>{{getYear(recommendedMovie.release_date)}}</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
 
     <div *ngIf="!hasData">
       <label>The movie you were looking for was not found.</label>

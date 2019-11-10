@@ -25,7 +25,6 @@ export class MovieService {
 
   constructor(
     private http: HttpClient,
-    // private params: HttpParams,
     private ipcService: IpcService
   ) { }
   // https://api.themoviedb.org/3/movie/550/videos?api_key=a636ce7bd0c125045f4170644b4d3d25 --getting trailer 1
@@ -35,7 +34,6 @@ export class MovieService {
   // https://api.trakt.tv/search/text?query=titanic
   // https://api.themoviedb.org/3/movie/550?api_key=a636ce7bd0c125045f4170644b4d3d25
   // http://www.myapifilms.com/imdb/idIMDB?title=matrix&token=c7e516ed-d9fe-4f3f-b1d9-fde33f63c816
-  jsonContentType2 = new HttpHeaders({ 'Content-Type': 'application/json' })
   httpParam = new HttpParams()
   omdbApiKey = '3a2fe8bf'
   tmdbApiKey = 'a636ce7bd0c125045f4170644b4d3d25'

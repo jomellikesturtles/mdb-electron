@@ -176,14 +176,19 @@ export class DashboardComponent implements OnInit {
    * Goes to detail of the selected movie.
    * @param movie the movie selected
    */
-  onSelect(movie: any) {
-    this.selectedMovie = movie
-    this.movieService.getExternalId(movie.id).subscribe(data => {
-      const highlightedId = data.imdb_id
-      localStorage.setItem('imdb_id', highlightedId)
-      this.dataService.updateHighlightedMovie(highlightedId)
-      this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute })
-    })
+  goToMovie(id: any) {
+    const highlightedId = id;
+    this.dataService.updateHighlightedMovie(highlightedId);
+    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+
+    // below is for imdb id, but we will settle for tmdb id for now
+    // this.selectedMovie = movie
+    // this.movieService.getExternalId(movie.id).subscribe(data => {
+    //   const highlightedId = data.imdb_id
+    //   localStorage.setItem('imdb_id', highlightedId)
+    //   this.dataService.updateHighlightedMovie(highlightedId)
+    //   this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute })
+    // })
   }
 
   scrollPrev() {

@@ -46,6 +46,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   voteCount: number; // tmdb votes
   website?: string
   writer?: string // omdb
+  [propName: string]: any;
 
   constructor() {
     this.isAvailable = false

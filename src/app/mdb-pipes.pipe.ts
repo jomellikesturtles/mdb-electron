@@ -46,24 +46,39 @@ export class RuntimeDisplayPipe implements PipeTransform {
     let toReturn = ''
     if (typeof value === 'number') {
       const runtimeHour = parseInt((value / 60).toFixed(), 10)
+      const valueRemainder = (value % 60)
       if (runtimeHour === 1) {
         toReturn += `${runtimeHour} hour`
       } else if (runtimeHour >= 2) {
         toReturn += `${runtimeHour} hours`
       }
-      toReturn += ` ${value % 60} minutes`
+      if (valueRemainder !== 0) {
+        if (valueRemainder === 1) {
+          toReturn += ` ${valueRemainder} minutes`
+        } else {
+          toReturn += ` ${valueRemainder} minutes`
+        }
+      }
     } else if (typeof value === 'string') {
       const tmdbRuntimeRegex = new RegExp(`([\\d,]+)(\\s)(min)`, `gi`);
       const regexResults = tmdbRuntimeRegex.exec(value)
       if (value !== 'N/A') {
         if (regexResults != null) {
           const runtimeHour = parseInt((parseInt(value, 10) / 60).toFixed(), 10)
+          const integerValue = parseInt(value, 10)
+          const valueRemainder = integerValue % 60
           if (runtimeHour === 1) {
             toReturn += `${runtimeHour} hour`
           } else if (runtimeHour >= 2) {
             toReturn += `${runtimeHour} hours`
           }
-          toReturn += ` ${parseInt(value, 10) % 60} minutes`
+          if (valueRemainder !== 0) {
+            if (valueRemainder === 1) {
+              toReturn += ` ${valueRemainder} minutes`
+            } else {
+              toReturn += ` ${valueRemainder} minute`
+            }
+          }
         }
       }
     }

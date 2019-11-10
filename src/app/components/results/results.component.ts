@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../services/data.service'
 import { IpcService } from '../../services/ipc.service'
 import { MovieService } from '../../services/movie.service'
+import { NavigationService } from '../../services/navigation.service'
 import { UtilsService } from '../../services/utils.service'
 declare var $: any
 
@@ -18,7 +19,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
   // searchResults = TMDB_SEARCH_RESULTS.results
   searchResults = []
   searchQuery = {
-    keyword: ''
+    keyword: '',
+    year: 2010
   }
   hasSearchResults = true
   currentSearchQuery = 'guardians of the galaxy'
@@ -33,6 +35,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     private dataService: DataService,
     private ipcService: IpcService,
     private movieService: MovieService,
+    private navigationService: NavigationService,
     private utilsService: UtilsService,
     private cdr: ChangeDetectorRef,
     private router: Router,
@@ -96,6 +99,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.selectedMovie = movie;
     const highlightedId = movie.id;
     this.dataService.updateHighlightedMovie(highlightedId);
+    // this.navigationService.goToPage()
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
 
     // below is for imdb id, but we will settle for tmdb id for now

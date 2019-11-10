@@ -41,6 +41,7 @@ export interface IMdbMovieDetails {
   // voteCount: number; // tmdb votes
   website?: string
   writer?: string // omdb
+  [propName: string]: any;
 }
 
 export interface IRating {
@@ -411,4 +412,91 @@ export enum AppendToResponse {
    * keywords, reviews,recommendations
    */
 
+}
+export interface IPersonDetails {
+  birthday: string;
+  known_for_department: string;
+  id: number;
+  movie_credits: IMoviecredits;
+  homepage?: any;
+  profile_path: string;
+  imdb_id: string;
+  deathday?: any;
+  images: IImages;
+  external_ids: IExternalids;
+  name: string;
+  also_known_as: string[];
+  biography: string;
+  adult: boolean;
+  gender: number;
+  place_of_birth: string;
+  popularity: number;
+}
+
+export interface IExternalids {
+  freebase_id: string;
+  instagram_id: string;
+  tvrage_id: number;
+  twitter_id: string;
+  freebase_mid: string;
+  imdb_id: string;
+  facebook_id: string;
+}
+
+export interface IImages {
+  profiles: IProfile[];
+}
+
+export interface IProfile {
+  iso_639_1?: any;
+  aspect_ratio: number;
+  vote_count: number;
+  height: number;
+  vote_average: number;
+  file_path: string;
+  width: number;
+}
+
+export interface IMoviecredits {
+  cast: ICast[];
+  crew: ICrew[];
+}
+
+export interface ICast {
+  poster_path?: string;
+  adult: boolean;
+  backdrop_path?: string;
+  vote_count: number;
+  video: boolean;
+  id: number;
+  popularity: number;
+  genre_ids: number[];
+  original_language: string;
+  title: string;
+  original_title: string;
+  release_date: string;
+  character: string;
+  vote_average: number;
+  overview: string;
+  credit_id: string;
+}
+
+export interface ICrew {
+  id: number;
+  department: string;
+  original_language: string;
+  original_title: string;
+  job: string;
+  overview: string;
+  genre_ids: number[];
+  video: boolean;
+  credit_id: string;
+  poster_path?: string;
+  popularity: number;
+  backdrop_path?: string;
+  vote_count: number;
+  title: string;
+  adult: boolean;
+  vote_average: number;
+  release_date: string;
 }

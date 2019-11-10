@@ -8,7 +8,7 @@ import {
 } from '@angular/core'
 import { BehaviorSubject } from 'rxjs'
 declare var electron: any
-// const { ipcRenderer } = electron
+const { ipcRenderer } = electron
 import { ILibraryInfo } from '../interfaces'
 @Injectable({
   providedIn: 'root'
@@ -19,10 +19,10 @@ export class IpcService {
   libraryMovie = new BehaviorSubject<string[]>([])
   preferencesConfig = new BehaviorSubject<string[]>([])
   movieMetadata = new BehaviorSubject<string[]>([])
-  // private ipcRenderer: typeof ipcRenderer
+  private ipcRenderer: typeof ipcRenderer
   constructor() //// private ref: ChangeDetectorRef
   {
-    // this.ipcRenderer = (<any>window).require('electron').ipcRenderer
+    this.ipcRenderer = (<any>window).require('electron').ipcRenderer
 
     this.libraryFolders.next(['test', 'test2'])
     // this.ipcRenderer.on('library-folders', (event, data) => {
@@ -255,12 +255,12 @@ export class IpcService {
     // this.ipcRenderer.send('remove-watched', val)
   }
   minimizeWindow() {
-    // this.ipcRenderer.send('app-min')
+    this.ipcRenderer.send('app-min')
   }
   restoreWindow() {
-    // this.ipcRenderer.send('app-restore')
+    this.ipcRenderer.send('app-restore')
   }
   exitProgram() {
-    // this.ipcRenderer.send('exit-program')
+    this.ipcRenderer.send('exit-program')
   }
 }

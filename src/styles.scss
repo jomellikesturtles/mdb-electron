@@ -129,8 +129,6 @@ h6 {
   }
 }
 
-
-
 .jumbo-message {
   color: slategray;
   font-size: 10vh
@@ -206,7 +204,6 @@ body {
   opacity: .5;
 }
 
-
 .movie-card-title {
   display: inline-block;
   width: 100%;
@@ -244,12 +241,17 @@ body {
   cursor: pointer
 }
 
-selected-movie-card-image-container:hover img {
+.selected-movie-card-image-container:hover img {
   opacity: .5;
 }
 
-selected-movie-card-image-container:hover .overlay {
+.selected-movie-card-image-container:hover .overlay {
   opacity: .5;
+}
+
+.text-hyperlink:hover {
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 // selected-movie-card-image-container:hover .overlay-remove {

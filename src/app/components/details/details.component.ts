@@ -26,6 +26,22 @@ declare var $: any
 export class DetailsComponent implements OnInit, OnDestroy {
   @Input() data: Observable<any>;
 
+  isWatched = false
+  isBookmarked = false
+  selectedMovie;
+  currentMovie: MdbMovieDetails;
+  movieBackdrop;
+  torrents: ITorrent[] = [];
+  globalImdbId;
+  testSelectedMovie = TEST_TMDB_MOVIE_DETAILS
+  testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
+  isAvailable = false
+  hasData = false
+  movieMetadataSubscription
+  libraryMovieSubscription
+  myVideoPath = null
+  movieDetails = new MdbMovieDetails()
+
   constructor(
     private sanitizer: DomSanitizer,
     private activatedRoute: ActivatedRoute,
@@ -38,23 +54,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) { }
 
-
-  isWatched = false
-  isBookmarked = false
-  // selectedMovie: OmdbMovieDetail;
-  selectedMovie;
-  currentMovie: MdbMovieDetails;
-  movieBackdrop;
-  torrents: ITorrent[] = [];
-  globalImdbId;
-  testSelectedMovie = TEST_TMDB_MOVIE_DETAILS
-  testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
-  isAvailable = false
-  hasData = true
-  movieMetadataSubscription
-  libraryMovieSubscription
-  myVideoPath = null
-  movieDetails = new MdbMovieDetails()
   ngOnInit() {
 
     // this.selectedMovie = this.testSelectedMovie
@@ -69,18 +68,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
         this.hasData = false
       }
     });
-    // let imdbId = 0
-    // this.activatedRoute.params.subscribe(params => {
-    //   console.log('activatedRoute.params', params);
-    //   if (params.imdbId) {
-    //     console.log('params.imdbId true');
-    //     imdbId = params.imdbId;
-    //     this.getMovieDataOffline(imdbId)
-    //     this.getMovieFromLibrary(imdbId)
-    //   } else {
-    //     this.hasData = false
-    //   }
-    // });
 
     // this.movieMetadataSubscription = this.ipcService.movieMetadata.subscribe(value => {
     //   // console.log('this.ipcService.movieMetadata.subscribe ', value)
@@ -425,9 +412,15 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.dataService.updateHighlightedMovie(highlightedId);
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
   }
-  goToCast(val) {
 
+  goToPerson(val) {
+    this.router.navigate([`/person-details/${val}`], { relativeTo: this.activatedRoute });
   }
+
+  goToMoviePersons() {
+    // this.router.navigate([`/person-details/${highlightedId}`], { relativeTo: this.activatedRoute });
+  }
+
   getYear(val: string) {
     return this.utilsService.getYear(val)
   }

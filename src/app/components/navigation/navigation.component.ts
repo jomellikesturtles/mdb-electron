@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-
+import { NavigationService, Navigation } from '../../services/navigation.service'
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
@@ -8,9 +8,13 @@ import { Location } from '@angular/common';
 })
 export class NavigationComponent implements OnInit {
 
-  constructor(private location: Location) { }
+  constructor(private location: Location,
+    // private navigationService: NavigationService
+  ) { }
 
   isOpenNav = true
+  sideNavWidth;
+  // navigation = new NavigationService(this, this.location)
   ngOnInit() {
     this.openNav()
   }
@@ -19,18 +23,16 @@ export class NavigationComponent implements OnInit {
    * Opens side navigation
    */
   openNav() {
-    document.getElementById('mySidenav').style.width = '250px';
-    document.getElementById('main').style.marginLeft = '250px';
-    document.getElementById('topNav').style.marginLeft = '230px';
+    this.sideNavWidth = '250px';
+    document.getElementById('mySidenav').style.width = this.sideNavWidth;
   }
 
   /**
    * Closes side navigation
    */
   closeNav() {
-    document.getElementById('mySidenav').style.width = '50px';
-    document.getElementById('main').style.marginLeft = '50px';
-    document.getElementById('topNav').style.marginLeft = '50px';
+    this.sideNavWidth = '50px';
+    document.getElementById('mySidenav').style.width = this.sideNavWidth;
   }
 
   switchNav() {
@@ -44,15 +46,15 @@ export class NavigationComponent implements OnInit {
 
   goPreviousPage() {
     console.log('goPreviousPage');
-    console.log(this.location.path())
-    console.log(window.history)
-    console.log(this.location)
+    // this
     this.location.back()
+    // this.navigation.previousPage()
   }
 
   goForwardPage() {
     console.log('goPreviousPage');
     console.log(this.location.path())
     this.location.forward()
+    // this.navigation.nextPage()
   }
 }

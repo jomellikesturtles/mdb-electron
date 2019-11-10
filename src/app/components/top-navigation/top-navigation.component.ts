@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 // import { Movie, MovieGenre, IGenre } from '../../subject';
 import { IOmdbMovieDetail, MovieGenre, IGenre } from '../../interfaces';
 import { MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
+// import { SELECTEDMOVIE, MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
 import { IpcService } from '../../services/ipc.service'

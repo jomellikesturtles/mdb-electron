@@ -904,8 +904,6 @@ const TEST_TMDB_MOVIE_DETAIL2 = {
   vote_count: 17355
 }
 
-
-
 export const TROUBLE_QUOTES = [
   { quote: 'I see dead people.' },
   { quote: 'Houston, we have a problem.' },
@@ -976,43 +974,10 @@ export const DECADES = [
     value: 2010
   }]
 
-  // "images": {
-  //   "base_url": "http://image.tmdb.org/t/p/",
-  //   "secure_base_url": "https://image.tmdb.org/t/p/",
-  //   "backdrop_sizes": [
-  //     "w300",
-  //     "w780",
-  //     "w1280",
-  //     "original"
-  //   ],
-  //   "logo_sizes": [
-  //     "w45",
-  //     "w92",
-  //     "w154",
-  //     "w185",
-  //     "w300",
-  //     "w500",
-  //     "original"
-  //   ],
-  //   "poster_sizes": [
-  //     "w92",
-  //     "w154",
-  //     "w185",
-  //     "w342",
-  //     "w500",
-  //     "w780",
-  //     "original"
-  //   ],
-  //   "profile_sizes": [
-  //     "w45",
-  //     "w185",
-  //     "h632",
-  //     "original"
-  //   ],
-  //   "still_sizes": [
-  //     "w92",
-  //     "w185",
-  //     "w300",
-  //     "original"
-  //   ]
-  // }
+export const TMDB_IMAGE_BASE_URL = 'http://image.tmdb.org/t/p/'
+export const TMDB_IMAGE_SECURE_BASE_URL = 'https://image.tmdb.org/t/p/'
+export const TMDB_BACKGROUND_SIZES = ['w300', 'w780', 'w1280', 'original']
+export const TMDB_LOGO_SIZES = ['w45', 'w92', 'w154', 'w185', 'w300', 'w500', 'original']
+export const TMDB_POSTER_SIZES = ['w92', 'w154', 'w185', 'w342', 'w500', 'w780', 'original']
+export const TMDB_PROFILE_SIZES = ['w45', 'w185', 'h632', 'original']
+export const TMDB_STILL_SIZES = ['w92', 'w185', 'w300', 'original']
