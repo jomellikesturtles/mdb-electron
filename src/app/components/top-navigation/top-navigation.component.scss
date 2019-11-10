@@ -11,6 +11,8 @@
   justify-content: flex-start
 }
 
+-webkit-app-region-
+
 /* Links inside the navbar */
 .navbar a {
   float: left;
@@ -30,4 +32,62 @@
 
 .autocomplete-items:hover {
   background-color: #e9e9e9
+}
+
+.search-controls-container {
+  display: flex;
+  -webkit-app-region: no-drag;
+}
+
+.window-controls-container {
+  display: flex;
+  flex-grow: 0;
+  flex-shrink: 0;
+  text-align: center;
+  -webkit-app-region: no-drag;
+  height: 30px;
+  width: 138px;
+  margin-left: auto;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+.window-icon-bg {
+  display: inline-block;
+  -webkit-app-region: no-drag;
+  height: 100%;
+  width: 33.34%;
+  transition: .2s;
+}
+
+.window-icon-bg:hover {
+  background-color: rgba(231, 231, 231, 0.6);
+}
+
+.window-close:hover {
+  background-color: rgb(255, 0, 0);
+}
+
+.icon-img {
+  height: 12px;
+  filter: invert(1) contrast(1);
+}
+
+.list-criteria-container {
+  float: left;
+  margin: 0 5px 0 0;
+  width: 100px;
+  height: 40px;
+  position: relative;
+  color: white
+}
+
+.list-criteria-container:hover {
+  background-color: #ddd;
+}
+
+.criteria-item * {
+  cursor: pointer;
 }

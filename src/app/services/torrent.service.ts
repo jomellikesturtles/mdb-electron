@@ -4,7 +4,8 @@ import { Observable, of, Subscriber, forkJoin } from 'rxjs';
 // import 'rxjs/add/operator/retry';
 // import 'rxjs/add/operator/catch';
 import { catchError, map, tap, retry } from 'rxjs/operators';
-import { Test, Movie, Torrent } from '../subject'
+// import { Test, Movie, Torrent } from '../subject'
+import { ITorrent } from '../interfaces'
 import { forEach } from '@angular/router/src/utils/collection';
 import { IpcService } from '../services/ipc.service'
 import { DomSanitizer } from '@angular/platform-browser'
@@ -69,14 +70,14 @@ export class TorrentService {
     return result
   }
 
-  searchTorrentsByQuery(val: string): Observable<Test[]> {
+  searchTorrentsByQuery(val: string): Observable<any> {
     console.log('insearchtorentsquery')
     val = 'tt0499549'
-    let url = `${this.ytsUrl}?query_term=${val}`
+    const url = `${this.ytsUrl}?query_term=${val}`
     // let result = this.http.get<any>(url).pipe(
     //   tap(_ => this.log(`searched torrents for ${val}`)),
     //   catchError(this.handleError<any>('search torrents fail')))
-    let result = this.http.get<Test[]>(url).pipe(map(response => response))
+    const result = this.http.get<any>(url).pipe(map(response => response))
     // console.log('result: ', JSON.parse(result.))
     console.log('result: ', result)
     return result
@@ -86,7 +87,7 @@ export class TorrentService {
    * Sanitizes magnet link
    * @param torrent Torrent object
    */
-  sanitize(torrent: Torrent) {
+  sanitize(torrent: ITorrent) {
     let val
     if (torrent.hash.length !== 40) {
       val = this.getMagnetLinkWithImproperHash(torrent.hash, torrent.name);

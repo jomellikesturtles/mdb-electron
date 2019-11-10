@@ -9,7 +9,7 @@ const datastore = new Datastore({
   autoload: true
 });
 // import * as path from 'path'
-// import * as url from 'url'const 
+// import * as url from 'url'const
 const path = require('path');
 const fs = require('fs');
 let procSearch;
@@ -86,9 +86,12 @@ ipcMain.on('logger', function (event, data) {
   console.log(data);
 }); // Handle console.logs from Renderer
 
-/** Set to maximized */
-ipcMain.on('app-max', function () {
+/** Set to maximized or restore */
+ipcMain.on('app-restore', function () {
   mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize();
+});
+ipcMain.on('app-min', function () {
+  mainWindow.minimize()
 });
 
 /* Operating System

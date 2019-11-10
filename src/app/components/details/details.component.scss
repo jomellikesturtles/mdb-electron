@@ -1,11 +1,17 @@
 .circle-available {
-    // height: 15px;
-    // width: 15px;
-    // background-color: rgb(8, 185, 8);
-    // box-shadow: 0 0 10px #38ec14;
-    // border-radius: 50%;
-    // position: relative;
-    // left: 130px;
-    // top: 25px;
-    // z-index: 2;
-  }
+  // height: 15px;
+  // width: 15px;
+  // background-color: rgb(8, 185, 8);
+  // box-shadow: 0 0 10px #38ec14;
+  // border-radius: 50%;
+  // position: relative;
+  // left: 130px;
+  // top: 25px;
+  // z-index: 2;
+}
+
+p {
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  white-space: pre-line;
+}

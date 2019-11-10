@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-// const path = require('path')
-// import {} from 'path'
-
+import { Location } from '@angular/common';
+import { NavigationService, Navigation } from '../../services/navigation.service'
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
@@ -9,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavigationComponent implements OnInit {
 
-  constructor() { }
+  constructor(private location: Location,
+    // private navigationService: NavigationService
+  ) { }
 
   isOpenNav = true
+  sideNavWidth;
+  // navigation = new NavigationService(this, this.location)
   ngOnInit() {
     this.openNav()
   }
@@ -20,18 +23,16 @@ export class NavigationComponent implements OnInit {
    * Opens side navigation
    */
   openNav() {
-    document.getElementById('mySidenav').style.width = '250px';
-    document.getElementById('main').style.marginLeft = '250px';
-    document.getElementById('topNav').style.marginLeft = '230px';
+    this.sideNavWidth = '250px';
+    document.getElementById('mySidenav').style.width = this.sideNavWidth;
   }
 
   /**
    * Closes side navigation
    */
   closeNav() {
-    document.getElementById('mySidenav').style.width = '50px';
-    document.getElementById('main').style.marginLeft = '50px';
-    document.getElementById('topNav').style.marginLeft = '50px';
+    this.sideNavWidth = '50px';
+    document.getElementById('mySidenav').style.width = this.sideNavWidth;
   }
 
   switchNav() {
@@ -42,14 +43,18 @@ export class NavigationComponent implements OnInit {
       this.closeNav()
     }
   }
-  // path.join(__dirname, 'src', 'assets', 'scripts', 'file-explorer.js'
-  getHomeIcon() {
-    const icon = '/assets/icons/home.svg'
-    // console.log(__dirname);
-    return icon
+
+  goPreviousPage() {
+    console.log('goPreviousPage');
+    // this
+    this.location.back()
+    // this.navigation.previousPage()
   }
-  getBrowseIcon() {
-    const icon = '\\assets\\icons\\magnifiying-glass.svg'
-    return icon
+
+  goForwardPage() {
+    console.log('goPreviousPage');
+    console.log(this.location.path())
+    this.location.forward()
+    // this.navigation.nextPage()
   }
 }

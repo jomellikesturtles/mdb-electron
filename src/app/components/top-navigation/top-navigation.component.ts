@@ -1,7 +1,9 @@
 
 import { Component, OnInit } from '@angular/core';
-import { Movie, MovieGenre } from '../../subject';
-import { SELECTEDMOVIE, MOVIES, MOVIEGENRES } from '../../mock-data';
+// import { Movie, MovieGenre, IGenre } from '../../subject';
+import { IOmdbMovieDetail, MovieGenre, IGenre } from '../../interfaces';
+import { MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
+// import { SELECTEDMOVIE, MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
 import { IpcService } from '../../services/ipc.service'
@@ -26,7 +28,7 @@ export class TopNavigationComponent implements OnInit {
     private location: Location) { }
 
   browserConnection = navigator.onLine;
-  selectedMovie: Movie
+  selectedMovie: IOmdbMovieDetail
   numbers;
   minYear = 1888;
   maxYear = 2018;
@@ -34,7 +36,7 @@ export class TopNavigationComponent implements OnInit {
   genres = ['Action', 'Adventure', 'Documentary', 'Drama', 'Horror', 'Sci-Fi', 'Thriller'];
   movieGenres = MOVIEGENRES;
   types = ['TV Series', 'Movie', 'Short'];
-  searchQuery: SearchQuery = {
+  searchQuery: ISearchQuery = {
     keywords: '',
     startYear: 1969,
     endYear: 2018,
@@ -53,6 +55,8 @@ export class TopNavigationComponent implements OnInit {
   isSearchDirty = false
   searchHistoryList = []
   searchHistoryMaxLength = 4
+  decadesList = DECADES
+  genresList = GENRES
 
   ngOnInit() {
   }
@@ -68,8 +72,6 @@ export class TopNavigationComponent implements OnInit {
    * Initialize search
    */
   onSearch(val: any) {
-    console.log('unshifting',val);
-    
     this.searchHistoryList.unshift(val)
     console.log(this.searchHistoryList);
     if (this.searchHistoryList.length >= this.searchHistoryMaxLength) {
@@ -131,17 +133,30 @@ export class TopNavigationComponent implements OnInit {
     // })
   }
 
+  onMinimize() {
+    this.ipcService.minimizeWindow()
+  }
+  onRestore() {
+    this.ipcService.restoreWindow()
+  }
   onExit() {
+    console.log('onexit');
     this.ipcService.exitProgram()
   }
 }
 
-
-export interface SearchQuery {
+export interface ISearchQuery {
   keywords: string,
   startYear: number,
   endYear: number,
   genres: MovieGenre[],
   type: string,
   isAvailable: string
+}
+
+export interface ITmdbSearchQuery {
+  keywords: string,
+  decade: number
+  endYear: number,
+  genres: IGenre[],
 }

@@ -2,15 +2,22 @@
  * Movies from and to web API and offline dump
  */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of, Subscriber, forkJoin } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
-import { Test, Movie, Torrent, OmdbMovieDetail, Rating } from '../subject'
+import { ITorrent, IOmdbMovieDetail, IRating, TmdbParameters } from '../interfaces'
 import { forEach } from '@angular/router/src/utils/collection';
+import { ParamMap } from '@angular/router';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+const jsonContentType = new HttpHeaders({ 'Content-Type': 'application/json' })
+const omdbHttpOptions = {
+  headers: jsonContentType,
+  params: new HttpParams().set('apikey', '3a2fe8bf')
+};
+const fanartTVHttpOptions = {
+  headers: jsonContentType,
+  params: new HttpParams().set('api_key', '295c36bf9229fd8369928b7360554c9a')
 };
 
 @Injectable({ providedIn: 'root' })
@@ -27,19 +34,20 @@ export class MovieService {
   // https://api.trakt.tv/search/text?query=titanic
   // https://api.themoviedb.org/3/movie/550?api_key=a636ce7bd0c125045f4170644b4d3d25
   // http://www.myapifilms.com/imdb/idIMDB?title=matrix&token=c7e516ed-d9fe-4f3f-b1d9-fde33f63c816
+  httpParam = new HttpParams()
   omdbApiKey = '3a2fe8bf'
   tmdbApiKey = 'a636ce7bd0c125045f4170644b4d3d25'
   // https://api.themoviedb.org/3/search/movie?api_key=a636ce7bd0c125045f4170644b4d3d25&page=1
   myApiFilmsApiKey = 'c7e516ed-d9fe-4f3f-b1d9-fde33f63c816'
+  trakTVApiKey = 'b4f1b1e56c6b78ed8970ba48ed2b6d1fcc517d09164af8c10e2be56c45f5f9a7'
+  trakTVApiKeySecret = '76c26a018cc31652644caf51928efedf75d301eed404b51e218edefdb661dc36'
+  fanartTVApiKey = '295c36bf9229fd8369928b7360554c9a'
   imdbId = 'tt0499549'
   plot = 'full' // short
   omdbUrl = 'http://www.omdbapi.com'
   tmdbUrl = 'https://api.themoviedb.org/3'
   farnartTVUrl = 'http://webservice.fanart.tv/v3/movies'
   ytsUrl = 'https://yts.am/api/v2/list_movies.json'
-  trakTVApiKey = 'b4f1b1e56c6b78ed8970ba48ed2b6d1fcc517d09164af8c10e2be56c45f5f9a7'
-  trakTVApiKeySecret = '76c26a018cc31652644caf51928efedf75d301eed404b51e218edefdb661dc36'
-  fanartTVApiKey = '295c36bf9229fd8369928b7360554c9a'
   myApiFilmsUrl = 'http://www.myapifilms.com/imdb/'
   results = ''
   testBaseUrl = 'https://jsonplaceholder.typicode.com/todos/1'
@@ -73,15 +81,15 @@ export class MovieService {
    * Gets movie details by imdb id
    * @param val imdb id
    */
-  getMovieByImdbId(val: string): Observable<OmdbMovieDetail> {
+  getMovieByImdbId(val: string): Observable<IOmdbMovieDetail> {
     const url = `${this.omdbUrl}/?i=${val}&apikey=${this.omdbApiKey}&plot=full`
-    return this.http.get<OmdbMovieDetail>(url).pipe(
+    return this.http.get<IOmdbMovieDetail>(url).pipe(
       map(data => {
         console.log(data);
         return data
       }),
       tap(_ => this.log(``)),
-      catchError(this.handleError<OmdbMovieDetail>('getMovie')))
+      catchError(this.handleError<IOmdbMovieDetail>('getMovie')))
     // return this.http.get<OmdbMovie>(url).pipe(
     //   tap(_ => this.log(``)),
     //   catchError(this.handleError<OmdbMovie>('getMovie')))
@@ -91,10 +99,10 @@ export class MovieService {
    * most probably will not be used
    * @param val Movie title
    */
-  getMovieByTitle(val: string): Observable<Movie> {
+  getMovieByTitle(val: string): Observable<IOmdbMovieDetail> {
     const url = `${this.omdbUrl}/?t=${val}&apikey=${this.omdbApiKey}`
-    return this.http.get<Movie>(url).pipe(tap(_ => this.log(`getMovie ${val}`)),
-      catchError(this.handleError<Movie>('getMovie')))
+    return this.http.get<IOmdbMovieDetail>(url).pipe(tap(_ => this.log(`getMovie ${val}`)),
+      catchError(this.handleError<IOmdbMovieDetail>('getMovie')))
   }
 
   getMovieFromLibrary(val) {
@@ -102,10 +110,9 @@ export class MovieService {
   }
 
   getImages(val: any): Observable<any> {
-    // https://image.tmdb.org/t/p/original/mFb0ygcue4ITixDkdr7wm1Tdarx.jpg
     const url = `${this.omdbUrl}/?t=${val}&apikey=${this.tmdbApiKey}`
-    return this.http.get<Movie>(url).pipe(tap(_ => this.log(`getMovie ${val}`)),
-      catchError(this.handleError<Movie>('getMovie')))
+    return this.http.get<IOmdbMovieDetail>(url).pipe(tap(_ => this.log(`getMovie ${val}`)),
+      catchError(this.handleError<IOmdbMovieDetail>('getMovie')))
   }
 
   searchMovieByTitle(val: string): Observable<any> {
@@ -115,16 +122,12 @@ export class MovieService {
       catchError(this.handleError<any>('searchMovieByTitle')))
   }
 
-  searchMovieByTitleWithPage(query: string, page: number): Observable<any> {
-    const url = `${this.tmdbUrl}/search/multi?api_key=${this.tmdbApiKey}&query=${query}&page=${page}`
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('searchMovieByTitleWithPage')))
+  searchMovieByTitleWithPage(query: string, page: number) {
+
   }
 
-  searchSubtitleById(val: string): Observable<Movie> {
-    const url = `${this.omdbUrl}/?t=${val}&apikey=${this.omdbApiKey}`
-    return this.http.get<Movie>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<Movie>('getMovie')))
+  searchSubtitleById(val: string) {
+    // insert code here
   }
 
   /**
@@ -148,6 +151,7 @@ export class MovieService {
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getMoviesInTheaters')))
   }
+
   getMovieBackdrop(val: string): Observable<any> {
     // http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
 
@@ -164,53 +168,85 @@ export class MovieService {
     // https://image.tmdb.org/t/p/original/vVpEOvdxVBP2aV166j5Xlvb5Cdc.jpg
     const url = `${this.tmdbUrl}/movie/${val}/images?api_key=${this.tmdbApiKey}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesInTheaters')))
+      catchError(this.handleError<any>('getMovieImages')))
   }
 
   getMovieVideos(val: string) {
     const url = `${this.tmdbUrl}/movie/${val}/videos?api_key=${this.tmdbApiKey}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesInTheaters')))
+      catchError(this.handleError<any>('getMovieVideos')))
   }
 
   getReviews(val: string) {
     const url = `${this.tmdbUrl}/movie/${val}/reviews?api_key=${this.tmdbApiKey}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesInTheaters')))
+      catchError(this.handleError<any>('getReviews')))
   }
 
   getSimilarMovies(val: string) {
     const url = `${this.tmdbUrl}/movie/${val}/similar?api_key=${this.tmdbApiKey}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesInTheaters')))
+      catchError(this.handleError<any>('getSimilarMovies')))
   }
 
-  getMoviesByDates(startDate, endDate) {
-    const url = `${this.tmdbUrl}/discover/movie?primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&api_key=${this.tmdbApiKey}`
-
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesInTheaters')))
+  getMoviePoster(posterLink: string) {
+    const url = `https://image.tmdb.org/t/p/w600_and_h900_bestv2/biH5hW1BRfEr13oCizuAzpdBf2l.jpg`
+    return this.http.get<any>(url, {
+      observe: 'response'
+    }).pipe(map(data => {
+      console.log(data);
+    }, catchError(this.handleError('getposter')))
+    )
   }
 
-  getTopMovies() {
-    const url = `${this.tmdbUrl}/discover/movie?sort_by=popularity.desc&api_key=${this.tmdbApiKey}`
+  /**
+   *
+   * @param val tmdb id
+   */
+  getMovieCredits(val: number) {
+    console.log('getMovieCredits', val);
+    const url = `${this.tmdbUrl}/movie/${val}/credits?api_key=${this.tmdbApiKey}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesInTheaters')))
+      catchError(this.handleError<any>('getMovieCredits')))
   }
-  getRRatedMovies() {
-    const url = `${this.tmdbUrl}/discover/movie/?certification_country=US&certification=R&sort_by=vote_average.desc&api_key=${this.tmdbApiKey}`
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesInTheaters')))
+
+  getTmdbMovieDetails(tmdbId: number, ...val): Observable<any> {
+    const url = `${this.tmdbUrl}/movie/${tmdbId}`
+    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, 'a636ce7bd0c125045f4170644b4d3d25')
+    // videos, images, credits, translations, similar, external_ids, alternative_titles,recommendations
+    //   keywords, reviews
+    const appendToResponse = 'videos,images,credits,similar,external_ids,recommendations'
+    myHttpParam = myHttpParam.append(TmdbParameters.AppendToResponse, appendToResponse)
+    if (val.length > 0) {
+      val[0].forEach(element => {
+        console.log(element);
+        myHttpParam = myHttpParam.append(element[0], element[1])
+      })
+    }
+    const tmdbHttpOptions = {
+      headers: jsonContentType,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getTmdbMovieDetails')))
   }
-  getTopMoviesByGenre(genreId) {
-    const url = `${this.tmdbUrl}/discover/movie?with_genres=${genreId}&sort_by=vote_average.desc&vote_count.gte=10&api_key=${this.tmdbApiKey}`
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesInTheaters')))
-  }
-  getTopMoviesByYear(year) {
-    const url = `${this.tmdbUrl}/discover/movie?primary_release_year=${year}&sort_by=popularity.desc&api_key=${this.tmdbApiKey}`
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesInTheaters')))
+
+  /**
+   * [[key,value],[key,value]]
+   */
+  getMoviesDiscover(...val): Observable<any> {
+    const url = `${this.tmdbUrl}/discover/movie`
+    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, 'a636ce7bd0c125045f4170644b4d3d25')
+    val[0].forEach(element => {
+      console.log(element);
+      myHttpParam = myHttpParam.append(element[0], element[1])
+    })
+    const tmdbHttpOptions = {
+      headers: jsonContentType,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getMoviesDiscover')))
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

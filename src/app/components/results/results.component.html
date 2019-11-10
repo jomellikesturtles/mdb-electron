@@ -1,5 +1,89 @@
-<p>
-  results works!
-</p>
+<div class='movie-selected-list' style='background-color: rgb(40,40,40);
+padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.length != 0">
+  <div class="container-fluid" id="list" style="overflow-y:hidden; overflow-x:auto;">
+    <div class='d-inline-flex'>
 
-<h1>You are offline</h1>
+      <div *ngFor="let sMovie of selectedMovies" style='width: 120px;margin :0 5px 5px 0'>
+        <div class='selected-movie-card-image-container' (click)='onHighlight(sMovie)' [ngStyle]="{'height': '180px'
+          ,'background-image':'url(https://image.tmdb.org/t/p/w342'+ sMovie.poster_path + ')'}">
+
+          <!-- <div id="results-panel" *ngFor="let movie of searchResults" class='movie-card' [ngStyle]="{'width': cardWidth}"
+  [ngClass]="{'movie-card-selected': movie.isHighlighted}" (click)=onHighlight(movie)>
+
+  <div
+    [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w600_and_h900_bestv2'+movie.poster_path+')'}"
+    class='movie-card-image-container'>
+    <div class="overlay overlay-add"> -->
+
+          <div class="overlay overlay-remove">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='selected-list-controls-container container' style='margin-top: 10px;'>
+    <div class="btn-group">
+      <button class='btn btn-success' (click)='onDownloadSelected()'>Download</button>
+      <button class='btn btn-primary' (click)='onAddToWatchlist()'>Add to watchlist</button>
+      <button class='btn btn-primary' (click)='onMarkAsWatched()'>Mark as watched</button>
+    </div>
+    <button class='btn btn-danger' style='float:right' (click)='onClearSelected()'>Clear list</button>
+  </div>
+</div>
+<select class="form-control" [(ngModel)]="cardWidth" style='width: 200px; float:right'>
+  <option value='100px'>small</option>
+  <option value='130px'>medium</option>
+  <option value='180px'>large</option>
+  <option value='250px'>xtra large</option>
+</select>
+
+<div class="container-fluid">
+
+  <div *ngIf='!hasSearchResults'>
+    <h1 class='jumbo-message'>No results found for '{{currentSearchQuery}}' :(</h1>
+  </div>
+
+  <div *ngIf='hasSearchResults' class='movie-cards-display-grid'>
+
+    <div id="results-panel" *ngFor="let movie of searchResults" class='movie-card' [ngStyle]="{'width': cardWidth}"
+      [ngClass]="{'movie-card-selected': movie.isHighlighted}">
+
+      <!-- alt image -->
+      <!-- <div style=' text-align: center; color: white;' [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')'}"
+        class='movie-card-image-container'>
+        <h3>{{movie.title}}</h3>
+        <div class="overlay overlay-add">
+        </div>-->
+      <!-- end of alt image -->
+
+      <div
+        [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
+        class='movie-card-image-container' (click)=onHighlight(movie)>
+
+        <div class='movie-available' data-toggle='tooltip' title='Available offline'>
+        </div>
+        <div class="overlay overlay-add">
+        </div>
+      </div>
+      <div class="card-body movie-card-body">
+        <div class="movie-card-text">
+          <h6 class="card-title" (click)="onSelect(movie)" class='text-primary movie-card-title' data-toggle="tooltip"
+            title="{{movie.title}}">{{movie.title}}</h6>
+          <label style='float: left'>{{getYear(movie.release_date)}}</label>
+          <label style='float: right'>{{movie.vote_average}}</label>
+        </div>
+      </div>
+    </div>
+    <div style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
+      <h5 style='text-decoration: underline;cursor:pointer' (click)='getMoreResults()'>Load more results...</h5>
+    </div>
+  </div>
+</div>
+<!-- <div class="snackbar" [hidden]="displayMessage.length == 0">{{displayMessage}}</div> -->
+<!-- <div class="snackbar" [ngClass]="{'show': displayMessage.length >= 0}">
+  <p>{{displayMessage}}</p>
+</div> -->
+<div id='snackbar' [ngClass]="{'show ': displaySnackbar}">
+  <p>{{displayMessage}}</p>
+</div>
+<!-- <h1>You are offline</h1> -->

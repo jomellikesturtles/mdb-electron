@@ -1,35 +1,81 @@
-<div class="container-fluid" style='padding-top: 10vh'>
-  <div *ngIf="dashboardLists">
-    <div *ngFor="let list of dashboardLists">
-      <h3>{{list.name}}</h3>
-      <div class="container-fluid" id="list" style="overflow-y:hidden;overflow-x:scroll;">
-        <div class='d-inline-flex'>
-
-          <div *ngFor="let movie of list">
-            <div class='flex-fill movie-card' [ngClass]="{'movie-card-selected': movie.isHighlighted}"
-              style="margin:3px; cursor: pointer" (click)=onHighlight(movie)>
-
-              <div class="form-check" style="position:relative;left:15px;top:25px;z-index: 2">
-                <input class="form-check-input" type="checkbox" [checked]="movie.isHighlighted" hidden="!isHighlighted"
-                  id="defaultCheck1">
-              </div>
-              <div class="circle-available" *ngIf='movie.isAvailable' data-toggle="tooltip" title="Available offline">
-              </div>
-              <!-- <div style="width:154px;height: 231px;border:solid" data-toggle="tooltip" title="{{movie.overview}}"> -->
-                <img src="https://image.tmdb.org/t/p/w154/{{movie.poster_path}}" alt="{{movie.title}}">
-              <!-- </div> -->
-              <h6 (click)=onSelect(movie) class='text-primary' style='cursor: pointer'>{{movie.title}}</h6>
-            </div>
+<div class='movie-selected-list' style='background-color: rgb(40,40,40);
+padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.length != 0">
+  <div class="container-fluid" id="list" style="overflow-y:hidden; overflow-x:auto;">
+    <div class='d-inline-flex'>
+      <div *ngFor="let sMovie of selectedMovies" style='width: 120px'>
+        <div class='selected-movie-card-image-container' [ngClass]="{'movie-card-selected': sMovie.isHighlighted}"
+          (click)=onHighlight(sMovie)>
+          <div [ngStyle]="{'height': '180px'
+          ,'background-image':'url(https://image.tmdb.org/t/p/w154'+ sMovie.poster_path + ')','margin':'0 5px 5px 0'}"
+            class='movie-card-image-container'>
+          </div>
+          <div class="overlay overlay-remove">
           </div>
         </div>
       </div>
     </div>
   </div>
+  <div class='selected-list-controls-container container' style='margin-top: 10px;'>
+    <div class="btn-group">
+      <button class='btn btn-success' (click)='onDownloadSelected()'>Download</button>
+      <button class='btn btn-primary' (click)='onAddToWatchlist()'>Add to watchlist</button>
+      <button class='btn btn-primary' (click)='onMarkAsWatched()'>Mark as watched</button>
+    </div>
+    <button class='btn btn-danger' style='float:right' (click)='onClearSelected()'>Clear list</button>
+  </div>
+</div>
 
-  <div *ngIf='selectedMovies'>
+<div class="container-fluid" style='padding-top: 10vh'>
+  <div *ngIf="dashboardLists">
+    <div *ngFor="let list of dashboardLists">
+      <h3>{{list.name}}</h3>
+      <div class="container-fluid" id="list" style="overflow-y:hidden;overflow-x:scroll;">
+
+        <div class='d-inline-flex'>
+
+          <div *ngFor="let movie of list" [ngStyle]="{'width': cardWidth}">
+            <div class='flex-fill movie-card' [ngClass]="{'movie-card-selected': movie.isHighlighted}"
+              style="margin:3px; cursor: pointer" (click)=onHighlight(movie)>
+
+              <!-- <div class="form-check" style="position:relative;left:15px;top:25px;z-index: 2"> -->
+              <!-- <input class="form-check-input" type="checkbox" [checked]="movie.isHighlighted" hidden="!isHighlighted"> -->
+              <!-- </div> -->
+
+              <!-- <div class="circle-available" *ngIf='movie.isAvailable' data-toggle="tooltip" title="Available offline">
+              </div> -->
+
+              <!-- <div style="width:154px;height: 231px;border:solid" data-toggle="tooltip" title="{{movie.overview}}"> -->
+              <!-- <img src="https://image.tmdb.org/t/p/w154/{{movie.poster_path}}" alt="{{movie.title}}"> -->
+              <!-- </div> -->
+              <!-- <h6 (click)=onSelect(movie) class='text-primary' style='cursor: pointer'>{{movie.title}}</h6> -->
+
+              <div
+                [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w154'+movie.poster_path+')'}"
+                class='movie-card-image-container'>
+                <div class="overlay overlay-add">
+                </div>
+              </div>
+              <div class="card-body movie-card-body">
+                <div class="movie-card-text">
+                  <h6 class="card-title" (click)="goToMovie(movie.id)" class='text-primary movie-card-title'
+                    data-toggle="tooltip" title="{{movie.title}}">{{movie.title}}</h6>
+                  <label style='float: left'>{{getYear(movie.release_date)}}</label>
+                  <label style='float: right'>{{movie.vote_average}}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- <div *ngIf='selectedMovies'>
     <button class='btn btn-success' (click)='onDownloadSelected()'>Download selected</button>
     <button class='btn btn-danger' (click)='onClearSelected()'>Clear selected</button>
-  </div>
+  </div> -->
   <div *ngIf='!browserConnection'>
     <h1>You are offline</h1>
   </div>

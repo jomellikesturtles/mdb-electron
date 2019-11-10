@@ -337,16 +337,195 @@ UI and functionalities are influenced by follows: (in descending order)
 
 ## changes from office
 
-- readme.md
-- styles.scss
-- dashboard,navigation,top-navigation
-- https://playnite.link/
-
 - adm-zip
 - bittorrent-tracker, bittorrent-dht, rimraf, moment
+
+- changes 2
+
+- libraryFiles.db,mock-data,subject,results
 
 ## notes
 
 - tsv parse search is faster than nedb; ~2s vs ~15s
 - search queries: title, releaseYear, genre/s, rating, ratingcount, language, country origin/region,
 - minify tsv stream has leak
+- tmdb criteria: year,region, language, vote count, vote average.
+- snackbar/toast doesnt work
+- omdb and Imdb has same genre in movies
+
+https://api.themoviedb.org/3/movie/157336?api_key=a636ce7bd0c125045f4170644b4d3d25&append_to_response=videos,images,credits,changes,translations,similar,external_ids,ss
+
+api_key
+string
+1 validations
+required
+language
+string
+Specify a language to query translatable fields with.
+
+minLength: 2
+pattern: ([a-z]{2})-([A-Z]{2})
+default: en-US
+optional
+region
+string
+Specify a ISO 3166-1 code to filter release dates. Must be uppercase.
+
+pattern: ^[A-Z]{2}$
+optional
+
+sort_by:string
+Choose from one of the many available sort options.
+Allowed Values: , popularity.asc, popularity.desc, release_date.asc, release_date.desc, revenue.asc, revenue.desc, primary_release_date.asc, primary_release_date.desc, original_title.asc, original_title.desc, vote_average.asc, vote_average.desc, vote_count.asc, vote_count.desc
+default: popularity.desc
+optional
+
+certification_country:string
+Used in conjunction with the certification filter, use this to specify a country with a valid certification.
+optional
+
+certification:string
+Filter results with a valid certification from the 'certification_country' field.
+optional
+
+certification.lte:string
+Filter and only include movies that have a certification that is less than or equal to the specified value.
+optional
+
+certification.gte:string
+Filter and only include movies that have a certification that is greater than or equal to the specified value.
+optional
+
+include_adult:boolean
+A filter and include or exclude adult movies.
+
+default
+optional
+
+include_video:boolean
+A filter to include or exclude videos.
+
+default
+optional
+
+page
+integer
+Specify the page of results to query.
+
+minimum: 1
+maximum: 1000
+default: 1
+optional
+
+primary_release_year
+integer
+A filter to limit the results to a specific primary release year.
+
+optional
+primary_release_date.gte
+string
+Filter and only include movies that have a primary release date that is greater or equal to the specified value.
+
+format: date
+optional
+primary_release_date.lte
+string
+Filter and only include movies that have a primary release date that is less than or equal to the specified value.
+
+format: date
+optional
+release_date.gte
+string
+Filter and only include movies that have a release date (looking at all release dates) that is greater or equal to the specified value.
+
+format: date
+optional
+release_date.lte
+string
+Filter and only include movies that have a release date (looking at all release dates) that is less than or equal to the specified value.
+
+format: date
+optional
+with_release_type
+integer
+Specify a comma (AND) or pipe (OR) separated value to filter release types by. These release types map to the same values found on the movie release date method.
+
+minimum: 1
+maximum: 6
+optional
+year
+integer
+A filter to limit the results to a specific year (looking at all release dates).
+
+optional
+vote_count.gte
+integer
+Filter and only include movies that have a vote count that is greater or equal to the specified value.
+
+minimum: 0
+optional
+vote_count.lte
+integer
+Filter and only include movies that have a vote count that is less than or equal to the specified value.
+
+minimum: 1
+optional
+vote_average.gte
+number
+Filter and only include movies that have a rating that is greater or equal to the specified value.
+
+minimum: 0
+optional
+vote_average.lte
+number
+Filter and only include movies that have a rating that is less than or equal to the specified value.
+
+minimum: 0
+optional
+with_cast
+string
+A comma separated list of person ID's. Only include movies that have one of the ID's added as an actor.
+
+optional
+with_crew
+string
+A comma separated list of person ID's. Only include movies that have one of the ID's added as a crew member.
+
+optional
+with_people
+string
+A comma separated list of person ID's. Only include movies that have one of the ID's added as a either a actor or a crew member.
+
+optional
+with_companies
+string
+A comma separated list of production company ID's. Only include movies that have one of the ID's added as a production company.
+
+optional
+with_genres
+string
+Comma separated value of genre ids that you want to include in the results.
+
+optional
+without_genres
+string
+Comma separated value of genre ids that you want to exclude from the results.
+
+optional
+with_keywords
+string
+A comma separated list of keyword ID's. Only includes movies that have one of the ID's added as a keyword.
+optional
+
+without_keywords
+string
+Exclude items with certain keywords. You can comma and pipe seperate these values to create an 'AND' or 'OR' logic.
+optional
+
+with_runtime.gte
+integer
+Filter and only include movies that have a runtime that is greater or equal to a value. optional
+
+with_runtime.lte integer Filter and only include movies that have a runtime that is less than or equal to a value. optional
+
+with_original_language string Specify an ISO 639-1 string to filter results by their original language value. optional

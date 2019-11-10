@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Torrent, Movie, Test } from '../../subject'
+// import { Torrent, Movie, Test } from '../../subject'
+import { ITorrent } from '../../interfaces'
 import { MovieService } from '../../services/movie.service'
 import { IpcService } from '../../services/ipc.service'
-import { DISPLAYEDMOVIES, MOVIEGENRES, SELECTEDMOVIE } from '../../mock-data'
+import { DISPLAYEDMOVIES, MOVIEGENRES } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../services/data.service'
 import { TorrentService } from '../../services/torrent.service'
@@ -24,9 +25,6 @@ export class BulkDownloadComponent implements OnInit {
     "completed": false
   }`
   result: any
-  testResult: Test
-  gg = new Test()
-  test2: Test
 
   constructor(
     private movieService: MovieService,

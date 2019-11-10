@@ -10,12 +10,15 @@ import { DetailsComponent } from './components/details/details.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { MagnetPipe, SimplifySizePipe } from './services/torrent.service';
 import { FormsModule } from '@angular/forms'
-import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpClientModule, HttpParams } from '@angular/common/http';
 import { SearchComponent } from './components/search/search.component';
 import { TopNavigationComponent } from './components/top-navigation/top-navigation.component';
 import { ResultsComponent } from './components/results/results.component';
 import { LibraryComponent } from './components/library/library.component';
 import { BrowseComponent } from './components/browse/browse.component';
+import { CommaSpacePipe, MdbPipesPipe, ReleaseYearPipe, RuntimeDisplayPipe } from './mdb-pipes.pipe';
+import { PersonDetailsComponent } from './components/person-details/person-details.component';
+import { CreditsComponent } from './components/details/credits/credits.component';
 
 @NgModule({
   declarations: [
@@ -31,13 +34,20 @@ import { BrowseComponent } from './components/browse/browse.component';
     TopNavigationComponent,
     ResultsComponent,
     LibraryComponent,
-    BrowseComponent
+    BrowseComponent,
+    CommaSpacePipe,
+    MdbPipesPipe,
+    ReleaseYearPipe,
+    RuntimeDisplayPipe,
+    PersonDetailsComponent,
+    CreditsComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    // HttpParams
   ],
   providers: [],
   bootstrap: [AppComponent]

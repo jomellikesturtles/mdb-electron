@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } 
 import { Observable } from 'rxjs'
 import { IpcService } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
-import { Preferences } from '../../subject'
+import { IPreferences } from '../../interfaces'
 declare var $: any;
 @Component({
   selector: 'app-preferences',
@@ -24,7 +24,7 @@ export class PreferencesComponent implements OnInit {
   foldersList = this.testFoldersList
   currentFolder = this.initialFolder
   previousFolder = ''
-  preferencesObject: Preferences = {
+  preferencesObject: IPreferences = {
     isDarkMode: false,
     isDirty: false,
     isEnableCache: false,

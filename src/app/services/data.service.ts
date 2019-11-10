@@ -7,6 +7,9 @@ import { BehaviorSubject } from 'rxjs'
 export class DataService {
   dashboardData = []
 
+  // private isDesktop = new BehaviorSubject<any>('')
+  // currentMovie = this.isDesktop.asObservable()
+
   private selectedMovieSource = new BehaviorSubject<any>('')
   currentMovie = this.selectedMovieSource.asObservable()
 
@@ -19,7 +22,23 @@ export class DataService {
   private selectedMoviesSource = new BehaviorSubject<any>('')
   selectedMovies = this.selectedMoviesSource.asObservable()
 
-  constructor() {}
+  constructor() { }
+
+  /**
+   * web(angular) or desktop(electron)
+   */
+  getMode() {
+    return 'web'
+    // return 'desktop'
+  }
+
+  /**
+   * set true if working in strict/corporate network, false if not.
+   */
+  isMockDataOnly() {
+    return true
+    // return false
+  }
 
   setDashboardData(data: any[]) {
     this.dashboardData = data

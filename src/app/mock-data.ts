@@ -1,19 +1,31 @@
 /**
  * Mock data and Defaults. For pre-defined lists and offline data
  */
-import { Movie, MovieGenre, SelectedMovies, Torrent, Genre, TmdbResultObject, Preferences } from './subject'
+import { } from './subject'
+import { ITmdbResultObject, ILibraryMovie, IPreferences, IGenre, ITorrent, IOmdbMovieDetail } from './interfaces'
 import { Injectable } from '@angular/core'
 
-export const TEST_LIBRARY_MOVIES = [
+export const TEST_LIBRARY_MOVIES: ILibraryMovie[] = [
   {
-    title: 'Titanic',
+    tmdbId: 0,
     imdbId: 'tt0095956',
-    directory: ['D:\\titanic.mp4']
+    title: 'Titanic',
+    year: 0,
+    directory: ['D:\\media server\\movies\\titanic.mp4']
   },
   {
-    title: 'Guardians of the Galaxy',
+    tmdbId: 0,
     imdbId: 'tt0133093',
-    directory: ['D:\\guardians of the galaxy.mp4']
+    title: 'Guardians of the Galaxy',
+    year: 0,
+    directory: ['D:\\media server\\movies\\guardians of the galaxy.mp4']
+  },
+  {
+    tmdbId: 680,
+    imdbId: 'tt0110912',
+    title: 'Pulp Fiction',
+    year: 1994,
+    directory: ['D:\\media server\\movies\\pulp fiction.mp4']
   }
 ]
 
@@ -79,7 +91,7 @@ export const MOCK_MOVIE_DETAIL = {
   backgroundImageDirectory: ''
 }
 
-export const MOCKBULKDOWNLOADTORRENTS = [
+export const MOCK_BULK_DOWNLOAD_TORRENTS = [
   {
     id: 1,
     name: 'Guardians of the Galaxy (2014) 1080p BrRip x264 - YIFY',
@@ -124,7 +136,7 @@ export const MOCKBULKDOWNLOADTORRENTS = [
   }
 ]
 
-export const MOVIEGENRES: MovieGenre[] = [
+export const MOVIEGENRES = [
   { id: 1, code: 'ACT', description: 'Action', isChecked: true },
   { id: 2, code: 'ADV', description: 'Adventure', isChecked: false },
   { id: 3, code: 'DOC', description: 'Documentary', isChecked: false },
@@ -208,7 +220,8 @@ export let DISPLAYEDMOVIES = [
     torrents: []
   }
 ]
-export const MOVIES: Movie[] = [
+// used in top-nav for search
+export const MOVIES: IOmdbMovieDetail[] = [
   // { id: 1, Title: 'Face Off', Year: 1997, Plot: '', genre: 'Action', isAvailable: false, imageDirectory: './assets/images/1997-face-off-poster1.jpg', Runtime: '156', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' },
   // { id: 2, Title: 'Nacho Libre', Year: 2006, Plot: '', genre: 'Comedy', isAvailable: true, imageDirectory: './assets/images/2006-nacho_libre-1.jpg', Runtime: '120', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' },
   // { id: 3, Title: 'Salt', Year: 2006, Plot: '', genre: 'Action', isAvailable: false, imageDirectory: './assets/images/2006-salt-1.jpg', Runtime: '110', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' },
@@ -219,32 +232,7 @@ export const MOVIES: Movie[] = [
   // { id: 8, Title: 'Three Musketeers', Year: 2011, Plot: '', genre: 'Action', isAvailable: true, imageDirectory: './assets/images/2011-three_musketeers.jpg', Runtime: '180', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' }
 ]
 
-export const SELECTEDMOVIE: Movie = {
-  id: 4,
-  Title: 'Valkyrie',
-  Year: 2008,
-  Plot: '',
-  genre: 'Action',
-  isAvailable: true,
-  isHighlighted: false,
-  imageDirectory: './assets/images/2008-valkyrie-1.jpg',
-  Runtime: '120',
-  Genre: '',
-  Director: '',
-  Writer: '',
-  Poster: '',
-  imdbID: ''
-}
-
-export const SELECTEDMOVIES: SelectedMovies[] = [
-  { imdbId: 'tt0477348', title: 'No Country for Old Men' },
-  { imdbId: 'tt0120338', title: 'Titanic' },
-  { imdbId: 'tt0499549', title: 'Avatar' },
-  { imdbId: 'tt2287627', title: 'Deadpool' },
-  { imdbId: 'tt1431045', title: 'Akari' }
-]
-
-export const TORRENTS: Torrent[] = [
+export const TORRENTS: ITorrent[] = [
   //   {
   //   id: 1,
   //   name: 'Valkyrie.DVD-R.NTSC.2008',
@@ -318,7 +306,7 @@ export class DisplayedTorrent {
   }
 }
 
-export const GENRES: Genre[] = [
+export const GENRES: IGenre[] = [
   {
     id: 28,
     name: 'Action'
@@ -394,10 +382,42 @@ export const GENRES: Genre[] = [
   {
     id: 37,
     name: 'Western'
+  },
+  // mdb reserved
+  {
+    id: 20000,
+    name: 'Film-Noir'
+  },
+  {
+    // similar genre: Music id:10402
+    id: 20001,
+    name: 'Musical'
+  },
+  {
+    id: 20002,
+    name: 'News'
+  },
+  {
+    id: 20003,
+    name: 'Reality-TV'
+  },
+  {
+    // similar genre: Science Fiction id:878
+    id: 20004,
+    name: 'Sci-Fi'
+  },
+  {
+    // another media type
+    id: 20005,
+    name: 'Short'
+  },
+  {
+    id: 20006,
+    name: 'Sport'
   }
 ]
 
-export let TMDB_SEARCH_RESULTS: TmdbResultObject = {
+export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
   page: 1,
   total_results: 3810,
   total_pages: 191,
@@ -746,11 +766,150 @@ export let TMDB_SEARCH_RESULTS: TmdbResultObject = {
   ]
 }
 
+export const TEST_TMDB_MOVIE_DETAILS = {
+  "adult": false,
+  "backdrop_path": "/wMgbnUVS9wbRGAdki8fqxKU1O0N.jpg",
+  "belongs_to_collection": null,
+  "budget": 55000000,
+  "genres": [{
+    "id": 35,
+    "name": "Comedy"
+  }, {
+    "id": 18,
+    "name": "Drama"
+  }, {
+    "id": 10749,
+    "name": "Romance"
+  }],
+  "homepage": null,
+  "id": 13,
+  "imdb_id": "tt0109830",
+  "original_language": "en",
+  "original_title": "Forrest Gump",
+  "overview": "A man with a low IQ has accomplished great things in his life and been present during significant historic events—in each case, far exceeding what anyone imagined he could do. But despite all he has achieved, his one true love eludes him.",
+  "popularity": 23.858,
+  "poster_path": "/yE5d3BUhE8hCnkMUJOo1QDoOGNz.jpg",
+  "production_companies": [{
+    "id": 4,
+    "logo_path": "/fycMZt242LVjagMByZOLUGbCvv3.png",
+    "name": "Paramount",
+    "origin_country": "US"
+  }],
+  "production_countries": [{
+    "iso_3166_1": "US",
+    "name": "United States of America"
+  }],
+  "release_date": "1994-07-06",
+  "revenue": 677945399,
+  "runtime": 142,
+  "spoken_languages": [{
+    "iso_639_1": "en",
+    "name": "English"
+  }],
+  "status": "Released",
+  "tagline": "Life is like a box of chocolates...you never know what you're gonna get.",
+  "title": "Forrest Gump",
+  "video": false,
+  "vote_average": 8.4,
+  "vote_count": 15996
+}
+
+
+const TEST_TMDB_MOVIE_DETAIL2 = {
+  adult: false,
+  backdrop_path: "/mMZRKb3NVo5ZeSPEIaNW9buLWQ0.jpg",
+  belongs_to_collection: null,
+  budget: 63000000,
+  genres: [
+    {
+      id: 18,
+      name: "Drama"
+    }
+  ],
+  homepage: "http://www.foxmovies.com/movies/fight-club",
+  id: 550,
+  imdb_id: "tt0137523",
+  original_language: "en",
+  original_title: "Fight Club",
+  overview: "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \"fight clubs\" forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.",
+  popularity: 36.556,
+  poster_path: "/adw6Lq9FiC9zjYEpOqfq03ituwp.jpg",
+  production_companies: [
+    {
+      id: 508,
+      logo_path: "/7PzJdsLGlR7oW4J0J5Xcd0pHGRg.png",
+      name: "Regency Enterprises",
+      origin_country: "US"
+    },
+    {
+      id: 711,
+      logo_path: "/tEiIH5QesdheJmDAqQwvtN60727.png",
+      name: "Fox 2000 Pictures",
+      origin_country: "US"
+    },
+    {
+      id: 20555,
+      logo_path: "/hD8yEGUBlHOcfHYbujp71vD8gZp.png",
+      name: "Taurus Film",
+      origin_country: "DE"
+    },
+    {
+      id: 54051,
+      logo_path: null,
+      name: "Atman Entertainment",
+      origin_country: ""
+    },
+    {
+      id: 54052,
+      logo_path: null,
+      name: "Knickerbocker Films",
+      origin_country: "US"
+    },
+    {
+      id: 25,
+      logo_path: "/qZCc1lty5FzX30aOCVRBLzaVmcp.png",
+      name: "20th Century Fox",
+      origin_country: "US"
+    },
+    {
+      id: 4700,
+      logo_path: "/A32wmjrs9Psf4zw0uaixF0GXfxq.png",
+      name: "The Linson Company",
+      origin_country: ""
+    }
+  ],
+  production_countries: [
+    {
+      iso_3166_1: "DE",
+      name: "Germany"
+    },
+    {
+      iso_3166_1: "US",
+      name: "United States of America"
+    }],
+  release_date: "1999-10-15",
+  revenue: 100853753,
+  runtime: 139,
+  spoken_languages: [
+    {
+      iso_639_1: "en",
+      name: "English"
+    }
+  ],
+  status: "Released",
+  tagline: "Mischief. Mayhem. Soap.",
+  title: "Fight Club",
+  video: false,
+  vote_average: 8.4,
+  vote_count: 17355
+}
+
 export const TROUBLE_QUOTES = [
   { quote: 'I see dead people.' },
   { quote: 'Houston, we have a problem.' },
   { quote: 'Just keep swimming.' },
 ]
+
 export const MOVIE_QUOTES = [
   { title: `Gone With the Wind`, year: 1939, quote: `Frankly, my dear, I don't give a damn.`, backdrop: '' },
   { title: 'The Room', year: 2003, quote: `You are tearing me apart, Lisa!`, backdrop: '' },
@@ -758,7 +917,7 @@ export const MOVIE_QUOTES = [
   { title: 'Titanic', year: 1997, quote: `I'm king of the world!`, backdrop: '' },
 ]
 
-export const DEFAULT_PREFERENCES: Preferences = {
+export const DEFAULT_PREFERENCES: IPreferences = {
   frequencyUnit: 'day',
   frequencyValue: 3,
   isDarkMode: false,
@@ -766,3 +925,59 @@ export const DEFAULT_PREFERENCES: Preferences = {
   isEnableCache: true,
   libraryFolders: []
 }
+
+export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+export const DECADES = [
+  {
+    display: '1910s',
+    value: 1910
+  },
+  {
+    display: '1920s',
+    value: 1920
+  },
+  {
+    display: '1930s',
+    value: 1930
+  },
+  {
+    display: '1940s',
+    value: 1940
+  },
+  {
+    display: '1950s',
+    value: 1950
+  },
+  {
+    display: '1960s',
+    value: 1960
+  },
+  {
+    display: '1970s',
+    value: 1970
+  },
+  {
+    display: '1980s',
+    value: 1980
+  },
+  {
+    display: '1990s',
+    value: 1990
+  },
+  {
+    display: '2000s',
+    value: 2000
+  },
+  {
+    display: '2010s',
+    value: 2010
+  }]
+
+export const TMDB_IMAGE_BASE_URL = 'http://image.tmdb.org/t/p/'
+export const TMDB_IMAGE_SECURE_BASE_URL = 'https://image.tmdb.org/t/p/'
+export const TMDB_BACKGROUND_SIZES = ['w300', 'w780', 'w1280', 'original']
+export const TMDB_LOGO_SIZES = ['w45', 'w92', 'w154', 'w185', 'w300', 'w500', 'original']
+export const TMDB_POSTER_SIZES = ['w92', 'w154', 'w185', 'w342', 'w500', 'w780', 'original']
+export const TMDB_PROFILE_SIZES = ['w45', 'w185', 'h632', 'original']
+export const TMDB_STILL_SIZES = ['w92', 'w185', 'w300', 'original']

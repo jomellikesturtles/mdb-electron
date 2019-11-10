@@ -9,6 +9,7 @@ import {
 import { BehaviorSubject } from 'rxjs'
 declare var electron: any
 const { ipcRenderer } = electron
+import { ILibraryInfo } from '../interfaces'
 @Injectable({
   providedIn: 'root'
 })
@@ -62,12 +63,12 @@ export class IpcService {
   // }
 
   async getFiles() {
-    return new Promise<string[]>((resolve, reject) => {
-      this.ipcRenderer.once('library-folders', (event, arg) => {
-        resolve(arg);
-      });
-      this.ipcRenderer.send('retrieve-library-folders');
-    });
+    // return new Promise<string[]>((resolve, reject) => {
+    //   this.ipcRenderer.once('library-folders', (event, arg) => {
+    //     resolve(arg);
+    //   });
+    //   this.ipcRenderer.send('retrieve-library-folders');
+    // });
   }
   /**
    * All messages in logger
@@ -122,12 +123,12 @@ export class IpcService {
    * Gets the drives in the system.
    */
   async getSystemDrives() {
-    return new Promise<string[]>((resolve, reject) => {
-      this.ipcRenderer.once('system-drives', (event, arg) => {
-        resolve(arg);
-      });
-      this.ipcRenderer.send('get-drives');
-    });
+    // return new Promise<string[]>((resolve, reject) => {
+    //   this.ipcRenderer.once('system-drives', (event, arg) => {
+    //     resolve(arg);
+    //   });
+    //   this.ipcRenderer.send('get-drives');
+    // });
     // console.log('get system drives')
     // this.ipcRenderer.send('get-drives')
   }
@@ -137,7 +138,7 @@ export class IpcService {
    */
   openFolder(data: string) {
     console.log('open', data)
-    this.ipcRenderer.send('go-to-folder', ['open', data])
+    // this.ipcRenderer.send('go-to-folder', ['open', data])
   }
 
   /**
@@ -146,7 +147,7 @@ export class IpcService {
    */
   openParentFolder(data: string) {
     console.log('up', data)
-    this.ipcRenderer.send('go-to-folder', ['up', data])
+    // this.ipcRenderer.send('go-to-folder', ['up', data])
   }
 
   /**
@@ -155,7 +156,7 @@ export class IpcService {
    */
   openFileExplorer(data: string) {
     console.log(data)
-    this.ipcRenderer.send('open-folder', data)
+    // this.ipcRenderer.send('open-folder', data)
   }
 
   /**
@@ -211,10 +212,18 @@ export class IpcService {
   /**
    * Ipc renderer that sends command to main renderer to get specified movie from library db.
    * Replies offline directories.
-   * @param data imdb id or movie title and release year
+   * @param data imdb id or movie title and release year or tmdb id
    */
-  getMovieFromLibrary(data) {
-    // this.ipcRenderer.send('get-library-movie', data)
+  async getMovieFromLibrary(data) {
+    console.log('getMovieFromLibrary data', data);
+    // this.ipcRenderer.send('get-library-movie', [data]);
+    // return new Promise<ILibraryInfo>((resolve, reject) => {
+    //   this.ipcRenderer.once('library-movie', (event, arg) => {
+    //     console.log('library-movie', arg);
+    //     resolve(arg);
+    //   });
+    // });
+    return null
   }
 
   getImage(url: string, imdbId: string, type: string) {
@@ -244,6 +253,12 @@ export class IpcService {
   }
   removeMarkAsWatched(val) {
     // this.ipcRenderer.send('remove-watched', val)
+  }
+  minimizeWindow() {
+    this.ipcRenderer.send('app-min')
+  }
+  restoreWindow() {
+    this.ipcRenderer.send('app-restore')
   }
   exitProgram() {
     this.ipcRenderer.send('exit-program')
