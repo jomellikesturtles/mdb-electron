@@ -1,6 +1,16 @@
 <div id='contents' style="white-space: nowrap;position:relative">
+
   <div id="mySidenav" class="sidenav" style='z-index: 51; overflow: hidden; left:0px'
     [ngClass]="{'collapsed':isOpenNav===false}">
+    <div style='display: flex; flex-wrap: wrap; top:0;left:0'>
+
+      <a routerLink="./dashboard" (click)='goPreviousPage()'>
+        <img class='side-nav-icon' src="./assets/icons/arrow-left.svg" />
+      </a>
+      <a routerLink="./dashboard" (click)='goForwardPage()'>
+        <img class='side-nav-icon' src="./assets/icons/arrow-right.svg" />
+      </a>
+    </div>
     <div>
       <a routerLink="./dashboard">
         <img class='side-nav-icon' src="./assets/icons/home.svg" />
@@ -37,7 +47,7 @@
       <!-- only for buffer -->
     </div>
 
-    <!-- <div class='bg-image' style=' background: linear-gradient(to bottom, rgba(51, 51, 51, .8), rgba(0, 0, 0, .8)), url(https://cdn.onebauer.media/one/empire-tmdb/films/857/images/4y5TDUZlqUmWWtjTAznWb6CFpzt.jpg?quality=50&width=1800&ratio=16-9&resizeStyle=aspectfill&format=jpg); 
+    <!-- <div class='bg-image' style=' background: linear-gradient(to bottom, rgba(51, 51, 51, .8), rgba(0, 0, 0, .8)), url(https://cdn.onebauer.media/one/empire-tmdb/films/857/images/4y5TDUZlqUmWWtjTAznWb6CFpzt.jpg?quality=50&width=1800&ratio=16-9&resizeStyle=aspectfill&format=jpg);
     filter: blur(8px);
     -webkit-filter: blur(8px);
         height: 100%;

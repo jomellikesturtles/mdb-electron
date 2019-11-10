@@ -5,13 +5,7 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
 
       <div *ngFor="let sMovie of selectedMovies" style='width: 120px;margin :0 5px 5px 0'>
         <div class='selected-movie-card-image-container' (click)='onHighlight(sMovie)' [ngStyle]="{'height': '180px'
-          ,'background-image':'url(https://image.tmdb.org/t/p/w600_and_h900_bestv2'+ sMovie.poster_path + ')'}">
-
-          <!-- <div // old
-            [ngStyle]="{'height': '180px'
-          ,'background-image':'url(https://image.tmdb.org/t/p/w600_and_h900_bestv2'+ sMovie.poster_path + ')','margin':'0 5px 5px 0'}"
-            class='movie-card-image-container'>
-          </div> -->
+          ,'background-image':'url(https://image.tmdb.org/t/p/w342'+ sMovie.poster_path + ')'}">
 
           <!-- <div id="results-panel" *ngFor="let movie of searchResults" class='movie-card' [ngStyle]="{'width': cardWidth}"
   [ngClass]="{'movie-card-selected': movie.isHighlighted}" (click)=onHighlight(movie)>
@@ -43,20 +37,16 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
   <option value='250px'>xtra large</option>
 </select>
 
-
-
-
-
 <div class="container-fluid">
 
   <div *ngIf='!hasSearchResults'>
     <h1 class='jumbo-message'>No results found for '{{currentSearchQuery}}' :(</h1>
   </div>
 
-  <div *ngIf='hasSearchResults' style='width: 100%; display: flex; flex-wrap: wrap;'>
+  <div *ngIf='hasSearchResults' class='movie-cards-display-grid'>
 
     <div id="results-panel" *ngFor="let movie of searchResults" class='movie-card' [ngStyle]="{'width': cardWidth}"
-      [ngClass]="{'movie-card-selected': movie.isHighlighted}" (click)=onHighlight(movie)>
+      [ngClass]="{'movie-card-selected': movie.isHighlighted}">
 
       <!-- alt image -->
       <!-- <div style=' text-align: center; color: white;' [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')'}"
@@ -67,8 +57,8 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
       <!-- end of alt image -->
 
       <div
-        [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w600_and_h900_bestv2'+movie.poster_path+')'}"
-        class='movie-card-image-container'>
+        [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
+        class='movie-card-image-container' (click)=onHighlight(movie)>
 
         <div class='movie-available' data-toggle='tooltip' title='Available offline'>
         </div>
@@ -84,10 +74,11 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
         </div>
       </div>
     </div>
+    <div style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
+      <h5 style='text-decoration: underline;cursor:pointer' (click)='getMoreResults()'>Load more results...</h5>
+    </div>
   </div>
 </div>
-{{displayMessage}}
-{{displaySnackbar}}
 <!-- <div class="snackbar" [hidden]="displayMessage.length == 0">{{displayMessage}}</div> -->
 <!-- <div class="snackbar" [ngClass]="{'show': displayMessage.length >= 0}">
   <p>{{displayMessage}}</p>

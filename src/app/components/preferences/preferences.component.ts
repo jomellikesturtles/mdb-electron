@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } 
 import { Observable } from 'rxjs'
 import { IpcService } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
-import { IPreferences } from '../../subject'
+import { IPreferences } from '../../interfaces'
 declare var $: any;
 @Component({
   selector: 'app-preferences',

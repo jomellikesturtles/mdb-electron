@@ -10,7 +10,7 @@ import { DetailsComponent } from './components/details/details.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { MagnetPipe, SimplifySizePipe } from './services/torrent.service';
 import { FormsModule } from '@angular/forms'
-import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpClientModule, HttpParams } from '@angular/common/http';
 import { SearchComponent } from './components/search/search.component';
 import { TopNavigationComponent } from './components/top-navigation/top-navigation.component';
 import { ResultsComponent } from './components/results/results.component';
@@ -43,7 +43,8 @@ import { CommaSpacePipe, MdbPipesPipe, ReleaseYearPipe, RuntimeDisplayPipe } fro
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    // HttpParams
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -5,9 +5,8 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
       <div *ngFor="let sMovie of selectedMovies" style='width: 120px'>
         <div class='selected-movie-card-image-container' [ngClass]="{'movie-card-selected': sMovie.isHighlighted}"
           (click)=onHighlight(sMovie)>
-          <div
-            [ngStyle]="{'height': '180px'
-          ,'background-image':'url(https://image.tmdb.org/t/p/w600_and_h900_bestv2'+ sMovie.poster_path + ')','margin':'0 5px 5px 0'}"
+          <div [ngStyle]="{'height': '180px'
+          ,'background-image':'url(https://image.tmdb.org/t/p/w154'+ sMovie.poster_path + ')','margin':'0 5px 5px 0'}"
             class='movie-card-image-container'>
           </div>
           <div class="overlay overlay-remove">
@@ -51,7 +50,7 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
               <!-- <h6 (click)=onSelect(movie) class='text-primary' style='cursor: pointer'>{{movie.title}}</h6> -->
 
               <div
-                [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w600_and_h900_bestv2'+movie.poster_path+')'}"
+                [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w154'+movie.poster_path+')'}"
                 class='movie-card-image-container'>
                 <div class="overlay overlay-add">
                 </div>
@@ -73,10 +72,10 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
     </div>
   </div>
 
-  <div *ngIf='selectedMovies'>
+  <!-- <div *ngIf='selectedMovies'>
     <button class='btn btn-success' (click)='onDownloadSelected()'>Download selected</button>
     <button class='btn btn-danger' (click)='onClearSelected()'>Clear selected</button>
-  </div>
+  </div> -->
   <div *ngIf='!browserConnection'>
     <h1>You are offline</h1>
   </div>

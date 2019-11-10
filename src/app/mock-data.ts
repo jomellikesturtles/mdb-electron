@@ -1,10 +1,11 @@
 /**
  * Mock data and Defaults. For pre-defined lists and offline data
  */
-import { Movie, MovieGenre, SelectedMovies, Torrent, IGenre, TmdbResultObject, IPreferences, LibraryMovie } from './subject'
+import { } from './subject'
+import { ITmdbResultObject, ILibraryMovie, IPreferences, IGenre, ITorrent, IOmdbMovieDetail } from './interfaces'
 import { Injectable } from '@angular/core'
 
-export const TEST_LIBRARY_MOVIES: LibraryMovie[] = [
+export const TEST_LIBRARY_MOVIES: ILibraryMovie[] = [
   {
     tmdbId: 0,
     imdbId: 'tt0095956',
@@ -135,7 +136,7 @@ export const MOCK_BULK_DOWNLOAD_TORRENTS = [
   }
 ]
 
-export const MOVIEGENRES: MovieGenre[] = [
+export const MOVIEGENRES = [
   { id: 1, code: 'ACT', description: 'Action', isChecked: true },
   { id: 2, code: 'ADV', description: 'Adventure', isChecked: false },
   { id: 3, code: 'DOC', description: 'Documentary', isChecked: false },
@@ -219,7 +220,8 @@ export let DISPLAYEDMOVIES = [
     torrents: []
   }
 ]
-export const MOVIES: Movie[] = [
+// used in top-nav for search
+export const MOVIES: IOmdbMovieDetail[] = [
   // { id: 1, Title: 'Face Off', Year: 1997, Plot: '', genre: 'Action', isAvailable: false, imageDirectory: './assets/images/1997-face-off-poster1.jpg', Runtime: '156', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' },
   // { id: 2, Title: 'Nacho Libre', Year: 2006, Plot: '', genre: 'Comedy', isAvailable: true, imageDirectory: './assets/images/2006-nacho_libre-1.jpg', Runtime: '120', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' },
   // { id: 3, Title: 'Salt', Year: 2006, Plot: '', genre: 'Action', isAvailable: false, imageDirectory: './assets/images/2006-salt-1.jpg', Runtime: '110', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' },
@@ -230,32 +232,7 @@ export const MOVIES: Movie[] = [
   // { id: 8, Title: 'Three Musketeers', Year: 2011, Plot: '', genre: 'Action', isAvailable: true, imageDirectory: './assets/images/2011-three_musketeers.jpg', Runtime: '180', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' }
 ]
 
-export const SELECTEDMOVIE: Movie = {
-  id: 4,
-  Title: 'Valkyrie',
-  Year: 2008,
-  Plot: '',
-  genre: 'Action',
-  isAvailable: true,
-  isHighlighted: false,
-  imageDirectory: './assets/images/2008-valkyrie-1.jpg',
-  Runtime: '120',
-  Genre: '',
-  Director: '',
-  Writer: '',
-  Poster: '',
-  imdbID: ''
-}
-
-export const SELECTEDMOVIES: SelectedMovies[] = [
-  { imdbId: 'tt0477348', title: 'No Country for Old Men' },
-  { imdbId: 'tt0120338', title: 'Titanic' },
-  { imdbId: 'tt0499549', title: 'Avatar' },
-  { imdbId: 'tt2287627', title: 'Deadpool' },
-  { imdbId: 'tt1431045', title: 'Akari' }
-]
-
-export const TORRENTS: Torrent[] = [
+export const TORRENTS: ITorrent[] = [
   //   {
   //   id: 1,
   //   name: 'Valkyrie.DVD-R.NTSC.2008',
@@ -440,7 +417,7 @@ export const GENRES: IGenre[] = [
   }
 ]
 
-export let TMDB_SEARCH_RESULTS: TmdbResultObject = {
+export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
   page: 1,
   total_results: 3810,
   total_pages: 191,
@@ -954,6 +931,26 @@ export const DEFAULT_PREFERENCES: IPreferences = {
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 export const DECADES = [
+  {
+    display: '1910s',
+    value: 1910
+  },
+  {
+    display: '1920s',
+    value: 1920
+  },
+  {
+    display: '1930s',
+    value: 1930
+  },
+  {
+    display: '1940s',
+    value: 1940
+  },
+  {
+    display: '1950s',
+    value: 1950
+  },
   {
     display: '1960s',
     value: 1960

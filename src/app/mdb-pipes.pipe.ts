@@ -19,7 +19,6 @@ export class MdbPipesPipe implements PipeTransform {
 @Pipe({ name: 'releaseYear' })
 export class ReleaseYearPipe implements PipeTransform {
   transform(value: string): string {
-    console.log(value.substr(value.lastIndexOf(' ') + 1));
     return value.substr(value.lastIndexOf(' ') + 1);
   }
 }
@@ -47,7 +46,9 @@ export class RuntimeDisplayPipe implements PipeTransform {
     let toReturn = ''
     if (typeof value === 'number') {
       const runtimeHour = parseInt((value / 60).toFixed(), 10)
-      if (runtimeHour >= 1) {
+      if (runtimeHour === 1) {
+        toReturn += `${runtimeHour} hour`
+      } else if (runtimeHour >= 2) {
         toReturn += `${runtimeHour} hours`
       }
       toReturn += ` ${value % 60} minutes`
@@ -57,7 +58,9 @@ export class RuntimeDisplayPipe implements PipeTransform {
       if (value !== 'N/A') {
         if (regexResults != null) {
           const runtimeHour = parseInt((parseInt(value, 10) / 60).toFixed(), 10)
-          if (runtimeHour >= 1) {
+          if (runtimeHour === 1) {
+            toReturn += `${runtimeHour} hour`
+          } else if (runtimeHour >= 2) {
             toReturn += `${runtimeHour} hours`
           }
           toReturn += ` ${parseInt(value, 10) % 60} minutes`

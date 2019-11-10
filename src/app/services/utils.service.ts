@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { TmdbResultObject, TmdbResult } from '../subject';
 import * as _ from 'lodash';
 
 @Injectable({
@@ -18,6 +17,10 @@ export class UtilsService {
     return releaseDate.substring(0, releaseDate.indexOf('-'))
   }
 
+  /**
+   * Hides the snackbar.
+   * @param root instance method.
+   */
   hideSnackbar(root) {
     setTimeout(function () {
       root.displayMessage = ''

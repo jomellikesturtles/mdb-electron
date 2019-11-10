@@ -1,11 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { Movie, Test, OmdbMovieDetail, Rating, Torrent, LibraryInfo, TmdbMovieDetail } from '../../subject';
+import { IOmdbMovieDetail, IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail } from '../../interfaces';
 import { MdbMovieDetails } from '../../classes';
-import { SELECTEDMOVIE, TEST_MOVIE_DETAIL, TEST_TMDB_MOVIE_DETAILS } from '../../mock-data';
+import { TEST_MOVIE_DETAIL, TEST_TMDB_MOVIE_DETAILS } from '../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DataService } from '../../services/data.service';
 import { MovieService } from '../../services/movie.service';
 import { TorrentService } from '../../services/torrent.service';
+import { UtilsService } from '../../services/utils.service';
 import { IpcService } from '../../services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -32,6 +33,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private movieService: MovieService,
     private ipcService: IpcService,
     private torrentService: TorrentService,
+    private utilsService: UtilsService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) { }
@@ -43,7 +45,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   selectedMovie;
   currentMovie: MdbMovieDetails;
   movieBackdrop;
-  torrents: Torrent[] = [];
+  torrents: ITorrent[] = [];
   globalImdbId;
   testSelectedMovie = TEST_TMDB_MOVIE_DETAILS
   testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
@@ -54,8 +56,19 @@ export class DetailsComponent implements OnInit, OnDestroy {
   myVideoPath = null
   movieDetails = new MdbMovieDetails()
   ngOnInit() {
-    this.selectedMovie = this.testSelectedMovie
 
+    // this.selectedMovie = this.testSelectedMovie
+
+    this.activatedRoute.params.subscribe(params => {
+      console.log('activatedRoute.params', params);
+      if (params.id) {
+        console.log('params.imdbId true');
+        // this.imdbId = params.id;
+        this.getMovieOnline(params.id)
+      } else {
+        this.hasData = false
+      }
+    });
     // let imdbId = 0
     // this.activatedRoute.params.subscribe(params => {
     //   console.log('activatedRoute.params', params);
@@ -107,16 +120,14 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // // end of commented for test
     $('[data-toggle="popover"]').popover()
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
-    const myObject = this.selectedMovie
-    this.convertObject(myObject)
     this.getMarkAsWatched()
-    this.getMovieCredits()
+    // this.getMovieCredits()
   }
 
   ngOnDestroy(): void {
-    this.movieMetadataSubscription.unsubscribe()
-    this.libraryMovieSubscription.unsubscribe()
-    this.selectedMovie = null
+    // this.movieMetadataSubscription.unsubscribe()
+    // this.libraryMovieSubscription.unsubscribe()
+    // this.selectedMovie = null
   }
 
   convertObject(v) {
@@ -300,9 +311,17 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getMovieOnline(val: any) {
     // tt2015381 is Guardians of the galaxy 2014; for testing only
     console.log('getMovie initializing with value...', val);
-    this.movieService.getMovieInfo(val.trim()).subscribe(data => {
+    // this.movieService.getMovieInfo(val.trim()).subscribe(data => {
+    //   console.log('got from getMovieOnline ', data)
+    //   this.selectedMovie = data;
+    //   this.saveMovieDataOffline(data)
+    // });
+    this.movieService.getTmdbMovieDetails(val).subscribe(data => {
       console.log('got from getMovieOnline ', data)
       this.selectedMovie = data;
+      const myObject = this.selectedMovie
+      this.convertObject(myObject)
+      this.hasData = true
       this.saveMovieDataOffline(data)
     });
   }
@@ -400,7 +419,19 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.ipcService.openLinkExternal(url)
   }
 
-  sanitize(torrent: Torrent) {
+  goToMovie(val) {
+    // this.selectedMovie = movie;
+    const highlightedId = val
+    this.dataService.updateHighlightedMovie(highlightedId);
+    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+  }
+  goToCast(val) {
+
+  }
+  getYear(val: string) {
+    return this.utilsService.getYear(val)
+  }
+  sanitize(torrent: ITorrent) {
     return this.torrentService.sanitize(torrent);
   }
 

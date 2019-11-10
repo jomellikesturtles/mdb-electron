@@ -140,3 +140,118 @@ body {
   height: 100%;
   background-color: rgb(32, 32, 32);
 }
+
+.movie-cards-display-grid {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.movie-card {
+  padding: 5px;
+  outline: none;
+  margin-left: 10px
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: .5s ease;
+  // z-index: -1;
+}
+
+
+.overlay-add {
+  background-color: #38ec14;
+}
+
+
+.overlay-remove {
+  background-color: #fc0000;
+}
+
+.movie-card-selected .overlay-add {
+  opacity: .5;
+}
+
+.movie-card-body {
+  padding: 5px 0px 0px 0px !important;
+}
+
+
+.movie-card-selected .overlay-add {
+  opacity: .5;
+}
+
+.movie-card-image-container {
+  background-color: rgb(32, 32, 32);
+  box-shadow: 0 0 10px black;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer
+}
+
+.movie-card-image-container:hover img {
+  opacity: .5;
+}
+
+.movie-card-image-container:hover .overlay {
+  opacity: .5;
+}
+
+
+.movie-card-title {
+  display: inline-block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  margin-bottom: 0px;
+}
+
+.movie-card-title:hover {
+  text-decoration: underline;
+}
+
+// the circle one
+.movie-available {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  height: 15px;
+  width: 15px;
+  background-color: rgb(8, 185, 8);
+  border-radius: 50%;
+  box-shadow: 0 0 10px #38ec14;
+  z-index: 3;
+}
+
+
+.selected-movie-card-image-container {
+  background-color: rgb(32, 32, 32);
+  box-shadow: 0 0 10px black;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer
+}
+
+selected-movie-card-image-container:hover img {
+  opacity: .5;
+}
+
+selected-movie-card-image-container:hover .overlay {
+  opacity: .5;
+}
+
+// selected-movie-card-image-container:hover .overlay-remove {
+//   opacity: .5;
+// }

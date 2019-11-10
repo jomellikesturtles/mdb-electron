@@ -86,13 +86,12 @@ ipcMain.on('logger', function (event, data) {
   console.log(data);
 }); // Handle console.logs from Renderer
 
-/** Set to maximized */
-ipcMain.on('app-max', function () {
+/** Set to maximized or restore */
+ipcMain.on('app-restore', function () {
   mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize();
 });
 ipcMain.on('app-min', function () {
   mainWindow.minimize()
-  // mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize();
 });
 
 /* Operating System

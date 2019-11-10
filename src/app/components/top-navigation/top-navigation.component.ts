@@ -1,7 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
-import { Movie, MovieGenre, IGenre } from '../../subject';
-import { SELECTEDMOVIE, MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
+// import { Movie, MovieGenre, IGenre } from '../../subject';
+import { IOmdbMovieDetail, MovieGenre, IGenre } from '../../interfaces';
+import { MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
 import { IpcService } from '../../services/ipc.service'
@@ -26,7 +27,7 @@ export class TopNavigationComponent implements OnInit {
     private location: Location) { }
 
   browserConnection = navigator.onLine;
-  selectedMovie: Movie
+  selectedMovie: IOmdbMovieDetail
   numbers;
   minYear = 1888;
   maxYear = 2018;
@@ -134,9 +135,6 @@ export class TopNavigationComponent implements OnInit {
   onMinimize() {
     this.ipcService.minimizeWindow()
   }
-  onMaximize() {
-    this.ipcService.maximizeWindow()
-  }
   onRestore() {
     this.ipcService.restoreWindow()
   }
@@ -145,7 +143,6 @@ export class TopNavigationComponent implements OnInit {
     this.ipcService.exitProgram()
   }
 }
-
 
 export interface ISearchQuery {
   keywords: string,

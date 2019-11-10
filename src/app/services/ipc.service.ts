@@ -9,7 +9,7 @@ import {
 import { BehaviorSubject } from 'rxjs'
 declare var electron: any
 // const { ipcRenderer } = electron
-import { LibraryInfo } from '../subject'
+import { ILibraryInfo } from '../interfaces'
 @Injectable({
   providedIn: 'root'
 })
@@ -217,7 +217,7 @@ export class IpcService {
   async getMovieFromLibrary(data) {
     console.log('getMovieFromLibrary data', data);
     // this.ipcRenderer.send('get-library-movie', [data]);
-    // return new Promise<LibraryInfo>((resolve, reject) => {
+    // return new Promise<ILibraryInfo>((resolve, reject) => {
     //   this.ipcRenderer.once('library-movie', (event, arg) => {
     //     console.log('library-movie', arg);
     //     resolve(arg);
@@ -257,11 +257,8 @@ export class IpcService {
   minimizeWindow() {
     // this.ipcRenderer.send('app-min')
   }
-  maximizeWindow() {
-    // this.ipcRenderer.send('maximize-window')
-  }
   restoreWindow() {
-    // this.ipcRenderer.send('app-max')
+    // this.ipcRenderer.send('app-restore')
   }
   exitProgram() {
     // this.ipcRenderer.send('exit-program')

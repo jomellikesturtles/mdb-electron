@@ -16,7 +16,7 @@ const routes: Routes = [
   { path: 'bulk-download', component: BulkDownloadComponent },
   { path: 'browse', component: BrowseComponent },
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'details/:imdbId', component: DetailsComponent },
+  { path: 'details/:id', component: DetailsComponent },
   { path: 'details', component: DetailsComponent }, // test only
   { path: 'library', component: LibraryComponent },
   { path: 'navigation', component: NavigationComponent },

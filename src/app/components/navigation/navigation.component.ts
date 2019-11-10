@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-// const path = require('path')
-// import {} from 'path'
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-navigation',
@@ -9,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavigationComponent implements OnInit {
 
-  constructor() { }
+  constructor(private location: Location) { }
 
   isOpenNav = true
   ngOnInit() {
@@ -42,14 +41,18 @@ export class NavigationComponent implements OnInit {
       this.closeNav()
     }
   }
-  // path.join(__dirname, 'src', 'assets', 'scripts', 'file-explorer.js'
-  getHomeIcon() {
-    const icon = '/assets/icons/home.svg'
-    // console.log(__dirname);
-    return icon
+
+  goPreviousPage() {
+    console.log('goPreviousPage');
+    console.log(this.location.path())
+    console.log(window.history)
+    console.log(this.location)
+    this.location.back()
   }
-  getBrowseIcon() {
-    const icon = '\\assets\\icons\\magnifiying-glass.svg'
-    return icon
+
+  goForwardPage() {
+    console.log('goPreviousPage');
+    console.log(this.location.path())
+    this.location.forward()
   }
 }

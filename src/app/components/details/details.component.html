@@ -62,7 +62,7 @@
             <div *ngIf="movieDetails.isAvailable==false">
               <p>Movie is not available</p>
             </div>
-            <div id='featuredCastAndCrewDisplay'></div>
+
           </div>
         </div>
         <div *ngIf="movieDetails.isAvailable">
@@ -70,26 +70,25 @@
         <h1>video 1</h1>
         <!-- <div *ngIf="getVideoPath()|async">
           <h1>{{myVideoPath}}</h1>
-          <div style='background-color: black;
+          <div style=' background-color: black; outline: none; border-color: darkblue; box-shadow: 0 0 10px #0099FF;
+              border: 2px solid black; transition: 333ms; margin-bottom:10vh;margin-top:10vh ' class=' text-center'>
+              <video width="100%" controls>
+                <source [src]="myVideoPath" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+          <div *ngIf="myVideoPath.length > 1">
+            <h1>{{myVideoPath}}2</h1>
+            <div style='background-color: black;
           outline: none; border-color: darkblue; box-shadow: 0 0 10px #0099FF;
           border: 2px solid black; transition: 333ms; margin-bottom:10vh;margin-top:10vh ' class='text-center'>
-            <video width="100%" controls>
-              <source [src]="myVideoPath" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        </div>
-        <div *ngIf="myVideoPath.length > 1">
-          <h1>{{myVideoPath}}2</h1>
-          <div style='background-color: black;
-          outline: none; border-color: darkblue; box-shadow: 0 0 10px #0099FF;
-          border: 2px solid black; transition: 333ms; margin-bottom:10vh;margin-top:10vh ' class='text-center'>
-            <video width="100%" controls>
-              <source [src]="myVideoPath" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        </div> -->
+              <video width="100%" controls>
+                <source [src]="myVideoPath" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div> -->
         <!-- </div> -->
         <div class="table-responsive-lg container">
           <table class="table">
@@ -118,6 +117,41 @@
         </div>
       </div>
 
+      <div class="row">
+        Cast
+        <div id='featuredCastAndCrewDisplay' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
+          <div *ngFor="let cast of movieDetails.credits.cast">
+            <div (click)='goToCast(cast.cast_id)'
+              style='height: 200px; width: 185px; border-radius: 50%;background-size: cover; background-position: center;'
+              [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+cast.profile_path+')'}">
+            </div>
+            <div>
+              <h6 (click)='goToCast(cast.cast_id)'>{{cast.name}}</h6>
+              <p>{{cast.character}}</p>
+            </div>
+            <!-- image -->
+            <!-- name -->
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        Recommended Movies
+        <div id='recommendedMovies' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
+          <div *ngFor="let rMovie of movieDetails.recommendations.results" style='margin-right: 8px; cursor: pointer;'>
+            <!-- image -->
+            <!-- name -->
+            <div (click)='goToMovie(rMovie.id)'
+              style='height: 190px; width: 300px;background-size: cover; background-position: center;'
+              [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w300'+rMovie.backdrop_path+')'}">
+            </div>
+            <div>
+              <h6 (click)='goToMovie(rMovie.id)' style='cursor: pointer;'>{{rMovie.title}}</h6>
+              <p style='margin-left: 5px;'>{{getYear(rMovie.release_date)}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
 
