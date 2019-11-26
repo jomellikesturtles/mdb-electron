@@ -14,7 +14,7 @@ export class DataService {
   currentMovie = this.selectedMovieSource.asObservable()
 
   private searchQuerySource = new BehaviorSubject<any>('')
-  currentSearchQuery = this.searchQuerySource.asObservable()
+  searchQuery = this.searchQuerySource.asObservable()
 
   private searchResultsSource = new BehaviorSubject<any>('')
   currentSearchResults = this.searchResultsSource.asObservable()
@@ -57,6 +57,16 @@ export class DataService {
       this.dashboardData && this.dashboardData.length
     )
     return this.dashboardData && this.dashboardData.length
+  }
+
+  setSearchQuery(val) {
+    console.log(val);
+    this.searchQuery = val;
+  }
+
+  getSearchQuery() {
+    console.log(this.searchQuery);
+    return this.searchQuery;
   }
 
   updateHighlightedMovie(val: any) {

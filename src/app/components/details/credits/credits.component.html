@@ -1,11 +1,27 @@
-<p>
-  credits works!
-</p>
-
 
 <div *ngFor="let cast of castList">
-
+  <div class='row'>
+    <div class='col-4'>
+      <div style='background-color: white;border-radius: 50%;height: 50px;width: 50px;'></div>
+    </div>
+    <div class='col-4'>
+      <p (click)='goToPerson(cast.id)' class='text-hyperlink'>{{cast.name}}</p>
+    </div>
+    <div class='col-4'>
+      <p>{{cast.character}}</p>
+    </div>
+  </div>
 </div>
 <div *ngFor="let crew of crewList">
-
+  <div class='row'>
+    <div class='col-4'>
+      <div style='background-color: white;border-radius: 50%;height: 50px;width: 50px;'></div>
+    </div>
+    <div class='col-4'>
+      <p (click)='goToPerson(crew.id)' class='text-hyperlink'>{{crew.name}}</p>
+    </div>
+    <div class='col-4'>
+      <p>{{crew.job}}</p>
+    </div>
+  </div>
 </div>

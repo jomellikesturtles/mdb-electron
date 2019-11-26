@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { BulkDownloadComponent } from '../components/bulk-download/bulk-download.component';
 import { BrowseComponent } from '../components/browse/browse.component';
+import { CreditsComponent } from '../components/details/credits/credits.component';
 import { DashboardComponent } from '../components/dashboard/dashboard.component';
 import { DetailsComponent } from '../components/details/details.component';
 import { NavigationComponent } from '../components/navigation/navigation.component';
@@ -17,12 +18,15 @@ const routes: Routes = [
   { path: 'bulk-download', component: BulkDownloadComponent },
   { path: 'browse', component: BrowseComponent },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'credits/', component: CreditsComponent },
+  { path: 'credits/:id', component: CreditsComponent },
   { path: 'details/:id', component: DetailsComponent },
   { path: 'details', component: DetailsComponent }, // test only
   { path: 'library', component: LibraryComponent },
   { path: 'navigation', component: NavigationComponent },
   { path: 'preferences', component: PreferencesComponent },
   { path: 'person-details/:id', component: PersonDetailsComponent },
+  { path: 'person-details', component: PersonDetailsComponent },
   { path: 'results', component: ResultsComponent },
   // { path: '**', redirectTo: '/dashboard', pathMatch: 'full' }, // not found
   { path: '**', redirectTo: '/dashboard', pathMatch: 'full' }, // not found

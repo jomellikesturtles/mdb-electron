@@ -19,6 +19,8 @@ import { BrowseComponent } from './components/browse/browse.component';
 import { CommaSpacePipe, MdbPipesPipe, ReleaseYearPipe, RuntimeDisplayPipe } from './mdb-pipes.pipe';
 import { PersonDetailsComponent } from './components/person-details/person-details.component';
 import { CreditsComponent } from './components/details/credits/credits.component';
+import { VideoComponent } from './components/details/video/video.component';
+import { BookmarksComponent } from './components/bookmarks/bookmarks.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,9 @@ import { CreditsComponent } from './components/details/credits/credits.component
     ReleaseYearPipe,
     RuntimeDisplayPipe,
     PersonDetailsComponent,
-    CreditsComponent
+    CreditsComponent,
+    VideoComponent,
+    BookmarksComponent
   ],
   imports: [
     BrowserModule,

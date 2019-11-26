@@ -1,5 +1,5 @@
 import { IMdbMovieDetails, IRating, ILibraryInfo, IGenre, ISpokenLanguage } from './interfaces'
-import { MONTHS } from './mock-data'
+import { MONTHS, REGEX_TMDB_RELEASE_DATE, REGEX_OMDB_BOX_OFFICE } from './constants'
 
 /**
  * The main class.
@@ -71,7 +71,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
    */
   set boxOffice(v: string | number) {
     // just in case to be used in the future
-    const omdbBoxOfficeRegex = new RegExp(`(\\$+[\\d,]+)`, `gi`);
+    const omdbBoxOfficeRegex = REGEX_OMDB_BOX_OFFICE
     if (typeof v === 'string') {
       if (v === 'N/A') {
         this._boxOffice = null
@@ -150,9 +150,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
    * @param v date to set
    */
   set releaseDate(v: string) {
-    const omdbReleaseDateRegex = new RegExp(`^(\\d{2})+\\s+([a-z]{3,})+\\s+(\\d{4})+`, `gi`);
-    const tmdbReleaseDateRegex = new RegExp(`([0-9]{2,4})-([0-9]{2})-([0-9]{2})`, `gi`);
-    const regexResults = tmdbReleaseDateRegex.exec(v)
+    const regexResults = REGEX_TMDB_RELEASE_DATE.exec(v)
     if (regexResults != null) {
       const date = new Date()
       date.setFullYear(parseInt(regexResults[1], 10))

@@ -1,3 +1,7 @@
+/**
+ * For practicing only
+ */
+
 // import { catchError } from "rxjs/operators";
 // import { log } from 'util';
 
@@ -45,22 +49,56 @@ var rxCommon = require('@angular/common');
 // var http = require('http');
 var https = require('https');
 
-const subject = new Rx.BehaviorSubject(123);
-rxCommon.
-// two new subscribers will get initial value => output: 123, 123
-subject.subscribe(console.log);
-subject.subscribe(console.log);
+const inDb = [true, false, false]
+// const
 
-// two subscribers will get new value => output: 456, 456
-subject.next(456);
+// -------------------
+function function1() {
+  console.log(typeof (Worker));
+  return new Promise(resolve => {
+    setTimeout(() => {
+      console.log('hey');
+      resolve('hey');
+    }, 3000);
+  })
+}
 
-// new subscriber will get latest value (456) => output: 456
-subject.subscribe(console.log);
+async function onInit() {
+  console.log('initializing...');
+  var result = await function1()
+  console.log(result)
+  console.log('in here')
+}
 
-// all three subscribers will get new value => output: 789, 789, 789
-subject.next(789);
+onInit()
+console.log('afte in here')
 
-https.get('https://api.themoviedb.org/3/movie/550?api_key=a636ce7bd0c125045f4170644b4d3d25').pipe(tap(_ => console.log('')))
-// http .get<any>(url).pipe(tap(_ => this.log('')),
-//       catchError(this.handleError<any>('searchMovieByTitle')))
+// -------------------
 
+
+function random(val) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(Math.random())
+    }, val * 1000);
+  })
+}
+
+const sumRandomAsyncNums = async () => {
+  const first = await random(1)
+  const third = await random(3)
+  console.log(`sumRandomAsyncNums ${first}`);
+  console.log(`sumRandomAsyncNums ${third}`);
+}
+
+const sumRandomAsyncNums2 = async () => {
+  const second = await random(2)
+  console.log(`${second}`);
+}
+const sumRandomAsyncNums3 = async () => {
+  const second = await random(2)
+  console.log(`${second}`);
+}
+sumRandomAsyncNums()
+sumRandomAsyncNums()
+sumRandomAsyncNums2()

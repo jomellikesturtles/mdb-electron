@@ -249,13 +249,20 @@ export class BulkDownloadComponent implements OnInit {
    * @param movie movie to remove
    */
   removeMovie(movie) {
-    console.log('movie', movie[0]);
+    console.log('movie', movie);
     const newDisplayedMovies = this.displayedMovies.filter(obj => {
-      console.log(obj.imdbId != movie[0].imdbId)
-      return obj.imdbId != movie[0].imdbId
+      console.log(obj.id != movie.id)
+      return obj.id != movie.id
     })
     console.log('newDisplayedMovies', newDisplayedMovies);
     this.displayedMovies = newDisplayedMovies
+    // console.log('movie', movie);
+    // const newDisplayedMovies = this.displayedMovies.filter(obj => {
+    //   console.log(obj.imdbId != movie.imdbId)
+    //   return obj.imdbId != movie.imdbId
+    // })
+    // console.log('newDisplayedMovies', newDisplayedMovies);
+    // this.displayedMovies = newDisplayedMovies
   }
 
   /**
@@ -263,16 +270,8 @@ export class BulkDownloadComponent implements OnInit {
    * @param movie selected movie object
    */
   goToMovie(movie) {
-    let imdbId = movie.imdbId
-    console.log(imdbId)
-    if (!imdbId) {
-      this.movieService.getExternalId(movie.id).subscribe(data => {
-        imdbId = data.imdb_id;
-        this.router.navigate([`/details/${imdbId}`], { relativeTo: this.activatedRoute })
-      })
-    } else {
-      this.router.navigate([`/details/${imdbId}`], { relativeTo: this.activatedRoute })
-    }
+    let tmdbId = movie.id
+    this.router.navigate([`/details/${tmdbId}`], { relativeTo: this.activatedRoute })
   }
   // https://yts.lt/api/v2/movie_suggestions.json?movie_id=10
   /**

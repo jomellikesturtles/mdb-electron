@@ -6,18 +6,20 @@
   <!-- <div class="col-sm-6"> -->
   <div style='width: 350px;'></div>
   <div class='search-controls-container' style='margin-left: 350px;'>
-    <input #searchBar name="searchBar" class="form-control" id="search-bar"
-      style='margin-right: 10px; border-radius: .25rem; min-width: 200px;' placeholder="Search title or IMDb id"
-      [(ngModel)]="searchQuery.keywords" (keyup.enter)="onSearch(searchQuery.keywords);searchBar.value=''"
+    <input #searchBar name="searchBar" class="form-control" id="search-bar" [(ngModel)]="searchQuery.query"
+      style='margin-right: 10px; border-radius: .25rem; min-width: 200px;color:black'
+      placeholder="Search title or IMDb id" (keyup.enter)="onSearch(searchQuery.query);"
       list='searchHistory' />
     <datalist id="searchHistory">
       <option *ngFor="let item of searchHistoryList">
         {{item}}
     </datalist>
+    <button class="btn btn-danger input-group-btn" (click)="searchBar.value=''" style='margin-right: 10px'>x</button>
     <button class="btn btn-success input-group-btn" id="search-button"
-      (click)="onSearch(searchQuery.keywords);searchBar.value=''" style='margin-right: 10px'>Search</button>
+      (click)="onSearch(searchQuery.query);" style='margin-right: 10px'>Search</button>
     <button class="btn btn-outline-light input-group-btn" style='margin-right: 10px;width: 300px;'
-      id="advanced-search-button" data-toggle="collapse" data-target="#demo">Advanced Search</button>
+      id="advanced-search-button" data-toggle="collapse" data-target="#demo" (click)='onAdvancedSearch()'>Advanced
+      Search</button>
   </div>
   <!-- </div> -->
   <div class='window-controls-container'>
@@ -38,8 +40,9 @@
   <!-- </div> -->
 </div>
 
-<!-- find -->
-<div style='margin-top: 30px;display:none'>
+<!-- advaned find -->
+<!-- <div style='margin-top: 30px;display:none'> -->
+<div style='margin-top: 30px;z-index: 55;display:none'>
   <h4>Region</h4>
   <button class='btn'></button>
   <h4>Genre</h4>
@@ -50,6 +53,24 @@
     </div>
   </div>
   <h4>Decade</h4>
+  <div class="form-check form-check-inline list-criteria-container" *ngFor="let decade of decadesList">
+    <input class="form-check-input" type="radio" id="{{decade.value}}" name="inlineRadioOptions"
+      value="{{decade.value}}">
+    <label class="form-check-label" for="{{decade.value}}">{{decade.display}}</label>
+  </div>
+  <h4>Vote average</h4>
+  <div class="form-check form-check-inline list-criteria-container" *ngFor="let decade of decadesList">
+    <input class="form-check-input" type="radio" id="{{decade.value}}" name="inlineRadioOptions"
+      value="{{decade.value}}">
+    <label class="form-check-label" for="{{decade.value}}">{{decade.display}}</label>
+  </div>
+  <h4>Vote count</h4>
+  <div class="form-check form-check-inline list-criteria-container" *ngFor="let decade of decadesList">
+    <input class="form-check-input" type="radio" id="{{decade.value}}" name="inlineRadioOptions"
+      value="{{decade.value}}">
+    <label class="form-check-label" for="{{decade.value}}">{{decade.display}}</label>
+  </div>
+  <h4>Language</h4>
   <div class="form-check form-check-inline list-criteria-container" *ngFor="let decade of decadesList">
     <input class="form-check-input" type="radio" id="{{decade.value}}" name="inlineRadioOptions"
       value="{{decade.value}}">

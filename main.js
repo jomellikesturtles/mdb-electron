@@ -14,6 +14,7 @@ const path = require('path');
 const fs = require('fs');
 let procSearch;
 let procLibraryDb;
+let procTorrentSearch;
 let offlineMovieDataService;
 let mainWindow
 
@@ -47,6 +48,14 @@ function createWindow() {
     console.log('main window Show');
   });
 
+  // ipcMain.on('error', (_, err) => {
+  // 	if (!argv.debug) {
+  // 		console.error(err);
+  // 		app.exit(1);
+  // 	}
+  // });
+
+  // ---------shortcuts. BUG: shortcuts also applies to other electron apps
   // globalShortcut.register('CommandOrControl+F', () => {
   //   console.log('search');
   //   mainWindow.webContents.send('shortcut-search');
@@ -155,27 +164,26 @@ ipcMain.on('open-link-external', function (event, url) {
  * Initializes scan-library.js
  */
 ipcMain.on('scan-library', function (data) {
-  if (!procSearch) { // if process search is not yet running
+  if (!procScanLibrary) { // if process search is not yet running
     console.log('procSearch true');
-    procSearch = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), {
+    procScanLibrary = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), {
       cwd: __dirname,
       silent: true
     });
-    procSearch.stdout.on('data', function (data) {
+    procScanLibrary.stdout.on('data', function (data) {
       console.log('printing data..');
       console.log(data.toString());
     });
-    // procSearch.on('exit', function () {
-    //     console.log('Search process ended');
-    //     procSearch = null;
-    //     if (awaitingQuit) {
-    //         process.emit('cont-quit');
-    //     }
-    // });
-    // procSearch.on('message', function (m) {
-    //     mainWindow.webContents.send(m[0], m[1]);
-    // });
-    // mainWindow.webContents.send('search-init');
+    procScanLibrary.on('exit', function () {
+      console.log('ScanLibrary process ended');
+      procScanLibrary = null;
+      if (awaitingQuit) {
+        process.emit('cont-quit');
+      }
+    });
+    procScanLibrary.on('message', function (m) {
+      mainWindow.webContents.send(m[0], m[1]);
+    });
   } else {
     console.log('scan library is already running');
   }
@@ -231,20 +239,25 @@ ipcMain.on('save-preferences', function (event, data) {
  */
 ipcMain.on('get-library-movies', function (event, data) {
   console.log('get movies from library..')
-  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), ['find-all'], {
-    cwd: __dirname,
-    silent: true
-  });
-  procLibraryDb.stdout.on('data', function (data) {
-    console.log(data.toString().slice(0, -1));
-  });
-  procLibraryDb.on('exit', function () {
-    console.log('get-library-movies process ended');
-  });
-  procLibraryDb.on('message', function (m) {
-    mainWindow.webContents.send(m[0], m[1]);
-  });
+  if (!procLibraryDb) {
+    procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), [data[0], data[1]], {
+      cwd: __dirname,
+      silent: true
+    });
+    procLibraryDb.stdout.on('data', function (data) {
+      console.log(data.toString().slice(0, -1));
+    });
+    procLibraryDb.on('exit', function () {
+      console.log('get-library-movies process ended');
+      procLibraryDb = null
+    });
+    procLibraryDb.on('message', function (m) {
+      console.log('from main', m[0], m[1]);
+      mainWindow.webContents.send(m[0], m[1]);
+    });
+  }
 })
+
 /**
  * Gets the movie from libraryFiles.db
  */
@@ -313,4 +326,22 @@ ipcMain.on('get-image', function (event, data) {
   offlineMovieDataService.on('message', function (m) {
     mainWindow.webContents.send(m[0], m[1]); // reply
   });
+})
+
+// TORRENTS
+ipcMain.on('search-torrent', function (event, data) {
+
+  if (!procTorrentSearch) { // if process search is not yet running
+    console.log('procTorrentSearch ', data);
+    procTorrentSearch = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'search-torrent.js'), [data], {
+      cwd: __dirname,
+      silent: true
+    });
+    procTorrentSearch.stdout.on('data', function (data) {
+      console.log('printing data..');
+      console.log(data.toString());
+    });
+  } else {
+    console.log('One Search process is already running');
+  }
 })

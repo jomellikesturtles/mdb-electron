@@ -9,6 +9,7 @@ const path = require('path');
 const DataStore = require('nedb')
 var libraryDb = new DataStore({
   filename: path.join(process.cwd(), 'src', 'assets', 'db', 'libraryFiles.db'),
+  // filename: path.join('../..', 'assets', 'db', 'libraryFiles.db'),
   autoload: true
 })
 
@@ -16,6 +17,7 @@ process.on('uncaughtException', function (error) {
   console.log(error);
   process.send(['operation-failed', 'general']); //mainWindow.webContents.send('scrape-failed', 'general');
 });
+
 let testLibraryMovieObject = {
   imdbId: 'tt2015381',
   title: 'Guardians of the Galaxy',
@@ -65,6 +67,7 @@ function addMovie(value) {
 function getMovie(param1, param2) {
   const imdbIdRegex = new RegExp(`(^tt[0-9]{0,7})$`, `g`)
   const tmdbIdRegex = new RegExp(`([0-9])`, `g`)
+  const titleRegex = new RegExp('^' + regexify(param1) + '$', `gi`)
   if (param1.trim().match(imdbIdRegex)) {
     console.log('param1', param1);
     libraryDb.findOne({ imdbId: param1 }, function (err, result) {
@@ -84,7 +87,6 @@ function getMovie(param1, param2) {
     })
   } else {
     console.log('param1', param1, 'param2', param2);
-    const titleRegex = new RegExp('^' + regexify(param1) + '$', `gi`)
     libraryDb.find({ title: titleRegex, year: parseInt(param2) }, function (err, result) {
       if (!err) {
         console.log(result);
@@ -109,7 +111,7 @@ function escapeRegExp(text) {
 }
 
 /**
- * Gets listof movies in library folders
+ * Gets list of all movies in library folders
  */
 function getAllMovies() {
   console.log('retrieving all movies');
@@ -166,7 +168,18 @@ function getMovieAsync(param1, param2) {
       }
     })
   })
+}
 
+/**
+ *
+ * @param page page number
+ */
+function getMoviesByPage(page) {
+  const NUMBER_OF_ITEMS = 2
+  libraryDb.find({}).skip(NUMBER_OF_ITEMS * (page - 1)).limit(NUMBER_OF_ITEMS).exec(function (err, docs) {
+    console.log('page', page, ',', docs);
+    process.send(['library-movies', docs])
+  })
 }
 
 // initializeDataAccess('insert', testLibraryMovieObject)
@@ -181,6 +194,8 @@ function getMovieAsync(param1, param2) {
 // initializeDataAccess('find-all')
 // initializeDataAccess('insert-directory', 'tt2015381', 'C:\\Titanic.mp4')
 // initializeDataAccess('remove-directory', 'tt2015381', 'C:\\Titanic.mp4')
+// initializeDataAccess('find-directory', 'tt2015381', 'C:\\Titanic.mp4')
+// initializeDataAccess('find-collection', 1)
 initializeDataAccess(command, data1, data2)
 
 /**
@@ -199,6 +214,9 @@ function initializeDataAccess(command, data1, data2) {
   switch (command) {
     case 'find':
       getMovie(data1)
+      break;
+    case 'find-collection':
+      getMoviesByPage(data1)
       break;
     case 'find-one':
       getMovie(data1, data2)

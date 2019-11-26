@@ -4,6 +4,9 @@ import { MovieService } from '../../services/movie.service';
 import { Observable } from 'rxjs'
 import { TEST_LIBRARY_MOVIES } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
+import { REGEX_IMAGE_SIZE } from '../../constants';
+import { UtilsService } from '../../services/utils.service';
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-library',
@@ -15,8 +18,10 @@ export class LibraryComponent implements OnInit {
   @Input() data: Observable<any>
 
   constructor(
+    private dataService: DataService,
     private ipcService: IpcService,
     private movieService: MovieService,
+    private utilsService: UtilsService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private cdr: ChangeDetectorRef
@@ -30,24 +35,16 @@ export class LibraryComponent implements OnInit {
   numberOfResults = 0
   currentPage = 1
   hasSearchResults = false
+  cardWidth = '130px'
 
   ngOnInit() {
     console.log('ngOnInit');
     // this.libraryMovies = this.testLibraryMovies
 
-    this.ipcService.libraryMovies.subscribe((value) => {
-      if (value.length !== 0) {
-        this.libraryMovies = value
-        this.libraryMovies.forEach(libraryMovie => {
-          console.log('ibraryMovies.forEach', libraryMovie);
-          this.getMovieDetails(libraryMovie.imdbId)
-        });
-      }
-      this.cdr.detectChanges()
-    })
-
     this.getMoviesFromLibrary()
+    // this.getMoviesFromLibrary2()
   }
+
   /**
    * Gets details of movie
    */
@@ -65,8 +62,7 @@ export class LibraryComponent implements OnInit {
    * @returns newPoster new Poster
    */
   minimizeMoviePoster(poster) {
-    const imageSizeRegex = new RegExp(`(SX)+([\\d])+(.jpg|.jpeg)`, `gi`)
-    const newPoster = poster.replace(imageSizeRegex, 'SX150.jpg')
+    const newPoster = poster.replace(REGEX_IMAGE_SIZE, 'SX150.jpg')
     return newPoster
   }
 
@@ -75,6 +71,28 @@ export class LibraryComponent implements OnInit {
    */
   getMoviesFromLibrary() {
     this.ipcService.getMoviesFromLibrary()
+    this.ipcService.libraryMovies.subscribe((value) => {
+      if (value.length !== 0) {
+        this.libraryMovies = value
+        this.libraryMovies.forEach(libraryMovie => {
+          console.log('ibraryMovies.forEach', libraryMovie);
+          this.movies.push(libraryMovie)
+        });
+      }
+      this.cdr.detectChanges()
+    })
+  }
+
+  async getMoviesFromLibrary2() {
+    // const result = await this.ipcService.getMoviesFromLibraryByPage(1)
+    // console.log('getMoviesFromLibrary2 ', result);
+    // // result.forEach(libraryMovie => {
+    // //   console.log('ibraryMovies.forEach', libraryMovie);
+    // //   this.movies.push(libraryMovie)
+    // // });
+
+    // this.movies.push(...result)
+    // this.cdr.detectChanges()
   }
 
   /**
@@ -83,6 +101,19 @@ export class LibraryComponent implements OnInit {
    */
   onSelect(movie) {
     console.log('selected movie: ', movie)
+    // this.selectedMovie = movie;
+    const highlightedId = movie.imdbId ? movie.imdbId : movie.tmdbId;
+    this.dataService.updateHighlightedMovie(highlightedId);
+    // this.navigationService.goToPage()
+    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+  }
+
+  /**
+   * Gets the year.
+   * @param releaseDate release date with format YYYY-MM-DD
+   */
+  getYear(releaseDate: string): string {
+    return this.utilsService.getYear(releaseDate)
   }
 
   /**
@@ -92,5 +123,20 @@ export class LibraryComponent implements OnInit {
   goToMovie(movie) {
     console.log(movie);
     this.router.navigate([`/details/${movie.imdbID}`], { relativeTo: this.activatedRoute });
+  }
+  getMoreResults() {
+    this.currentPage++
+    this.ipcService.getMoviesFromLibraryByPage(this.currentPage)
+  }
+  // async getMoreResults() {
+  //   this.currentPage++
+  //   const result = await this.ipcService.getMoviesFromLibraryByPage(this.currentPage)
+  //   console.log('getMoreResults ', result);
+  //   this.movies.push(...result)
+  //   this.cdr.detectChanges()
+  // }
+
+  onHighlight() {
+
   }
 }

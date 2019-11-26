@@ -14,7 +14,11 @@ export class UtilsService {
    * @returns string value of year with YYYY format
    */
   getYear(releaseDate: string) {
-    return releaseDate.substring(0, releaseDate.indexOf('-'))
+    if (releaseDate.indexOf('-') > -1) {
+      return releaseDate.substring(0, releaseDate.indexOf('-'))
+    } else {
+      return releaseDate.substr(releaseDate.lastIndexOf(' ') + 1);
+    }
   }
 
   /**

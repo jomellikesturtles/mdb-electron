@@ -1,5 +1,5 @@
 <div class='movie-selected-list' style='background-color: rgb(40,40,40);
-padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.length != 0">
+padding: 20px 0 20px 0; transition: .3s' *ngIf="selectedMovies.length != 0">
   <div class="container-fluid" id="list" style="overflow-y:hidden; overflow-x:auto;">
     <div class='d-inline-flex'>
       <div *ngFor="let sMovie of selectedMovies" style='width: 120px'>
@@ -7,7 +7,7 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
           (click)=onHighlight(sMovie)>
           <div [ngStyle]="{'height': '180px'
           ,'background-image':'url(https://image.tmdb.org/t/p/w154'+ sMovie.poster_path + ')','margin':'0 5px 5px 0'}"
-            class='movie-card-image-container'>
+            class='movie-card-image-container image-container'>
           </div>
           <div class="overlay overlay-remove">
           </div>
@@ -35,7 +35,8 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
 
           <div *ngFor="let movie of list" [ngStyle]="{'width': cardWidth}">
             <div class='flex-fill movie-card' [ngClass]="{'movie-card-selected': movie.isHighlighted}"
-              style="margin:3px; cursor: pointer" (click)=onHighlight(movie)>
+              style="margin:3px; cursor: pointer">
+
 
               <!-- <div class="form-check" style="position:relative;left:15px;top:25px;z-index: 2"> -->
               <!-- <input class="form-check-input" type="checkbox" [checked]="movie.isHighlighted" hidden="!isHighlighted"> -->
@@ -49,9 +50,11 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
               <!-- </div> -->
               <!-- <h6 (click)=onSelect(movie) class='text-primary' style='cursor: pointer'>{{movie.title}}</h6> -->
 
-              <div
+              <div (click)=onHighlight(movie)
                 [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w154'+movie.poster_path+')'}"
-                class='movie-card-image-container'>
+                class='movie-card-image-container image-container'>
+                <div class='movie-available' *ngIf="movie.isAvailable" data-toggle='tooltip' title='Available offline'>
+                </div>
                 <div class="overlay overlay-add">
                 </div>
               </div>
@@ -60,7 +63,11 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
                   <h6 class="card-title" (click)="goToMovie(movie.id)" class='text-primary movie-card-title'
                     data-toggle="tooltip" title="{{movie.title}}">{{movie.title}}</h6>
                   <label style='float: left'>{{getYear(movie.release_date)}}</label>
-                  <label style='float: right'>{{movie.vote_average}}</label>
+                  <!-- <label style='float: '>{{movie.vote_average}}</label> -->
+
+                  <label style='float: right'><img style='height:10px;
+                    -webkit-filter: invert(1);margin-bottom: 4px;
+    margin-right: 2px;' src='./assets/icons/star.svg' />{{movie.vote_average}}</label>
                 </div>
               </div>
             </div>

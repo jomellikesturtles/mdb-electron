@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
     this.dashboardLists.push(this.nowShowingMovies)
     this.getNowShowingMovies()
     this.getTopMoviesFromYear()
-
+    this.getAvailability()
     // COMMENTED FOR TEST DATA ONLY
     // this.ipcService.libraryMovie.subscribe(value => {
     //   console.log('libraryMovie value', value)
@@ -89,6 +89,15 @@ export class DashboardComponent implements OnInit {
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
   }
 
+  async getAvailability() {
+    for (const element of this.nowShowingMovies) {
+      const result = await this.ipcService.getMovieFromLibrary(element.id)
+      if (result) {
+        element.isAvailable = true
+      }
+    }
+    this.cdr.detectChanges()
+  }
   /**
    * Downloads highlighted/selected movies
    */

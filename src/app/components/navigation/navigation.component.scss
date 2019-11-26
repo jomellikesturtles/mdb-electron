@@ -36,19 +36,20 @@
 }
 
 /* When you mouse over the navigation links, change their color */
-.sidenav a:hover {
-  color: #f1f1f1;
-  cursor: pointer
+.sidenav-option:hover * {
+  cursor: pointer;
+  transition: .3s
 }
-
-.side-nav-icon:hover a img {
+.sidenav-option:hover span {
+  color: #f1f1f1;
+}
+.sidenav-option:hover .side-nav-icon {
   filter: invert(1) contrast(1);
 }
 
 /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
 #main {
-  transition: margin-left .5s;
-  // padding: 20px;
+  transition: .5s
 }
 
 #topNav {

@@ -44,7 +44,7 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
   </div>
 
   <div *ngIf='hasSearchResults' class='movie-cards-display-grid'>
-
+    <h1 *ngIf="currentSearchQuery">Search results for "{{currentSearchQuery}}"</h1>
     <div id="results-panel" *ngFor="let movie of searchResults" class='movie-card' [ngStyle]="{'width': cardWidth}"
       [ngClass]="{'movie-card-selected': movie.isHighlighted}">
 
@@ -75,9 +75,12 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
       </div>
     </div>
     <div style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
-      <h5 style='text-decoration: underline;cursor:pointer' (click)='getMoreResults()'>Load more results...</h5>
+      <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
     </div>
   </div>
+</div>
+<div>
+  <h1 *ngIf="!currentSearchQuery">No results found for "{{currentSearchQuery}} :("</h1>
 </div>
 <!-- <div class="snackbar" [hidden]="displayMessage.length == 0">{{displayMessage}}</div> -->
 <!-- <div class="snackbar" [ngClass]="{'show': displayMessage.length >= 0}">

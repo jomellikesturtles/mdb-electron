@@ -368,6 +368,18 @@ export interface ISearch {
 
 }
 
+export enum OmdbParameters {
+  ApiKey = 'apikey',
+  ImdbId = 'i',
+  Title = 't',
+  Type = 'type',
+  Year = 'y',
+  Plot = 'plot',
+  Return = 'r',
+  Callback = 'callback',
+  Version = 'v',
+}
+
 export enum TmdbParameters {
   ApiKey = 'api_key',
   AppendToResponse = 'append_to_response',
@@ -405,14 +417,41 @@ export enum TmdbParameters {
   WithOriginalLanguage = 'with_original_language',
 }
 
-export enum AppendToResponse {
-  /**
-   * Details
-   * videos,images,credits,changes,translations,similar,external_ids,alternative_titles
-   * keywords, reviews,recommendations
-   */
-
+export enum TmdbAppendToResponseParameters {
+  AccountStates = 'account_states',
+  Videos = 'videos',
+  Images = 'images',
+  Credits = 'credits',
+  Changes = 'changes',
+  Translations = 'translations',
+  Similar = 'similar',
+  ExternalIds = 'external_ids',
+  AlternativeTitles = 'alternative_titles',
+  Keywords = 'keywords',
+  Reviews = 'reviews',
+  Recommendations = 'recommendations',
+  ReleaseDates = 'release_dates',
+  Lists = 'lists'
 }
+
+export enum TmdbReleaseTypes {
+  PREMIERE = 'Premiere',  // 1
+  THEATRICAL_LIMITED = 'Theatrical(limited)', // 2
+  THEATRICAL = 'Theatrical', // 3
+  DIGITAL = 'Digital', // 4
+  PHYSICAL = 'Physical', // 5
+  TV = 'TV', // 6
+}
+
+export enum TmdbReleaseTypes2 {
+  PREMIERE = 'Premiere',  // 1
+  THEATRICAL_LIMITED = 'Theatrical(limited)', // 2
+  THEATRICAL = 'Theatrical', // 3
+  DIGITAL = 'Digital', // 4
+  PHYSICAL = 'Physical', // 5
+  TV = 'TV', // 6
+}
+
 export interface IPersonDetails {
   birthday: string;
   known_for_department: string;
@@ -500,3 +539,125 @@ export interface ICrew {
   vote_average: number;
   release_date: string;
 }
+
+/**
+ *
+export interface Credits {
+    cast: Cast[];
+    crew: Crew[];
+}
+
+export interface Cast {
+    cast_id:      number;
+    character:    string;
+    credit_id:    string;
+    gender:       number;
+    id:           number;
+    name:         string;
+    order:        number;
+    profile_path: null | string;
+}
+
+export interface Crew {
+    credit_id:    string;
+    department:   Department;
+    gender:       number;
+    id:           number;
+    job:          string;
+    name:         string;
+    profile_path: null | string;
+}
+
+export enum Department {
+    Art = "Art",
+    Camera = "Camera",
+    CostumeMakeUp = "Costume & Make-Up",
+    Crew = "Crew",
+    Directing = "Directing",
+    Editing = "Editing",
+    Lighting = "Lighting",
+    Production = "Production",
+    Sound = "Sound",
+    VisualEffects = "Visual Effects",
+    Writing = "Writing",
+}
+
+export interface ExternalIDS {
+    imdb_id:      string;
+    facebook_id:  null;
+    instagram_id: null;
+    twitter_id:   null;
+}
+
+export interface Genre {
+    id:   number;
+    name: string;
+}
+
+export interface Images {
+    backdrops: any[];
+    posters:   any[];
+}
+
+export enum OriginalLanguage {
+    En = "en",
+    Es = "es",
+    Fr = "fr",
+}
+
+export interface ProductionCompany {
+    id:             number;
+    logo_path:      string;
+    name:           string;
+    origin_country: string;
+}
+
+export interface ProductionCountry {
+    iso_3166_1: string;
+    name:       string;
+}
+
+export interface Recommendations {
+    page:          number;
+    results:       RecommendationsResult[];
+    total_pages:   number;
+    total_results: number;
+}
+
+export interface RecommendationsResult {
+    id:                number;
+    video:             boolean;
+    vote_count:        number;
+    vote_average:      number;
+    title:             string;
+    release_date:      string;
+    original_language: OriginalLanguage;
+    original_title:    string;
+    genre_ids:         number[];
+    backdrop_path:     string;
+    adult:             boolean;
+    overview:          string;
+    poster_path:       string;
+    popularity:        number;
+}
+
+export interface SpokenLanguage {
+    iso_639_1: OriginalLanguage;
+    name:      string;
+}
+
+export interface Videos {
+    results: VideosResult[];
+}
+
+export interface VideosResult {
+    id:         string;
+    iso_639_1:  OriginalLanguage;
+    iso_3166_1: string;
+    key:        string;
+    name:       string;
+    site:       string;
+    size:       number;
+    type:       string;
+}
+ */

@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Observable } from 'rxjs'
 import { TMDB_SEARCH_RESULTS } from '../../mock-data';
 import { IOmdbMovieDetail, ITmdbResult, TmdbParameters } from '../../interfaces';
 import { Router, ActivatedRoute } from '@angular/router'
@@ -15,6 +16,7 @@ declare var $: any
   styleUrls: ['./results.component.scss']
 })
 export class ResultsComponent implements OnInit, OnDestroy {
+  // @Input() data: Observable<any>
 
   // searchResults = TMDB_SEARCH_RESULTS.results
   searchResults = []
@@ -44,6 +46,32 @@ export class ResultsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
+
+    const imdbId = this.activatedRoute.snapshot.paramMap;
+    // this.dataService.currentSearchQuery
+    this.dataService.searchQuery.subscribe(data => {
+      console.log('fromdataservice: ', data);
+      this.currentSearchQuery = data.query
+    });
+    this.dataService.currentMovie.subscribe(data => {
+      console.log('fromdataservice: ', data);
+    });
+    this.dataService.currentSearchResults.subscribe(data => {
+      console.log('fromdataservice: ', data);
+    });
+    // console.log('fromdataservice: ', this.searchQuery);
+    // this.dataService.getDashboardData()
+    // this.dataService.currentSearchQuery.subscribe(data => {
+    //   // ran twice
+    //   console.log('fromdataservice: ', data);
+    //   // if (data) {
+    //   //   this.getMovie(data);
+    //   //   this.getBackdrop(data);
+    //   // } else {
+    //   //   this.getMovie(imdbId);
+    //   //   this.getBackdrop(imdbId);
+    //   // }
+    // });
     this.getSearchResults()
   }
 
@@ -126,13 +154,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   getSearchResults() {
-    const params = [
-      [TmdbParameters.PrimaryReleaseYear, 2010]
-    ]
-    this.movieService.getMoviesDiscover(params).subscribe(data => {
-      this.searchResults.push(...data.results)
-      this.cdr.detectChanges()
-    });
+    this.searchResults = TMDB_SEARCH_RESULTS.results
+    // const params = [
+    //   [TmdbParameters.PrimaryReleaseYear, 2010]
+    // ]
+    // this.movieService.getMoviesDiscover(params).subscribe(data => {
+    //   this.searchResults.push(...data.results)
+    //   this.cdr.detectChanges()
+    // });
   }
 
   /**

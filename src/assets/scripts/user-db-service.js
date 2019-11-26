@@ -13,8 +13,8 @@ var userWatchedDb = new DataStore({
     filename: path.join(process.cwd(), 'src', 'assets', 'db', 'userWatched.db'),
     autoload: true
 })
-var userWatchlistDb = new DataStore({
-    filename: path.join(process.cwd(), 'src', 'assets', 'db', 'userWatchlist.db'),
+var userBookmarksDb = new DataStore({
+    filename: path.join(process.cwd(), 'src', 'assets', 'db', 'userBookmarks.db'),
     autoload: true
 })
 
@@ -49,11 +49,11 @@ function removeFromWatchlist() {
 
 function initializeService() {
     switch (command) {
-        case 'watchlist-get': getWatchlist()
+        case 'bookmark-get': getWatchlist()
             break;
-        case 'watchlist-add': addToWatchlist()
+        case 'bookmark-add': addToWatchlist()
             break;
-        case 'watchlist-remove': removeFromWatchlist()
+        case 'bookmark-remove': removeFromWatchlist()
             break;
         case 'watched-get': getWatchedStatus()
             break;

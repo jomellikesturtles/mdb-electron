@@ -10,29 +10,30 @@ import { BehaviorSubject } from 'rxjs'
 declare var electron: any
 const { ipcRenderer } = electron
 import { ILibraryInfo } from '../interfaces'
+import { NgZone } from '@angular/core'
 @Injectable({
   providedIn: 'root'
 })
 export class IpcService {
+
   libraryFolders = new BehaviorSubject<string[]>([])
   libraryMovies = new BehaviorSubject<string[]>([])
   libraryMovie = new BehaviorSubject<string[]>([])
   preferencesConfig = new BehaviorSubject<string[]>([])
   movieMetadata = new BehaviorSubject<string[]>([])
   private ipcRenderer: typeof ipcRenderer
+
   constructor() //// private ref: ChangeDetectorRef
   {
     this.ipcRenderer = (<any>window).require('electron').ipcRenderer
 
-    this.libraryFolders.next(['test', 'test2'])
     // this.ipcRenderer.on('library-folders', (event, data) => {
     //   console.log('library-folders:', data)
     //   this.libraryFolders.next(data)
     // })
-    // this.ipcRenderer.on('library-movies', (event, data) => {
-    //   console.log('library-movies data:', data)
-    //   this.libraryMovies.next(data)
-    // })
+    this.ipcRenderer.on('library-movies', (event, data) => {
+      this.libraryMovies.next(data)
+    })
     // this.ipcRenderer.on('library-movie', (event, data) => {
     //   console.log('library-movie data:', data)
     //   this.libraryMovie.next(data)
@@ -84,7 +85,7 @@ export class IpcService {
    * @param url url to open
    */
   openLinkExternal(url: string) {
-    // this.ipcRenderer.send('open-link-external', url)
+    this.ipcRenderer.send('open-link-external', url)
   }
   /**
    * Opens files and folders
@@ -102,7 +103,7 @@ export class IpcService {
    * Scans the library folders
    */
   scanLibrary() {
-    // this.ipcRenderer.send('scan-library')
+    this.ipcRenderer.send('scan-library')
   }
 
   /**
@@ -181,7 +182,7 @@ export class IpcService {
    */
   searchTorrent(data) {
     console.log('searchTorrent ', data)
-    // this.ipcRenderer.send('search-torrent', data)
+    this.ipcRenderer.send('search-torrent', data)
   }
 
   /**
@@ -202,28 +203,43 @@ export class IpcService {
   }
 
   // library movies db
+  getMoviesFromLibrary() {
+    console.log('get-library-movies')
+    this.ipcRenderer.send('get-library-movies', ['find-collection', 1])
+    // this.ipcRenderer.send('get-library-movies')
+  }
+
   /**
    * Ipc renderer that sends command to main renderer to get movies from library db.
    */
-  getMoviesFromLibrary() {
-    console.log('get-library-movies')
-    // this.ipcRenderer.send('get-library-movies')
+  getMoviesFromLibraryByPage(val) {
+    this.ipcRenderer.send('get-library-movies', ['find-collection', val]);
   }
+  // getMoviesFromLibraryByPage(val) {
+
+  //   this.ipcRenderer.send('get-library-movies', ['find-collection', val]);
+  //   return new Promise<any>((resolve, reject) => {
+  //     this.ipcRenderer.once('library-movies', (event, arg) => {
+  //       console.log('library-movies', arg);
+  //       resolve(arg);
+  //     });
+  //   });
+  // }
+
   /**
    * Ipc renderer that sends command to main renderer to get specified movie from library db.
    * Replies offline directories.
    * @param data imdb id or movie title and release year or tmdb id
    */
-  async getMovieFromLibrary(data) {
-    console.log('getMovieFromLibrary data', data);
-    // this.ipcRenderer.send('get-library-movie', [data]);
-    // return new Promise<ILibraryInfo>((resolve, reject) => {
-    //   this.ipcRenderer.once('library-movie', (event, arg) => {
-    //     console.log('library-movie', arg);
-    //     resolve(arg);
-    //   });
-    // });
-    return null
+  getMovieFromLibrary(data) {
+    this.ipcRenderer.send('get-library-movie', [data]);
+    return new Promise<ILibraryInfo>((resolve, reject) => {
+      this.ipcRenderer.once('library-movie', (event, arg) => {
+        console.log('library-movie', arg);
+        resolve(arg);
+      });
+    });
+    // return null
   }
 
   getImage(url: string, imdbId: string, type: string) {

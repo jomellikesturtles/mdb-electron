@@ -12,31 +12,31 @@
       <div>
         <div style='display: flex; flex-wrap: wrap; top:0;left:0'>
 
-          <a (click)='goPreviousPage()'>
+          <a (click)='goPreviousPage()' class='sidenav-option'>
             <img class='side-nav-icon' src="./assets/icons/arrow-left.svg" />
           </a>
-          <a (click)='goForwardPage()'>
+          <a (click)='goForwardPage()' class='sidenav-option'>
             <img class='side-nav-icon' src="./assets/icons/arrow-right.svg" />
           </a>
         </div>
-        <a routerLink="./dashboard">
+        <a routerLink="./dashboard" class='sidenav-option'>
           <img class='side-nav-icon' src="./assets/icons/home.svg" />
           <span *ngIf="isOpenNav">Home</span>
         </a>
-        <a routerLink="./browse">
-          <img class='side-nav-icon' src="./assets/icons/magnifiying-glass.svg" />
+        <a routerLink="./browse" class='sidenav-option'>
+          <img class='side-nav-icon' src="./assets/icons/globe.svg" />
           <span *ngIf="isOpenNav">Browse</span>
         </a>
-        <a routerLink="./library">
+        <a routerLink="./library" class='sidenav-option'>
           <img class='side-nav-icon' src="./assets/icons/server.svg" />
           <span *ngIf="isOpenNav">Library</span>
         </a>
-        <a routerLink="./preferences">
+        <a routerLink="./preferences" class='sidenav-option'>
           <img class='side-nav-icon' src="./assets/icons/gear.svg" />
           <span *ngIf="isOpenNav">Preferences</span>
         </a>
       </div>
-      <div style='overflow: hidden; position: fixed; bottom: 0;'>
+      <div style='overflow: hidden; position: fixed; bottom: 0;' class='sidenav-option'>
         <a (click)="switchNav()">
           <span *ngIf="isOpenNav">
             <img class='side-nav-icon' src="./assets/icons/left-angle.svg" />Collapse</span>

@@ -3,6 +3,7 @@ import { Observable } from 'rxjs'
 import { IpcService } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
+import { REGEX_PREFIX } from '../../constants';
 declare var $: any;
 @Component({
   selector: 'app-preferences',
@@ -169,9 +170,8 @@ export class PreferencesComponent implements OnInit {
    * @param folder folder directory to open
    */
   onOpenFolder(folder: string) {
-    const prefixRegex = new RegExp(`^([a-z]:)`, 'gi') // if absolute e.g. c:/
     let folderToOpen = ''
-    if (folder.match(prefixRegex) == null) { // not match
+    if (folder.match(REGEX_PREFIX) == null) { // not match
       folderToOpen = this.currentFolder + folder;
     } else {
       folderToOpen = folder

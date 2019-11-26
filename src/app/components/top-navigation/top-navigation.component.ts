@@ -1,8 +1,10 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Observable } from 'rxjs'
 // import { Movie, MovieGenre, IGenre } from '../../subject';
 import { IOmdbMovieDetail, MovieGenre, IGenre } from '../../interfaces';
-import { MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
+import { MOVIES, MOVIEGENRES } from '../../mock-data';
+import { DECADES, GENRES, REGEX_IMDB_ID } from '../../constants';
 // import { SELECTEDMOVIE, MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
@@ -18,6 +20,7 @@ declare var $: any
   styleUrls: ['./top-navigation.component.scss']
 })
 export class TopNavigationComponent implements OnInit {
+  @Input() data: Observable<any>
 
   constructor(
     private dataService: DataService,
@@ -30,13 +33,12 @@ export class TopNavigationComponent implements OnInit {
   browserConnection = navigator.onLine;
   selectedMovie: IOmdbMovieDetail
   numbers;
-  minYear = 1888;
-  maxYear = 2018;
   currentYear = new Date().getFullYear()
   genres = ['Action', 'Adventure', 'Documentary', 'Drama', 'Horror', 'Sci-Fi', 'Thriller'];
   movieGenres = MOVIEGENRES;
   types = ['TV Series', 'Movie', 'Short'];
   searchQuery: ISearchQuery = {
+    query: '',
     keywords: '',
     startYear: 1969,
     endYear: 2018,
@@ -69,6 +71,12 @@ export class TopNavigationComponent implements OnInit {
   }
 
   /**
+   * Opens advanced search options.
+   */
+  onAdvancedSearch() {
+
+  }
+  /**
    * Initialize search
    */
   onSearch(val: any) {
@@ -78,19 +86,20 @@ export class TopNavigationComponent implements OnInit {
       // this.searchHistoryList = this.searchHistoryList.splice(1)
       this.searchHistoryList = this.searchHistoryList.slice(0, this.searchHistoryMaxLength)
     }
-    // const imdbIdRegex = new RegExp(`(^tt[0-9]{0,7})$`, `g`)
-    // const enteredQuery = val.keywords
+    const enteredQuery = val
     // this.isSearchDirty = true
     // this.currentPage = 1
     // this.numberOfPages = 1
     // this.numberOfResults = 0
     // this.currentSearchQuery = enteredQuery
     // // tt0092099 example
-    // if (enteredQuery.match(imdbIdRegex)) {
-    //   this.searchByImdbId(enteredQuery)
-    // } else {
-    //   this.searchByTitle(enteredQuery)
-    // }
+    if (enteredQuery.match(REGEX_IMDB_ID)) {
+      console.log('searchByImdbId');
+      // this.searchByImdbId(enteredQuery)
+    } else {
+      console.log('searchByTitle');
+      this.searchByTitle(enteredQuery)
+    }
   }
 
   /**
@@ -113,8 +122,12 @@ export class TopNavigationComponent implements OnInit {
    * @param enteredQuery query to search
    */
   searchByTitle(enteredQuery) {
-    this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
     // this.dataService.currentSearchQuery = enteredQuery
+    // this.dataService.updateHighlightedMovie(this.searchQuery);
+    if (this.searchQuery || this.searchQuery.query.length > 0) {
+      this.dataService.updateSearchQuery(this.searchQuery)
+      this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
+    }
     // this.movieService.searchMovieByTitle(enteredQuery).subscribe(data => {
     //   this.numberOfPages = data.total_pages;
     //   this.numberOfResults = data.total_results;
@@ -146,6 +159,7 @@ export class TopNavigationComponent implements OnInit {
 }
 
 export interface ISearchQuery {
+  query: string,
   keywords: string,
   startYear: number,
   endYear: number,
