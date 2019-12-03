@@ -72,7 +72,6 @@ function getMovie(param1, param2) {
     console.log('param1', param1);
     libraryDb.findOne({ imdbId: param1 }, function (err, result) {
       if (!err) {
-        console.log(result);
         process.send(['library-movie', result])
       }
     })
@@ -81,7 +80,6 @@ function getMovie(param1, param2) {
     console.log('param1 num type', param1);
     libraryDb.findOne({ tmdbId: parseInt(param1) }, function (err, result) {
       if (!err) {
-        console.log(result);
         process.send(['library-movie', result])
       }
     })
@@ -89,7 +87,6 @@ function getMovie(param1, param2) {
     console.log('param1', param1, 'param2', param2);
     libraryDb.find({ title: titleRegex, year: parseInt(param2) }, function (err, result) {
       if (!err) {
-        console.log(result);
         process.send(['library-movie', result])
       }
     })
@@ -116,7 +113,6 @@ function escapeRegExp(text) {
 function getAllMovies() {
   console.log('retrieving all movies');
   libraryDb.find({}, (err, result) => {
-    console.log('results ', result);
     process.send(['library-movies', result])
   })
 }

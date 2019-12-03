@@ -191,15 +191,6 @@ export const GENRES: IGenre[] = [
   }
 ]
 
-// export const IMDB_ID_REGEX = new RegExp(`(^tt[0-9]{7})$`, `gi`);
-// export const TMDB_RUNTIME_REGEX = new RegExp(`([\\d,]+)(\\s)(min)`, `gi`);
-// export const OMDB_RELEASE_DATE_REGEX = new RegExp(`^(\\d{2})+\\s+([a-z]{3,})+\\s+(\\d{4})+`, `gi`);
-// export const TMDB_RELEASE_DATE_REGEX = new RegExp(`([0-9]{2,4})-([0-9]{2})-([0-9]{2})`, `gi`);
-// export const PREFIX_REGEX = new RegExp(`^([a-z]:)`, 'gi') // if file absolute e.g. c:/
-// export const FILE_SIZE_REGEX = new RegExp(`^([0-9])\\d+$`, `g`);
-// export const OMDB_BOX_OFFICE_REGEX = new RegExp(`(\\$+[\\d,]+)`, `gi`);
-// export const IMAGE_SIZE_REGEX = new RegExp(`(SX)+([\\d])+(.jpg|.jpeg)`, `gi`)
-
 export const REGEX_IMDB_ID = new RegExp(`(^tt[0-9]{7})$`, `gi`);
 export const REGEX_TMDB_RUNTIME = new RegExp(`([\\d,]+)(\\s)(min)`, `gi`);
 export const REGEX_OMDB_RELEASE_DATE = new RegExp(`^(\\d{2})+\\s+([a-z]{3,})+\\s+(\\d{4})+`, `gi`);
@@ -208,6 +199,7 @@ export const REGEX_PREFIX = new RegExp(`^([a-z]:)`, 'gi') // if file absolute e.
 export const REGEX_FILE_SIZE = new RegExp(`^([0-9])\\d+$`, `g`);
 export const REGEX_OMDB_BOX_OFFICE = new RegExp(`(\\$+[\\d,]+)`, `gi`);
 export const REGEX_IMAGE_SIZE = new RegExp(`(SX)+([\\d])+(.jpg|.jpeg)`, `gi`)
+export const REGEX_YEAR_ONLY = new RegExp(`^([0-9]{4})$`, `gi`);
 
 export const OMDB_URL = 'http://www.omdbapi.com'
 export const TMDB_URL = 'https://api.themoviedb.org/3'
@@ -221,3 +213,13 @@ export const MY_API_FILMS_API_KEY = 'c7e516ed-d9fe-4f3f-b1d9-fde33f63c816'
 export const TRAK_TV_API_KEY = 'b4f1b1e56c6b78ed8970ba48ed2b6d1fcc517d09164af8c10e2be56c45f5f9a7'
 export const TRAK_TV_API_KEY_SECRET = '76c26a018cc31652644caf51928efedf75d301eed404b51e218edefdb661dc36'
 export const FANART_TV_API_KEY = '295c36bf9229fd8369928b7360554c9a'
+
+
+  // https://api.themoviedb.org/3/movie/550/videos?api_key=a636ce7bd0c125045f4170644b4d3d25 --getting trailer 1
+  // https://api.trakt.tv/?trakt-api-key=b4f1b1e56c6b78ed8970ba48ed2b6d1fcc517d09164af8c10e2be56c45f5f9a7&trakt-api-version=2&query=batman`
+  // http://www.omdbapi.com//?i=tt0499549&apikey=3a2fe8bf\
+  // /search/:type?query=
+  // https://api.trakt.tv/search/text?query=titanic
+  // https://api.themoviedb.org/3/movie/550?api_key=a636ce7bd0c125045f4170644b4d3d25
+  // http://www.myapifilms.com/imdb/idIMDB?title=matrix&token=c7e516ed-d9fe-4f3f-b1d9-fde33f63c816
+    // http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a

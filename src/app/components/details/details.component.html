@@ -15,17 +15,24 @@
             </div>
           </div>
           <div class="col-sm-8">
+            <h3>{{isBookmarked}}</h3>
             <div class='uk-button-group'>
-              <div *ngIf="isBookmarked">
-                <button class='btn btn-basic btn-small' (click)='removeBookmark()'>
+              <button class='btn btn-basic btn-small' (click)='removeBookmark()'>
+                Remove bookmark
+              </button>
+              <button class='btn btn-basic btn-small' (click)='addBookmark()'>
+                Add to bookmark
+              </button>
+              <!-- <div *ngIf="isBookmarked">
+                <button class='btn btn-basic btn-small' (click)='toggleBookmark()'>
                   Remove bookmark
                 </button>
               </div>
               <div *ngIf="!isBookmarked">
-                <button class='btn btn-basic btn-small' (click)='addBookmark()'>
+                <button class='btn btn-basic btn-small' (click)='toggleBookmark()'>
                   Add to bookmark
                 </button>
-              </div>
+              </div> -->
               <div *ngIf="isWatched">
                 <button class='btn btn-info btn-small' (click)='removeMarkAsWatched(movieDetails.imdbId)'>
                   Unmark as watched

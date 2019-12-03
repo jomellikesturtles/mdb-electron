@@ -80,6 +80,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.searchResults.forEach(element => {
       element.isHighlighted = false
     });
+    this.searchResults = []
   }
 
   onClearSelected(): void {
@@ -94,9 +95,9 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.router.navigate([`/bulk-download`], { relativeTo: this.activatedRoute });
   }
 
-  onAddToWatchlist(): void {
+  onAddBookmark(): void {
     const root = this
-    this.ipcService.addToWatchlist(this.selectedMovies)
+    this.ipcService.addBookmark(this.selectedMovies)
     this.displayMessage = 'Added to watchlist'
     this.displaySnackbar = true
     this.utilsService.hideSnackbar(root)

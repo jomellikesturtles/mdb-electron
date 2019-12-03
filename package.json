@@ -39,6 +39,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "jquery": "^3.4.1",
     "nedb": "^1.8.0",
+    "ngx-electron": "^2.2.0",
     "papaparse": "^5.0.1",
     "popper": "^1.0.1",
     "rxjs": "~6.3.3",

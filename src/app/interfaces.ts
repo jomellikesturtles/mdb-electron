@@ -456,13 +456,15 @@ export interface IPersonDetails {
   birthday: string;
   known_for_department: string;
   id: number;
-  movie_credits: IMoviecredits;
+  movie_credits?: IPersonCredits;
+  tv_credits?: IPersonCredits;
+  combined_credits?: IPersonCredits;
   homepage?: any;
   profile_path: string;
   imdb_id: string;
   deathday?: any;
-  images: IImages;
-  external_ids: IExternalids;
+  images?: IImages;
+  external_ids?: IExternalids;
   name: string;
   also_known_as: string[];
   biography: string;
@@ -472,7 +474,43 @@ export interface IPersonDetails {
   popularity: number;
 }
 
+
+
+export interface IPersonCredits {
+  cast: IPersonCastCrew[];
+  crew: IPersonCastCrew[];
+  id?: number;
+}
+
+export interface IPersonCastCrew {
+  id?: number;
+  original_language: string;
+  episode_count?: number;
+  overview: string;
+  origin_country?: string[];
+  original_name?: string;
+  genre_ids: number[];
+  name?: string;
+  media_type: string;
+  poster_path: null | string;
+  first_air_date?: string;
+  vote_average: number;
+  vote_count: number;
+  character?: string;
+  backdrop_path: null | string;
+  popularity: number;
+  credit_id: string;
+  original_title?: string;
+  video?: boolean;
+  release_date?: string;
+  title?: string;
+  adult?: boolean;
+  department?: string;
+  job?: string;
+}
+
 export interface IExternalids {
+  id?: number;
   freebase_id: string;
   instagram_id: string;
   tvrage_id: number;
@@ -483,6 +521,7 @@ export interface IExternalids {
 }
 
 export interface IImages {
+  id?: number;
   profiles: IProfile[];
 }
 
@@ -496,7 +535,8 @@ export interface IProfile {
   width: number;
 }
 
-export interface IMoviecredits {
+
+export interface ICredits {
   cast: ICast[];
   crew: ICrew[];
 }
@@ -508,6 +548,7 @@ export interface ICast {
   vote_count: number;
   video: boolean;
   id: number;
+  media_type?: string;
   popularity: number;
   genre_ids: number[];
   original_language: string;
@@ -529,6 +570,8 @@ export interface ICrew {
   overview: string;
   genre_ids: number[];
   video: boolean;
+  episode_count: number
+  media_type?: string;
   credit_id: string;
   poster_path?: string;
   popularity: number;

@@ -1,19 +1,21 @@
 /**
- * Searches movie info from imdb .tsv files
+ * Searches movie info from torrent .csv file
+ * TODO: fix dotted dash, e.g. WALL·E
  */
 const fs = require('fs')
 const path = require('path')
 const papa = require('papaparse')
 args = process.argv.slice(2)
 var title = args[0]
-var imdbId = args[1]
+var year = args[1]
 let stream
 let result = []
 const levenshtein = require('fast-levenshtein')
+const newRegex = new RegExp(regexify(title), 'i')
 
 
 function regexify(text) {
-  text = text.trim().replace(/(\s+)/g, ' ');
+  text = text.trim().replace(/(\s+)/g, ' '); // whitespace
   const words = text.split(' ');
   let final = '';
   words.forEach((item) => {
@@ -25,10 +27,10 @@ function regexify(text) {
 function escapeRegExp(text) {
   return text.replace(/[-[\]{}()*+?.,\\/^$|#\s]/g, '\\$&');
 }
-const newRegex = new RegExp(regexify(title), 'i')
 function condition(name) {
   // if (name.search((newRegex)) >= 0) {
-  if (name.match(newRegex)) {
+  // if (name.match(newRegex)) {
+  if (name.match(newRegex) && name.indexOf(year) >= 0) {
     return true
   }
   return false
@@ -44,6 +46,7 @@ function procData(results, parser) {
   // var condition = currentCondition ? titleCondition : ratingCondition;
   for (let c = 0; c < results.data.length; c++) {
     let record = results.data[c]
+
     if (condition(record['NAME'])) {
       result.push(record['NAME'])
     }
@@ -59,9 +62,9 @@ function finSearch() {
   process.exit(0)
 }
 function initializeSearch() {
-  console.log(title)
-  const titleBasicsTSV = path.join(process.cwd(), 'src', 'assets', 'torrent database', 'torrent_dump_full.csv', 'torrent_dump_full.csv')
-  // const titleBasicsTSV = path.join(process.cwd(), '..', 'app', 'src', 'assets', 'torrent database', 'torrent_dump_full.csv', 'torrent_dump_full.csv')
+  // const titleBasicsTSV = path.join(process.cwd(), 'src', 'assets', 'torrent database', 'torrent_dump_full.csv', 'torrent_dump_full.csv')
+  const titleBasicsTSV = path.join(process.cwd(), '..', 'torrent database', 'torrent_dump_full.csv', 'torrent_dump_full.csv')
+  console.log(titleBasicsTSV);
 
   stream = fs.createReadStream(titleBasicsTSV)
     .once('open', function () {
@@ -82,4 +85,7 @@ function initializeSearch() {
     });
 }
 console.time('searchLapse')
+console.log('torrent search with data0', title);
+console.log('torrent search with data1', year);
+
 initializeSearch()

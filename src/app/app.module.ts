@@ -21,6 +21,7 @@ import { PersonDetailsComponent } from './components/person-details/person-detai
 import { CreditsComponent } from './components/details/credits/credits.component';
 import { VideoComponent } from './components/details/video/video.component';
 import { BookmarksComponent } from './components/bookmarks/bookmarks.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { BookmarksComponent } from './components/bookmarks/bookmarks.component';
     PersonDetailsComponent,
     CreditsComponent,
     VideoComponent,
-    BookmarksComponent
+    BookmarksComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

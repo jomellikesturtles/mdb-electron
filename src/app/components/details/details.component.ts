@@ -70,8 +70,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.movieDetailsWriters = this.getWriters()
     this.movieDetailsProducers = this.getProducers()
     this.movieCertification = this.getMovieCertification()
-    this.getTorrents()
-    this.getMovieFromLibrary()
+    this.getBookmark()
+    // this.getMovieFromLibrary()
+    // this.getTorrents()
     this.router.events.subscribe((evt) => {
       if (!(evt instanceof NavigationEnd)) {
         return;
@@ -140,7 +141,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
   convertObject(v) {
 
     Object.keys(v).forEach(key => {
-      console.log(`converting ${key} with value `, v[key]);
       switch (key) {
         case 'Actors':
           this.movieDetails.releaseDate = v[key]
@@ -224,9 +224,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
       }
     });
 
-    Object.keys(this.movieDetails).forEach(key => {
-      console.log(`movieDetails key ${key} with value `, v[key]);
-    })
+    // Object.keys(this.movieDetails).forEach(key => {
+    //   console.log(`movieDetails key ${key} with value `, v[key]);
+    // })
   }
 
   getMovieCredits() {
@@ -241,26 +241,57 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Gets movie's watchlist status
-   * @param val imdb id
    */
-  getToWatchlist(val: string) {
-    this.ipcService.getWatchlist(val)
+
+  async getBookmark() {
+    const val = this.movieDetails.tmdbId
+    const result = await this.ipcService.getBookmark(val)
+    console.log('getBookmark: ', result);
+    // this.myVideoPath = 'file:///' + result.directoryList[0]
+    this.cdr.detectChanges()
   }
 
-  /**
-   * Adds movie into user's watchlist
-   * @param val imdb id
-   */
-  addBookmark(val?: string) {
-    this.ipcService.addToWatchlist(val)
+  async toggleBookmark() {
+    if (this.isBookmarked === true) {
+      this.ipcService.removeBookmark(this.movieDetails.tmdbId)
+    } else {
+      this.ipcService.addBookmark(this.movieDetails.tmdbId)
+    }
   }
 
+  // getBookmark() {
+  //   this.ipcService.getBookmark(this.movieDetails.tmdbId)
+  //   this.ipcService.bookmarkSingle.subscribe(data => {
+  //     if (data === null) {
+  //       this.isBookmarked = false
+  //     } else {
+  //       this.isBookmarked = true
+  //     }
+  //     this.cdr.detectChanges()
+  //   })
+
+  //   this.ipcService.bookmarkS.subscribe(data => {
+  //     console.log('g');
+  //   })
+  // }
+
   /**
-   * Removes movie from user's watchlist
-   * @param val imdb id
+   * Toggles movie from user's watchlist or bookmarks
    */
-  removeBookmark(val: string) {
-    this.ipcService.removeFromWatchlist(val)
+  // toggleBookmark() {
+  //   if (this.isBookmarked === true) {
+  //     this.ipcService.removeBookmark(this.movieDetails.tmdbId)
+  //   } else {
+  //     this.ipcService.addBookmark(this.movieDetails.tmdbId)
+  //   }
+  // }
+
+  addBookmark() {
+    this.ipcService.addBookmark(this.movieDetails.tmdbId)
+  }
+
+  removeBookmark() {
+    this.ipcService.removeBookmark(this.movieDetails.tmdbId)
   }
 
   /**
@@ -378,11 +409,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param val name
    * @returns Torrent object
    */
-  getTorrents(val?: string) {
+  getTorrents() {
     const releaseYear = this.getYear(this.movieDetails.releaseDate)
-    const query = `${this.movieDetails.title} ${releaseYear}`
+    const query = [this.movieDetails.title, releaseYear]
     console.log('getTorrents initializing... with val ', query);
     this.torrentService.getTorrents(query).subscribe(data => {
+      console.log(data);
       const resultTorrents = data;
       this.torrents = resultTorrents.filter(obj => {
         if (!obj.name) {

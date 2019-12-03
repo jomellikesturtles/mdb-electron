@@ -22,22 +22,13 @@ export class DataService {
   private selectedMoviesSource = new BehaviorSubject<any>('')
   selectedMovies = this.selectedMoviesSource.asObservable()
 
+  // private isTestRunSource = new BehaviorSubject<any>('')
+  // isTestRun = this.getIsTestRun.asObservable()
+
   constructor() { }
 
-  /**
-   * web(angular) or desktop(electron)
-   */
-  getMode() {
-    return 'web'
-    // return 'desktop'
-  }
-
-  /**
-   * set true if working in strict/corporate network, false if not.
-   */
-  isMockDataOnly() {
+  getIsTestRun() {
     return true
-    // return false
   }
 
   setDashboardData(data: any[]) {

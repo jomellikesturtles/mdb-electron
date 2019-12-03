@@ -36,6 +36,7 @@ export class LibraryComponent implements OnInit {
   currentPage = 1
   hasSearchResults = false
   cardWidth = '130px'
+  isFetchingData = false
 
   ngOnInit() {
     console.log('ngOnInit');
@@ -71,6 +72,7 @@ export class LibraryComponent implements OnInit {
    */
   getMoviesFromLibrary() {
     this.ipcService.getMoviesFromLibrary()
+    this.isFetchingData = true
     this.ipcService.libraryMovies.subscribe((value) => {
       if (value.length !== 0) {
         this.libraryMovies = value
@@ -79,6 +81,7 @@ export class LibraryComponent implements OnInit {
           this.movies.push(libraryMovie)
         });
       }
+      this.isFetchingData = false
       this.cdr.detectChanges()
     })
   }
@@ -127,6 +130,7 @@ export class LibraryComponent implements OnInit {
   getMoreResults() {
     this.currentPage++
     this.ipcService.getMoviesFromLibraryByPage(this.currentPage)
+    this.isFetchingData = true
   }
   // async getMoreResults() {
   //   this.currentPage++

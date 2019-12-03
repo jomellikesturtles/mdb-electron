@@ -11,14 +11,6 @@ import { forEach } from '@angular/router/src/utils/collection';
 import { REGEX_IMDB_ID, OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL } from '../constants';
 
 const jsonContentType = new HttpHeaders({ 'Content-Type': 'application/json' })
-const omdbHttpOptions = {
-  headers: jsonContentType,
-  params: new HttpParams().set('apikey', '3a2fe8bf')
-};
-const fanartTVHttpOptions = {
-  headers: jsonContentType,
-  params: new HttpParams().set('api_key', '295c36bf9229fd8369928b7360554c9a')
-};
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
@@ -27,20 +19,12 @@ export class MovieService {
     private http: HttpClient,
     private ipcService: IpcService
   ) { }
-  // https://api.themoviedb.org/3/movie/550/videos?api_key=a636ce7bd0c125045f4170644b4d3d25 --getting trailer 1
-  // https://api.trakt.tv/?trakt-api-key=b4f1b1e56c6b78ed8970ba48ed2b6d1fcc517d09164af8c10e2be56c45f5f9a7&trakt-api-version=2&query=batman`
-  // http://www.omdbapi.com//?i=tt0499549&apikey=3a2fe8bf\
-  // /search/:type?query=
-  // https://api.trakt.tv/search/text?query=titanic
-  // https://api.themoviedb.org/3/movie/550?api_key=a636ce7bd0c125045f4170644b4d3d25
-  // http://www.myapifilms.com/imdb/idIMDB?title=matrix&token=c7e516ed-d9fe-4f3f-b1d9-fde33f63c816
+
   httpParam = new HttpParams()
   imdbId = 'tt0499549'
   plot = 'full' // short
   results = ''
   testBaseUrl = 'https://jsonplaceholder.typicode.com/todos/1'
-
-  // http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
 
   // test only
   getTestApi(id: number): Observable<any> {
@@ -123,16 +107,6 @@ export class MovieService {
     const url = `${TMDB_URL}/movie/${val}/external_ids?api_key=${TMDB_API_KEY}`
     return this.http.get<any>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getExternalId')))
-  }
-
-  getMoviesInTheaters() {
-    const date = new Date();
-    const dateToday = date.getFullYear() + '-' + ('0' + date.getMonth()).slice(-2) + '-' + ('0' + date.getDate()).slice(-2)
-    const date2 = new Date(date.getTime() + (1000 * 60 * 60 * 24))
-    const dateTomorrow = date2.getFullYear() + '-' + ('0' + date2.getMonth()).slice(-2) + '-' + ('0' + date2.getDate()).slice(-2)
-    const url = `${TMDB_URL}/discover/movie?primary_release_date.${dateToday}&primary_release_date.lte=${dateTomorrow}`
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesInTheaters')))
   }
 
   getMovieBackdrop(val: string): Observable<any> {

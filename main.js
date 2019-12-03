@@ -2,7 +2,7 @@
  * Main processor
  */
 const cp = require('child_process');
-const { app, BrowserWindow, ipcMain, shell, globalShortcut } = require('electron')
+const { app, BrowserWindow, ipcMain, shell, globalShortcut, Menu, Tray } = require('electron')
 const Datastore = require('nedb')
 const datastore = new Datastore({
   filename: 'src/assets/config/config.db',
@@ -12,17 +12,24 @@ const datastore = new Datastore({
 // import * as url from 'url'const
 const path = require('path');
 const fs = require('fs');
-let procSearch;
+let procBookmark;
 let procLibraryDb;
+let procSearch;
 let procTorrentSearch;
 let offlineMovieDataService;
+let procmovieImageService;
 let mainWindow
-
+let mdbTray
+const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`
 /**
  * Creates the browser window
  */
 function createWindow() {
 
+  // let displays = screen.getAllDisplays()
+  // displays.forEach(element => {
+  //   console.log(element);
+  // });
   mainWindow = new BrowserWindow({
     minWidth: 762,
     minHeight: 700,
@@ -34,6 +41,8 @@ function createWindow() {
       nodeIntegration: true,
       webSecurity: false
     },
+    icon: appIcon,
+    // maxHeight:
     title: 'MDB'
   });
   mainWindow.webContents.openDevTools()
@@ -64,8 +73,11 @@ function createWindow() {
   //   console.log('pref');
   //   mainWindow.webContents.send('shortcut-preferences');
   // })
+
+  setSystemTray();
 }
 
+app.setAppUserModelId(process.execPath)
 // Create window on electron initialization
 app.on('ready', createWindow)
 
@@ -86,6 +98,30 @@ app.on('activate', function () {
     createWindow()
   }
 })
+
+function setSystemTray() {
+  // let trayIcon = `${__dirname}/dist/mdb-electron/assets/icons/chevron.png`
+  let trayIcon = appIcon
+  mdbTray = new Tray(trayIcon)
+  const trayMnu = Menu.buildFromTemplate([
+    { label: 'Preferences', icon: trayIcon, enabled: false },
+    { type: "separator" },
+    { label: 'Quit', click: app.quit }
+  ])
+  mdbTray.setToolTip('Media Database')
+  mdbTray.setContextMenu(trayMnu)
+  mdbTray.on('click', showWindow)
+  mdbTray.on('double-click', showWindow)
+}
+
+// Show and Focus mainWindow
+function showWindow() {
+  mainWindow.show();
+  mainWindow.focus();
+  // if (isMac) {
+  //   app.dock.show();
+  // }
+}
 
 /* IPC Event handling
 ----------------------*/
@@ -313,27 +349,28 @@ ipcMain.on('movie-metadata', function (event, data) {
  */
 ipcMain.on('get-image', function (event, data) {
   console.log('image-data-service..', data[0], data[1])
-  offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'image-data-service.js'), [data[0], data[1], data[2], data[3]], {
+  procmovieImageService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'image-data-service.js'), [data[0], data[1], data[2], data[3]], {
     cwd: __dirname,
     silent: true
   });
-  offlineMovieDataService.stdout.on('data', function (data) {
+  procmovieImageService.stdout.on('data', function (data) {
     console.log(data.toString().slice(0, -1));
   });
-  offlineMovieDataService.on('exit', function () {
+  procmovieImageService.on('exit', function () {
     console.log('image-data process ended');
   });
-  offlineMovieDataService.on('message', function (m) {
+  procmovieImageService.on('message', function (m) {
     mainWindow.webContents.send(m[0], m[1]); // reply
   });
 })
 
 // TORRENTS
-ipcMain.on('search-torrent', function (event, data) {
+ipcMain.on('torrent-search', function (event, data) {
+  console.log('data: ', data[0], data[1]);
 
   if (!procTorrentSearch) { // if process search is not yet running
     console.log('procTorrentSearch ', data);
-    procTorrentSearch = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'search-torrent.js'), [data], {
+    procTorrentSearch = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'search-torrent.js'), [data[0], [data[1]]], {
       cwd: __dirname,
       silent: true
     });
@@ -343,5 +380,28 @@ ipcMain.on('search-torrent', function (event, data) {
     });
   } else {
     console.log('One Search process is already running');
+  }
+})
+
+// BOOKMARK
+ipcMain.on('bookmark', function (event, data) {
+  if (!procLibraryDb) {
+    console.log('procBookmark ', data);
+    procBookmark = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'user-db-service.js'), [data[0], [data[1]]], {
+      cwd: __dirname,
+      silent: true
+    });
+    procBookmark.stdout.on('data', function (data) {
+      console.log('printing data..');
+      console.log(data.toString());
+    });
+    procBookmark.on('exit', function () {
+      console.log('procBookmark process ended');
+      procBookmark = null
+    });
+    procBookmark.on('message', function (m) {
+      console.log('bookmark in IPCMAIN', m);
+      mainWindow.webContents.send(m[0], m[1]); // reply
+    });
   }
 })

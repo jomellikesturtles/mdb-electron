@@ -8,19 +8,32 @@
   <div class='search-controls-container' style='margin-left: 350px;'>
     <input #searchBar name="searchBar" class="form-control" id="search-bar" [(ngModel)]="searchQuery.query"
       style='margin-right: 10px; border-radius: .25rem; min-width: 200px;color:black'
-      placeholder="Search title or IMDb id" (keyup.enter)="onSearch(searchQuery.query);"
-      list='searchHistory' />
+      placeholder="Search title or IMDb id" (keyup.enter)="onSearch(searchQuery.query);" list='searchHistory' />
     <datalist id="searchHistory">
       <option *ngFor="let item of searchHistoryList">
         {{item}}
     </datalist>
     <button class="btn btn-danger input-group-btn" (click)="searchBar.value=''" style='margin-right: 10px'>x</button>
-    <button class="btn btn-success input-group-btn" id="search-button"
-      (click)="onSearch(searchQuery.query);" style='margin-right: 10px'>Search</button>
+    <button class="btn btn-success input-group-btn" id="search-button" (click)="onSearch(searchQuery.query);"
+      style='margin-right: 10px'>Search</button>
     <button class="btn btn-outline-light input-group-btn" style='margin-right: 10px;width: 300px;'
       id="advanced-search-button" data-toggle="collapse" data-target="#demo" (click)='onAdvancedSearch()'>Advanced
       Search</button>
+
+    <div class='dropdown'>
+      <img style='height:30px;width: 30px;' id='dropdownMenuButton' class='icon-img' src='./assets/icons/human.svg'
+        data-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
+      <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
+        <a class='dropdown-item'>Profile</a>
+        <a class='dropdown-item'>Bookmarks</a>
+        <a class='dropdown-item'>Watched</a>
+        <div class='dropdown-divider'></div>
+        <a *ngIf="isSignedIn" class='dropdown-item' href='#'>Sign out</a>
+        <a *ngIf="!isSignedIn" class='dropdown-item' href='#'>Sign in</a>
+      </div>
+    </div>
   </div>
+
   <!-- </div> -->
   <div class='window-controls-container'>
     <div class='window-icon-bg' (click)="onMinimize()">

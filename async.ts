@@ -48,57 +48,101 @@ var tap = require('rxjs/operators');
 var rxCommon = require('@angular/common');
 // var http = require('http');
 var https = require('https');
+var http = require('http');
 
-const inDb = [true, false, false]
-// const
 
-// -------------------
-function function1() {
-  console.log(typeof (Worker));
-  return new Promise(resolve => {
-    setTimeout(() => {
-      console.log('hey');
-      resolve('hey');
-    }, 3000);
-  })
+const options = {
+  hostname: 'omdbapi.com',
+  port: 9400,
+  path: '/?t=wall-e&apikey=3a2fe8bf',
+  method: 'GET'
 }
 
-async function onInit() {
-  console.log('initializing...');
-  var result = await function1()
-  console.log(result)
-  console.log('in here')
-}
+// const req = https.request(options, res => {
+//   console.log(`statusCode: ${res.statusCode}`)
 
-onInit()
-console.log('afte in here')
+//   res.on('data', d => {
+//     process.stdout.write(d)
+//   })
+// })
 
-// -------------------
+// req.on('error', error => {
+//   console.error(error)
+// })
+
+// req.end()
 
 
-function random(val) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(Math.random())
-    }, val * 1000);
-  })
-}
 
-const sumRandomAsyncNums = async () => {
-  const first = await random(1)
-  const third = await random(3)
-  console.log(`sumRandomAsyncNums ${first}`);
-  console.log(`sumRandomAsyncNums ${third}`);
-}
+http.get(options, function (http_res) {
+  // initialize the container for our data
+  var data = "";
 
-const sumRandomAsyncNums2 = async () => {
-  const second = await random(2)
-  console.log(`${second}`);
-}
-const sumRandomAsyncNums3 = async () => {
-  const second = await random(2)
-  console.log(`${second}`);
-}
-sumRandomAsyncNums()
-sumRandomAsyncNums()
-sumRandomAsyncNums2()
+  // this event fires many times, each time collecting another piece of the response
+  http_res.on("data", function (chunk) {
+      // append this chunk to our growing `data` var
+      data += chunk;
+  });
+
+  // this event fires *one* time, after all the `data` events/chunks have been gathered
+  http_res.on("end", function () {
+      // you can use res.send instead of console.log to output via express
+      console.log(data);
+  });
+});
+
+// ------------
+
+// const inDb = [true, false, false]
+// // const
+
+// // -------------------
+// function function1() {
+//   console.log(typeof (Worker));
+//   return new Promise(resolve => {
+//     setTimeout(() => {
+//       console.log('hey');
+//       resolve('hey');
+//     }, 3000);
+//   })
+// }
+
+// async function onInit() {
+//   console.log('initializing...');
+//   var result = await function1()
+//   console.log(result)
+//   console.log('in here')
+// }
+
+// onInit()
+// console.log('afte in here')
+
+// // -------------------
+
+
+// function random(val) {
+//   return new Promise(resolve => {
+//     setTimeout(() => {
+//       resolve(Math.random())
+//     }, val * 1000);
+//   })
+// }
+
+// const sumRandomAsyncNums = async () => {
+//   const first = await random(1)
+//   const third = await random(3)
+//   console.log(`sumRandomAsyncNums ${first}`);
+//   console.log(`sumRandomAsyncNums ${third}`);
+// }
+
+// const sumRandomAsyncNums2 = async () => {
+//   const second = await random(2)
+//   console.log(`${second}`);
+// }
+// const sumRandomAsyncNums3 = async () => {
+//   const second = await random(2)
+//   console.log(`${second}`);
+// }
+// sumRandomAsyncNums()
+// sumRandomAsyncNums()
+// sumRandomAsyncNums2()

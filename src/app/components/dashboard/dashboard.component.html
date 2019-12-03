@@ -18,7 +18,7 @@ padding: 20px 0 20px 0; transition: .3s' *ngIf="selectedMovies.length != 0">
   <div class='selected-list-controls-container container' style='margin-top: 10px;'>
     <div class="btn-group">
       <button class='btn btn-success' (click)='onDownloadSelected()'>Download</button>
-      <button class='btn btn-primary' (click)='onAddToWatchlist()'>Add to watchlist</button>
+      <button class='btn btn-primary' (click)='onAddBookmark()'>Add to watchlist</button>
       <button class='btn btn-primary' (click)='onMarkAsWatched()'>Mark as watched</button>
     </div>
     <button class='btn btn-danger' style='float:right' (click)='onClearSelected()'>Clear list</button>

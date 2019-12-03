@@ -29,6 +29,7 @@
 
 * {
   -webkit-user-select: none;
+  color: whitesmoke
 }
 
 p,
@@ -188,7 +189,8 @@ body {
 }
 
 .movie-card-image-container {
-  background-color: rgb(32, 32, 32);
+  // background-color: rgb(32, 32, 32);
+  background-color: white;
   box-shadow: 0 0 10px black;
   position: relative;
   background-size: cover;
@@ -254,6 +256,13 @@ body {
   text-decoration: underline;
 }
 
+.image-container {
+  background-size: cover;
+  background-position: center;
+  background-color: white;
+}
+
+// .image
 // selected-movie-card-image-container:hover .overlay-remove {
 //   opacity: .5;
 // }

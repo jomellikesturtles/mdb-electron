@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <div style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
+    <div *ngIf="!isFetchingData" style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
       <!-- <h5 class='text-hyperlink' (click)='getMoviesFromLibrary()'>Load more results...</h5> -->
       <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
     </div>

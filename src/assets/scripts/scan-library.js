@@ -2,6 +2,7 @@
  * scans library folders for potential video files
  */
 const promise = require('promise')
+const searchMovie = require('./search-movie')
 const fs = require('fs');
 const path = require('path');
 var DataStore = require('nedb')
@@ -28,14 +29,19 @@ var itemInfo = {
   hasMatched: true,
   imdbId: 'tt1000912'
 }
-// libraryFiles.insert(itemInfo, function (err, doc) {
-//     console.log('Inserted', doc.title, 'with ID', doc._id);
-// });
 
 process.on('uncaughtException', function (error) {
   console.log(error);
   // process.send(['scrape-failed', 'general']); //mainWindow.webContents.send('scrape-failed', 'general');
 });
+
+
+/**
+ * Gets the info of the movie from tmdb or omdb
+ */
+function getMovieInfo() {
+  // http://www.omdbapi.com/?t=wall-e&apikey=3a2fe8bf
+}
 
 /**
  * Insert into libraryFiles.db
@@ -49,6 +55,13 @@ function saveToLibrary(params) {
       console.log(err)
     }
   })
+
+  // libraryDb.insert(value, function (err, data) {
+  //   if (!err) {
+  //     console.log('inserted ', data);
+  //   }
+  // })
+
 }
 
 /**
@@ -65,7 +78,7 @@ function addToList(folderPath, fileName) {
   var extension = path.extname(fullFilePath)
   var fullFileName = path.basename(fullFilePath)
   var hasSiblings = checkForSiblings(dir)
-  var fromRegex = getTitle(parentFolder, fullFileName)
+  var fromRegex = getTitleAndYear(parentFolder, fullFileName)
   var title = fromRegex[1]
   var year = fromRegex[2]
 
@@ -86,12 +99,18 @@ function addToList(folderPath, fileName) {
   // saveToLibrary(fileInfo);
 }
 
+
+
+
+
+
+
 /**
  * Gets the movie title based on regex
  * @param {string} parentFolder
  * @param {string} fullFileName
  */
-function getTitle(parentFolder, fullFileName) {
+function getTitleAndYear(parentFolder, fullFileName) {
   //1: title, 2: year, 3: extension
   var fileTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`
   var folderTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*$)`

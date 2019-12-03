@@ -54,7 +54,7 @@ export class TorrentService {
    * Searches torrents offline
    * @param val imdb or title
    */
-  async getTorrentsOffline(val: string) {
+  async getTorrentsOffline(val: string[]) {
     console.log('in getTorrentsOffline...; to be removed, jquery will handle instead')
 
     this.ipcService.searchTorrent(val)
@@ -68,9 +68,9 @@ export class TorrentService {
 
   }
 
-  getTorrents(val: string): Observable<any> {
+  getTorrents(val): Observable<any> {
     let result
-    if (val.trim().match(REGEX_IMDB_ID)) {
+    if (typeof val === 'string' && val.trim().match(REGEX_IMDB_ID)) {
       result = this.getTorrentsOnline(val);
     } else {
       result = this.getTorrentsOffline(val);

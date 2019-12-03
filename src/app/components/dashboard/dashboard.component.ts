@@ -50,9 +50,10 @@ export class DashboardComponent implements OnInit {
     this.nowShowingMovies = TMDB_SEARCH_RESULTS.results
     this.nowShowingMovies[this.nameString] = `Best of 1994`
     this.dashboardLists.push(this.nowShowingMovies)
-    this.getNowShowingMovies()
-    this.getTopMoviesFromYear()
+    // this.getNowShowingMovies()
+    // this.getTopMoviesFromYear()
     this.getAvailability()
+
     // COMMENTED FOR TEST DATA ONLY
     // this.ipcService.libraryMovie.subscribe(value => {
     //   console.log('libraryMovie value', value)
