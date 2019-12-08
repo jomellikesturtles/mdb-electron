@@ -15,9 +15,11 @@ export class UtilsService {
    * @returns string value of year with YYYY format
    */
   getYear(releaseDate: string) {
-
-    const result1 = REGEX_OMDB_RELEASE_DATE.exec(releaseDate)
-    const result2 = REGEX_TMDB_RELEASE_DATE.exec(releaseDate)
+    // change to test
+    const REGEX_OMDB_RELEASE_DATE_LOCAL = new RegExp(`^(\\d{2})+\\s+([a-z]{3,})+\\s+(\\d{4})+`, `gi`);
+    const REGEX_TMDB_RELEASE_DATE_LOCAL = new RegExp(`([0-9]{2,4})-([0-9]{2})-([0-9]{2})`, `gi`);
+    const result1 = REGEX_OMDB_RELEASE_DATE_LOCAL.exec(releaseDate)
+    const result2 = REGEX_TMDB_RELEASE_DATE_LOCAL.exec(releaseDate)
     let toReturn = ''
     if (result1) {
       toReturn = releaseDate.substr(releaseDate.lastIndexOf(' ') + 1);

@@ -1,0 +1,38 @@
+<!-- google -->
+<button></button>
+<!-- facebook -->
+<button></button>
+<input placeholder="Email address">
+<input placeholder="Password">
+<button>Sign in</button>
+<button>Sign in anonymously</button>
+
+<a>Forgotten your password?</a>
+Not registered yet? <a>Sign up</a>
+
+<!-- register -->
+
+<!-- facebook -->
+<button class='btn'>Facebook</button>
+<!-- google -->
+<button class='btn'>Google</button>
+<label><input [(ngModel)]="userSignIn.username" placeholder="Username"></label>
+<label><input [(ngModel)]="userSignIn.emailAddress" placeholder="Email address"></label>
+<label><input placeholder="Password"></label>
+<label>Gender</label>
+<select [(ngModel)]="userSignIn.gender" class="form-control" style='width: 200px; float:right'>
+  <option value='g'>Gender</option>
+  <option value='m'>Male</option>
+  <option value='f'>Female</option>
+  <option value='n'>Rather not to say</option>
+</select>
+<select class="form-control" style='width: 200px; float:right'>
+  <option *ngFor="let age of ageList" [value]='age'>{{age}}</option>
+</select>
+<button class='btn btn-success'>Sign up</button>
+<button>Sign up anonymously</button>
+
+{{userSignIn.username}}
+{{userSignIn.emailAddress}}
+{{userSignIn.gender}}
+{{userSignIn.age}}

@@ -6,7 +6,7 @@ import {
   Injectable, NgZone
   //// , ChangeDetectionStrategy, ChangeDetectorRef,
 } from '@angular/core'
-import { BehaviorSubject, Observable } from 'rxjs'
+import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
 declare var electron: any
 const { ipcRenderer } = electron
 import { ILibraryInfo } from '../interfaces'
@@ -22,22 +22,26 @@ export class IpcService {
   movieMetadata = new BehaviorSubject<string[]>([])
   preferencesConfig = new BehaviorSubject<string[]>([])
   bookmarkSingle = new BehaviorSubject<IBookmark>({ id: '', imdbId: '', tmdbId: 0 })
+  watchedSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
+  scannedMovieSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
+  scannedMovieMulti = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
 
   // bookmarkSingle: Bookmark = new BehaviorSubject<Bookmark>()
   private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone) //// private ref: ChangeDetectorRef
   {
-
     this.ipcRenderer = (<any>window).require('electron').ipcRenderer
 
     // this.ipcRenderer.on('library-folders', (event, data) => {
     //   console.log('library-folders:', data)
     //   this.libraryFolders.next(data)
     // })
-    this.ipcRenderer.on('library-movies', (event, data) => {
-      this.libraryMovies.next(data)
-    })
+
+    // this.ipcRenderer.on('library-movies', (event, data) => {
+    //   this.libraryMovies.next(data)
+    // })
+
     // this.ipcRenderer.on('library-movie', (event, data) => {
     //   console.log('library-movie data:', data)
     //   this.libraryMovie.next(data)
@@ -58,45 +62,34 @@ export class IpcService {
     // })
 
     // ----------------------------
-    // this.ipcRenderer.once('bookmark-get-success', (event, data) => {
+
+    // this.ipcRenderer.on('bookmark-get-success' || 'bookmark-add-success' || 'bookmark-remove-success', (event, data) => {
     //   this.bookmarkSingle.next(data)
-    //   // this.ngZone.run(() => {
     //   console.log('ipcRenderer bookmark-get', data)
-    //   // })
     // })
-    // this.ipcRenderer.once('bookmark-add-success', (event, data) => {
-    //   // this.ngZone.run(() => {
-    //   console.log('ipcRenderer bookmark-add', data)
-    //   // })
-    //   // console.log('ipcRenderer bookmark-add', data)
-    //   this.bookmarkSingle.next(data)
-    // })
-    // this.ipcRenderer.once('bookmark-remove-success', (event, data) => {
-    //   // this.ngZone.run(() => {
-    //   console.log('ipcRenderer bookmark-remove', data)
-    //   // })
-    //   // console.log('ipcRenderer bookmark-remove', data)
-    //   this.bookmarkSingle.next(data)
-    // })
-  }
 
+    // BOOKMARKS
+    this.ipcRenderer.on('bookmark-get-success', (event, data) => {
+      this.bookmarkSingle.next(data)
+    })
+    this.ipcRenderer.on('bookmark-add-success', (event, data) => {
+      this.bookmarkSingle.next(data)
+    })
+    this.ipcRenderer.on('bookmark-remove-success', (event, data) => {
+      this.bookmarkSingle.next(data)
+    })
+    // WATCHED
+    this.ipcRenderer.on('watched-success', (event, data) => {
+      console.log('watched-success', data);
+      this.watchedSingle.next(data)
+    })
+    // SCANNED MOVIE
+    this.ipcRenderer.on('scanned-success', (event, data) => {
+      console.log('scanned-success', data);
+      this.scannedMovieSingle.next(data)
+    })
 
-  // // user services; watchlist/bookmarks, watched
-  async getBookmark(val) {
-    this.ipcRenderer.send('bookmark', ['bookmark-get', val])
-    return new Promise<IBookmark>((resolve, reject) => {
-      this.ipcRenderer.once('bookmark', (event, arg) => {
-        console.log('bookmark', arg);
-        resolve(arg);
-      });
-    });
   }
-  // addBookmark(val) {
-  //   this.ipcRenderer.send('bookmark', ['bookmark-add', val])
-  // }
-  // removeBookmark(val) {
-  //   this.ipcRenderer.send('bookmark', ['bookmark-remove', val])
-  // }
 
   async getFiles() {
     // return new Promise<string[]>((resolve, reject) => {
@@ -120,7 +113,7 @@ export class IpcService {
    * @param url url to open
    */
   openLinkExternal(url: string) {
-    this.ipcRenderer.send('open-link-external', url)
+    // this.ipcRenderer.send('open-link-external', url)
   }
   /**
    * Opens files and folders
@@ -138,7 +131,7 @@ export class IpcService {
    * Scans the library folders
    */
   scanLibrary() {
-    this.ipcRenderer.send('scan-library')
+    // this.ipcRenderer.send('scan-library')
   }
 
   /**
@@ -192,7 +185,7 @@ export class IpcService {
    */
   openFileExplorer(data: string) {
     console.log(data)
-    // this.ipcRenderer.send('open-folder', data)
+    this.ipcRenderer.send('open-folder', data)
   }
 
   /**
@@ -217,7 +210,7 @@ export class IpcService {
    */
   searchTorrent(data) {
     console.log('searchTorrent ', data)
-    this.ipcRenderer.send('torrent-search', data)
+    // this.ipcRenderer.send('torrent-search', data)
   }
 
   /**
@@ -240,7 +233,7 @@ export class IpcService {
   // library movies db
   getMoviesFromLibrary() {
     console.log('get-library-movies')
-    this.ipcRenderer.send('get-library-movies', ['find-collection', 1])
+    // this.ipcRenderer.send('get-library-movies', ['find-collection', 1])
     // this.ipcRenderer.send('get-library-movies')
   }
 
@@ -248,7 +241,7 @@ export class IpcService {
    * Ipc renderer that sends command to main renderer to get movies from library db.
    */
   getMoviesFromLibraryByPage(val) {
-    this.ipcRenderer.send('get-library-movies', ['find-collection', val]);
+    // this.ipcRenderer.send('get-library-movies', ['find-collection', val]);
   }
   // getMoviesFromLibraryByPage(val) {
 
@@ -267,12 +260,15 @@ export class IpcService {
    * @param data imdb id or movie title and release year or tmdb id
    */
   getMovieFromLibrary(data) {
-    this.ipcRenderer.send('get-library-movie', [data]);
+    // this.ipcRenderer.send('get-library-movie', [data]);
+    // return new Promise<ILibraryInfo>((resolve, reject) => {
+    //   this.ipcRenderer.once('library-movie', (event, arg) => {
+    //     console.log('library-movie', arg);
+    //     resolve(arg);
+    //   });
+    // });
     return new Promise<ILibraryInfo>((resolve, reject) => {
-      this.ipcRenderer.once('library-movie', (event, arg) => {
-        console.log('library-movie', arg);
-        resolve(arg);
-      });
+      resolve(null);
     });
     // return null
   }
@@ -288,9 +284,9 @@ export class IpcService {
 
   // // User services
   // // user services; watchlist/bookmarks, watched
-  // getBookmark(val) {
-  //   this.ipcRenderer.send('bookmark', ['bookmark-get', val])
-  // }
+  getBookmark(val) {
+    this.ipcRenderer.send('bookmark', ['bookmark-get', val])
+  }
   addBookmark(val) {
     this.ipcRenderer.send('bookmark', ['bookmark-add', val])
   }
@@ -301,15 +297,14 @@ export class IpcService {
     this.ipcRenderer.send('bookmark', ['bookmark-update', val])
   }
   getMarkAsWatched(val) {
-    // this.ipcRenderer.send('get-watched', val)
+    this.ipcRenderer.send('watched', ['get', val])
   }
   addMarkAsWatched(val) {
-    // this.ipcRenderer.send('add-watched', val)
+    this.ipcRenderer.send('watched', ['add', val])
   }
   removeMarkAsWatched(val) {
-    // this.ipcRenderer.send('remove-watched', val)
+    this.ipcRenderer.send('watched', ['remove', val])
   }
-
 
   // App Window Events
   minimizeWindow() {
@@ -327,4 +322,11 @@ export interface IBookmark {
   tmdbId: number
   imdbId: string,
   id: string
+}
+
+export interface IWatched {
+  tmdbId: number
+  imdbId: string,
+  id: string
+  timestamp?: number,
 }

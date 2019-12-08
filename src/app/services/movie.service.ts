@@ -10,7 +10,7 @@ import { ITorrent, IOmdbMovieDetail, IRating, TmdbParameters, OmdbParameters } f
 import { forEach } from '@angular/router/src/utils/collection';
 import { REGEX_IMDB_ID, OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL } from '../constants';
 
-const jsonContentType = new HttpHeaders({ 'Content-Type': 'application/json' })
+const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
@@ -136,7 +136,7 @@ export class MovieService {
     let httpParam = new HttpParams().append(OmdbParameters.ApiKey, OMDB_API_KEY)
 
     const myOmdbHttpOptions = {
-      headers: jsonContentType,
+      headers: JSON_CONTENT_TYPE_HEADER,
       params: httpParam
     };
     return this.http.get<any>(url, myOmdbHttpOptions).pipe(tap(_ => this.log('')),
@@ -168,7 +168,7 @@ export class MovieService {
       })
     }
     const tmdbHttpOptions = {
-      headers: jsonContentType,
+      headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
     };
     return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
@@ -180,19 +180,39 @@ export class MovieService {
    */
   getMoviesDiscover(...val): Observable<any> {
     const url = `${TMDB_URL}/discover/movie`
-    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, 'a636ce7bd0c125045f4170644b4d3d25')
+    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
     val[0].forEach(element => {
       console.log(element);
       myHttpParam = myHttpParam.append(element[0], element[1])
     })
     const tmdbHttpOptions = {
-      headers: jsonContentType,
+      headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
     };
     return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getMoviesDiscover')))
   }
 
+  searchTmdbMovie(...val): Observable<any> {
+    const url = `${TMDB_URL}/search/movie`
+    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
+    val[0].forEach(element => {
+      console.log(element);
+      myHttpParam = myHttpParam.append(element[0], element[1])
+    })
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('searchTmdbMovie')))
+  }
+
+  /**
+   * Error handler.
+   * @param operation
+   * @param result
+   */
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       // TODO: send the error to remote logging infrastructure

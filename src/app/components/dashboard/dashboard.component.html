@@ -60,11 +60,9 @@ padding: 20px 0 20px 0; transition: .3s' *ngIf="selectedMovies.length != 0">
               </div>
               <div class="card-body movie-card-body">
                 <div class="movie-card-text">
-                  <h6 class="card-title" (click)="goToMovie(movie.id)" class='text-primary movie-card-title'
+                  <h6 class="card-title" (click)="goToMovie(movie.id)" class='text-primary movie-card-title text-hyperlink'
                     data-toggle="tooltip" title="{{movie.title}}">{{movie.title}}</h6>
-                  <label style='float: left'>{{getYear(movie.release_date)}}</label>
-                  <!-- <label style='float: '>{{movie.vote_average}}</label> -->
-
+                  <label class='text-hyperlink' style='float: left'>{{getYear(movie.release_date)}}</label>
                   <label style='float: right'><img style='height:10px;
                     -webkit-filter: invert(1);margin-bottom: 4px;
     margin-right: 2px;' src='./assets/icons/star.svg' />{{movie.vote_average}}</label>

@@ -24,11 +24,6 @@ export class ReleaseYearPipe implements PipeTransform {
     private utilsService: UtilsService) { }
   transform(value: string): string {
     return this.utilsService.getYear(value)
-    // if (value.indexOf('-') > -1) {
-    //   return value.substring(0, value.indexOf('-'))
-    // } else {
-    //   return value.substr(value.lastIndexOf(' ') + 1);
-    // }
   }
 }
 

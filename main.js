@@ -8,11 +8,11 @@ const datastore = new Datastore({
   filename: 'src/assets/config/config.db',
   autoload: true
 });
-// import * as path from 'path'
 // import * as url from 'url'const
 const path = require('path');
 const fs = require('fs');
 let procBookmark;
+let procWatched;
 let procLibraryDb;
 let procSearch;
 let procTorrentSearch;
@@ -48,7 +48,7 @@ function createWindow() {
   mainWindow.webContents.openDevTools()
   mainWindow.setMenu(null)
   mainWindow.loadURL(`file://${__dirname}/dist/mdb-electron/index.html`); // It will load in production mode
-
+  // console.log('version', ipcMain.())
   // Event when the window is closed.
   mainWindow.on('closed', function () {
     mainWindow = null
@@ -56,7 +56,6 @@ function createWindow() {
   mainWindow.once('show', function () {
     console.log('main window Show');
   });
-
   // ipcMain.on('error', (_, err) => {
   // 	if (!argv.debug) {
   // 		console.error(err);
@@ -385,7 +384,7 @@ ipcMain.on('torrent-search', function (event, data) {
 
 // BOOKMARK
 ipcMain.on('bookmark', function (event, data) {
-  if (!procLibraryDb) {
+  if (!procBookmark) {
     console.log('procBookmark ', data);
     procBookmark = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'user-db-service.js'), [data[0], [data[1]]], {
       cwd: __dirname,
@@ -401,6 +400,29 @@ ipcMain.on('bookmark', function (event, data) {
     });
     procBookmark.on('message', function (m) {
       console.log('bookmark in IPCMAIN', m);
+      mainWindow.webContents.send(m[0], m[1]); // reply
+    });
+  }
+})
+
+// WATCHED
+ipcMain.on('watched', function (event, data) {
+  if (!procWatched) {
+    console.log('procWatched ', data);
+    procWatched = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'watched-db-service.js'), [data[0], [data[1]]], {
+      cwd: __dirname,
+      silent: true
+    });
+    procWatched.stdout.on('data', function (data) {
+      console.log('printing data..');
+      console.log(data.toString());
+    });
+    procWatched.on('exit', function () {
+      console.log('procWatched process ended');
+      procWatched = null
+    });
+    procWatched.on('message', function (m) {
+      console.log('watched in IPCMAIN', m);
       mainWindow.webContents.send(m[0], m[1]); // reply
     });
   }

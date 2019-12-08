@@ -417,6 +417,18 @@ export enum TmdbParameters {
   WithOriginalLanguage = 'with_original_language',
 }
 
+export enum TmdbSearchMovieParameters {
+  ApiKey = 'api_key',
+  Language = 'language', // Pass a ISO 639 - 1 value to display translated data for the fields that support it. minLength: 2 pattern: ([a - z]{ 2 }) -([A - Z]{ 2 }) default: en - US
+  Query = 'query',
+  Page = 'page', // minimum: 1 maximum: 1000
+  IncludeAdult = 'include_adult',
+  Region = 'region',
+  // Specify a ISO 3166 - 1 code to filter release dates.Must be uppercase. pattern: ^ [A - Z]{ 2 } $
+  Year = 'year',
+  PrimaryReleaseYear = 'primary_release_year'
+}
+
 export enum TmdbAppendToResponseParameters {
   AccountStates = 'account_states',
   Videos = 'videos',

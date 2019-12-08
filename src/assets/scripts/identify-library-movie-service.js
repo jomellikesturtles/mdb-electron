@@ -1,5 +1,5 @@
 /**
- * scans library folders for potential video files
+ * Identifies the movie from library.db
  */
 const promise = require('promise')
 const searchMovie = require('./search-movie')
@@ -213,9 +213,9 @@ function getLibraryFolders() {
 }
 
 /**
- * Starts scan
+ * Starts identification
  */
-function initializeScan() {
+function initializeIdentify() {
   getLibraryFolders().then(function (libraryFolders) {
     libraryFolders.forEach(folder => {
       readDirectory(folder);
@@ -224,7 +224,7 @@ function initializeScan() {
 }
 
 console.time('initializeScan')
-initializeScan();
+initializeIdentify();
 console.timeEnd('initializeScan')
 
 // saveToConfig(moviesList)
@@ -240,4 +240,3 @@ console.timeEnd('initializeScan')
  * levenschtein
  * rank by vote count&average
  */
-

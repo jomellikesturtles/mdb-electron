@@ -14,7 +14,7 @@ import { UtilsService } from '../../services/utils.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { ITmdbResult, ILibraryInfo, TmdbParameters } from '../../interfaces'
 import { TMDB_SEARCH_RESULTS } from '../../mock-data'
-import { utils } from 'protractor'
+import { GENRES } from '../../constants'
 declare var $: any
 
 @Component({
@@ -50,10 +50,10 @@ export class DashboardComponent implements OnInit {
     this.nowShowingMovies = TMDB_SEARCH_RESULTS.results
     this.nowShowingMovies[this.nameString] = `Best of 1994`
     this.dashboardLists.push(this.nowShowingMovies)
-    // this.getNowShowingMovies()
-    // this.getTopMoviesFromYear()
+    this.getNowShowingMovies()
+    this.getTopMoviesFromYear()
+    // this.getTopGenreMovie()
     this.getAvailability()
-
     // COMMENTED FOR TEST DATA ONLY
     // this.ipcService.libraryMovie.subscribe(value => {
     //   console.log('libraryMovie value', value)
@@ -90,6 +90,9 @@ export class DashboardComponent implements OnInit {
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
   }
 
+  /**
+   * Gets the availability of movies in the dashboard.
+   */
   async getAvailability() {
     for (const element of this.nowShowingMovies) {
       const result = await this.ipcService.getMovieFromLibrary(element.id)
@@ -99,6 +102,7 @@ export class DashboardComponent implements OnInit {
     }
     this.cdr.detectChanges()
   }
+
   /**
    * Downloads highlighted/selected movies
    */
@@ -148,6 +152,19 @@ export class DashboardComponent implements OnInit {
       [TmdbParameters.PrimaryReleaseYear, randYear.toString()]
     ]
     this.sendToMovieService(params, `Top movies of ${randYear}`)
+  }
+
+  /**
+   * Gets top-rated movies by genre.
+   */
+  getTopGenreMovie() {
+    const TMDB_GENRE_LENGTH = 19 // up to index 19 is valid tmdb genre
+    const GENRE_INDEX = Math.floor(Math.random() * (TMDB_GENRE_LENGTH))
+    const CHOSEN_GENRE = GENRES[GENRE_INDEX]
+    const params = [
+      [TmdbParameters.WithGenres, CHOSEN_GENRE.id]
+    ]
+    this.sendToMovieService(params, `Top ${CHOSEN_GENRE.name}`)
   }
 
   sendToMovieService(params: any, title: string) {

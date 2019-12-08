@@ -1,9 +1,7 @@
 <div style='width:100%;height:100%;position:absolute'>
 
   <!-- TOP -->
-  <div style='position:fixed;top:0;height:50px;width:100%'>
-    <app-top-navigation></app-top-navigation>
-  </div>
+  <app-top-navigation style='position: fixed;top:0;height:50px;width:100%;z-index: 5;'></app-top-navigation>
 
   <div style='position:fixed;top:50px;height:100%;width:100%;display: flex;'>
 
@@ -46,11 +44,9 @@
     </div>
 
     <!-- MAIN -->
-    <div id="main" style='height:100%;width:100%;overflow-y:auto; padding-bottom: 10px;'
+    <div id="main" style='height:100%;width:100%;overflow-y:auto; padding-bottom: 50px;'
       [ngStyle]="{'width':'calc(100% - '+sideNavWidth+')'}">
       <router-outlet></router-outlet>
     </div>
-
   </div>
-
 </div>

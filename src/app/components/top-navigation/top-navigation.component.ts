@@ -1,11 +1,9 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs'
-// import { Movie, MovieGenre, IGenre } from '../../subject';
 import { IOmdbMovieDetail, MovieGenre, IGenre } from '../../interfaces';
 import { MOVIES, MOVIEGENRES } from '../../mock-data';
 import { DECADES, GENRES, REGEX_IMDB_ID } from '../../constants';
-// import { SELECTEDMOVIE, MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
 import { IpcService } from '../../services/ipc.service'
@@ -44,7 +42,8 @@ export class TopNavigationComponent implements OnInit {
     endYear: 2018,
     genres: this.movieGenres,
     type: 'TV Series',
-    isAvailable: 'true'
+    isAvailable: 'true',
+    page: 1
   };
   movies = MOVIES;
   selectedMovies = []
@@ -59,6 +58,7 @@ export class TopNavigationComponent implements OnInit {
   searchHistoryMaxLength = 4
   decadesList = DECADES
   genresList = GENRES
+  isSignedIn = false
 
   ngOnInit() {
   }
@@ -76,10 +76,14 @@ export class TopNavigationComponent implements OnInit {
   onAdvancedSearch() {
 
   }
+
   /**
    * Initialize search
    */
-  onSearch(val: any) {
+  onSearch(val: string) {
+    if (this.currentSearchQuery === val || val.length === 0) {
+      return
+    }
     this.searchHistoryList.unshift(val)
     console.log(this.searchHistoryList);
     if (this.searchHistoryList.length >= this.searchHistoryMaxLength) {
@@ -100,13 +104,14 @@ export class TopNavigationComponent implements OnInit {
       console.log('searchByTitle');
       this.searchByTitle(enteredQuery)
     }
+    this.currentSearchQuery = enteredQuery
   }
 
   /**
    * Searches movie by imdb id and redirects if there are results
    * @param imdbId imdb id to search
    */
-  searchByImdbId(imdbId) {
+  searchByImdbId(imdbId: string) {
     this.movieService.getMovieByImdbId(imdbId).subscribe(data => {
       if (data.Response !== 'False') {
         this.router.navigate([`/details/${imdbId}`], { relativeTo: this.activatedRoute });
@@ -121,29 +126,16 @@ export class TopNavigationComponent implements OnInit {
    * Searches by title
    * @param enteredQuery query to search
    */
-  searchByTitle(enteredQuery) {
-    // this.dataService.currentSearchQuery = enteredQuery
-    // this.dataService.updateHighlightedMovie(this.searchQuery);
-    if (this.searchQuery || this.searchQuery.query.length > 0) {
-      this.dataService.updateSearchQuery(this.searchQuery)
-      this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
-    }
-    // this.movieService.searchMovieByTitle(enteredQuery).subscribe(data => {
-    //   this.numberOfPages = data.total_pages;
-    //   this.numberOfResults = data.total_results;
-    //   const resultMovies = data.results;
-    //   this.selectedMovie = data;
-    //   console.log('searchMovieByTitle data', data);
-    //   if (resultMovies != undefined) {
-    //     this.movies = resultMovies.filter(obj => {
-    //       return obj.media_type === 'movie'
-    //     })
-    //     this.hasSearchResults = true
-    //   } else {
-    //     this.hasSearchResults = false
-    //     // insert code for not found
-    //   }
-    // })
+  searchByTitle(enteredQuery: string) {
+    this.dataService.updateSearchQuery(this.searchQuery)
+    this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
+  }
+
+  /**
+   * Opens the user profile.
+   */
+  openProfile() {
+
   }
 
   onMinimize() {
@@ -165,7 +157,8 @@ export interface ISearchQuery {
   endYear: number,
   genres: MovieGenre[],
   type: string,
-  isAvailable: string
+  isAvailable: string,
+  page: number
 }
 
 export interface ITmdbSearchQuery {

@@ -1,13 +1,14 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs'
 import { TMDB_SEARCH_RESULTS } from '../../mock-data';
-import { IOmdbMovieDetail, ITmdbResult, TmdbParameters } from '../../interfaces';
+import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../interfaces';
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../services/data.service'
 import { IpcService } from '../../services/ipc.service'
 import { MovieService } from '../../services/movie.service'
 import { NavigationService } from '../../services/navigation.service'
 import { UtilsService } from '../../services/utils.service'
+import { ISearchQuery } from '../top-navigation/top-navigation.component';
 declare var $: any
 
 @Component({
@@ -19,13 +20,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
   // @Input() data: Observable<any>
 
   // searchResults = TMDB_SEARCH_RESULTS.results
+  // sortByList = ['popularity','rating',]
   searchResults = []
-  searchQuery = {
-    keyword: '',
-    year: 2010
-  }
+  searchQuery: ISearchQuery
   hasSearchResults = true
-  currentSearchQuery = 'guardians of the galaxy'
+  currentSearchQuery
   selectedMovie = null
   selectedMovies = []
   cardWidth = '130px'
@@ -50,14 +49,13 @@ export class ResultsComponent implements OnInit, OnDestroy {
     const imdbId = this.activatedRoute.snapshot.paramMap;
     // this.dataService.currentSearchQuery
     this.dataService.searchQuery.subscribe(data => {
-      console.log('fromdataservice: ', data);
-      this.currentSearchQuery = data.query
-    });
-    this.dataService.currentMovie.subscribe(data => {
-      console.log('fromdataservice: ', data);
-    });
-    this.dataService.currentSearchResults.subscribe(data => {
-      console.log('fromdataservice: ', data);
+      console.log('fromdataservice searchQuery: ', data);
+      this.searchResults = [] // clear for new search
+      this.currentPage = 1
+      this.searchQuery = data
+      this.getSearchResults()
+      this.currentSearchQuery = this.searchQuery.query
+      // this.currentSearchQuery = data.query
     });
     // console.log('fromdataservice: ', this.searchQuery);
     // this.dataService.getDashboardData()
@@ -72,7 +70,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
     //   //   this.getBackdrop(imdbId);
     //   // }
     // });
-    this.getSearchResults()
   }
 
   ngOnDestroy(): void {
@@ -155,14 +152,18 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   getSearchResults() {
-    this.searchResults = TMDB_SEARCH_RESULTS.results
-    // const params = [
-    //   [TmdbParameters.PrimaryReleaseYear, 2010]
-    // ]
-    // this.movieService.getMoviesDiscover(params).subscribe(data => {
-    //   this.searchResults.push(...data.results)
-    //   this.cdr.detectChanges()
-    // });
+    // commented for actual
+    // this.searchResults = TMDB_SEARCH_RESULTS.results
+    const params = [
+      [TmdbSearchMovieParameters.Query, this.searchQuery.query]
+    ]
+    this.movieService.searchTmdbMovie(params).subscribe(data => {
+      // this.searchResults.push(...data.results)
+      data.results.forEach(element => {
+        this.searchResults.push(element)
+      });
+      this.cdr.detectChanges()
+    })
   }
 
   /**
@@ -170,6 +171,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
    */
   getMoreResults() {
     const params = [
+      [TmdbSearchMovieParameters.Query, this.searchQuery.query],
       [TmdbParameters.PrimaryReleaseYear, 1994],
       [TmdbParameters.Page, ++this.currentPage]
     ]

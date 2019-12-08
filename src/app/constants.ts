@@ -201,6 +201,16 @@ export const REGEX_OMDB_BOX_OFFICE = new RegExp(`(\\$+[\\d,]+)`, `gi`);
 export const REGEX_IMAGE_SIZE = new RegExp(`(SX)+([\\d])+(.jpg|.jpeg)`, `gi`)
 export const REGEX_YEAR_ONLY = new RegExp(`^([0-9]{4})$`, `gi`);
 
+export const STRING_REGEX_IMDB_ID = `(^tt[0-9]{7})$`;
+export const STRING_REGEX_TMDB_RUNTIME = `([\\d,]+)(\\s)(min)`;
+export const STRING_REGEX_OMDB_RELEASE_DATE = `^(\\d{2})+\\s+([a-z]{3,})+\\s+(\\d{4})+`;
+export const STRING_REGEX_TMDB_RELEASE_DATE = `([0-9]{2,4})-([0-9]{2})-([0-9]{2})`
+export const STRING_REGEX_PREFIX = `^([a-z]:)`// if file absolute e.g. c:/
+export const STRING_REGEX_FILE_SIZE = `^([0-9])\\d+$`
+export const STRING_REGEX_OMDB_BOX_OFFICE = `(\\$+[\\d,]+)`
+export const STRING_REGEX_IMAGE_SIZE = `(SX)+([\\d])+(.jpg|.jpeg)`
+export const STRING_REGEX_YEAR_ONLY = `^([0-9]{4})$`
+
 export const OMDB_URL = 'http://www.omdbapi.com'
 export const TMDB_URL = 'https://api.themoviedb.org/3'
 export const FANART_TV_URL = 'http://webservice.fanart.tv/v3/movies'

@@ -212,12 +212,7 @@ body {
   white-space: nowrap;
   overflow: hidden !important;
   text-overflow: ellipsis;
-  cursor: pointer;
   margin-bottom: 0px;
-}
-
-.movie-card-title:hover {
-  text-decoration: underline;
 }
 
 // the circle one
@@ -262,7 +257,3 @@ body {
   background-color: white;
 }
 
-// .image
-// selected-movie-card-image-container:hover .overlay-remove {
-//   opacity: .5;
-// }

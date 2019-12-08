@@ -22,6 +22,8 @@ import { CreditsComponent } from './components/details/credits/credits.component
 import { VideoComponent } from './components/details/video/video.component';
 import { BookmarksComponent } from './components/bookmarks/bookmarks.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { SigninComponent } from './components/signin/signin.component';
+import { DiscoverComponent } from './components/discover/discover.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +48,9 @@ import { ProfileComponent } from './components/profile/profile.component';
     CreditsComponent,
     VideoComponent,
     BookmarksComponent,
-    ProfileComponent
+    ProfileComponent,
+    SigninComponent,
+    DiscoverComponent
   ],
   imports: [
     BrowserModule,

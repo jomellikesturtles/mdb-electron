@@ -22,6 +22,9 @@ export class DataService {
   private selectedMoviesSource = new BehaviorSubject<any>('')
   selectedMovies = this.selectedMoviesSource.asObservable()
 
+  private discoverMoviesSource = new BehaviorSubject<any>('')
+  discoverQuery = this.discoverMoviesSource.asObservable()
+
   // private isTestRunSource = new BehaviorSubject<any>('')
   // isTestRun = this.getIsTestRun.asObservable()
 
@@ -77,5 +80,17 @@ export class DataService {
   updateSelectedMovies(val: any) {
     console.log('selectedMovies ', val)
     this.selectedMoviesSource.next(val)
+  }
+
+  // updateDiscoverQuery(type: string, val: string | null | number) {
+  updateDiscoverQuery(val: string[]) {
+    console.log(val);
+    // this.discoverQuery = val;
+    this.discoverMoviesSource.next(val)
+  }
+
+  getDiscoverQuery() {
+    console.log(this.discoverQuery);
+    return this.discoverQuery;
   }
 }

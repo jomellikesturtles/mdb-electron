@@ -8,7 +8,7 @@
       <div class="container">
 
         <div class="row">
-          <div class="col-sm-4">
+          <div class="col-sm-4" style='padding-left: 0px'>
             <div class='img-container'
               [ngStyle]="{'background-image':'url('+movieDetails.posterPath+')','height':'calc(1.481*300px)'}"
               style='background-size: cover; background-position: center; width: 100%; background-color: white;'>
@@ -17,40 +17,35 @@
           <div class="col-sm-8">
             <h3>{{isBookmarked}}</h3>
             <div class='uk-button-group'>
-              <button class='btn btn-basic btn-small' (click)='removeBookmark()'>
-                Remove bookmark
-              </button>
-              <button class='btn btn-basic btn-small' (click)='addBookmark()'>
-                Add to bookmark
-              </button>
-              <!-- <div *ngIf="isBookmarked">
-                <button class='btn btn-basic btn-small' (click)='toggleBookmark()'>
+              <div *ngIf="isBookmarked">
+                <button [disabled]='procBookmark' class='btn btn-danger btn-small' (click)='toggleBookmark()'>
                   Remove bookmark
                 </button>
               </div>
               <div *ngIf="!isBookmarked">
-                <button class='btn btn-basic btn-small' (click)='toggleBookmark()'>
+                <button [disabled]='procBookmark' class='btn btn-success btn-small' (click)='toggleBookmark()'>
                   Add to bookmark
                 </button>
-              </div> -->
+              </div>
               <div *ngIf="isWatched">
-                <button class='btn btn-info btn-small' (click)='removeMarkAsWatched(movieDetails.imdbId)'>
+                <button [disabled]='procWatched' class='btn btn-danger btn-small' (click)='toggleWatched()'>
                   Unmark as watched
                 </button>
               </div>
-            </div>
-            <div *ngIf="!isWatched">
-              <button class='btn btn-info btn-small' (click)='addMarkAsWatched(movieDetails.imdbId)'>
-                Mark as watched
-              </button>
+              <div *ngIf="!isWatched">
+                <button [disabled]='procWatched' class='btn btn-success btn-small' (click)='toggleWatched()'>
+                  Mark as watched
+                </button>
+              </div>
             </div>
 
             <h6>{{movieDetails.voteAverage}}</h6>
             <div style='display: flex;'>
               <h2 id="movie-title">{{movieDetails.title}}</h2>&nbsp;
-              <h2 class='text-hyperlink' (click)='goToReleaseYear(1990)'> ({{movieDetails.releaseDate|releaseYear}})
+              <h2 class='text-hyperlink' (click)='goToReleaseYear(getYear(movieDetails.releaseDate))'>
+                ({{movieDetails.releaseDate|releaseYear}})
               </h2>
-              <h2>{{movieCertification}}</h2>
+              <h2 (click)='goToCertification(movieCertification)'>{{movieCertification}}</h2>
             </div>
 
             <p id="movie-plot" style='overflow-wrap: break-word !important;
@@ -121,6 +116,11 @@
 
         </div>
         <h1>video 1</h1>
+        <video src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4
+        " id="videoPlayer" controls>
+          <source  type="video/mp4">
+        </video>
+
         <div *ngIf="myVideoPath.length > 1" style='height:600px; width:800px;background-color: black;margin:auto'>
           <video [src]="myVideoPath" width="100%" height="100%" controls>
             <source type="video/mp4">
@@ -161,7 +161,7 @@
           <div id='featuredCastAndCrewDisplay' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
             <div *ngFor="let cast of movieDetails.credits.cast" style='margin-right: 20px;'>
               <div (click)='goToPerson(cast.id)' class='image-container'
-                style='height: 200px; width: 185px; border-radius: 50%;'
+                style='height: 200px; width: 185px; border-radius: 50%; cursor: pointer;'
                 [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+cast.profile_path+')'}">
               </div>
               <div>
@@ -184,7 +184,7 @@
                 <h6 (click)='goToMovie(recommendedMovie.id)' class='text-hyperlink'>{{recommendedMovie.title}}</h6>
                 <p class='text-hyperlink' style='margin-left: 5px;'
                   (click)='goToReleaseYear(getYear(recommendedMovie.release_date))'>
-                  {{getYear(recommendedMovie.release_date)}}</p>
+                  {{recommendedMovie.release_date|releaseYear}}</p>
               </div>
             </div>
           </div>

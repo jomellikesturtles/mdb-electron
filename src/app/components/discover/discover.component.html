@@ -1,0 +1,12 @@
+<!-- TMDB discover -->
+<p>
+  discover works!
+</p>
+
+<select class="form-control" [(ngModel)]="sortBy" style='width: 200px; float:right'>
+  <option value='popularity.desc'>Popularity</option>
+  <option value='release_date.asc'>Oldest</option>
+  <option value='release_date.desc'>Newest</option>
+  <option value='original_title.asc'>Name</option>
+  <option value='vote_count.desc'>Vote Average</option>
+</select>

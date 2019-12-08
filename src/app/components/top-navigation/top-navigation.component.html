@@ -1,4 +1,4 @@
-<div class='navbar' style='-webkit-user-select: none; -webkit-app-region: drag;height: 50px;'>
+<div style='-webkit-user-select: none; -webkit-app-region: drag;height: 50px;'>
   <!-- <a class="row" routerLink="./dashboard">Home</a>
   <a class="row" (click)='navigateBack()'>Back</a> -->
   <!-- <div class="row"> -->
@@ -7,7 +7,7 @@
   <div style='width: 350px;'></div>
   <div class='search-controls-container' style='margin-left: 350px;'>
     <input #searchBar name="searchBar" class="form-control" id="search-bar" [(ngModel)]="searchQuery.query"
-      style='margin-right: 10px; border-radius: .25rem; min-width: 200px;color:black'
+      style='width:100px;margin-right: 10px; border-radius: .25rem; min-width: 50px;color:black'
       placeholder="Search title or IMDb id" (keyup.enter)="onSearch(searchQuery.query);" list='searchHistory' />
     <datalist id="searchHistory">
       <option *ngFor="let item of searchHistoryList">
@@ -19,8 +19,19 @@
     <button class="btn btn-outline-light input-group-btn" style='margin-right: 10px;width: 300px;'
       id="advanced-search-button" data-toggle="collapse" data-target="#demo" (click)='onAdvancedSearch()'>Advanced
       Search</button>
+    <button routerLink='./profile'>Profile</button>
 
-    <div class='dropdown'>
+    <!-- <div class="dropdown2">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown2">Dropdown Example
+      <span class="caret"></span></button>
+    <ul class="dropdown-menu">
+      <li><a href="#">HTML</a></li>
+      <li><a href="#">CSS</a></li>
+      <li><a href="#">JavaScript</a></li>
+    </ul>
+  </div> -->
+
+    <!-- <div class='dropdown'>
       <img style='height:30px;width: 30px;' id='dropdownMenuButton' class='icon-img' src='./assets/icons/human.svg'
         data-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
       <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
@@ -31,8 +42,28 @@
         <a *ngIf="isSignedIn" class='dropdown-item' href='#'>Sign out</a>
         <a *ngIf="!isSignedIn" class='dropdown-item' href='#'>Sign in</a>
       </div>
-    </div>
+    </div> -->
+
+    <li class="nav-item dropdown">
+      <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Messages</a>
+      <div class="dropdown-menu">
+        <a href="#" class="dropdown-item" [routerLink]="['/profile']" routerLinkActive="router-link-active">Profile</a>
+        <a href="#" class="dropdown-item">Account Settings</a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item" *ngIf="isSignedIn">Sign out</a>
+        <a href="#" class="dropdown-item" [routerLink]="['/signin']" *ngIf="!isSignedIn">Sign in</a>
+      </div>
+    </li>
   </div>
+
+  <!-- <div class="dropdown" style='float:end;'>
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown</a>
+    <div class="dropdown-menu" style='float:left;' style=' z-index: 10000;'>
+      <a href="#" class="dropdown-item" style='color:black'>Action</a>
+      <a href="#" class="dropdown-item"  style='color:black'>Another action</a>
+    </div>
+  </div> -->
+
 
   <!-- </div> -->
   <div class='window-controls-container'>
