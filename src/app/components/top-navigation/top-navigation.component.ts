@@ -9,6 +9,7 @@ import { MovieService } from '../../services/movie.service'
 import { IpcService } from '../../services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
+// import {} from '@angular/router'
 declare var jquery: any
 declare var $: any
 
@@ -77,6 +78,8 @@ export class TopNavigationComponent implements OnInit {
 
   }
 
+  toSignIn() {
+  }
   /**
    * Initialize search
    */

@@ -116,10 +116,15 @@
 
         </div>
         <h1>video 1</h1>
-        <video src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4
+        <div *ngIf="isVideoAvailable">
+          <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls>
+            <source type="video/mp4">
+          </video>
+        </div>
+        <!-- <video src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4
         " id="videoPlayer" controls>
           <source  type="video/mp4">
-        </video>
+        </video> -->
 
         <div *ngIf="myVideoPath.length > 1" style='height:600px; width:800px;background-color: black;margin:auto'>
           <video [src]="myVideoPath" width="100%" height="100%" controls>

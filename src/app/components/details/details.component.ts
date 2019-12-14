@@ -37,12 +37,14 @@ export class DetailsComponent implements OnInit, OnDestroy {
   testSelectedMovie = TEST_TMDB_MOVIE_DETAILS
   testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
   isAvailable = false
+  isVideoAvailable = false
   hasData = false
   movieMetadataSubscription
   libraryMovieSubscription
   bookmarksSingleSubscription = null
   watchedSingleSubscription = null
-  myVideoPath = ""
+  videoFileSubscription = null
+  myVideoPath = ''
   troubleQuote
   movieDetailsDirectors
   movieDetailsWriters
@@ -52,6 +54,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   userLocation = 'US'
   procBookmark = false
   procWatched = false
+  procVideo = false
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -77,6 +80,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.movieCertification = this.getMovieCertification()
     this.getBookmark()
     this.getWatched()
+    this.getVideo()
     // this.getMovieFromLibrary()
     // this.getTorrents()
     this.router.events.subscribe((evt) => {
@@ -242,6 +246,21 @@ export class DetailsComponent implements OnInit, OnDestroy {
       // this.selectedMovie = data;
       // this.saveMovieDataOffline(data)
     });
+  }
+
+  getVideo() {
+    // throw new Error("Method not implemented.");
+    this.ipcService.openVideo(this.movieDetails.tmdbId)
+    this.procVideo = true
+    this.videoFileSubscription = this.ipcService.videoFile.subscribe(data => {
+      if (data === null || data === 0) {
+        this.isVideoAvailable = false
+      } else {
+        this.isVideoAvailable = true
+      }
+      this.procVideo = false
+      this.cdr.detectChanges()
+    })
   }
 
   getBookmark() {

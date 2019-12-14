@@ -8,7 +8,8 @@ import {
 } from '@angular/core'
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
 declare var electron: any
-const { ipcRenderer } = electron
+import { ipcRenderer } from 'electron'
+// const { ipcRenderer } = electron
 import { ILibraryInfo } from '../interfaces'
 
 @Injectable({
@@ -25,8 +26,8 @@ export class IpcService {
   watchedSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   scannedMovieSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   scannedMovieMulti = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
+  videoFile = new BehaviorSubject<any>([])
 
-  // bookmarkSingle: Bookmark = new BehaviorSubject<Bookmark>()
   private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone) //// private ref: ChangeDetectorRef
@@ -69,26 +70,36 @@ export class IpcService {
     // })
 
     // BOOKMARKS
-    this.ipcRenderer.on('bookmark-get-success', (event, data) => {
-      this.bookmarkSingle.next(data)
-    })
-    this.ipcRenderer.on('bookmark-add-success', (event, data) => {
-      this.bookmarkSingle.next(data)
-    })
-    this.ipcRenderer.on('bookmark-remove-success', (event, data) => {
-      this.bookmarkSingle.next(data)
-    })
-    // WATCHED
-    this.ipcRenderer.on('watched-success', (event, data) => {
-      console.log('watched-success', data);
-      this.watchedSingle.next(data)
-    })
-    // SCANNED MOVIE
-    this.ipcRenderer.on('scanned-success', (event, data) => {
-      console.log('scanned-success', data);
-      this.scannedMovieSingle.next(data)
-    })
+    // this.ipcRenderer.on('bookmark-get-success', (event, data) => {
+    //   this.bookmarkSingle.next(data)
+    // })
+    // this.ipcRenderer.on('bookmark-add-success', (event, data) => {
+    //   this.bookmarkSingle.next(data)
+    // })
+    // this.ipcRenderer.on('bookmark-remove-success', (event, data) => {
+    //   this.bookmarkSingle.next(data)
+    // })
+    // // WATCHED
+    // this.ipcRenderer.on('watched-success', (event, data) => {
+    //   console.log('watched-success', data);
+    //   this.watchedSingle.next(data)
+    // })
+    // // SCANNED MOVIE
+    // this.ipcRenderer.on('scanned-success', (event, data) => {
+    //   console.log('scanned-success', data);
+    //   this.scannedMovieSingle.next(data)
+    // })
+    // this.ipcRenderer.on('video-success', (event, data) => {
+    //   console.log('video-success', data);
+    //   this.videoFile.next(1)
+    // })
+    // console.log = function (data) {
+    //   ipcRenderer.send('logger', data)
+    // }
+  }
 
+  sendProvider(provider) {
+    this.ipcRenderer.send('firebase-provider', [provider])
   }
 
   async getFiles() {
@@ -185,9 +196,13 @@ export class IpcService {
    */
   openFileExplorer(data: string) {
     console.log(data)
-    this.ipcRenderer.send('open-folder', data)
+    // this.ipcRenderer.send('open-folder', data)
   }
 
+  openVideo(tmdbId) {
+    // throw new Error("Method not implemented.");
+    // this.ipcRenderer.send('open-video', [tmdbId])
+  }
   /**
    * Get torrents from offline dump of movie by title
    * @param value movie title or imdb id
@@ -285,25 +300,25 @@ export class IpcService {
   // // User services
   // // user services; watchlist/bookmarks, watched
   getBookmark(val) {
-    this.ipcRenderer.send('bookmark', ['bookmark-get', val])
+    // this.ipcRenderer.send('bookmark', ['bookmark-get', val])
   }
   addBookmark(val) {
-    this.ipcRenderer.send('bookmark', ['bookmark-add', val])
+    // this.ipcRenderer.send('bookmark', ['bookmark-add', val])
   }
   removeBookmark(val) {
-    this.ipcRenderer.send('bookmark', ['bookmark-remove', val])
+    // this.ipcRenderer.send('bookmark', ['bookmark-remove', val])
   }
   updateBookmark(val) {
-    this.ipcRenderer.send('bookmark', ['bookmark-update', val])
+    // this.ipcRenderer.send('bookmark', ['bookmark-update', val])
   }
   getMarkAsWatched(val) {
-    this.ipcRenderer.send('watched', ['get', val])
+    // this.ipcRenderer.send('watched', ['get', val])
   }
   addMarkAsWatched(val) {
-    this.ipcRenderer.send('watched', ['add', val])
+    // this.ipcRenderer.send('watched', ['add', val])
   }
   removeMarkAsWatched(val) {
-    this.ipcRenderer.send('watched', ['remove', val])
+    // this.ipcRenderer.send('watched', ['remove', val])
   }
 
   // App Window Events

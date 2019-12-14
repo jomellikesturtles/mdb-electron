@@ -2,7 +2,7 @@
  * Main processor
  */
 const cp = require('child_process');
-const { app, BrowserWindow, ipcMain, shell, globalShortcut, Menu, Tray } = require('electron')
+const electron = require('electron')
 const Datastore = require('nedb')
 const datastore = new Datastore({
   filename: 'src/assets/config/config.db',
@@ -11,11 +11,13 @@ const datastore = new Datastore({
 // import * as url from 'url'const
 const path = require('path');
 const fs = require('fs');
+const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray, shell } = electron
 let procBookmark;
 let procWatched;
 let procLibraryDb;
 let procSearch;
 let procTorrentSearch;
+let procVideoService
 let offlineMovieDataService;
 let procmovieImageService;
 let mainWindow
@@ -26,10 +28,6 @@ const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`
  */
 function createWindow() {
 
-  // let displays = screen.getAllDisplays()
-  // displays.forEach(element => {
-  //   console.log(element);
-  // });
   mainWindow = new BrowserWindow({
     minWidth: 762,
     minHeight: 700,
@@ -41,12 +39,13 @@ function createWindow() {
       nodeIntegration: true,
       webSecurity: false
     },
+
     icon: appIcon,
-    // maxHeight:
     title: 'MDB'
   });
   mainWindow.webContents.openDevTools()
   mainWindow.setMenu(null)
+  // mainWindow.loadURL(`http://${__dirname}/dist/mdb-electron/index.html`); // It will load in production mode
   mainWindow.loadURL(`file://${__dirname}/dist/mdb-electron/index.html`); // It will load in production mode
   // console.log('version', ipcMain.())
   // Event when the window is closed.
@@ -424,6 +423,58 @@ ipcMain.on('watched', function (event, data) {
     procWatched.on('message', function (m) {
       console.log('watched in IPCMAIN', m);
       mainWindow.webContents.send(m[0], m[1]); // reply
+    });
+  }
+})
+
+ipcMain.on('open-video', function (event, data) {
+  if (!procVideoService) {
+    console.log('procVideoService ', data);
+    procVideoService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'video-service.js'), [data], {
+      cwd: __dirname,
+      silent: true
+    });
+    procVideoService.stdout.on('data', function (data) {
+      console.log('printing data..');
+      console.log(data.toString());
+    });
+    procVideoService.on('exit', function () {
+      console.log('video service process ended');
+      procVideoService = null
+    });
+    procVideoService.on('message', function (m) {
+      console.log('video service in IPCMAIN', m);
+      mainWindow.webContents.send(m[0], m[1]); // reply
+    });
+  }
+})
+
+ipcMain.on('firebase-provider', function (event, data) {
+  if (!procVideoService) {
+    console.log('firebase ', data);
+    // cp.
+    procVideoService = cp.fork(path.join(__dirname, 'firebase-service.js'), [data], {
+      // procVideoService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'firebase-service.js'), [data], {
+      cwd: __dirname,
+      silent: true
+    });
+    procVideoService.stdout.on('data', function (data) {
+      console.log('printing data..');
+      console.log(data.toString());
+    });
+    procVideoService.on('exit', function () {
+      console.log('firebase service process ended');
+      procVideoService = null
+    });
+    procVideoService.on('error', (err) => {
+      console.log("\n\t\tERROR: spawn failed! (" + err + ")");
+    });
+    procVideoService.on('message', function (m) {
+      console.log('firebase service in IPCMAIN', m);
+      mainWindow.webContents.send(m[0], m[1]); // reply
+      if (m[0] === 'app-open') {
+        shell.openExternal('http:\\localhost:4000')
+      }
     });
   }
 })

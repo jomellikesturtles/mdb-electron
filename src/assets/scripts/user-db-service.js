@@ -76,11 +76,9 @@ function addBookmarkMulti() {
         errorList.push(err.key)
       }
     })
-    // process.send(['bookmark-add-success', data])
   });
   console.log('done');
 }
-
 
 function updateBookmark() {
 
@@ -102,7 +100,6 @@ function updateBookmark() {
 function removeBookmark() {
   bookmarksDb.remove({ tmdbId: parseInt(tmdbIdArg) }, {}, function (err, data) {
     if (!err) {
-      // console.log(data);
       process.send(['bookmark-remove-success', 1])
       if (data) {
         process.send(['bookmark-remove-success', null])
@@ -136,16 +133,4 @@ function initializeService() {
   }
 }
 
-// command = 'bookmark-add'
-// tmdbIdArg = 10681
-// imdbIdArg = 'tt09109702'
-// command = 'bookmark-add-multi'
-// command = 'bookmark-add'
-// command = 'bookmark-remove'
-// command = 'bookmark-get'
-// command = 'bookmark-update'
 initializeService()
-
-// initializeService()
-// initializeService()
-// initializeService()

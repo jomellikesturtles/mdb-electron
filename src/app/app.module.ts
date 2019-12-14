@@ -24,6 +24,10 @@ import { BookmarksComponent } from './components/bookmarks/bookmarks.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { SigninComponent } from './components/signin/signin.component';
 import { DiscoverComponent } from './components/discover/discover.component';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from '../environments/environment';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 @NgModule({
   declarations: [
@@ -57,6 +61,10 @@ import { DiscoverComponent } from './components/discover/discover.component';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
+    AngularFirestoreModule
+
     // HttpParams
   ],
   providers: [],

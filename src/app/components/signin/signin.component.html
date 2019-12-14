@@ -2,10 +2,13 @@
 <button></button>
 <!-- facebook -->
 <button></button>
-<input placeholder="Email address">
-<input placeholder="Password">
-<button>Sign in</button>
-<button>Sign in anonymously</button>
+<div class='form-group'>
+  <input class='form-control' [(ngModel)]="user.emailAddress" placeholder="Email address">
+  <input class='form-control' [(ngModel)]="user.password" placeholder="Password">
+  <button (click)='onSignIn()' class='btn btn-success'>Sign in</button>
+  <button (click)='onSignInGoogle()' class='btn btn-success'>Sign in with Gooogle</button>
+</div>
+<!-- <button>Sign in anonymously</button> -->
 
 <a>Forgotten your password?</a>
 Not registered yet? <a>Sign up</a>
@@ -13,9 +16,9 @@ Not registered yet? <a>Sign up</a>
 <!-- register -->
 
 <!-- facebook -->
-<button class='btn'>Facebook</button>
+<!-- <button class='btn'>Facebook</button> -->
 <!-- google -->
-<button class='btn'>Google</button>
+<!-- <button class='btn'>Google</button>
 <label><input [(ngModel)]="userSignIn.username" placeholder="Username"></label>
 <label><input [(ngModel)]="userSignIn.emailAddress" placeholder="Email address"></label>
 <label><input placeholder="Password"></label>
@@ -35,4 +38,4 @@ Not registered yet? <a>Sign up</a>
 {{userSignIn.username}}
 {{userSignIn.emailAddress}}
 {{userSignIn.gender}}
-{{userSignIn.age}}
+{{userSignIn.age}} -->
