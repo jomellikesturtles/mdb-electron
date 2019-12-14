@@ -9,8 +9,8 @@ import { PreferencesComponent } from './components/preferences/preferences.compo
 import { DetailsComponent } from './components/details/details.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { MagnetPipe, SimplifySizePipe } from './services/torrent.service';
-import { FormsModule } from '@angular/forms'
-import { HttpClient, HttpHeaders, HttpClientModule, HttpParams } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { HttpClientModule } from '@angular/common/http';
 import { SearchComponent } from './components/search/search.component';
 import { TopNavigationComponent } from './components/top-navigation/top-navigation.component';
 import { ResultsComponent } from './components/results/results.component';
@@ -28,6 +28,10 @@ import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
+// import { RepeatPasswordValidatorDirective } from './directives/repeat-password.directive';
+// import { repeatPasswordValidator } from './directives/repeat-password.directive';
+import { RepeatPasswordValidatorDirective } from './directives/repeat-password.directive';
+import { CredentialsDirective } from './directives/credentials.directive';
 
 @NgModule({
   declarations: [
@@ -54,12 +58,15 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
     BookmarksComponent,
     ProfileComponent,
     SigninComponent,
-    DiscoverComponent
+    DiscoverComponent,
+    RepeatPasswordValidatorDirective,
+    CredentialsDirective
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,

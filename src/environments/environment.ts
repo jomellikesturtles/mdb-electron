@@ -12,7 +12,7 @@ export const environment = {
     // storageBucket: '',
     // messagingSenderId: '',
     apiKey: "AIzaSyBPB_9eQbL5ZzYrI-mBqFix96xTXYyFo7U",
-    // authDomain: "mdb-project-id.firebaseapp.com",
+    authDomain: "mdb-project-id.firebaseapp.com",
     databaseURL: "https://mdb-project-id.firebaseio.com",
     projectId: "mdb-project-id",
     storageBucket: "mdb-project-id.appspot.com",

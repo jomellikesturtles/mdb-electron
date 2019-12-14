@@ -9,7 +9,6 @@ import { MovieService } from '../../services/movie.service'
 import { IpcService } from '../../services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
-// import {} from '@angular/router'
 declare var jquery: any
 declare var $: any
 
@@ -43,8 +42,7 @@ export class TopNavigationComponent implements OnInit {
     endYear: 2018,
     genres: this.movieGenres,
     type: 'TV Series',
-    isAvailable: 'true',
-    page: 1
+    isAvailable: 'true'
   };
   movies = MOVIES;
   selectedMovies = []
@@ -77,16 +75,10 @@ export class TopNavigationComponent implements OnInit {
   onAdvancedSearch() {
 
   }
-
-  toSignIn() {
-  }
   /**
    * Initialize search
    */
-  onSearch(val: string) {
-    if (this.currentSearchQuery === val || val.length === 0) {
-      return
-    }
+  onSearch(val: any) {
     this.searchHistoryList.unshift(val)
     console.log(this.searchHistoryList);
     if (this.searchHistoryList.length >= this.searchHistoryMaxLength) {
@@ -107,14 +99,13 @@ export class TopNavigationComponent implements OnInit {
       console.log('searchByTitle');
       this.searchByTitle(enteredQuery)
     }
-    this.currentSearchQuery = enteredQuery
   }
 
   /**
    * Searches movie by imdb id and redirects if there are results
    * @param imdbId imdb id to search
    */
-  searchByImdbId(imdbId: string) {
+  searchByImdbId(imdbId) {
     this.movieService.getMovieByImdbId(imdbId).subscribe(data => {
       if (data.Response !== 'False') {
         this.router.navigate([`/details/${imdbId}`], { relativeTo: this.activatedRoute });
@@ -129,14 +120,14 @@ export class TopNavigationComponent implements OnInit {
    * Searches by title
    * @param enteredQuery query to search
    */
-  searchByTitle(enteredQuery: string) {
-    this.dataService.updateSearchQuery(this.searchQuery)
-    this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
+  searchByTitle(enteredQuery) {
+    // this.dataService.currentSearchQuery = enteredQuery
+    if (this.searchQuery && this.searchQuery.query.length > 0) {
+      this.dataService.updateSearchQuery(this.searchQuery)
+      this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
+    }
   }
 
-  /**
-   * Opens the user profile.
-   */
   openProfile() {
 
   }
@@ -160,8 +151,7 @@ export interface ISearchQuery {
   endYear: number,
   genres: MovieGenre[],
   type: string,
-  isAvailable: string,
-  page: number
+  isAvailable: string
 }
 
 export interface ITmdbSearchQuery {

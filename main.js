@@ -39,15 +39,13 @@ function createWindow() {
       nodeIntegration: true,
       webSecurity: false
     },
-
     icon: appIcon,
+    // maxHeight:
     title: 'MDB'
   });
   mainWindow.webContents.openDevTools()
   mainWindow.setMenu(null)
-  // mainWindow.loadURL(`http://${__dirname}/dist/mdb-electron/index.html`); // It will load in production mode
   mainWindow.loadURL(`file://${__dirname}/dist/mdb-electron/index.html`); // It will load in production mode
-  // console.log('version', ipcMain.())
   // Event when the window is closed.
   mainWindow.on('closed', function () {
     mainWindow = null

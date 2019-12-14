@@ -7,8 +7,8 @@ import {
   //// , ChangeDetectionStrategy, ChangeDetectorRef,
 } from '@angular/core'
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
-declare var electron: any
-import { ipcRenderer } from 'electron'
+// declare var electron: any
+// import { ipcRenderer } from 'electron'
 // const { ipcRenderer } = electron
 import { ILibraryInfo } from '../interfaces'
 
@@ -28,11 +28,11 @@ export class IpcService {
   scannedMovieMulti = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   videoFile = new BehaviorSubject<any>([])
 
-  private ipcRenderer: typeof ipcRenderer
+  // private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone) //// private ref: ChangeDetectorRef
   {
-    this.ipcRenderer = (<any>window).require('electron').ipcRenderer
+    // this.ipcRenderer = (<any>window).require('electron').ipcRenderer
 
     // this.ipcRenderer.on('library-folders', (event, data) => {
     //   console.log('library-folders:', data)
@@ -99,7 +99,7 @@ export class IpcService {
   }
 
   sendProvider(provider) {
-    this.ipcRenderer.send('firebase-provider', [provider])
+    // this.ipcRenderer.send('firebase-provider', [provider])
   }
 
   async getFiles() {
@@ -323,13 +323,13 @@ export class IpcService {
 
   // App Window Events
   minimizeWindow() {
-    this.ipcRenderer.send('app-min')
+    // this.ipcRenderer.send('app-min')
   }
   restoreWindow() {
-    this.ipcRenderer.send('app-restore')
+    // this.ipcRenderer.send('app-restore')
   }
   exitProgram() {
-    this.ipcRenderer.send('exit-program')
+    // this.ipcRenderer.send('exit-program')
   }
 }
 

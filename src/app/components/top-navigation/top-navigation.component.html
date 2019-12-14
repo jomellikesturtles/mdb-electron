@@ -1,68 +1,64 @@
-<div style='-webkit-user-select: none; -webkit-app-region: drag;height: 50px;'>
+<div style='-webkit-user-select: none; -webkit-app-region: drag;height: 50px; background-color:coral;'>
   <!-- <a class="row" routerLink="./dashboard">Home</a>
   <a class="row" (click)='navigateBack()'>Back</a> -->
-  <!-- <div class="row"> -->
-  <!-- <div class="col-12"> -->
-  <!-- <div class="col-sm-6"> -->
-  <div style='width: 350px;'></div>
-  <div class='search-controls-container' style='margin-left: 350px;'>
-    <input #searchBar name="searchBar" class="form-control" id="search-bar" [(ngModel)]="searchQuery.query"
-      style='width:100px;margin-right: 10px; border-radius: .25rem; min-width: 50px;color:black'
-      placeholder="Search title or IMDb id" (keyup.enter)="onSearch(searchQuery.query);" list='searchHistory' />
-    <datalist id="searchHistory">
-      <option *ngFor="let item of searchHistoryList">
-        {{item}}
-    </datalist>
-    <button class="btn btn-danger input-group-btn" (click)="searchBar.value=''" style='margin-right: 10px'>x</button>
-    <button class="btn btn-success input-group-btn" id="search-button" (click)="onSearch(searchQuery.query);"
-      style='margin-right: 10px'>Search</button>
-    <button class="btn btn-outline-light input-group-btn" style='margin-right: 10px;width: 300px;'
-      id="advanced-search-button" data-toggle="collapse" data-target="#demo" (click)='onAdvancedSearch()'>Advanced
+  <!-- </div> -->
+  <div id='title-drag-region'
+    style='z-index: -1;-webkit-app-region: drag;top: 0;left: 0;display: block;position: absolute;width: 100%;height: 100%;'>
+  </div>
+  <div id='app-logo' routerLink='/dashboard'
+    style='position: absolute;z-index: 3000;left: 0; -webkit-app-region: no-drag;'>
+    <h1 style='cursor: pointer'>LOGO</h1>
+  </div>
+  <div class='search-controls-container' style='margin-left: 260px;z-index: 3000;
+  position: absolute;
+  transform: translate(0%,12%);'>
+
+    <div class='btn-group'>
+
+      <input data-toggle='tooltip' title='Search title or IMDb id' #searchBar name="searchBar" class="form-control"
+        [(ngModel)]="searchQuery.query"
+        style='padding-right: 2rem;width:400px;margin-right: 10px; border-radius: .25rem; min-width: 50px;color:black'
+        placeholder="Search" (keyup.enter)="onSearch(searchQuery.query);" list='searchHistory' />
+      <datalist id="searchHistory">
+        <option *ngFor="let item of searchHistoryList">
+          {{item}}
+      </datalist>
+      <div id='searchClear' [style.visibility]="searchBar.value===''? 'hidden': 'visible'" (click)="searchBar.value=''"
+        data-toggle='tooltip' title='Clear' style='
+    background-image: url("./assets/icons/close.svg");'></div>
+    </div>
+
+    <!-- <button class="btn btn-success input-group-btn"  (click)="onSearch(searchQuery.query);"
+      data-toggle='tooltip' title='Search'>Search</button> -->
+    <div id='searchEnter' style='background-image: url("./assets/icons/magnifiying-glass.svg");'
+      (click)="onSearch(searchQuery.query);" data-toggle='tooltip' title='Search'></div>
+
+    <button class="btn btn-outline-light input-group-btn" style='width: 300px;' id="advanced-search-button"
+      data-toggle="collapse" title='Opens advanced search' data-target="#demo" (click)='onAdvancedSearch()'>Advanced
       Search</button>
 
-    <!-- <div class="dropdown2">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown2">Dropdown Example
-      <span class="caret"></span></button>
-    <ul class="dropdown-menu">
-      <li><a href="#">HTML</a></li>
-      <li><a href="#">CSS</a></li>
-      <li><a href="#">JavaScript</a></li>
-    </ul>
-  </div> -->
-
-    <!-- <div class='dropdown'>
-      <img style='height:30px;width: 30px;' id='dropdownMenuButton' class='icon-img' src='./assets/icons/human.svg'
-        data-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
-      <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
-        <a class='dropdown-item'>Profile</a>
-        <a class='dropdown-item'>Bookmarks</a>
-        <a class='dropdown-item'>Watched</a>
-        <div class='dropdown-divider'></div>
-        <a *ngIf="isSignedIn" class='dropdown-item' href='#'>Sign out</a>
-        <a *ngIf="!isSignedIn" class='dropdown-item' href='#'>Sign in</a>
-      </div>
-    </div> -->
-
-    <li class="nav-item dropdown">
-      <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Messages</a>
-      <div class="dropdown-menu">
-        <a href="#" class="dropdown-item" [routerLink]="['/profile']" routerLinkActive="router-link-active">Profile</a>
-        <a href="#" class="dropdown-item">Account Settings</a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item" *ngIf="isSignedIn">Sign out</a>
-        <a href="#" class="dropdown-item" [routerLink]="['/signin']" *ngIf="!isSignedIn">Sign in</a>
-      </div>
-    </li>
   </div>
 
-  <!-- <div class="dropdown" style='float:end;'>
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown</a>
-    <div class="dropdown-menu" style='float:left;' style=' z-index: 10000;'>
-      <a href="#" class="dropdown-item" style='color:black'>Action</a>
-      <a href="#" class="dropdown-item"  style='color:black'>Another action</a>
+  <div class='dropdown' data-toggle='tooltip' title='Profile options' style='z-index: 3000;
+  margin-left: auto;
+  position: absolute;
+  right: 138px;
+  height: 50px;
+  width: 50px; -webkit-app-region: no-drag;'>
+    <img style='cursor: pointer;height:80%;width: 80%;' id='dropdownMenuButton' class='icon-img'
+      src='./assets/icons/human.svg' data-toggle='dropdown' aria-haspopup="true" aria-expanded="false" href='#'>
+    <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
+      <a class='dropdown-item' routerLink='/profile' href='#'>Profile</a>
+      <a class='dropdown-item' routerLink='/profile' href='#'>Account Settings</a>
+      <a class='dropdown-item' routerLink='/bookmarks' href='#'>Bookmarks</a>
+      <a class='dropdown-item' routerLink='/watched' href='#'>Watched</a>
+      <!-- <a class='dropdown-item' routerLink='/signin' href='#'>About</a> -->
+      <!-- <a class='dropdown-item'>Keyboard Shortcuts</a> -->
+      <div class='dropdown-divider'></div>
+      <a *ngIf="isSignedIn" class='dropdown-item' href='#'>Sign out</a>
+      <a *ngIf="!isSignedIn" class='dropdown-item' routerLink='/signin' href='#'>Sign in</a>
     </div>
-  </div> -->
-
+  </div>
 
   <!-- </div> -->
   <div class='window-controls-container'>

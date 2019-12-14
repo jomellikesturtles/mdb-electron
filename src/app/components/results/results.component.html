@@ -24,7 +24,7 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
   <div class='selected-list-controls-container container' style='margin-top: 10px;'>
     <div class="btn-group">
       <button class='btn btn-success' (click)='onDownloadSelected()'>Download</button>
-      <button class='btn btn-primary' (click)='onAddBookmark()'>Add to bookmark</button>
+      <button class='btn btn-primary' (click)='onAddBookmark()'>Add to watchlist</button>
       <button class='btn btn-primary' (click)='onMarkAsWatched()'>Mark as watched</button>
     </div>
     <button class='btn btn-danger' style='float:right' (click)='onClearSelected()'>Clear list</button>
@@ -93,3 +93,10 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
   <p>{{displayMessage}}</p>
 </div>
 <!-- <h1>You are offline</h1> -->
+<!-- max-width: calc(320px * var(--ytd-rich-grid-items-per-row) + 16px * var(--ytd-rich-grid-items-per-row));
+
+FONT-WEIGHT: 500;
+margin-left: calc(16px / 2);
+margin-right: calc(16px / 2);
+margin-bottom: 40px;
+width: calc(100% / (5) - 16px - 0.01px); -->
