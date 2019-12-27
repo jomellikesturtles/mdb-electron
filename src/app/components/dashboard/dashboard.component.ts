@@ -45,8 +45,8 @@ export class DashboardComponent implements OnInit {
   selectedMovie = null
   isHighlighted = false
   cardWidth = '130px'
-  ngOnInit() {
 
+  ngOnInit() {
     this.nowShowingMovies = TMDB_SEARCH_RESULTS.results
     this.nowShowingMovies[this.nameString] = `Best of 1994`
     this.dashboardLists.push(this.nowShowingMovies)

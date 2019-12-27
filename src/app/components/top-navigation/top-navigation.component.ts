@@ -6,9 +6,11 @@ import { MOVIES, MOVIEGENRES } from '../../mock-data';
 import { DECADES, GENRES, REGEX_IMDB_ID } from '../../constants';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
-import { IpcService } from '../../services/ipc.service'
+import { IpcService, IpcCommand } from '../../services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
+import { Store, Select } from '@ngxs/store'
+import { Add, CountState } from '../../app.state'
 declare var jquery: any
 declare var $: any
 
@@ -19,14 +21,15 @@ declare var $: any
 })
 export class TopNavigationComponent implements OnInit {
   @Input() data: Observable<any>
-
+  @Select(CountState) count$: Observable<number>
   constructor(
     private dataService: DataService,
     private ipcService: IpcService,
     private movieService: MovieService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private location: Location) { }
+    private location: Location,
+    private store: Store) { }
 
   browserConnection = navigator.onLine;
   selectedMovie: IOmdbMovieDetail
@@ -59,6 +62,9 @@ export class TopNavigationComponent implements OnInit {
   genresList = GENRES
   isSignedIn = false
 
+  onCount() {
+    this.store.dispatch(new Add())
+  }
   ngOnInit() {
   }
 
@@ -133,14 +139,14 @@ export class TopNavigationComponent implements OnInit {
   }
 
   onMinimize() {
-    this.ipcService.minimizeWindow()
+    this.ipcService.call(IpcCommand.MinimizeApp)
   }
   onRestore() {
-    this.ipcService.restoreWindow()
+    this.ipcService.call(IpcCommand.RestoreApp)
   }
   onExit() {
     console.log('onexit');
-    this.ipcService.exitProgram()
+    this.ipcService.call(IpcCommand.ExitApp)
   }
 }
 

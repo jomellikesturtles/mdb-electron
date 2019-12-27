@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { REGEX_OMDB_RELEASE_DATE, REGEX_TMDB_RELEASE_DATE, REGEX_YEAR_ONLY } from '../constants';
+import { REGEX_OMDB_RELEASE_DATE, REGEX_TMDB_RELEASE_DATE, REGEX_YEAR_ONLY, STRING_REGEX_OMDB_RELEASE_DATE, STRING_REGEX_TMDB_RELEASE_DATE } from '../constants';
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +16,9 @@ export class UtilsService {
    */
   getYear(releaseDate: string) {
     // change to test
-    const REGEX_OMDB_RELEASE_DATE_LOCAL = new RegExp(`^(\\d{2})+\\s+([a-z]{3,})+\\s+(\\d{4})+`, `gi`);
-    const REGEX_TMDB_RELEASE_DATE_LOCAL = new RegExp(`([0-9]{2,4})-([0-9]{2})-([0-9]{2})`, `gi`);
+
+    const REGEX_OMDB_RELEASE_DATE_LOCAL = new RegExp(STRING_REGEX_OMDB_RELEASE_DATE, `gi`);
+    const REGEX_TMDB_RELEASE_DATE_LOCAL = new RegExp(STRING_REGEX_TMDB_RELEASE_DATE, `gi`);
     const result1 = REGEX_OMDB_RELEASE_DATE_LOCAL.exec(releaseDate)
     const result2 = REGEX_TMDB_RELEASE_DATE_LOCAL.exec(releaseDate)
     let toReturn = ''

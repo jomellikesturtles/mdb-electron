@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { BulkDownloadComponent } from '../components/bulk-download/bulk-download.component';
 import { BrowseComponent } from '../components/browse/browse.component';
+import { BookmarksComponent } from '../components/bookmarks/bookmarks.component';
 import { CreditsComponent } from '../components/details/credits/credits.component';
 import { DashboardComponent } from '../components/dashboard/dashboard.component';
 import { DetailsComponent } from '../components/details/details.component';
@@ -19,6 +20,7 @@ const routes: Routes = [
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // homepage
   { path: '', redirectTo: '/results', pathMatch: 'full' },
   { path: 'bulk-download', component: BulkDownloadComponent },
+  { path: 'bookmarks', component: BookmarksComponent },
   { path: 'browse', component: BrowseComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'credits/', component: CreditsComponent },

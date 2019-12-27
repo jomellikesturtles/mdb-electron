@@ -9,7 +9,7 @@ import {
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
 // declare var electron: any
 // import { ipcRenderer } from 'electron'
-// const { ipcRenderer } = electron
+// // const { ipcRenderer } = electron
 import { ILibraryInfo } from '../interfaces'
 
 @Injectable({
@@ -27,7 +27,7 @@ export class IpcService {
   scannedMovieSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   scannedMovieMulti = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   videoFile = new BehaviorSubject<any>([])
-
+  bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
   // private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone) //// private ref: ChangeDetectorRef
@@ -79,6 +79,9 @@ export class IpcService {
     // this.ipcRenderer.on('bookmark-remove-success', (event, data) => {
     //   this.bookmarkSingle.next(data)
     // })
+    // this.ipcRenderer.on('bookmark-changes', (event, data) => {
+    //   this.bookmarkChanges.next(data)
+    // })
     // // WATCHED
     // this.ipcRenderer.on('watched-success', (event, data) => {
     //   console.log('watched-success', data);
@@ -119,30 +122,26 @@ export class IpcService {
     // this.ipcRenderer.send('logger', data)
   }
 
-  /**
-   * Opens link to browser
-   * @param url url to open
-   */
-  openLinkExternal(url: string) {
-    // this.ipcRenderer.send('open-link-external', url)
+  call(message: string, args?: any) {
+    // this.ipcRenderer.send('', args)
   }
+
+  listen() {
+
+  }
+
   /**
    * Opens files and folders
    */
   modalFileExplorer() {
     // this.ipcRenderer.send('modal-file-explorer')
   }
+
   /**
    * Opens files and folders
    */
   getLibraryFolders() {
     // this.ipcRenderer.send('retrieve-library-folders')
-  }
-  /**
-   * Scans the library folders
-   */
-  scanLibrary() {
-    // this.ipcRenderer.send('scan-library')
   }
 
   /**
@@ -190,19 +189,6 @@ export class IpcService {
     // this.ipcRenderer.send('go-to-folder', ['up', data])
   }
 
-  /**
-   * Opens folder with system file explorer.
-   * @param data folder directory
-   */
-  openFileExplorer(data: string) {
-    console.log(data)
-    // this.ipcRenderer.send('open-folder', data)
-  }
-
-  openVideo(tmdbId) {
-    // throw new Error("Method not implemented.");
-    // this.ipcRenderer.send('open-video', [tmdbId])
-  }
   /**
    * Get torrents from offline dump of movie by title
    * @param value movie title or imdb id
@@ -311,6 +297,13 @@ export class IpcService {
   updateBookmark(val) {
     // this.ipcRenderer.send('bookmark', ['bookmark-update', val])
   }
+
+  /**
+   * Gets bookmark db all changes.
+   */
+  getBookmarkChanges() {
+
+  }
   getMarkAsWatched(val) {
     // this.ipcRenderer.send('watched', ['get', val])
   }
@@ -320,27 +313,41 @@ export class IpcService {
   removeMarkAsWatched(val) {
     // this.ipcRenderer.send('watched', ['remove', val])
   }
+}
 
-  // App Window Events
-  minimizeWindow() {
-    // this.ipcRenderer.send('app-min')
-  }
-  restoreWindow() {
-    // this.ipcRenderer.send('app-restore')
-  }
-  exitProgram() {
-    // this.ipcRenderer.send('exit-program')
-  }
+export enum IpcCommand {
+  MinimizeApp = 'app-min',
+  RestoreApp = 'app-restore',
+  ExitApp = 'exit-program',
+  GetBookmark = 'bookmark',
+  ScanLibrary = 'scan-library',
+  OpenLinkExternal = 'open-link-external',
+  OpenInFileExplorer = 'open-file-explorer',
+  OpenVideo= 'open-video',
+}
+
+export enum IpcEvent {
+
+}
+
+export interface IBookmarkChanges {
+  change: BookmarkChanges
+}
+
+export enum BookmarkChanges {
+  UPDATE = 'update',
+  DELETE = 'delete',
+  INSERT = 'insert'
 }
 
 export interface IBookmark {
-  tmdbId: number
+  tmdbId: number,
   imdbId: string,
   id: string
 }
 
 export interface IWatched {
-  tmdbId: number
+  tmdbId: number,
   imdbId: string,
   id: string
   timestamp?: number,

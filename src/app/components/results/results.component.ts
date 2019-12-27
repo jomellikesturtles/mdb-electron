@@ -100,6 +100,22 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.utilsService.hideSnackbar(root)
   }
 
+  /**
+   * Adds bookmark for single movie.
+   * @param val tmdb id
+   */
+  onAddBookmarkSingle(val): void {
+    this.ipcService.call('', val)
+  }
+
+  /**
+   * Removes bookmark for single movie.
+   * @param val tmdb id
+   */
+  onRemoveBookmarkSingle(val): void {
+    this.ipcService.call('', val)
+  }
+
   onMarkAsWatched(): void {
     const root = this
     this.ipcService.addMarkAsWatched(this.selectedMovies)
@@ -172,10 +188,9 @@ export class ResultsComponent implements OnInit, OnDestroy {
   getMoreResults() {
     const params = [
       [TmdbSearchMovieParameters.Query, this.searchQuery.query],
-      [TmdbParameters.PrimaryReleaseYear, 1994],
       [TmdbParameters.Page, ++this.currentPage]
     ]
-    this.movieService.getMoviesDiscover(params).subscribe(data => { this.searchResults.push(...data.results) });
+    this.movieService.searchTmdbMovie(params).subscribe(data => { this.searchResults.push(...data.results) });
   }
   // download, add to watchlsit, mark as watched
 }

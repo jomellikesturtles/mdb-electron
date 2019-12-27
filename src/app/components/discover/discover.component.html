@@ -3,10 +3,43 @@
   discover works!
 </p>
 
-<select class="form-control" [(ngModel)]="sortBy" style='width: 200px; float:right'>
+<select class="form-control" [(ngModel)]='sortBy' style='width: 200px; float:right'>
   <option value='popularity.desc'>Popularity</option>
   <option value='release_date.asc'>Oldest</option>
   <option value='release_date.desc'>Newest</option>
   <option value='original_title.asc'>Name</option>
   <option value='vote_count.desc'>Vote Average</option>
 </select>
+
+<div class="container-fluid">
+
+  <div *ngIf='!hasResults'>
+    <h1 class='jumbo-message'>No movies found</h1>
+  </div>
+  <div *ngIf='hasResults' class='movie-cards-display-grid'>
+    <div id="results-panel" *ngFor="let movie of discoverResults" class='movie-card' [ngStyle]="{'width': cardWidth}">
+
+      <div
+        [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
+        class='movie-card-image-container' (click)=onHighlight(movie)>
+
+        <div class='movie-available' data-toggle='tooltip' title='Available offline'>
+        </div>
+        <div class="overlay overlay-add">
+        </div>
+      </div>
+      <div class="card-body movie-card-body">
+        <div class="movie-card-text">
+          <h6 (click)="onSelect(movie)" class='text-primary movie-card-title card-title text-hyperlink'
+            data-toggle="tooltip" title="{{movie.title}}">{{movie.title}}</h6>
+
+          <label class='text-hyperlink' style='float: left'>{{getYear(movie.release_date)}}</label>
+          <label style='float: right'>{{movie.vote_average}}</label>
+        </div>
+      </div>
+    </div>
+    <div style='width: 100%; text-align: center; height: 80px;'>
+      <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
+    </div>
+  </div>
+</div>

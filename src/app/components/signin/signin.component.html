@@ -4,7 +4,6 @@
 <input placeholder="Password">
 <button>Sign in</button>
 <button>Sign in anonymously</button>
-
 register -->
 <div class='container-fluid' style='height:100%'>
   <div class='row' style='height:100%'>
@@ -27,7 +26,7 @@ register -->
         </div>
         <div class='form-group'>
           <label for='emailAddress'>Email Address: </label>
-          <input class='form-control' id='emailAddress' formControlName='emailAddress' placeholder="Username"
+          <input class='form-control' id='emailAddress' formControlName='emailAddress' placeholder="Email Address"
             type='email' required>
           <div *ngIf="emailAddress.invalid && (emailAddress.dirty || emailAddress.touched)" class="alert alert-danger">
             <div *ngIf="emailAddress.errors.required">
@@ -71,10 +70,10 @@ register -->
             </div>
           </div>
         </div>
-        <button class='btn btn-success' type='submit' (click)='onSubmit()' [disabled]='signUpForm.invalid'>Sign
+        <button class='btn btn-success' type='submit' (click)='onSignUp()' [disabled]='signUpForm.invalid'>Sign
           up</button>
       </form>
-      <a>Already have an account? <b (click)='isSignIn=true'>Click here</b> to Sign in</a>
+      <a>Already have an account? <b class='text-hyperlink' (click)='isSignIn=true'>Click here</b> to Sign in</a>
     </div>
     <!-- sign in -->
     <div class='col col-6' style='height:100%' *ngIf="isSignIn">
@@ -101,11 +100,11 @@ register -->
         border-radius: 50px;'>Sign
           in</button>
 
-        <button (click)='onSignInGoogle()' class='btn btn-success'>Sign in with Gooogle</button>
+        <!-- <button (click)='onSignInGoogle()' class='btn btn-success'>Sign in with Gooogle</button> -->
         <!-- <button *ngIf="isOauthValid" (click)='onSignInGoogle()' class='btn btn-success'>Sign in with Gooogle</button> -->
       </form>
-      <a>Forgotten your password?</a>
-      Not registered yet? <b (click)='isSignIn=false'>Sign up</b>
+      <a class='text-hyperlink'>Forgotten your password?</a>
+      Not registered yet? <b class='text-hyperlink' (click)='isSignIn=false'>Sign up</b>
     </div>
     <div class='col col-6 cover-full'
       style='height:100%;width:100%;background-image: linear-gradient(to left, rgba(245, 246, 252, 0), rgba(-0, 0, 0, 10.73)), url(./assets/backdrops/gone_with_the_wind-backdrop.jpg);'>
@@ -113,21 +112,7 @@ register -->
   </div>
 </div>
 
-<!-- <label for='emailInput'>Email address: </label>
-  <div class="input-group mb-3">
-    <input class='form-control' id='emailInput' name='emailAddress' type='email' placeholder="Email address"
-    [(ngModel)]="userSignUp.emailAddress">
-  </div>
-  <label for='passwordInput'>Password: </label>
-  <div class="input-group mb-3">
-    <input class='form-control' id='passwordInput' name='password' type='password' placeholder="Password"
-    [(ngModel)]="userSignUp.password">
-</div>
-<label for='repeatPasswordInput'>Repeat Password: </label>
-<div class="input-group mb-3">
-  <input class='form-control' id='repeatPasswordInput' name='repeatPassword' type='password'
-    placeholder="Repeat Password" [(ngModel)]="userSignUp.repeatPassword">
-</div>
+<!--
 <label>Gender</label>
 <select [(ngModel)]="userSignIn.gender" class="form-control" style='width: 200px; float:right'>
   <option value='g'>Gender</option>

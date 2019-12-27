@@ -28,8 +28,6 @@
     background-image: url("./assets/icons/close.svg");'></div>
     </div>
 
-    <!-- <button class="btn btn-success input-group-btn"  (click)="onSearch(searchQuery.query);"
-      data-toggle='tooltip' title='Search'>Search</button> -->
     <div id='searchEnter' style='background-image: url("./assets/icons/magnifiying-glass.svg");'
       (click)="onSearch(searchQuery.query);" data-toggle='tooltip' title='Search'></div>
 
@@ -38,15 +36,27 @@
       Search</button>
 
   </div>
-
-  <div class='dropdown' data-toggle='tooltip' title='Profile options' style='z-index: 3000;
+  <div>
+    <h1>Count is {{count$|async}}</h1>
+    <button (click)='onCount()'>COUNT</button>
+  </div>
+  <div class='dropdown' data-toggle='tooltip' style='z-index: 3000;
+  margin-left: auto;
+  position: absolute;
+  right: 138px;
+  height: 40px;
+  width: 40px; -webkit-app-region: no-drag;'>
+    <img style='cursor: pointer;height:80%;width: 80%; transform: translate(13%,12%);' title='Profile options'
+      id='dropdownMenuButton' class='icon-img' src='./assets/icons/human.svg' data-toggle='dropdown'
+      aria-haspopup="true" aria-expanded="false" href='#'>
+    <!-- <div class='dropdown' data-toggle='tooltip' title='Profile options' style='z-index: 3000;
   margin-left: auto;
   position: absolute;
   right: 138px;
   height: 50px;
   width: 50px; -webkit-app-region: no-drag;'>
     <img style='cursor: pointer;height:80%;width: 80%;' id='dropdownMenuButton' class='icon-img'
-      src='./assets/icons/human.svg' data-toggle='dropdown' aria-haspopup="true" aria-expanded="false" href='#'>
+      src='./assets/icons/human.svg' data-toggle='dropdown' aria-haspopup="true" aria-expanded="false" href='#'> -->
     <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
       <a class='dropdown-item' routerLink='/profile' href='#'>Profile</a>
       <a class='dropdown-item' routerLink='/profile' href='#'>Account Settings</a>

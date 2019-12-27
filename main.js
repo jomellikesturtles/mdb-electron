@@ -142,8 +142,8 @@ ipcMain.on('exit-program', function (event, folder) {
   app.quit()
 })
 // Opens folder with system file explorer.
-ipcMain.on('open-folder', function (event, folder) {
-  console.log('open-folder', folder);
+ipcMain.on('open-file-explorer', function (event, folder) {
+  console.log('open-file-explorer', folder);
   shell.showItemInFolder(folder)
   shell.openItem(folder)
 })

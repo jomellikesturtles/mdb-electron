@@ -32,7 +32,9 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 // import { repeatPasswordValidator } from './directives/repeat-password.directive';
 import { RepeatPasswordValidatorDirective } from './directives/repeat-password.directive';
 import { CredentialsDirective } from './directives/credentials.directive';
-
+import { NgxsModule } from '@ngxs/store';
+import { CountState } from './app.state';
+import { SelectedListComponent } from './components/selected-list/selected-list/selected-list.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -60,7 +62,8 @@ import { CredentialsDirective } from './directives/credentials.directive';
     SigninComponent,
     DiscoverComponent,
     RepeatPasswordValidatorDirective,
-    CredentialsDirective
+    CredentialsDirective,
+    SelectedListComponent
   ],
   imports: [
     BrowserModule,
@@ -70,8 +73,8 @@ import { CredentialsDirective } from './directives/credentials.directive';
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
-    AngularFirestoreModule
-
+    AngularFirestoreModule,
+    NgxsModule.forRoot([CountState]),
     // HttpParams
   ],
   providers: [],

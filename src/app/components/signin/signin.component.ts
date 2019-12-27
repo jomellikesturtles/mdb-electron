@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { NG_ASYNC_VALIDATORS, FormGroup, FormControl, Validators } from '@angular/forms'
 import { repeatPasswordValidator } from '../../directives/repeat-password.directive';
 import { CredentialsValidator } from '../../directives/credentials.directive';
+import * as firebase from 'firebase/app';
 import { AngularFirestore } from '@angular/fire/firestore'
 import { AngularFireAuth, AngularFireAuthModule } from '@angular/fire/auth'
 // import {  } from '@angular/fire/angularfire2'
-import * as firebase from 'firebase/app';
 import { IpcService } from '../../services/ipc.service';
+import { FirebaseService } from '../../services/firebase.service';
 
 @Component({
   selector: 'app-signin',
@@ -40,9 +41,9 @@ export class SigninComponent implements OnInit {
 
   constructor(
     private credentialValidator: CredentialsValidator,
-    private db: AngularFirestore,
     private auth: AngularFireAuth,
     private authModule: AngularFireAuthModule,
+    private firebaseService: FirebaseService,
     private ipcService: IpcService
   ) { }
 
@@ -61,10 +62,12 @@ export class SigninComponent implements OnInit {
       ),
     },
       { validators: repeatPasswordValidator })
-    // this.signInForm = new FormGroup({
-    //   usernameEmail: new FormControl(this.userSignIn.usernameEmail, [Validators.required]),
-    //   password: new FormControl(this.userSignIn.password, [Validators.required])
-    // }, { validators: repeatPasswordValidator, asyncValidators: [this.credentialValidator.validate.bind(this.credentialValidator)] })
+    this.signInForm = new FormGroup({
+      usernameEmail: new FormControl(this.userSignIn.usernameEmail, [Validators.required]),
+      password: new FormControl(this.userSignIn.password, [Validators.required])
+    },
+      // { validators: repeatPasswordValidator, asyncValidators: [this.credentialValidator.validate.bind(this.credentialValidator)] }
+    )
 
   }
 
@@ -73,28 +76,23 @@ export class SigninComponent implements OnInit {
   get password() { return this.signUpForm.get('password'); }
   get repeatPassword() { return this.signUpForm.get('repeatPassword'); }
 
-  onSubmit() {
+  onSignUp() {
     console.log('submit');
-    alert('submit');
+    const emailUsername = this.signInForm.get('usernameEmail').value
+    const password = this.signInForm.get('password').value
+    this.firebaseService.signUp(emailUsername, password)
   }
+
   onSignIn() {
     // this.db.
     console.log('onsignin');
     // this.auth.auth.signInWithCredential()
     // console.log(googleUser.getAuthResponse().id_token)
-    const myAuth = this.auth.auth.createUserWithEmailAndPassword(this.user.emailAddress, this.user.password).then((e) => {
-      console.log(e.additionalUserInfo);
-      console.log(e.credential);
-      console.log(e.operationType);
-      console.log(e.user);
-
-    }).catch(function (e) {
-      {
-        console.log('in catch', e);
-      }
-    })
-    // myAuth.
+    const emailUsername = this.signInForm.get('usernameEmail').value
+    const password = this.signInForm.get('password').value
+    this.firebaseService.signIn(emailUsername, password)
   }
+
   onSignInGoogle() {
     // const provider = firebase.auth.GoogleAuthProvider.PROVIDER_ID
     const provider = new firebase.auth.GoogleAuthProvider()

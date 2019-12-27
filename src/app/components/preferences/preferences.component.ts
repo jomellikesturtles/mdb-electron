@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs'
-import { IpcService } from '../../services/ipc.service';
+import { IpcService, IpcCommand } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
 import { REGEX_PREFIX } from '../../constants';
@@ -110,7 +110,7 @@ export class PreferencesComponent implements OnInit {
    */
   onScanLibrary() {
     console.log('onScanLibrary');
-    this.ipcService.scanLibrary()
+    this.ipcService.call(IpcCommand.ScanLibrary)
   }
   /**
    * Updates thepiratebay torrent dump
@@ -176,7 +176,7 @@ export class PreferencesComponent implements OnInit {
     } else {
       folderToOpen = folder
     }
-    this.ipcService.openFileExplorer(folderToOpen)
+    this.ipcService.call(IpcCommand.OpenInFileExplorer, folderToOpen)
   }
 
   // modal file explorer

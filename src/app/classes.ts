@@ -54,7 +54,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   // constructor(val: string)
 
   set backgroundPath(v: string) {
-    if (v.indexOf('/') == 0) {
+    if (v && v.indexOf('/') == 0) {
       this._backgroundPath = `https://image.tmdb.org/t/p/original/${v}`
     } else {
       this._backgroundPath = v

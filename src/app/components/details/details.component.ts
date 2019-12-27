@@ -7,7 +7,7 @@ import { DataService } from '../../services/data.service';
 import { MovieService } from '../../services/movie.service';
 import { TorrentService } from '../../services/torrent.service';
 import { UtilsService } from '../../services/utils.service';
-import { IpcService } from '../../services/ipc.service';
+import { IpcService, IpcCommand } from '../../services/ipc.service';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { Observable } from 'rxjs';
 import { TROUBLE_QUOTES } from '../../constants';
@@ -70,17 +70,19 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getTroubleQuote()
+    this.activatedRoute.params.subscribe(params => {
+      console.log('activatedRoute.params', params);
+      if (params.id) {
+        this.getMovieOnline(params.id)
+      } else {
+        this.hasData = false
+      }
+    });
     // this.selectedMovie = this.testSelectedMovie
     console.time('convertTime');
-    this.convertObject(TMDB_FULL_MOVIE_DETAILS)
+    // this.convertObject(TMDB_FULL_MOVIE_DETAILS)
     console.timeEnd('convertTime');
-    this.movieDetailsDirectors = this.getDirectors()
-    this.movieDetailsWriters = this.getWriters()
-    this.movieDetailsProducers = this.getProducers()
-    this.movieCertification = this.getMovieCertification()
-    this.getBookmark()
-    this.getWatched()
-    this.getVideo()
+    this.loadVideoData()
     // this.getMovieFromLibrary()
     // this.getTorrents()
     this.router.events.subscribe((evt) => {
@@ -89,18 +91,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
       }
       window.scrollTo(0, 0)
     });
-
-    // this.activatedRoute.params.subscribe(params => {
-    //   console.log('activatedRoute.params', params);
-    //   if (params.id) {
-    //     console.log('params.imdbId true');
-    //     // this.imdbId = params.id;
-    //     this.getMovieOnline(params.id)
-    //   } else {
-    //     this.hasData = false
-    //   }
-    // });
-
     // this.movieMetadataSubscription = this.ipcService.movieMetadata.subscribe(value => {
     //   // console.log('this.ipcService.movieMetadata.subscribe ', value)
     //   if (value.length !== 0) {
@@ -147,9 +137,23 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // this.selectedMovie = null
   }
 
+  /**
+   * Loads minor video data.
+   */
+  loadVideoData() {
+    this.movieDetailsDirectors = this.getDirectors()
+    this.movieDetailsWriters = this.getWriters()
+    this.movieDetailsProducers = this.getProducers()
+    this.movieCertification = this.getMovieCertification()
+    this.getBookmark()
+    this.getWatched()
+    this.getVideo()
+  }
+
   convertObject(v) {
 
     Object.keys(v).forEach(key => {
+      console.log('key: ', key, ' value: ', v[key], ' ')
       switch (key) {
         case 'Actors':
           this.movieDetails.releaseDate = v[key]
@@ -250,7 +254,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   getVideo() {
     // throw new Error("Method not implemented.");
-    this.ipcService.openVideo(this.movieDetails.tmdbId)
+    this.ipcService.call(IpcCommand.OpenVideo, this.movieDetails.tmdbId)
     this.procVideo = true
     this.videoFileSubscription = this.ipcService.videoFile.subscribe(data => {
       if (data === null || data === 0) {
@@ -460,7 +464,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-    this.ipcService.openLinkExternal(url)
+    this.ipcService.call(IpcCommand.OpenLinkExternal, url)
   }
 
   goToMovie(val) {
