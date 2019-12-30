@@ -82,7 +82,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     console.time('convertTime');
     // this.convertObject(TMDB_FULL_MOVIE_DETAILS)
     console.timeEnd('convertTime');
-    this.loadVideoData()
+    // this.loadVideoData()
     // this.getMovieFromLibrary()
     // this.getTorrents()
     this.router.events.subscribe((evt) => {
@@ -236,7 +236,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
           break;
       }
     });
-
+    this.loadVideoData()
     // Object.keys(this.movieDetails).forEach(key => {
     //   console.log(`movieDetails key ${key} with value `, v[key]);
     // })

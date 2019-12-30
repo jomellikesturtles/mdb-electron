@@ -35,6 +35,7 @@ import { CredentialsDirective } from './directives/credentials.directive';
 import { NgxsModule } from '@ngxs/store';
 import { CountState } from './app.state';
 import { SelectedListComponent } from './components/selected-list/selected-list/selected-list.component';
+import { SelectedMoviesState } from './movie.state';
 @NgModule({
   declarations: [
     AppComponent,
@@ -74,7 +75,7 @@ import { SelectedListComponent } from './components/selected-list/selected-list/
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,
-    NgxsModule.forRoot([CountState]),
+    NgxsModule.forRoot([CountState, SelectedMoviesState]),
     // HttpParams
   ],
   providers: [],

@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
-import { TmdbParameters } from '../../interfaces';
+import { TmdbParameters, GenreCodes } from '../../interfaces';
 import { UtilsService } from '../../services/utils.service';
 
 @Component({
@@ -50,7 +50,7 @@ export class DiscoverComponent implements OnInit {
         tempTitle = `Top ${val} movies`
         break;
       case 'genre':
-        params.push([TmdbParameters.WithGenres, val])
+        params.push([TmdbParameters.WithGenres, GenreCodes[val]])
         tempTitle = `Top ${val} movies`
         break;
       case 'year':

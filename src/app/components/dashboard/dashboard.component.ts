@@ -15,6 +15,10 @@ import { Router, ActivatedRoute } from '@angular/router'
 import { ITmdbResult, ILibraryInfo, TmdbParameters } from '../../interfaces'
 import { TMDB_SEARCH_RESULTS } from '../../mock-data'
 import { GENRES } from '../../constants'
+import { Select, Store } from '@ngxs/store'
+import { AddMovie, RemoveMovie } from '../../movie.actions'
+import { SelectedMoviesState } from '../../movie.state'
+import { SelectedMovie } from '../bulk-download/bulk-download.component'
 declare var $: any
 
 @Component({
@@ -25,8 +29,18 @@ declare var $: any
 })
 export class DashboardComponent implements OnInit {
   @Input() data: Observable<any>
+  @Select(state => state.moviesList) moviesList$
 
   browserConnection = navigator.onLine
+  nameString = 'name'
+  selectedMovies = []
+  sampleListMovies: ITmdbResult[] = []
+  topMoviesFromYear = []
+  dashboardLists = []
+  selectedMovie = null
+  isHighlighted = false
+  cardWidth = '130px'
+
   constructor(
     private dataService: DataService,
     private movieService: MovieService,
@@ -34,26 +48,19 @@ export class DashboardComponent implements OnInit {
     private utilsService: UtilsService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private store: Store
   ) { }
 
-  nameString = 'name'
-  selectedMovies = []
-  nowShowingMovies: ITmdbResult[] = []
-  topMoviesFromYear = []
-  dashboardLists = []
-  selectedMovie = null
-  isHighlighted = false
-  cardWidth = '130px'
-
   ngOnInit() {
-    this.nowShowingMovies = TMDB_SEARCH_RESULTS.results
-    this.nowShowingMovies[this.nameString] = `Best of 1994`
-    this.dashboardLists.push(this.nowShowingMovies)
+    this.sampleListMovies = TMDB_SEARCH_RESULTS.results
+    this.sampleListMovies[this.nameString] = `Best of 1994`
+    this.dashboardLists.push(this.sampleListMovies)
     this.getNowShowingMovies()
     this.getTopMoviesFromYear()
     // this.getTopGenreMovie()
     this.getAvailability()
+
     // COMMENTED FOR TEST DATA ONLY
     // this.ipcService.libraryMovie.subscribe(value => {
     //   console.log('libraryMovie value', value)
@@ -86,15 +93,49 @@ export class DashboardComponent implements OnInit {
       console.log('dashboard libraryFolders', value)
       this.cdr.detectChanges()
     })
+
+    /**
+     * TODO: move/add code to dashboard list update (when another list is added or lazy loading).
+     */
+    this.moviesList$.subscribe(e => {
+      if (e.change === 'add') {
+        this.dashboardLists.forEach(list => {
+          list.forEach(element => {
+            if (e.idChanged === element.id) {
+              element.isHighlighted = true
+            }
+          })
+        })
+      } else if (e.change === 'remove') {
+        this.dashboardLists.forEach(list => {
+          list.forEach(element => {
+            if (e.idChanged === element.id) {
+              element.isHighlighted = false
+            }
+          })
+        })
+      } else if (e.change === 'clear') {
+        this.dashboardLists.forEach(list => {
+          list.forEach(element => {
+            element.isHighlighted = false
+          })
+        })
+      }
+    })
+
     $('[data-toggle="popover"]').popover()
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
+  }
+
+  highlightSelectedMovies() {
+
   }
 
   /**
    * Gets the availability of movies in the dashboard.
    */
   async getAvailability() {
-    for (const element of this.nowShowingMovies) {
+    for (const element of this.sampleListMovies) {
       const result = await this.ipcService.getMovieFromLibrary(element.id)
       if (result) {
         element.isAvailable = true
@@ -114,7 +155,8 @@ export class DashboardComponent implements OnInit {
   }
 
   /**
-   * Clears highlighted/selected movies
+   * Clears highlighted/selected movies.
+   * TODO: Remove. It is alredy in the selected-movies component.
    */
   onClearSelected() {
     this.selectedMovies.forEach(element => {
@@ -167,14 +209,20 @@ export class DashboardComponent implements OnInit {
     this.sendToMovieService(params, `Top ${CHOSEN_GENRE.name}`)
   }
 
-  sendToMovieService(params: any, title: string) {
-    this.movieService.getMoviesDiscover(params).subscribe(data => {
-      const innerList = data.results
-      innerList[this.nameString] = title
-      this.dashboardLists.push(innerList)
-      this.dataService.addDashboardData(innerList)
-      this.cdr.detectChanges()
-    })
+  /**
+   * Sends parameter to the API.
+   * @param params parameters to pass to the API
+   * @param title the title of the list
+   */
+  async sendToMovieService(params: any, title: string) {
+    const data = await this.movieService.getMoviesDiscover(params).toPromise()
+    console.log('subss results', data)
+
+    const innerList = data.results
+    innerList[this.nameString] = title
+    this.dashboardLists.push(innerList)
+    this.dataService.addDashboardData(innerList)
+    this.cdr.detectChanges()
   }
 
   /**
@@ -190,15 +238,19 @@ export class DashboardComponent implements OnInit {
    * @param movie current selected movie
    */
   onHighlight(movie: any) {
+    console.log('altering: ', movie.id)
     movie.isHighlighted = !movie.isHighlighted
     if (movie.isHighlighted) {
       this.selectedMovies.push(movie)
+      this.store.dispatch(new AddMovie(movie))
     } else {
       this.selectedMovies = this.selectedMovies.filter((value, index, arr) => {
-        return value != movie
+        return value !== movie
       })
+      this.store.dispatch(new RemoveMovie(movie))
     }
   }
+
   /**
    * Goes to detail of the selected movie.
    * @param movie the movie selected

@@ -74,22 +74,22 @@ const options = {
 
 
 
-http.get(options, function (http_res) {
-  // initialize the container for our data
-  var data = "";
+// http.get(options, function (http_res) {
+//   // initialize the container for our data
+//   var data = "";
 
-  // this event fires many times, each time collecting another piece of the response
-  http_res.on("data", function (chunk) {
-      // append this chunk to our growing `data` var
-      data += chunk;
-  });
+//   // this event fires many times, each time collecting another piece of the response
+//   http_res.on("data", function (chunk) {
+//       // append this chunk to our growing `data` var
+//       data += chunk;
+//   });
 
-  // this event fires *one* time, after all the `data` events/chunks have been gathered
-  http_res.on("end", function () {
-      // you can use res.send instead of console.log to output via express
-      console.log(data);
-  });
-});
+//   // this event fires *one* time, after all the `data` events/chunks have been gathered
+//   http_res.on("end", function () {
+//       // you can use res.send instead of console.log to output via express
+//       console.log(data);
+//   });
+// });
 
 // ------------
 
@@ -120,29 +120,42 @@ http.get(options, function (http_res) {
 // // -------------------
 
 
-// function random(val) {
-//   return new Promise(resolve => {
-//     setTimeout(() => {
-//       resolve(Math.random())
-//     }, val * 1000);
-//   })
-// }
+function random(val) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(Math.random())
+    }, val * 1000);
+  })
+}
 
-// const sumRandomAsyncNums = async () => {
-//   const first = await random(1)
-//   const third = await random(3)
-//   console.log(`sumRandomAsyncNums ${first}`);
-//   console.log(`sumRandomAsyncNums ${third}`);
-// }
+const sumRandomAsyncNums = async () => {
+  const first = await random(1)
+  const third = await random(3)
+  console.log(`sumRandomAsyncNums ${first}`);
+  console.log(`sumRandomAsyncNums ${third}`);
+}
 
-// const sumRandomAsyncNums2 = async () => {
-//   const second = await random(2)
-//   console.log(`${second}`);
-// }
-// const sumRandomAsyncNums3 = async () => {
-//   const second = await random(2)
-//   console.log(`${second}`);
-// }
+const sumRandomAsyncNums2 = async () => {
+  const second = await random(2)
+  console.log(`${second}`);
+}
+const sumRandomAsyncNums3 = async () => {
+  const second = await random(2)
+  console.log(`${second}`);
+}
+
+function testfunction() {
+  const myarr = []
+  let page = 0
+  while (page < 5) {
+    myarr[page] = page
+    page++
+  }
+  console.log(myarr);
+
+}
+
+testfunction()
 // sumRandomAsyncNums()
 // sumRandomAsyncNums()
 // sumRandomAsyncNums2()

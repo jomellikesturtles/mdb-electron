@@ -8,58 +8,88 @@ let imdbIdArg = args[2];
 
 let fs = require('fs');
 const path = require('path');
-const DataStore = require('nedb')
-
+var DataStore = require('nedb')
+var utilJs = require('./util.js')
 var bookmarksDb = new DataStore({
-  // filename: path.join(__dirname, '..', 'db', 'bookmarks.db'), // for node only
-  filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks.db'),
+  filename: path.join(__dirname, '..', 'db', 'bookmarks.db'), // for node only
+  //   // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks.db'),
+  autoload: true
+})
+var bookmarksChangesDb = new DataStore({
+  filename: path.join(__dirname, '..', 'db', 'bookmarks-changes.db'), // for node only
+  //   // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks-changes.db'),
   autoload: true
 })
 
 process.on('uncaughtException', function (error) {
   console.log(error);
-  process.send(['operation-failed', 'general']); //mainWindow.webContents.send('scrape-failed', 'general');
+  // process.send(['operation-failed', 'general']);
 });
-
 
 // --------- FUNCTIONS
 //--------- BOOKMARK
 
 function getBookmark() {
-  bookmarksDb.findOne({ tmdbId: parseInt(tmdbIdArg) }, function (err, data) {
+  bookmarksDb.findOne({ tmdbId: parseInt(tmdbIdArg, 10) }, function (err, data) {
     if (!err) {
       console.log(data);
       if (data) {
-        process.send(['bookmark-get-success', 1])
+        // process.send(['bookmark-get-success', 1])
       } else {
-        process.send(['bookmark-get-success', data])
+        // process.send(['bookmark-get-success', data])
       }
     } else {
       console.log(err);
     }
-    process.exit(0)
+    // process.exit(0)
+  })
+}
+
+function getBookmarkMulti(skip, limit) {
+  bookmarksDb.find({}).sort({}).skip(skip).limit(limit).exec(function (err, data) {
+    if (!err) {
+      console.log(data);
+      if (data) {
+        // process.send(['bookmark-get-success', 1])
+      } else {
+        // process.send(['bookmark-get-success', data])
+      }
+    } else {
+      console.log(err);
+    }
+    // process.exit(0)
   })
 }
 
 function insertBookmarkDb(tmdbId, imdbId) {
-  bookmarksDb.insert({ tmdbId: parseInt(tmdbId), imdbId: imdbId }, function (err, data) {
+  bookmarksDb.insert({ tmdbId: parseInt(tmdbId, 10), imdbId: imdbId }, function (err, data) {
     if (!err) {
       console.log(data);
-      process.send(['bookmark-add-success', 1])
+      // process.send(['bookmark-add-success', 1])
+      addChanges('add', tmdbId)
     } else {
       console.log("ERROR!", err);
     }
-    process.exit(0)
   })
 }
 
 function addBookmark() {
   if (tmdbIdArg) {
-    bookmarksDb.ensureIndex({ fieldName: 'tmdbId', unique: true, sparse: true }, function (err) { })
-    insertBookmarkDb(tmdbIdArg, '')
+    bookmarksDb.ensureIndex({ fieldName: 'tmdbId', unique: true, sparse: true }, function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        insertBookmarkDb(tmdbIdArg, '') // tmdb id and empty imdb
+      }
+    })
   } else if (imdbIdArg) {
-    bookmarksDb.ensureIndex({ fieldName: 'imdbId', unique: true, sparse: true }, function (err) { })
-    insertBookmarkDb(0, imdbIdArg)
+    bookmarksDb.ensureIndex({ fieldName: 'imdbId', unique: true, sparse: true }, function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        insertBookmarkDb(0, imdbIdArg) // zero tmdb id and imdb id
+      }
+    })
   }
 }
 
@@ -70,7 +100,7 @@ function addBookmarkMulti() {
     bookmarksDb.insert(element, function (err, data) {
       if (!err) {
         console.log(data);
-        process.send(['bookmark-add-success', data])
+        // process.send(['bookmark-add-success', data])
       } else {
         console.log(err.type)
         errorList.push(err.key)
@@ -98,25 +128,53 @@ function updateBookmark() {
 }
 
 function removeBookmark() {
-  bookmarksDb.remove({ tmdbId: parseInt(tmdbIdArg) }, {}, function (err, data) {
+  console.log('tmdbIdArg:', parseInt(tmdbIdArg, 10));
+  const idToRemove = parseInt(tmdbIdArg, 10)
+  bookmarksDb.remove({ tmdbId: idToRemove }, {}, function (err, data) {
     if (!err) {
-      process.send(['bookmark-remove-success', 1])
-      if (data) {
-        process.send(['bookmark-remove-success', null])
+      console.log('bookmarksDb.remove ', data);
+      // process.send(['bookmark-remove-success', 1])
+      if (data > 0) {
+        console.log('data > 0');
+
+        addChanges('remove', idToRemove)
+        // process.send(['bookmark-remove-success', null])
       }
     } else {
       console.log(err.type);
     }
-    process.exit(0)
   })
 }
 
-function initializeService() {
+/**
+ * Saves the bookmark changes into the bookmarks-changes.db
+ * @param type change type
+ * @param id the tmdb id or imdb id
+ */
+function addChanges(type, id) {
+  bookmarksDb.ensureIndex({ fieldName: 'tmdbId', unique: true }, function (err) {
+    if (!err) {
+      bookmarksChangesDb.update({ tmdbId: parseInt(id, 10) },
+        { $set: { command: type, timestamp: Date.now() } },
+        { upsert: true }, function (err, numAffected, upsert) {
+          if (!err) {
+            console.log(numAffected);
+            console.log(upsert);
+          } else {
+            console.log(err);
+          }
+          // process.exit(0)
+        })
+    } else {
+      // process.exit(0)
+    }
+  })
+}
 
+
+function initializeService() {
   // "tmdbId":10681,"imdbId":"tt0910970"
   console.log('user-db-service initializeService', command, tmdbIdArg, imdbIdArg);
-  console.log('filename', bookmarksDb.filename);
-
   switch (command) {
     case 'bookmark-get': getBookmark()
       break;
@@ -128,9 +186,18 @@ function initializeService() {
       break;
     case 'bookmark-remove': removeBookmark()
       break;
+    case 'bookmark-count-all': bookmarksDb.count({}, function (err, count) {
+      if (!err) {
+        console.log(count);
+        // process.send(['bookmark-count-all', count])
+      }
+    })
+      break;
     default:
       break;
   }
 }
 
+command = 'bookmark-count-all'
 initializeService()
+utilJs.sayHello()

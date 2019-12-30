@@ -595,6 +595,43 @@ export interface ICrew {
   release_date: string;
 }
 
+
+export enum GenreCodes {
+  Action = 28,
+  Adventure = 12,
+  Animation = 16,
+  Comedy = 35,
+  Crime = 80,
+  Documentary = 99,
+  Drama = 18,
+  Family = 10751,
+  Fantasy = 14,
+  History = 36,
+  Horror = 27,
+  Music = 10402,
+  Mystery = 9648,
+  Romance = 10749,
+  ScienceFiction = 878,
+  TVMovie = 10770,
+  Thriller = 53,
+  War = 10752,
+  Western = 37,
+
+  // mdb reserved
+  FilmNoir = 20000,
+  // similar genre: Music id:10402
+  Musical = 20001,
+  News = 20002,
+  RealityTV = 20003,
+  // similar genre: Science Fiction id:878
+  SciFi = 20004,
+  // another media type
+  Short = 20005,
+  Sport = 20006,
+}
+
+
+
 /**
  *
 export interface Credits {

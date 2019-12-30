@@ -1,5 +1,4 @@
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { Observable } from 'rxjs'
 import { TMDB_SEARCH_RESULTS } from '../../mock-data';
 import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../interfaces';
 import { Router, ActivatedRoute } from '@angular/router'
@@ -9,6 +8,8 @@ import { MovieService } from '../../services/movie.service'
 import { NavigationService } from '../../services/navigation.service'
 import { UtilsService } from '../../services/utils.service'
 import { ISearchQuery } from '../top-navigation/top-navigation.component';
+import { Select, Store } from '@ngxs/store'
+import { AddMovie, RemoveMovie } from '../../movie.actions'
 declare var $: any
 
 @Component({
@@ -18,12 +19,13 @@ declare var $: any
 })
 export class ResultsComponent implements OnInit, OnDestroy {
   // @Input() data: Observable<any>
-
+  @Select(state => state.moviesList) moviesList$
   // searchResults = TMDB_SEARCH_RESULTS.results
   // sortByList = ['popularity','rating',]
   searchResults = []
   searchQuery: ISearchQuery
   hasSearchResults = true
+  hasMoreResults = false
   currentSearchQuery
   selectedMovie = null
   selectedMovies = []
@@ -40,36 +42,13 @@ export class ResultsComponent implements OnInit, OnDestroy {
     private utilsService: UtilsService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-    private activatedRoute: ActivatedRoute) { }
+    private activatedRoute: ActivatedRoute,
+    private store: Store) { }
 
   ngOnInit(): void {
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
-
-    const imdbId = this.activatedRoute.snapshot.paramMap;
-    // this.dataService.currentSearchQuery
-    this.dataService.searchQuery.subscribe(data => {
-      console.log('fromdataservice searchQuery: ', data);
-      this.searchResults = [] // clear for new search
-      this.currentPage = 1
-      this.searchQuery = data
-      this.getSearchResults()
-      this.currentSearchQuery = this.searchQuery.query
-      // this.currentSearchQuery = data.query
-    });
-    // console.log('fromdataservice: ', this.searchQuery);
-    // this.dataService.getDashboardData()
-    // this.dataService.currentSearchQuery.subscribe(data => {
-    //   // ran twice
-    //   console.log('fromdataservice: ', data);
-    //   // if (data) {
-    //   //   this.getMovie(data);
-    //   //   this.getBackdrop(data);
-    //   // } else {
-    //   //   this.getMovie(imdbId);
-    //   //   this.getBackdrop(imdbId);
-    //   // }
-    // });
+    this.getData()
   }
 
   ngOnDestroy(): void {
@@ -80,24 +59,43 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.searchResults = []
   }
 
+  getData() {
+    this.moviesList$.subscribe(moviesResult => {
+      console.log('moviesresult: ', moviesResult)
+
+      if (moviesResult.change === 'add') {
+        this.searchResults.forEach(element => {
+          if (moviesResult.idChanged === element.id) {
+            element.isHighlighted = true
+          }
+        })
+      } else if (moviesResult.change === 'remove') {
+        this.searchResults.forEach(element => {
+          if (moviesResult.idChanged === element.id) {
+            element.isHighlighted = false
+          }
+        })
+      } else if (moviesResult.change === 'clear') {
+        this.searchResults.forEach(element => {
+          element.isHighlighted = false
+        })
+      }
+    });
+
+    this.dataService.searchQuery.subscribe(data => {
+      console.log('fromdataservice searchQuery: ', data);
+      this.searchResults = [] // clear for new search
+      this.currentPage = 1
+      this.searchQuery = data
+      this.getSearchResults()
+      this.currentSearchQuery = this.searchQuery.query
+    });
+  }
   onClearSelected(): void {
     this.selectedMovies.forEach(element => {
       element.isHighlighted = false
     });
     this.selectedMovies = []
-  }
-
-  onDownloadSelected(): void {
-    this.dataService.updateSelectedMovies(this.selectedMovies)
-    this.router.navigate([`/bulk-download`], { relativeTo: this.activatedRoute });
-  }
-
-  onAddBookmark(): void {
-    const root = this
-    this.ipcService.addBookmark(this.selectedMovies)
-    this.displayMessage = 'Added to watchlist'
-    this.displaySnackbar = true
-    this.utilsService.hideSnackbar(root)
   }
 
   /**
@@ -116,27 +114,24 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.ipcService.call('', val)
   }
 
-  onMarkAsWatched(): void {
-    const root = this
-    this.ipcService.addMarkAsWatched(this.selectedMovies)
-    this.displayMessage = 'Marked as watched'
-    this.displaySnackbar = true
-    this.utilsService.hideSnackbar(root)
-  }
-
   onHighlight(movie): void {
     console.log(this.selectedMovies);
     movie.isHighlighted = !movie.isHighlighted
     if (movie.isHighlighted) {
       this.selectedMovies.push(movie)
+      this.store.dispatch(new AddMovie(movie))
     } else {
       this.selectedMovies = this.selectedMovies.filter((value, index, arr) => {
-        return value != movie;
+        return value !== movie;
       })
+      this.store.dispatch(new RemoveMovie(movie))
     }
-    console.log(this.selectedMovies);
   }
 
+  /**
+   * Opens the movie's details page.
+   * @param movie the movie to open
+   */
   onSelect(movie: ITmdbResult): void {
     this.selectedMovie = movie;
     const highlightedId = movie.id;
@@ -170,14 +165,16 @@ export class ResultsComponent implements OnInit, OnDestroy {
   getSearchResults() {
     // commented for actual
     // this.searchResults = TMDB_SEARCH_RESULTS.results
+    // end of commented for actual
     const params = [
       [TmdbSearchMovieParameters.Query, this.searchQuery.query]
     ]
     this.movieService.searchTmdbMovie(params).subscribe(data => {
-      // this.searchResults.push(...data.results)
-      data.results.forEach(element => {
-        this.searchResults.push(element)
-      });
+      this.searchResults.push(...data.results)
+      if (data.total_pages > this.currentPage) {
+        this.hasMoreResults = true
+      }
+      this.setHighlights()
       this.cdr.detectChanges()
     })
   }
@@ -190,7 +187,28 @@ export class ResultsComponent implements OnInit, OnDestroy {
       [TmdbSearchMovieParameters.Query, this.searchQuery.query],
       [TmdbParameters.Page, ++this.currentPage]
     ]
-    this.movieService.searchTmdbMovie(params).subscribe(data => { this.searchResults.push(...data.results) });
+    this.movieService.searchTmdbMovie(params).subscribe(data => {
+      this.searchResults.push(...data.results)
+      if (data.total_pages <= this.currentPage) {
+        this.hasMoreResults = false
+      }
+      this.setHighlights()
+    })
+  }
+
+  /**
+   * Sets the highlight to the movie image if is already in the selected list.
+   */
+  setHighlights() {
+    this.moviesList$.subscribe(e => {
+      e.movies.forEach(element => {
+        this.searchResults.forEach(res => {
+          if (element.id === res.id) {
+            res.isHighlighted = true
+          }
+        })
+      })
+    })
   }
   // download, add to watchlsit, mark as watched
 }

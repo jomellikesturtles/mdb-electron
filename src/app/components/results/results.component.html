@@ -1,35 +1,4 @@
-<div class='movie-selected-list' style='background-color: rgb(40,40,40);
-padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.length != 0">
-  <div class="container-fluid" id="list" style="overflow-y:hidden; overflow-x:auto;">
-    <div class='d-inline-flex'>
-
-      <div *ngFor="let sMovie of selectedMovies" style='width: 120px;margin :0 5px 5px 0'>
-        <div class='selected-movie-card-image-container' (click)='onHighlight(sMovie)' [ngStyle]="{'height': '180px'
-          ,'background-image':'url(https://image.tmdb.org/t/p/w342'+ sMovie.poster_path + ')'}">
-
-          <!-- <div id="results-panel" *ngFor="let movie of searchResults" class='movie-card' [ngStyle]="{'width': cardWidth}"
-  [ngClass]="{'movie-card-selected': movie.isHighlighted}" (click)=onHighlight(movie)>
-
-  <div
-    [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w600_and_h900_bestv2'+movie.poster_path+')'}"
-    class='movie-card-image-container'>
-    <div class="overlay overlay-add"> -->
-
-          <div class="overlay overlay-remove">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class='selected-list-controls-container container' style='margin-top: 10px;'>
-    <div class="btn-group">
-      <button class='btn btn-success' (click)='onDownloadSelected()'>Download</button>
-      <button class='btn btn-primary' (click)='onAddBookmark()'>Add to watchlist</button>
-      <button class='btn btn-primary' (click)='onMarkAsWatched()'>Mark as watched</button>
-    </div>
-    <button class='btn btn-danger' style='float:right' (click)='onClearSelected()'>Clear list</button>
-  </div>
-</div>
+<app-selected-list></app-selected-list>
 
 <select class="form-control" [(ngModel)]="cardWidth" style='width: 200px; float:right'>
   <option value='100px'>small</option>
@@ -73,12 +42,15 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="selectedMovies.leng
           <!-- <h6 class="card-title text-hyperlink" (click)="onSelect(movie)" class='text-primary movie-card-title'
             data-toggle="tooltip" title="{{movie.title}}">{{movie.title}}</h6> -->
           <label class='text-hyperlink' style='float: left'>{{getYear(movie.release_date)}}</label>
-          <label style='float: right'>{{movie.vote_average}}</label>
+          <label *ngIf='movie.vote_average>0' style='float: right' data-toggle='tooltip'
+            title='{{movie.vote_count}} votes'><img style='height:10px;
+            -webkit-filter: invert(1);margin-bottom: 4px;
+margin-right: 2px;' src='./assets/icons/star.svg' />{{movie.vote_average}}</label>
         </div>
       </div>
     </div>
     <div *ngIf='currentSearchQuery' style='width: 100%; text-align: center; height: 80px;'>
-      <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
+      <h5 class='text-hyperlink' *ngIf="hasMoreResults" (click)='getMoreResults()'>Load more results...</h5>
     </div>
   </div>
 </div>

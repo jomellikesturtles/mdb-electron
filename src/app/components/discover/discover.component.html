@@ -1,8 +1,5 @@
 <!-- TMDB discover -->
-<p>
-  discover works!
-</p>
-
+<app-selected-list></app-selected-list>
 <select class="form-control" [(ngModel)]='sortBy' style='width: 200px; float:right'>
   <option value='popularity.desc'>Popularity</option>
   <option value='release_date.asc'>Oldest</option>
@@ -17,6 +14,7 @@
     <h1 class='jumbo-message'>No movies found</h1>
   </div>
   <div *ngIf='hasResults' class='movie-cards-display-grid'>
+    <h1>{{discoverTitle}}</h1>
     <div id="results-panel" *ngFor="let movie of discoverResults" class='movie-card' [ngStyle]="{'width': cardWidth}">
 
       <div

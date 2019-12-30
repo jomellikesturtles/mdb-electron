@@ -8,27 +8,14 @@ const path = require('path');
 var DataStore = require('nedb')
 const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const ffmpeg = require('fluent-ffmpeg')
-var moviesList = []
-
-var config = new DataStore({ filename: '../config/config.db', autoload: true })
-var libraryFilesDb = new DataStore({ filename: 'libraryFiles.db', autoload: true })
-config.loadDatabase(function (err) {    // Callback is optional
-  // Now commands will be executed
-});
-var itemInfo = {
-  title: 'Cinderella Man',
-  year: 2005,
-  fullFilePath: 'C:\\Users\\Lenovo\\Downloads\\Completed Downloads\\Cinderella Man (2005)\\Cinderella Man (2005) 720p 600MB.mkv',
-  fullFileName: 'Cinderella Man (2005) 720p 600MB.mkv',
-  exension: 'mkv',
-  parentFolder: 'Cinderella Man (2005)',
-  byteSize: 628422594,
-  durationMins: 123,
-  hasDuplicateTitle: false,
-  hasSiblings: false,
-  hasMatched: true,
-  imdbId: 'tt1000912'
-}
+var libraryDbService = require('./library-db-service-2.js')
+var config = new DataStore(
+  {
+    filename: '../config/config.db',
+    // filename: path.join(__dirname, '..', 'config', 'config.db'), // for node only
+    // filename: '../config/config.db',
+    autoload: true
+  })
 
 process.on('uncaughtException', function (error) {
   console.log(error);
@@ -47,21 +34,17 @@ function getMovieInfo() {
  * Insert into libraryFiles.db
  * @param {*} params
  */
-function saveToLibrary(params) {
-  libraryFilesDb.insert(params, function (err, numpReplaced) {
-    console.log('adding');
-    if (err || (numpReplaced < 1)) {
-      console.log("replaced---->" + numReplaced);
-      console.log(err)
-    }
-  })
+function saveToLibraryDb(params) {
 
-  // libraryDb.insert(value, function (err, data) {
-  //   if (!err) {
-  //     console.log('inserted ', data);
+  // libraryFilesDb.insert(params, function (err, numpReplaced) {
+  //   console.log('adding');
+  //   if (!err || (numpReplaced < 1)) {
+  //     console.log("replaced---->" + numReplaced);
+  //   } else {
+  //     console.log(err);
   //   }
   // })
-
+  libraryDbService.insertLibraryFiles(params)
 }
 
 /**
@@ -70,19 +53,21 @@ function saveToLibrary(params) {
  * @param {String} fileName     the file name
  */
 function addToList(folderPath, fileName) {
-  var fullFilePath = path.join(folderPath, fileName);
-  var stat = fs.lstatSync(fullFilePath);
-  var dir = path.dirname(fullFilePath)
-  var parentFolder = folderPath.substr(folderPath.lastIndexOf('\\') + 1)
-  var byteSize = stat.size
-  var extension = path.extname(fullFilePath)
-  var fullFileName = path.basename(fullFilePath)
-  var hasSiblings = checkForSiblings(dir)
-  var fromRegex = getTitleAndYear(parentFolder, fullFileName)
-  var title = fromRegex[1]
-  var year = fromRegex[2]
+  const fullFilePath = path.join(folderPath, fileName);
+  const stat = fs.lstatSync(fullFilePath);
+  const dir = path.dirname(fullFilePath)
+  const parentFolder = folderPath.substr(folderPath.lastIndexOf('\\') + 1)
+  const byteSize = stat.size
+  const extension = path.extname(fullFilePath)
+  const fullFileName = path.basename(fullFilePath)
+  const hasSiblings = checkForSiblings(dir)
+  const fromRegex = getTitleAndYear(parentFolder, fullFileName)
+  const regex1Result = fromRegex[1]
+  const title = ((typeof regex1Result === 'undefined' || typeof regex1Result === 'null') ? '' : regex1Result)
+  const regex2Result = fromRegex[2]
+  const year = ((typeof regex2Result === 'undefined' || typeof regex2Result === 'null') ? 0 : regex2Result)
 
-  var fileInfo = {
+  const fileInfo = {
     fullFilePath: fullFilePath,
     dir: dir,
     parentFolder: parentFolder,
@@ -96,9 +81,12 @@ function addToList(folderPath, fileName) {
   // durationMins: 123,
   // hasDuplicateTitle: false,
   console.log(fileInfo);
-  // saveToLibrary(fileInfo);
+  // libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) {
+  // if (!err) {
+  saveToLibraryDb(fileInfo);
+  // }
+  // })
 }
-
 /**
  * Gets the movie title based on regex
  * @param {string} parentFolder
@@ -192,7 +180,7 @@ function readDirectory(startPath) {
   //         console.log(getExtension(element))
   //     });
   // })
-};
+}
 
 /**
  * Gets library folders from config.db file
@@ -203,8 +191,12 @@ function getLibraryFolders() {
     var foldersList = null
     config.findOne({ type: 'libraryFolders' }, function (err, dbPref) {
       if (!err) {
-        foldersList = dbPref.foldersList
-        resolve(foldersList)
+        if (dbPref) {
+          foldersList = dbPref.foldersList
+          resolve(foldersList)
+        } else {
+          console.log('undefined or null')
+        }
       } else {
         reject()
       }
@@ -212,10 +204,44 @@ function getLibraryFolders() {
   })
 }
 
+async function scanExistingLibraryMovies() {
+  var condition = true
+  let totalCount = 0
+  let page = 0
+  const skip = 2
+  let promises = []
+  libraryDbService.count().then(async count => {
+    totalCount = count
+    while (page < totalCount) {
+      promises[page] = new Promise((resolve, reject) => {
+
+        //------pagination steps. dont delete--
+        // console.log('page ', page, ' page*skip ', skip * page, ' totalCount', totalCount);
+        // if ((totalCount < (skip * page)) && totalCount % (skip * page) !== (skip * page)) {
+        libraryDbService.getLibraryFilesMulti(page, 1).then(fullFilePath => {
+          if (!fs.existsSync(fullFilePath)) {
+            console.log(`no dir, deleting ${fullFilePath}...`)
+            libraryDbService.removeLibraryFile(fullFilePath)
+          }
+          resolve('myval')
+        })
+      })
+      page++
+    }
+    const values = await Promise.all(promises);
+    return values;
+  })
+}
+
 /**
- * Starts scan
+ * Starts scan. First checks for the folders in the database.
  */
-function initializeScan() {
+async function initializeScan() {
+
+  let result = await scanExistingLibraryMovies()
+  console.log('inresults');
+  console.log(result);
+
   getLibraryFolders().then(function (libraryFolders) {
     libraryFolders.forEach(folder => {
       readDirectory(folder);
@@ -223,11 +249,7 @@ function initializeScan() {
   })
 }
 
-console.time('initializeScan')
 initializeScan();
-console.timeEnd('initializeScan')
-
-// saveToConfig(moviesList)
 
 // var regexList =
 // Tested: `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`
@@ -241,3 +263,7 @@ console.timeEnd('initializeScan')
  * rank by vote count&average
  */
 
+/**
+ * Scan process
+ * check contents of libraryFiles.db if existing, if not, delete
+ */

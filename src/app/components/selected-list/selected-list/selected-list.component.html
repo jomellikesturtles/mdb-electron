@@ -1,3 +1,25 @@
-<p>
-  selected-list works!
-</p>
+<div class='movie-selected-list' style='background-color: rgb(40,40,40);
+padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="display==true">
+  <div class="container-fluid" id="list" style="overflow-y:hidden; overflow-x:auto;">
+    <div class='d-inline-flex'>
+
+      <div *ngFor="let movie of (movies$| async)?.movies" style='width: 120px;margin :0 5px 5px 0'>
+        <div class='selected-movie-card-image-container' (click)='removeMovie(movie)' [ngStyle]="{'height': '180px'
+          ,'background-image':'url(https://image.tmdb.org/t/p/w342'+ movie.poster_path + ')'}" data-toggle='tooltip'
+          title='{{movie.title}}'>
+
+          <div class="overlay overlay-remove">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='selected-list-controls-container container' style='margin-top: 10px;'>
+    <div class="btn-group">
+      <button class='btn btn-success' (click)='download()'>Download</button>
+      <button class='btn btn-primary' (click)='addBookmark()'>Add to watchlist</button>
+      <button class='btn btn-primary' (click)='markAsWatched()'>Mark as watched</button>
+    </div>
+    <button class='btn btn-danger' style='float:right' (click)='clearList()'>Clear list</button>
+  </div>
+</div>
