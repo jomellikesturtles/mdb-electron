@@ -222,6 +222,12 @@ export class MovieService {
     return myHttpParam
   }
 
+  getBookmark(id) {
+
+    return this.http.get<any>(`http:\\\\localhost:3000\\getBookmark\\${id}`).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getBookmark')))
+  }
+
   /**
    * Error handler.
    * @param operation

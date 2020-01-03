@@ -35,7 +35,7 @@ const count = function () {
         console.log(err)
         return reject()
       } else {
-        // console.log(data)
+        console.log('data:', data)
         return resolve(data)
       }
     })

@@ -178,7 +178,7 @@ export class DashboardComponent implements OnInit {
       [TmdbParameters.PrimaryReleaseDateGreater, threeWeeksAgo],
       [TmdbParameters.PrimaryReleaseDateLess, today]
     ]
-    this.sendToMovieService(params, `Movies in Theatres`)
+    this.sendToMovieService(params, `New Releases`)
   }
 
   /**

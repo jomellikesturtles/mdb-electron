@@ -69,6 +69,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.movieService.getBookmark(123123).subscribe(e => {
+      console.log(e);
+    })
     this.getTroubleQuote()
     this.activatedRoute.params.subscribe(params => {
       console.log('activatedRoute.params', params);
@@ -268,7 +271,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   getBookmark() {
-    this.ipcService.getBookmark(this.movieDetails.tmdbId)
+    this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.BookmarkGet, this.movieDetails.tmdbId])
     this.procBookmark = true
     this.bookmarksSingleSubscription = this.ipcService.bookmarkSingle.subscribe(data => {
       if (data === null || data.id === '') {
@@ -287,9 +290,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
   toggleBookmark() {
     this.procBookmark = true
     if (this.isBookmarked === true) {
-      this.ipcService.removeBookmark(this.movieDetails.tmdbId)
+      this.ipcService.call('bookmark', ['bookmark-remove', this.movieDetails.tmdbId])
     } else {
-      this.ipcService.addBookmark(this.movieDetails.tmdbId)
+      this.ipcService.call('bookmark', ['bookmark-add', this.movieDetails.tmdbId])
     }
   }
 
@@ -324,7 +327,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param val imdb id
    */
   getMovieDataOffline(val: any) {
-    this.ipcService.getMovieMetadata(val)
+    this.ipcService.call(IpcCommand.MovieMetadata, [IpcCommand.Get, val])
   }
 
   async getMovieFromLibrary() {
@@ -336,8 +339,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   saveMovieDataOffline(val: any) {
-    console.log('setMovieMetadata ', val)
-    this.ipcService.setMovieMetadata(val)
+    this.ipcService.call(IpcCommand.MovieMetadata, [IpcCommand.Set, val])
   }
   /**
    * Gets movie details, torrents

@@ -7,8 +7,8 @@ import {
   //// , ChangeDetectionStrategy, ChangeDetectorRef,
 } from '@angular/core'
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
-// declare var electron: any
-// import { ipcRenderer } from 'electron'
+declare var electron: any
+import { ipcRenderer } from 'electron'
 // // const { ipcRenderer } = electron
 import { ILibraryInfo } from '../interfaces'
 
@@ -28,11 +28,11 @@ export class IpcService {
   scannedMovieMulti = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   videoFile = new BehaviorSubject<any>([])
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
-  // private ipcRenderer: typeof ipcRenderer
+  private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone) //// private ref: ChangeDetectorRef
   {
-    // this.ipcRenderer = (<any>window).require('electron').ipcRenderer
+    this.ipcRenderer = (<any>window).require('electron').ipcRenderer
 
     // this.ipcRenderer.on('library-folders', (event, data) => {
     //   console.log('library-folders:', data)
@@ -123,7 +123,7 @@ export class IpcService {
   }
 
   call(message: string, args?: any) {
-    // this.ipcRenderer.send('', args)
+    this.ipcRenderer.send(message, args)
   }
 
   listen() {
@@ -135,27 +135,6 @@ export class IpcService {
    */
   modalFileExplorer() {
     // this.ipcRenderer.send('modal-file-explorer')
-  }
-
-  /**
-   * Opens files and folders
-   */
-  getLibraryFolders() {
-    // this.ipcRenderer.send('retrieve-library-folders')
-  }
-
-  /**
-   * Saves preferences to the config file
-   * @param preferencesObject preferences object to save
-   */
-  savePreferences(preferencesObject) {
-    // this.ipcRenderer.send('save-preferences', preferencesObject)
-  }
-  /**
-   * Gets preferences from the config file.
-   */
-  getPreferences() {
-    // this.ipcRenderer.send('get-preferences')
   }
 
   /**
@@ -181,15 +160,6 @@ export class IpcService {
   }
 
   /**
-   * Opens the parent folder
-   * @param data folder directory
-   */
-  openParentFolder(data: string) {
-    console.log('up', data)
-    // this.ipcRenderer.send('go-to-folder', ['up', data])
-  }
-
-  /**
    * Get torrents from offline dump of movie by title
    * @param value movie title or imdb id
    */
@@ -212,23 +182,6 @@ export class IpcService {
   searchTorrent(data) {
     console.log('searchTorrent ', data)
     // this.ipcRenderer.send('torrent-search', data)
-  }
-
-  /**
-   * Gets movie metadata from offline source.
-   * @param data search query
-   */
-  getMovieMetadata(data) {
-    console.log('getMovieMetadata ', data)
-    // this.ipcRenderer.send('movie-metadata', ['get', data])
-  }
-  /**
-   * Sets movie metadata from offline source.
-   * @param data search query
-   */
-  setMovieMetadata(data) {
-    console.log('setMovieMetadata ', data)
-    // this.ipcRenderer.send('movie-metadata', ['set', data])
   }
 
   // library movies db
@@ -279,23 +232,10 @@ export class IpcService {
     // this.ipcRenderer.send('get-image', param)
   }
 
-  setImage() {
-
-  }
-
   // // User services
   // // user services; watchlist/bookmarks, watched
   getBookmark(val) {
     // this.ipcRenderer.send('bookmark', ['bookmark-get', val])
-  }
-  addBookmark(val) {
-    // this.ipcRenderer.send('bookmark', ['bookmark-add', val])
-  }
-  removeBookmark(val) {
-    // this.ipcRenderer.send('bookmark', ['bookmark-remove', val])
-  }
-  updateBookmark(val) {
-    // this.ipcRenderer.send('bookmark', ['bookmark-update', val])
   }
 
   /**
@@ -319,14 +259,27 @@ export enum IpcCommand {
   MinimizeApp = 'app-min',
   RestoreApp = 'app-restore',
   ExitApp = 'exit-program',
-  GetBookmark = 'bookmark',
   ScanLibrary = 'scan-library',
   OpenLinkExternal = 'open-link-external',
   OpenInFileExplorer = 'open-file-explorer',
-  OpenVideo= 'open-video',
-}
-
-export enum IpcEvent {
+  OpenVideo = 'open-video',
+  RetrieveLibraryFolders = 'retrieve-library-folders',
+  Bookmark = 'bookmark',
+  BookmarkAdd = 'bookmark-add',
+  BookmarkGet = 'bookmark-get',
+  WatchedAdd = 'add',
+  WatchedGet = 'get',
+  WatchedRemove = 'remove',
+  Watched = 'watched',
+  MovieMetadata = 'movie-metadata',
+  Get = 'get',
+  Add = 'add',
+  Set = 'set',
+  Remove = 'remove',
+  GetPreferences = 'get-preferences',
+  SavePreferences = 'save-preferences',
+  GoToFolder = 'go-to-folder',
+  Up = 'up'
 
 }
 

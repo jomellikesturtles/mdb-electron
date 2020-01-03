@@ -16,7 +16,10 @@
     "electron-build2": "ng build --prod && npm run electron",
     "electron-build-d": "ng build --dev && npm run electron",
     "electron-build": "ng build --prod && electron .",
-    "start:electron": "ng build --base-href ./ && electron ."
+    "start:electron": "ng build --base-href ./ && electron .",
+    "start:server": "node src/assets/scripts/server/main",
+    "start:angular-server": " start ng serve & start npm run start:server",
+    "start:angular-server2": "start npm start && npm run start:server"
   },
   "dependencies": {
     "@angular/animations": "~7.2.0",

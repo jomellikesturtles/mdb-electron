@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../../interfaces';
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../../services/data.service'
-import { IpcService } from '../../../services/ipc.service'
+import { FirebaseService } from '../../../services/firebase.service';
+import { IpcService, IpcCommand } from '../../../services/ipc.service'
 import { MovieService } from '../../../services/movie.service'
 import { NavigationService } from '../../../services/navigation.service'
 import { UtilsService } from '../../../services/utils.service'
@@ -28,6 +29,7 @@ export class SelectedListComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dataService: DataService,
+    private firebaseService: FirebaseService,
     private ipcService: IpcService,
     private utilsService: UtilsService,
     private store: Store) { }
@@ -61,7 +63,7 @@ export class SelectedListComponent implements OnInit {
    * Adds bookmarks to all items in the list.
    */
   addBookmark() {
-    this.ipcService.call('bookmark', ['bookmark-add', this.movieIdList])
+    this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.BookmarkAdd, this.movieIdList])
     const root = this
     // this.displayMessage = 'Added to watchlist'
     // this.displaySnackbar = true
@@ -69,7 +71,7 @@ export class SelectedListComponent implements OnInit {
   }
 
   markAsWatched() {
-    this.ipcService.call('')
+    this.ipcService.call(IpcCommand.Watched, [IpcCommand.WatchedAdd, this.movieIdList])
     // const root = this
     // this.ipcService.addMarkAsWatched(this.selectedMovies)
     // this.displayMessage = 'Marked as watched'

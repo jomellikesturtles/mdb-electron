@@ -85,7 +85,7 @@ export class PreferencesComponent implements OnInit {
    * Get list of library folders
    */
   onGetLibraryFolders() {
-    this.ipcService.getLibraryFolders()
+    this.ipcService.call(IpcCommand.RetrieveLibraryFolders)
   }
 
   /**
@@ -132,7 +132,7 @@ export class PreferencesComponent implements OnInit {
    */
   onSave() {
     this.preferencesObject.libraryFolders = this.libraryFolders
-    this.ipcService.savePreferences(this.preferencesObject)
+    this.ipcService.call(IpcCommand.SavePreferences, this.preferencesObject)
     console.log('onSave');
   }
 
@@ -196,8 +196,7 @@ export class PreferencesComponent implements OnInit {
     } else {
       this.previousFolder = this.currentFolder
     }
-
-    this.ipcService.openParentFolder(this.currentFolder)
+    this.ipcService.call(IpcCommand.GoToFolder, [IpcCommand.Up, this.currentFolder])
   }
 
   onGoToFolder(folder: string) {
