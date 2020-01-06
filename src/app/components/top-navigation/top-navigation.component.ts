@@ -10,9 +10,17 @@ import { IpcService, IpcCommand } from '../../services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
 import { Store, Select } from '@ngxs/store'
-import { Add, CountState } from '../../app.state'
+import { Add, CountState, UserState } from '../../app.state'
+import { FirebaseService } from '../../services/firebase.service';
+import { SetUser } from '../../app.actions';
+import { delay } from 'rxjs/operators';
 declare var jquery: any
 declare var $: any
+
+enum STATUS {
+  login = 'LOGIN',
+  logout = 'LOGOUT'
+}
 
 @Component({
   selector: 'app-top-navigation',
@@ -22,8 +30,10 @@ declare var $: any
 export class TopNavigationComponent implements OnInit {
   @Input() data: Observable<any>
   @Select(CountState) count$: Observable<number>
+  @Select(state => state.UserState) user$: Observable<any>
   constructor(
     private dataService: DataService,
+    private firebaseService: FirebaseService,
     private ipcService: IpcService,
     private movieService: MovieService,
     private router: Router,
@@ -31,6 +41,7 @@ export class TopNavigationComponent implements OnInit {
     private location: Location,
     private store: Store) { }
 
+  status = 'LOGIN'
   browserConnection = navigator.onLine;
   selectedMovie: IOmdbMovieDetail
   numbers;
@@ -40,7 +51,6 @@ export class TopNavigationComponent implements OnInit {
   types = ['TV Series', 'Movie', 'Short'];
   searchQuery: ISearchQuery = {
     query: '',
-    keywords: '',
     startYear: 1969,
     endYear: 2018,
     genres: this.movieGenres,
@@ -62,12 +72,22 @@ export class TopNavigationComponent implements OnInit {
   genresList = GENRES
   isSignedIn = false
 
-  onCount() {
-    this.store.dispatch(new Add())
-  }
   ngOnInit() {
+    this.init()
   }
 
+  init() {
+    const e = localStorage.getItem('user')
+    // this.user$.pipe(delay(1000)).subscribe(e => {
+    if (e === null) {
+      this.status = 'LOGIN'
+      this.isSignedIn = false
+    } else {
+      this.isSignedIn = true
+      this.status = ''
+    }
+    // })
+  }
   /**
    * Go to previous location
    */
@@ -138,6 +158,20 @@ export class TopNavigationComponent implements OnInit {
 
   }
 
+  signOut() {
+    this.firebaseService.signOut()
+  }
+
+  changeCredentialState(actionName: string) {
+    this.user$.subscribe(e => {
+      // console.log('user$', user$);
+      // this.store.dispatch(new SetUser())
+    })
+    // if (actionName === STATUS.login) {
+    //   this.status = STATUS.logout
+    // }
+  }
+
   onMinimize() {
     this.ipcService.call(IpcCommand.MinimizeApp)
   }
@@ -145,14 +179,12 @@ export class TopNavigationComponent implements OnInit {
     this.ipcService.call(IpcCommand.RestoreApp)
   }
   onExit() {
-    console.log('onexit');
     this.ipcService.call(IpcCommand.ExitApp)
   }
 }
 
 export interface ISearchQuery {
   query: string,
-  keywords: string,
   startYear: number,
   endYear: number,
   genres: MovieGenre[],

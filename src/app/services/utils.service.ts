@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 import { REGEX_OMDB_RELEASE_DATE, REGEX_TMDB_RELEASE_DATE, REGEX_YEAR_ONLY, STRING_REGEX_OMDB_RELEASE_DATE, STRING_REGEX_TMDB_RELEASE_DATE } from '../constants';
+import { FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root'

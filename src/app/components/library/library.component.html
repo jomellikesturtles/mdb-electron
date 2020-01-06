@@ -1,3 +1,4 @@
+<app-selected-list></app-selected-list>
 <div class="container-fluid">
   <button class='btn btn-info'>Scan library</button>
   <!-- <div *ngIf='!hasSearchResults'>
@@ -7,7 +8,7 @@
   <!-- <div *ngIf='hasSearchResults' class='movie-cards-display-grid'> -->
   <div class='movie-cards-display-grid'>
     <!-- <h1 *ngIf="currentSearchQuery">Search results for "{{currentSearchQuery}}"</h1> -->
-    <div id="results-panel" *ngFor="let movie of movies" class='movie-card' [ngStyle]="{'width': cardWidth}"
+    <div id="results-panel" *ngFor="let movie of libraryMovies" class='movie-card' [ngStyle]="{'width': cardWidth}"
       [ngClass]="{'movie-card-selected': movie.isHighlighted}">
 
       <div
@@ -67,7 +68,7 @@
   </div>
 </div> -->
 
-  <div *ngIf="!movies">
+  <div *ngIf="!libraryMovies">
     <label>No movies found, go to Preferences.</label>
     <h1>No movie libraries found :(</h1>
     <h3>Houston, we have a problem.</h3>

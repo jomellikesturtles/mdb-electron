@@ -68,7 +68,6 @@ export class SigninComponent implements OnInit {
     },
       // { validators: repeatPasswordValidator, asyncValidators: [this.credentialValidator.validate.bind(this.credentialValidator)] }
     )
-
   }
 
   get username() { return this.signUpForm.get('username'); }
@@ -84,34 +83,17 @@ export class SigninComponent implements OnInit {
   }
 
   onSignIn() {
-    // this.db.
     console.log('onsignin');
-    // this.auth.auth.signInWithCredential()
-    // console.log(googleUser.getAuthResponse().id_token)
     const emailUsername = this.signInForm.get('usernameEmail').value
     const password = this.signInForm.get('password').value
     this.firebaseService.signIn(emailUsername, password)
   }
 
   onSignInGoogle() {
-    // const provider = firebase.auth.GoogleAuthProvider.PROVIDER_ID
     const provider = new firebase.auth.GoogleAuthProvider()
-    // provider.addScope(
-    // this.auth.auth.goo
-    // this.ipcService.sendProvider(provider)
     // this.auth.auth.signInWithRedirect(provider)
     // firebase.auth().getRedirectResult().then((e) => {
-    this.auth.auth.signInWithPopup(provider).then((e) => {
-      console.log(e.additionalUserInfo);
-      console.log(e.credential);
-      console.log(e.operationType);
-      console.log(e.user);
-    }).catch(function (e) {
-      {
-        console.log('in catch', e.message);
-      }
-    })
-    // firebase.auth().createUserWithEmailAndPassword
+    this.firebaseService.signInWithGoogle(provider)
   }
 
 }

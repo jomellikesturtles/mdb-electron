@@ -3,7 +3,7 @@ import { TMDB_SEARCH_RESULTS } from '../../mock-data';
 import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../interfaces';
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../services/data.service'
-import { IpcService } from '../../services/ipc.service'
+import { IpcService, IpcCommand } from '../../services/ipc.service'
 import { MovieService } from '../../services/movie.service'
 import { NavigationService } from '../../services/navigation.service'
 import { UtilsService } from '../../services/utils.service'
@@ -103,7 +103,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
    * @param val tmdb id
    */
   onAddBookmarkSingle(val): void {
-    this.ipcService.call('', val)
+    this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.Add, val])
   }
 
   /**
@@ -111,7 +111,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
    * @param val tmdb id
    */
   onRemoveBookmarkSingle(val): void {
-    this.ipcService.call('', val)
+    this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.Remove, val])
   }
 
   onHighlight(movie): void {

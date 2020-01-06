@@ -1,12 +1,14 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
-import { IpcService } from '../../services/ipc.service';
-import { MovieService } from '../../services/movie.service';
-import { Observable } from 'rxjs'
 import { TEST_LIBRARY_MOVIES } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
 import { REGEX_IMAGE_SIZE } from '../../constants';
-import { UtilsService } from '../../services/utils.service';
 import { DataService } from '../../services/data.service';
+import { IpcService } from '../../services/ipc.service';
+import { MovieService } from '../../services/movie.service';
+import { Observable } from 'rxjs'
+import { UtilsService } from '../../services/utils.service';
+import { Select, Store } from '@ngxs/store'
+import { AddMovie, RemoveMovie } from '../../movie.actions'
 
 @Component({
   selector: 'app-library',
@@ -16,6 +18,7 @@ import { DataService } from '../../services/data.service';
 })
 export class LibraryComponent implements OnInit {
   @Input() data: Observable<any>
+  @Select(state => state.moviesList) moviesList$
 
   constructor(
     private dataService: DataService,
@@ -127,11 +130,13 @@ export class LibraryComponent implements OnInit {
     console.log(movie);
     this.router.navigate([`/details/${movie.imdbID}`], { relativeTo: this.activatedRoute });
   }
+
   getMoreResults() {
     this.currentPage++
     this.ipcService.getMoviesFromLibraryByPage(this.currentPage)
     this.isFetchingData = true
   }
+
   // async getMoreResults() {
   //   this.currentPage++
   //   const result = await this.ipcService.getMoviesFromLibraryByPage(this.currentPage)
@@ -141,6 +146,14 @@ export class LibraryComponent implements OnInit {
   // }
 
   onHighlight() {
-
+    this.moviesList$.subscribe(e => {
+      e.movies.forEach(element => {
+        this.libraryMovies.forEach(res => {
+          if (element.id === res.id) {
+            res.isHighlighted = true
+          }
+        })
+      })
+    })
   }
 }

@@ -62,6 +62,7 @@ const count = function () {
  * @param {*} params the object
  */
 function insertLibraryFiles(params) {
+  libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) { })
   libraryFilesDb.insert(params, function (err, numReplaced) {
     console.log('adding');
     if (!err || (numReplaced < 1)) {
@@ -130,7 +131,6 @@ function removeLibraryFile(val) {
   libraryFilesDb.remove({ fullFilePath: val }, {}, function (err, numRemoved) {
     if (!err) {
       console.log(numRemoved)
-
       // fullFilePath = data.fullFilePath
       Promise.resolve(numRemoved)
     } else {

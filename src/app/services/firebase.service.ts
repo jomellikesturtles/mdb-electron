@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
 import { catchError, map } from 'rxjs/operators'
-import { pipe } from 'rxjs'
+import { pipe, Observable } from 'rxjs'
 import { AngularFireAuth } from '@angular/fire/auth'
-import { AngularFirestore } from '@angular/fire/firestore'
+import { AngularFirestore, } from '@angular/fire/firestore'
 import * as firebase from 'firebase';
 import { IpcService, BookmarkChanges } from './ipc.service';
-
+import { Select, Store } from '@ngxs/store';
+import { UserState } from '../app.state';
+import { RemoveUser } from '../app.actions';
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
+  // @Select(UserState) user$: Observable<any>
 
   BOOKMARK = 'BOOKMARK'
   bookmarkDeleteList = []
@@ -21,8 +24,11 @@ export class FirebaseService {
   batch
 
   constructor(
-    private angularFirestore: AngularFirestore, private ipcService: IpcService,
-    private auth: AngularFireAuth) { this.db = this.angularFirestore.firestore }
+    private angularFirestore: AngularFirestore,
+    private ipcService: IpcService,
+    private auth: AngularFireAuth,
+    private store: Store
+  ) { this.db = this.angularFirestore.firestore }
 
   onSync() {
 
@@ -44,13 +50,63 @@ export class FirebaseService {
       this.deleteItemsFromFirestore()
       this.batch.commit()
     })
-    // this.batch.
   }
 
-  getItemsFromFirestore() {
-    this.db.collection('bookmark').doc()
-    // this.db.
-    // this.db.
+  /**
+   * Gets item from firestore.
+   * @param collection name of collection
+   * @param columnName name of column
+   * @param operator firebase operator
+   * @param value value to compare
+   */
+  getFromFirestore(collection: string, columnName: string, operator: FirebaseOperator, value: any) {
+
+    // this.db.doc('G01ZJnqUlPNetk50kCuO').get().then(s => {
+    //   console.log('s: ', s);
+    // })
+    return new Promise(resolve => {
+      // this.db.collection(collection).doc('G01ZJnqUlPNetk50kCuO').get().then(s => {
+      //   console.log('s: ', s);
+      //   resolve(s)
+      // })
+      const root = this
+      this.db.collection(collection).where(columnName, operator, value).get().then((snapshot) => {
+        console.log('SNAPSHOT: ', snapshot);
+
+        if (!snapshot.empty) {
+          const user = snapshot.docs[0]
+          console.log('snapshot.docs[0]', user);
+        }
+
+        root.db.collection(collection).doc(snapshot.docs[0].id).get().then((e) => {
+          console.log('SNAPSHOT: ', e);
+          console.log('SNAPSHOT: ', e.data().title);
+          console.log('SNAPSHOT: ', e.data().title);
+          resolve(e.data())
+        }).catch(err => {
+          console.log('Error getting document', err);
+        });
+      }).catch(err => {
+        console.log('Error getting document', err);
+      });
+
+    })
+
+    // return new Promise(resolve => {
+    //   this.auth.user.subscribe(e => {
+    //     console.log('the user', e);
+    //   })
+  }
+
+  /**
+   * Inserts data into firestore.
+   * @param collection name of the collection
+   * @param data data to insert/add
+   */
+  insertIntoFirestore(collection: string, data: object) {
+    this.db.collection(collection).add(data).then(e => {
+      console.log(e);
+    })
   }
 
   insertItemsToFirestore() {
@@ -95,6 +151,17 @@ export class FirebaseService {
     })
   }
 
+  signInWithGoogle(provider) {
+    this.auth.auth.signInWithPopup(provider).then((e) => {
+      console.log(e)
+      localStorage.setItem('user', JSON.stringify(e.user))
+    }).catch(function (e) {
+      {
+        console.log('in catch', e);
+      }
+    })
+  }
+
   signUp(emailUsername, password) {
     const myAuth = this.auth.auth.createUserWithEmailAndPassword(emailUsername, password).then((e) => {
     }).catch((e) => {
@@ -102,8 +169,45 @@ export class FirebaseService {
     })
   }
 
+  signOut() {
+    // return new Promise(resolve => {
+    this.auth.auth.signOut().then(e => {
+      console.log(e);
+      this.store.dispatch(new RemoveUser(e))
+      // resolve(e)
+    }).catch(e => {
+      console.log(e);
+    })
+    // })
+  }
+
+  getUser() {
+    return new Promise(resolve => {
+      this.auth.user.subscribe(e => {
+        console.log('the user', e);
+        resolve(e)
+      })
+    })
+  }
+
 }
 
+export enum FirebaseOperator {
+  Equal = '==',
+  LessThan = '<',
+  LessThanEqual = '<=',
+  GreaterThan = '>',
+  GreaterThanEqual = '>=',
+  ArrayContains = 'array-contains',
+  In = 'in',
+  ArrayContinsAny = 'array-contains-any'
+  // <, <=, ==, >, >=, array - contains, in, or array - contains - any
+}
+
+export enum ColumnName {
+  Bookmark = 'bookmark',
+  UserName = ''
+}
 export interface IBookmark {
   tmdbId: number,
   imdbId: string,

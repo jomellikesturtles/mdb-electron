@@ -3,6 +3,7 @@ import { IOmdbMovieDetail, IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail, Tm
 import { MdbMovieDetails } from '../../classes';
 import { TEST_MOVIE_DETAIL, TEST_TMDB_MOVIE_DETAILS } from '../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
+import { BookmarkService } from '../../services/bookmark.service'
 import { DataService } from '../../services/data.service';
 import { MovieService } from '../../services/movie.service';
 import { TorrentService } from '../../services/torrent.service';
@@ -59,6 +60,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   constructor(
     private sanitizer: DomSanitizer,
     private activatedRoute: ActivatedRoute,
+    private bookmarkService: BookmarkService,
     private dataService: DataService,
     private movieService: MovieService,
     private ipcService: IpcService,
@@ -69,9 +71,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.movieService.getBookmark(123123).subscribe(e => {
-      console.log(e);
-    })
+    // this.movieService.getBookmark(123123).subscribe(e => {
+    //   console.log(e);
+    // })
     this.getTroubleQuote()
     this.activatedRoute.params.subscribe(params => {
       console.log('activatedRoute.params', params);
@@ -270,37 +272,49 @@ export class DetailsComponent implements OnInit, OnDestroy {
     })
   }
 
-  getBookmark() {
-    this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.BookmarkGet, this.movieDetails.tmdbId])
-    this.procBookmark = true
-    this.bookmarksSingleSubscription = this.ipcService.bookmarkSingle.subscribe(data => {
-      if (data === null || data.id === '') {
-        this.isBookmarked = false
-      } else {
-        this.isBookmarked = true
-      }
-      this.procBookmark = false
-      this.cdr.detectChanges()
-    })
+  async getBookmark() {
+    // this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.BookmarkGet, this.movieDetails.tmdbId])
+    // this.procBookmark = true
+    // this.bookmarksSingleSubscription = this.ipcService.bookmarkSingle.subscribe(data => {
+    //   if (data === null || data.id === '') {
+    //     this.isBookmarked = false
+    //   } else {
+    //     this.isBookmarked = true
+    //   }
+    //   this.procBookmark = false
+    //   this.cdr.detectChanges()
+    // })
+    // this.procBookmark = true
+    const bookmark = await this.bookmarkService.getBookmark(this.movieDetails.tmdbId)
+    console.log('bookmark:', bookmark)
   }
 
   /**
    * Toggles movie from user's watchlist or bookmarks
    */
   toggleBookmark() {
-    this.procBookmark = true
-    if (this.isBookmarked === true) {
-      this.ipcService.call('bookmark', ['bookmark-remove', this.movieDetails.tmdbId])
-    } else {
-      this.ipcService.call('bookmark', ['bookmark-add', this.movieDetails.tmdbId])
+    // this.procBookmark = true
+    // if (this.isBookmarked === true) {
+    //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-remove', this.movieDetails.tmdbId])
+    // } else {
+    //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-add', this.movieDetails.tmdbId])
+    // }
+    const releaseYear = parseInt(this.getYear(this.movieDetails.releaseDate), 10)
+    const movieObject = {
+      tmdbId: this.movieDetails.tmdbId,
+      title: this.movieDetails.title,
+      year: releaseYear ? releaseYear : 0,
     }
+    console.log('object to toggle :', movieObject);
+    this.bookmarkService.saveBookmark(movieObject)
+    // this.bookmarkService.saveBookmark(this.movieDetails.tmdbId)
   }
 
   /**
    * Gets the mark as watched status of the movie
    */
   getWatched() {
-    this.ipcService.getMarkAsWatched(this.movieDetails.tmdbId)
+    this.ipcService.call(IpcCommand.Watched, [IpcCommand.Get, this.movieDetails.tmdbId])
     this.procWatched = true
     this.watchedSingleSubscription = this.ipcService.watchedSingle.subscribe(data => {
       if (data === null || data.id === '') {
@@ -316,9 +330,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
   toggleWatched() {
     this.procWatched = true
     if (this.isWatched === true) {
-      this.ipcService.addMarkAsWatched(this.movieDetails.tmdbId)
+      this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieDetails.tmdbId])
     } else {
-      this.ipcService.removeMarkAsWatched(this.movieDetails.tmdbId)
+      this.ipcService.call(IpcCommand.Watched, [IpcCommand.Remove, this.movieDetails.tmdbId])
     }
   }
 
@@ -466,7 +480,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-    this.ipcService.call(IpcCommand.OpenLinkExternal, url)
+    const environment = 'web'
+    if (environment === 'desktop') {
+      this.ipcService.call(IpcCommand.OpenLinkExternal, url)
+    } else if (environment === 'web') {
+      window.open(url)
+    }
   }
 
   goToMovie(val) {

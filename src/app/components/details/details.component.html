@@ -13,8 +13,6 @@
               [ngStyle]="{'background-image':'url('+movieDetails.posterPath+')','height':'calc(1.481*300px)'}"
               style='background-size: cover; background-position: center; width: 100%; background-color: white;'>
             </div>
-          </div>
-          <div class="col-sm-8">
             <h3>{{isBookmarked}}</h3>
             <div class='uk-button-group'>
               <div *ngIf="isBookmarked">
@@ -38,6 +36,9 @@
                 </button>
               </div>
             </div>
+          </div>
+          <div class="col-sm-8">
+
 
             <h6>{{movieDetails.voteAverage}}</h6>
             <div style='display: flex;'>

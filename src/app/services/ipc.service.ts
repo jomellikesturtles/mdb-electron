@@ -7,8 +7,8 @@ import {
   //// , ChangeDetectionStrategy, ChangeDetectorRef,
 } from '@angular/core'
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
-declare var electron: any
-import { ipcRenderer } from 'electron'
+// declare var electron: any
+// import { ipcRenderer } from 'electron'
 // // const { ipcRenderer } = electron
 import { ILibraryInfo } from '../interfaces'
 
@@ -28,11 +28,11 @@ export class IpcService {
   scannedMovieMulti = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   videoFile = new BehaviorSubject<any>([])
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
-  private ipcRenderer: typeof ipcRenderer
+  // private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone) //// private ref: ChangeDetectorRef
   {
-    this.ipcRenderer = (<any>window).require('electron').ipcRenderer
+    // this.ipcRenderer = (<any>window).require('electron').ipcRenderer
 
     // this.ipcRenderer.on('library-folders', (event, data) => {
     //   console.log('library-folders:', data)
@@ -122,8 +122,8 @@ export class IpcService {
     // this.ipcRenderer.send('logger', data)
   }
 
-  call(message: string, args?: any) {
-    this.ipcRenderer.send(message, args)
+  call(message: IpcCommand, args?: any) {
+    // this.ipcRenderer.send(message, args)
   }
 
   listen() {
@@ -244,15 +244,6 @@ export class IpcService {
   getBookmarkChanges() {
 
   }
-  getMarkAsWatched(val) {
-    // this.ipcRenderer.send('watched', ['get', val])
-  }
-  addMarkAsWatched(val) {
-    // this.ipcRenderer.send('watched', ['add', val])
-  }
-  removeMarkAsWatched(val) {
-    // this.ipcRenderer.send('watched', ['remove', val])
-  }
 }
 
 export enum IpcCommand {
@@ -267,9 +258,6 @@ export enum IpcCommand {
   Bookmark = 'bookmark',
   BookmarkAdd = 'bookmark-add',
   BookmarkGet = 'bookmark-get',
-  WatchedAdd = 'add',
-  WatchedGet = 'get',
-  WatchedRemove = 'remove',
   Watched = 'watched',
   MovieMetadata = 'movie-metadata',
   Get = 'get',

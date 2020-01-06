@@ -45,6 +45,7 @@
     <img style='cursor: pointer;height:80%;width: 80%; transform: translate(13%,12%);' title='Profile options'
       id='dropdownMenuButton' class='icon-img' src='./assets/icons/human.svg' data-toggle='dropdown'
       aria-haspopup="true" aria-expanded="false" href='#'>
+
     <!-- <div class='dropdown' data-toggle='tooltip' title='Profile options' style='z-index: 3000;
   margin-left: auto;
   position: absolute;
@@ -61,8 +62,10 @@
       <!-- <a class='dropdown-item' routerLink='/signin' href='#'>About</a> -->
       <!-- <a class='dropdown-item'>Keyboard Shortcuts</a> -->
       <div class='dropdown-divider'></div>
-      <a *ngIf="isSignedIn" class='dropdown-item' href='#'>Sign out</a>
-      <a *ngIf="!isSignedIn" class='dropdown-item' routerLink='/signin' href='#'>Sign in</a>
+      <!-- <a class='dropdown-item' (click)='signOut()'>Sign out</a>
+      <a class='dropdown-item' routerLink='/signin' href='#'>Sign in</a> -->
+      <a *ngIf="isSignedIn" class='dropdown-item' style='cursor: pointer;' (click)='signOut()'>Sign out</a>
+      <a *ngIf="!isSignedIn" class='dropdown-item' style='cursor: pointer;' routerLink='/signin' href='#'>Sign in</a>
     </div>
   </div>
 

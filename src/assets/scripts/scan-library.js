@@ -80,7 +80,7 @@ function addToList(folderPath, fileName) {
   }
   // durationMins: 123,
   // hasDuplicateTitle: false,
-  console.log(fileInfo);
+  // console.log(fileInfo);
   // libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) {
   // if (!err) {
   saveToLibraryDb(fileInfo);
@@ -212,6 +212,8 @@ async function scanExistingLibraryMovies() {
   let promises = []
   libraryDbService.count().then(async count => {
     totalCount = count
+    console.log('count:', count);
+
     while (page < totalCount) {
       promises[page] = new Promise((resolve, reject) => {
 

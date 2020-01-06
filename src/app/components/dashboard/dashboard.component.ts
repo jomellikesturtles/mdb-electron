@@ -25,7 +25,7 @@ declare var $: any
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class DashboardComponent implements OnInit {
   @Input() data: Observable<any>
@@ -54,7 +54,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.sampleListMovies = TMDB_SEARCH_RESULTS.results
-    this.sampleListMovies[this.nameString] = `Best of 1994`
+    this.sampleListMovies[this.nameString] = `Sample Data`
     this.dashboardLists.push(this.sampleListMovies)
     this.getNowShowingMovies()
     this.getTopMoviesFromYear()
@@ -238,7 +238,6 @@ export class DashboardComponent implements OnInit {
    * @param movie current selected movie
    */
   onHighlight(movie: any) {
-    console.log('altering: ', movie.id)
     movie.isHighlighted = !movie.isHighlighted
     if (movie.isHighlighted) {
       this.selectedMovies.push(movie)

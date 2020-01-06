@@ -364,3 +364,7 @@ string
 Specify a language to query translatable fields with.
 
 $env:debug=electron-packager . --overwrite --platform=win32 --arch=x64 --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"myapp\"
+
+Possible fix to have oauth2 possible in electron project: C:\Users\Lenovo\AppData\Roaming\npm\node_modules\firebase-tools\lib\auth.js
+
+https://itnext.io/an-oauth-2-0-introduction-for-beginners-6e386b19f7a9
