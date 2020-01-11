@@ -118,7 +118,8 @@
         </div>
         <h1>video 1</h1>
         <div *ngIf="isVideoAvailable">
-          <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls>
+          <video src="/stream" id="videoPlayer" style='height:100%;width:100%' controls>
+            <!-- <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls> -->
             <source type="video/mp4">
           </video>
         </div>

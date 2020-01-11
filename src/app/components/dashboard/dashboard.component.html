@@ -1,5 +1,28 @@
 <app-selected-list></app-selected-list>
 
+<div *ngIf="clipSrc" style='width:100%;height:500px;position: relative;'>
+  <div style='position:absolute; height: 100%;width: 100%;'>
+    <div style='width:100%;height:0%;background-color: black; position: absolute;'></div>
+    <div
+      style='position:absolute; height: 100%;width: 50%;top: 50%;transform: translateY(-100px);padding-left: 5vw;text-shadow: 1px 1px black;'>
+      <h3>{{selectedMovie.title}} ({{getYear(selectedMovie.release_date)}})</h3>
+      <span class='text-hyperlink' (click)='goToGenre(item)'
+        *ngFor="let item of selectedMovie.genre_ids; let isLast=last">
+        {{getGenre(item)}}{{isLast ? '' : ', '}}
+      </span>
+      <p>{{selectedMovie.overview}}</p>
+      <button class='btn btn-outline-info' (click)='toggleBookmark(selectedMovie.id)'>
+        <!-- <span style='height:100%;width:100%' [ngStyle]="{'background-image': 'url(./assets/icons/check.svg)'}"></span> -->
+        Bookmark</button>
+      <!-- selectedMovieBookmarkStatus -->
+      <button class='btn btn-outline-info'>Watched</button>
+      <button class='btn btn-outline-secondary' (click)="goToMovie(selectedMovie.id)">More Info</button>
+    </div>
+  </div>
+  <iframe width=" 100%" height="500px" [src]="clipSrc" frameborder="0"
+    allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+  </iframe>
+</div>
 <div class="container-fluid" style='padding-top: 10vh'>
   <div *ngIf="dashboardLists">
     <div *ngFor="let list of dashboardLists">
@@ -24,7 +47,8 @@
               <!-- </div> -->
               <!-- <h6 (click)=onSelect(movie) class='text-primary' style='cursor: pointer'>{{movie.title}}</h6> -->
 
-              <div (click)=onHighlight(movie)
+              <!-- <div (click)=onHighlight(movie) -->
+              <div (click)=onSelect(movie)
                 [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w154'+movie.poster_path+')'}"
                 class='movie-card-image-container image-container'>
                 <div class='movie-available' *ngIf="movie.isAvailable" data-toggle='tooltip' title='Available offline'>

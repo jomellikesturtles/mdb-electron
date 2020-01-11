@@ -446,7 +446,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param param1 link type
    * @param param2 id
    */
-  goToLink(param1, param2?) {
+  goToLink(param1: string, param2?) {
     let url = ''
     console.log('1:', param1, ' 2:', param2);
     switch (param1) {
@@ -480,10 +480,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-    const environment = 'web'
-    if (environment === 'desktop') {
+    const environment = location.protocol
+    if (environment === 'file:') {
       this.ipcService.call(IpcCommand.OpenLinkExternal, url)
-    } else if (environment === 'web') {
+    } else if (environment === 'http:' || environment === 'https:') {
       window.open(url)
     }
   }

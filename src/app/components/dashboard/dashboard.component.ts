@@ -3,7 +3,7 @@ import {
   OnInit,
   ChangeDetectorRef,
   Input,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
 } from '@angular/core'
 import { Observable } from 'rxjs'
 import { TorrentService } from '../../services/torrent.service'
@@ -12,13 +12,15 @@ import { DataService } from '../../services/data.service'
 import { IpcService } from '../../services/ipc.service'
 import { UtilsService } from '../../services/utils.service'
 import { Router, ActivatedRoute } from '@angular/router'
-import { ITmdbResult, ILibraryInfo, TmdbParameters } from '../../interfaces'
+import { ITmdbResult, ILibraryInfo, TmdbParameters, GenreCodes } from '../../interfaces'
 import { TMDB_SEARCH_RESULTS } from '../../mock-data'
 import { GENRES } from '../../constants'
 import { Select, Store } from '@ngxs/store'
 import { AddMovie, RemoveMovie } from '../../movie.actions'
 import { SelectedMoviesState } from '../../movie.state'
 import { SelectedMovie } from '../bulk-download/bulk-download.component'
+import { DomSanitizer } from '@angular/platform-browser'
+import { BookmarkService } from '../../services/bookmark.service'
 declare var $: any
 
 @Component({
@@ -38,10 +40,13 @@ export class DashboardComponent implements OnInit {
   topMoviesFromYear = []
   dashboardLists = []
   selectedMovie = null
+  selectedMovieBookmarkStatus = false
   isHighlighted = false
   cardWidth = '130px'
+  clipSrc = null
 
   constructor(
+    private bookmarkService: BookmarkService,
     private dataService: DataService,
     private movieService: MovieService,
     private ipcService: IpcService,
@@ -49,6 +54,7 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private cdr: ChangeDetectorRef,
+    private domSanitizer: DomSanitizer,
     private store: Store
   ) { }
 
@@ -127,10 +133,6 @@ export class DashboardComponent implements OnInit {
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
   }
 
-  highlightSelectedMovies() {
-
-  }
-
   /**
    * Gets the availability of movies in the dashboard.
    */
@@ -186,13 +188,11 @@ export class DashboardComponent implements OnInit {
    */
   getTopMoviesFromYear() {
     const sDate = new Date()
-    const minimumYear = 1960
+    const minimumYear = 1940
     const randYear = Math.round(
-      Math.random() * (sDate.getFullYear() - minimumYear) + minimumYear
+      Math.random() * ((sDate.getFullYear() - 1) - minimumYear) + minimumYear
     )
-    const params = [
-      [TmdbParameters.PrimaryReleaseYear, randYear.toString()]
-    ]
+    const params = [[TmdbParameters.PrimaryReleaseYear, randYear]]
     this.sendToMovieService(params, `Top movies of ${randYear}`)
   }
 
@@ -251,6 +251,58 @@ export class DashboardComponent implements OnInit {
   }
 
   /**
+   * Performs actions for selected movie.
+   * @param movie the selected movie
+   */
+  onSelect(movie: any) {
+    const results = []
+    this.selectedMovie = movie
+    let title = movie.title.toLowerCase()
+    const query = `${movie.title} ${this.getYear(movie.release_date)}`
+    title = title.replace(/[.…]+/g, '')
+    this.movieService.getRandomVideoClip(query).subscribe(data => {
+      data.forEach(element => {
+        const snipTitle = $.parseHTML(element.snippet.title.toLowerCase())[0].textContent
+        if ((snipTitle.indexOf(title) >= 0) && ((snipTitle.indexOf('scene') >= 0) || (snipTitle.indexOf('trailer') >= 0) || (snipTitle.indexOf('movie clip') >= 0)) && (snipTitle.indexOf('behind the scene') === -1)) {
+          results.push({ title: snipTitle, videoId: element.id.videoId })
+        }
+      })
+      // LHAQjlufY0A
+      // HiN6Ag5-DrU?VQ=HD720
+      console.log('clips list length: ', results.length);
+      const index = Math.round(Math.random() * (results.length - 1))
+      console.log('clip index: ', index, results[index]);
+      this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${results[index].videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`)
+      this.cdr.detectChanges();
+    })
+    this.getBookmarkStatus(movie.id)
+  }
+
+  /**
+   * Gets the bookmark status of the selected movie.
+   * @param id tmdb id to get the bookmark status
+   */
+  getBookmarkStatus(id: number) {
+    this.bookmarkService.getBookmark(id).then(e => {
+      if (e !== null) {
+        this.selectedMovieBookmarkStatus = true
+      } else {
+        this.selectedMovieBookmarkStatus = false
+      }
+      this.cdr.detectChanges();
+    })
+  }
+
+  /**
+   * Converts genre code into its genre name equivalent.
+   * @param genreCode genre code origin
+   * @returns genre name
+   */
+  getGenre(genreCode: number) {
+    return GenreCodes[genreCode]
+  }
+
+  /**
    * Goes to detail of the selected movie.
    * @param movie the movie selected
    */
@@ -267,6 +319,19 @@ export class DashboardComponent implements OnInit {
     //   this.dataService.updateHighlightedMovie(highlightedId)
     //   this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute })
     // })
+  }
+
+  toggleBookmark(id: number) {
+    // if (this.selectedMovieBookmarkStatus === false) {
+    this.bookmarkService.saveBookmark(id)
+    // } else {
+    //   this.bookmarkService.removeBookmark(id)
+    // }
+  }
+
+  goToGenre(val) {
+    this.dataService.updateDiscoverQuery(['genre', val])
+    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
   }
 
   scrollPrev() {

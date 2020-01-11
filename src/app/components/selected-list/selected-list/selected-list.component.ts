@@ -13,6 +13,8 @@ import { ClearList } from '../../../movie.actions'
 import { RemoveMovie } from '../../../movie.actions';
 import { Observable, Subscriber, Subscription } from 'rxjs';
 import { MovieList } from '../../../movie.state';
+import { BookmarkService } from '../../../services/bookmark.service';
+import { WatchedService } from '../../../services/watched.service';
 declare var $: any
 
 @Component({
@@ -30,9 +32,10 @@ export class SelectedListComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dataService: DataService,
-    private firebaseService: FirebaseService,
+    private bookmarkService: BookmarkService,
     private ipcService: IpcService,
     private utilsService: UtilsService,
+    private watchedService: WatchedService,
     private store: Store) { }
 
   ngOnInit() {
@@ -89,6 +92,7 @@ export class SelectedListComponent implements OnInit, OnDestroy {
     const root = this
     // this.displayMessage = 'Added to watchlist'
     // this.displaySnackbar = true
+    this.bookmarkService.saveBookmarkMulti(this.movieIdList)
     this.utilsService.hideSnackbar(root)
   }
 
@@ -99,6 +103,7 @@ export class SelectedListComponent implements OnInit, OnDestroy {
     // this.displayMessage = 'Marked as watched'
     // this.displaySnackbar = true
     // this.utilsService.hideSnackbar(root)
+    this.watchedService.saveWatchedMulti(this.movieIdList)
   }
 
   /**

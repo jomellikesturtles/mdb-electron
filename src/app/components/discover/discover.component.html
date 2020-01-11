@@ -13,10 +13,9 @@
   <div *ngIf='!hasResults'>
     <h1 class='jumbo-message'>No movies found</h1>
   </div>
+  <h1>{{discoverTitle}}</h1>
   <div *ngIf='hasResults' class='movie-cards-display-grid'>
-    <h1>{{discoverTitle}}</h1>
     <div id="results-panel" *ngFor="let movie of discoverResults" class='movie-card' [ngStyle]="{'width': cardWidth}">
-
       <div
         [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
         class='movie-card-image-container' (click)=onHighlight(movie)>

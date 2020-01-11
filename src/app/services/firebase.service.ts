@@ -60,42 +60,32 @@ export class FirebaseService {
    * @param value value to compare
    */
   getFromFirestore(collection: string, columnName: string, operator: FirebaseOperator, value: any) {
-
-    // this.db.doc('G01ZJnqUlPNetk50kCuO').get().then(s => {
-    //   console.log('s: ', s);
-    // })
     return new Promise(resolve => {
-      // this.db.collection(collection).doc('G01ZJnqUlPNetk50kCuO').get().then(s => {
-      //   console.log('s: ', s);
-      //   resolve(s)
-      // })
-      const root = this
       this.db.collection(collection).where(columnName, operator, value).get().then((snapshot) => {
         console.log('SNAPSHOT: ', snapshot);
-
         if (!snapshot.empty) {
           const user = snapshot.docs[0]
           console.log('snapshot.docs[0]', user);
         }
-
-        root.db.collection(collection).doc(snapshot.docs[0].id).get().then((e) => {
-          console.log('SNAPSHOT: ', e);
-          console.log('SNAPSHOT: ', e.data().title);
-          console.log('SNAPSHOT: ', e.data().title);
-          resolve(e.data())
-        }).catch(err => {
-          console.log('Error getting document', err);
-        });
+        console.log('snapshot.docs[0].data', snapshot.docs[0].data());
+        resolve(snapshot.docs[0].data())
       }).catch(err => {
         console.log('Error getting document', err);
       });
-
     })
+  }
 
-    // return new Promise(resolve => {
-    //   this.auth.user.subscribe(e => {
-    //     console.log('the user', e);
-    //   })
+  getFromFirestoreMultiple(collectionName: CollectionName, order: string, limit: number) {
+    const resultList = []
+    return new Promise(resolve => {
+      this.db.collection(collectionName).orderBy(order).limit(limit).get().then(snapshot => {
+        snapshot.docs.forEach(element => {
+          console.log('getFromFirestoreMultiple single:', element.data())
+          resultList.push(element.data())
+        })
+        resolve(resultList)
+      })
+    })
   }
 
   /**
@@ -103,17 +93,30 @@ export class FirebaseService {
    * @param collection name of the collection
    * @param data data to insert/add
    */
-  insertIntoFirestore(collection: string, data: object) {
+  insertIntoFirestore(collection: CollectionName, data: object) {
     this.db.collection(collection).add(data).then(e => {
       console.log(e);
     })
   }
 
+  /**
+   * Inserts data into firestore.
+   * @param collectionName name of the collection
+   * @param data data to insert/add
+   */
+  insertIntoFirestoreMulti(collectionName: CollectionName, data: object[]) {
+    const myBatch = this.db.batch()
+    data.forEach(element => {
+      const bookmarkRef = this.db.collection(collectionName).doc();
+      myBatch.set(bookmarkRef, element)
+    })
+    myBatch.commit()
+  }
+
   insertItemsToFirestore() {
     this.bookmarkInsertList.forEach(val => {
       this.db.collection('data').doc().set(val).then().catch()
-    });
-    // this.batch.com
+    })
   }
 
   deleteItemsFromFirestore() {
@@ -202,6 +205,11 @@ export enum FirebaseOperator {
   In = 'in',
   ArrayContinsAny = 'array-contains-any'
   // <, <=, ==, >, >=, array - contains, in, or array - contains - any
+}
+export enum CollectionName {
+  Bookmark = 'bookmark',
+  UserName = '',
+  Watched = 'watched',
 }
 
 export enum ColumnName {

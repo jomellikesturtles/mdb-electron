@@ -8,7 +8,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
 import { ITorrent, IOmdbMovieDetail, IRating, TmdbParameters, OmdbParameters } from '../interfaces'
 import { forEach } from '@angular/router/src/utils/collection';
-import { REGEX_IMDB_ID, OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID } from '../constants';
+import { REGEX_IMDB_ID, OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID, YOUTUBE_API_KEY } from '../constants';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
 
@@ -202,6 +202,10 @@ export class MovieService {
       catchError(this.handleError<any>('getMoviesDiscover')))
   }
 
+  /**
+   * Searches movie from TMDB api.
+   * @param val parameters key-value pair list
+   */
   searchTmdbMovie(...val): Observable<any> {
     const url = `${TMDB_URL}/search/movie`
     let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
@@ -214,7 +218,12 @@ export class MovieService {
       catchError(this.handleError<any>('searchTmdbMovie')))
   }
 
-  appendParameters(val, myHttpParam) {
+  /**
+   * Appends parameters list into http param object.
+   * @param val parameters key-value pair list
+   * @param myHttpParam http param to append to
+   */
+  appendParameters(val: any[], myHttpParam: HttpParams) {
     val[0].forEach(element => {
       console.log(element);
       myHttpParam = myHttpParam.append(element[0], element[1])
@@ -226,6 +235,27 @@ export class MovieService {
 
     return this.http.get<any>(`http:\\\\localhost:3000\\getBookmark\\${id}`).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getBookmark')))
+  }
+
+  /**
+   * Gets movie clips from YouTube.
+   * @param query query to search
+   */
+  getRandomVideoClip(query: string) {
+    const index = Math.round(Math.random() * (25))
+    console.log(index);
+    const baseUrl = 'https://www.googleapis.com/youtube/v3/search'
+    let myHttpParam = new HttpParams().append('part', 'snippet')
+    myHttpParam = myHttpParam.append('key', YOUTUBE_API_KEY)
+    myHttpParam = myHttpParam.append('q', query)
+    myHttpParam = myHttpParam.append('maxResults', '50')
+    myHttpParam = myHttpParam.append('order', 'relevance')
+    myHttpParam = myHttpParam.append('type', 'video')
+    const httpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(baseUrl, httpOptions).pipe(map((e) => e.items))
   }
 
   /**
