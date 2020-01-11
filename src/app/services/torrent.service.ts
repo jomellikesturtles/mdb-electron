@@ -10,6 +10,7 @@ import { forEach } from '@angular/router/src/utils/collection';
 import { IpcService } from '../services/ipc.service'
 import { DomSanitizer } from '@angular/platform-browser'
 import { Pipe, PipeTransform } from '@angular/core';
+import { REGEX_IMDB_ID } from '../constants';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -53,15 +54,23 @@ export class TorrentService {
    * Searches torrents offline
    * @param val imdb or title
    */
-  getTorrentsOffline(val: string) {
+  async getTorrentsOffline(val: string[]) {
     console.log('in getTorrentsOffline...; to be removed, jquery will handle instead')
+
     this.ipcService.searchTorrent(val)
+
+    // return new Promise<any>((resolve, reject) => {
+    //   this.ipcRenderer.once('library-movies', (event, arg) => {
+    //     console.log('library-movies', arg);
+    //     resolve(arg);
+    //   });
+    // });
+
   }
 
-  getTorrents(val: string): Observable<any> {
-    const imdbIdRegex = new RegExp(`(^tt[0-9]{0,7})$`, `g`)
+  getTorrents(val): Observable<any> {
     let result
-    if (val.trim().match(imdbIdRegex)) {
+    if (typeof val === 'string' && val.trim().match(REGEX_IMDB_ID)) {
       result = this.getTorrentsOnline(val);
     } else {
       result = this.getTorrentsOffline(val);

@@ -2,28 +2,69 @@
  * Firebase service
  */
 
-var firebase = require('firebase')
+// const express = require('express');
+// const fs = require('fs')
+// const app = express()
+// const electron = require('../electron');
+// const { shell } = electron;
+
+// window.onerror = function (msg, url, lineNo, columnNo, error) {
+//   console.log('[MAIN_WINDOW] > ' + error.stack);
+// }; // Send window errors to Main process
+
+let args = process.argv.slice(2);
+let url = args[0];
+// let myShell = args[1];
+
+// var firebase = require('firebase')
+
+process.on('uncaughtException', function (error) {
+  console.log('ERROR!!!!!!!!!!!!!!!!!!!!!!!!!', error);
+  process.send(['operation-failed', 'general']);
+});
 
 var firebaseConfig = {
-    apiKey: "AIzaSyBGOUmCJ8fcnfSJhtOrXSwKdlcs4mYYtvA",
-    // authDomain: "project-id.firebaseapp.com",
-    databaseURL: "https://zeta-bebop-656.firebaseio.com/",
-    projectId: "zeta-bebop-656",
-    storageBucket: "gs://zeta-bebop-656.appspot.com",
-    // messagingSenderId: "sender-id",
-    // appId: "app-id",
-    // measurementId: "G-measurement-id",
+  apiKey: "AIzaSyBPB_9eQbL5ZzYrI-mBqFix96xTXYyFo7U",
+  authDomain: "mdb-project-id.firebaseapp.com",
+  databaseURL: "https://mdb-project-id.firebaseio.com",
+  projectId: "mdb-project-id",
+  storageBucket: "mdb-project-id.appspot.com",
+  messagingSenderId: "24146436081",
+  appId: "1:24146436081:web:78f0dd1c699e12514eae50"
 };
 
-firebase.initializeApp(firebaseConfig)
-console.log(firebase)
 
 
-// <!-- The core Firebase JS SDK is always required and must be listed first -->
-// <script src="/__/firebase/7.2.0/firebase-app.js"></script>
+// function initialize() {
 
-// <!-- TODO: Add SDKs for Firebase products that you want to use
-//      https://firebase.google.com/docs/web/setup#available-libraries -->
+//   console.log('initialize');
+//   app.get('/', function (req, res) {
+//     console.log('initialize get');
+//     res.json('welcome!')
+//     // const { shell } = require('electron')
+//     shell.openExternal('http:\\localhost:4000')
+//     // firebase.initializeApp(firebaseConfig)
+//     // console.log(firebase)
+//     // firebase.auth()
+//     // var provider = new firebase.auth.GoogleAuthProvider();
+//     // firebase.auth().signInWithRedirect(provider)
+//   })
+//   app.listen(4000, function () {
+//     console.log('initialize listen');
+//     console.log('3000!');
+//   })
+//   // firebase.initializeApp(firebaseConfig)
+//   // console.log(firebase)
+//   // firebase.auth()/
+//   // var provider = new firebase.auth.GoogleAuthProvider();
+//   // firebase.auth().signInWithRedirect(provider)
+//   // shell.openExternal('http:\\localhost:4000')
+// }
+console.log('before initialize');
+// initialize()
+console.log('firebase', url);
 
-// <!-- Initialize Firebase -->
-// <script src="/__/firebase/init.js"></script>
+// shell.openExternal('http:\\localhost:4000')
+console.log('after initialize');
+
+// window.close();

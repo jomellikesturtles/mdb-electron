@@ -2,21 +2,27 @@
  * Main processor
  */
 const cp = require('child_process');
-const { app, BrowserWindow, ipcMain, shell, globalShortcut } = require('electron')
+const electron = require('electron')
 const Datastore = require('nedb')
 const datastore = new Datastore({
   filename: 'src/assets/config/config.db',
   autoload: true
 });
-// import * as path from 'path'
 // import * as url from 'url'const
 const path = require('path');
 const fs = require('fs');
-let procSearch;
+const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray, shell } = electron
+let procBookmark;
+let procWatched;
 let procLibraryDb;
+let procSearch;
+let procTorrentSearch;
+let procVideoService
 let offlineMovieDataService;
+let procmovieImageService;
 let mainWindow
-
+let mdbTray
+const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`
 /**
  * Creates the browser window
  */
@@ -33,12 +39,13 @@ function createWindow() {
       nodeIntegration: true,
       webSecurity: false
     },
+    icon: appIcon,
+    // maxHeight:
     title: 'MDB'
   });
   mainWindow.webContents.openDevTools()
   mainWindow.setMenu(null)
   mainWindow.loadURL(`file://${__dirname}/dist/mdb-electron/index.html`); // It will load in production mode
-
   // Event when the window is closed.
   mainWindow.on('closed', function () {
     mainWindow = null
@@ -46,7 +53,14 @@ function createWindow() {
   mainWindow.once('show', function () {
     console.log('main window Show');
   });
+  // ipcMain.on('error', (_, err) => {
+  // 	if (!argv.debug) {
+  // 		console.error(err);
+  // 		app.exit(1);
+  // 	}
+  // });
 
+  // ---------shortcuts. BUG: shortcuts also applies to other electron apps
   // globalShortcut.register('CommandOrControl+F', () => {
   //   console.log('search');
   //   mainWindow.webContents.send('shortcut-search');
@@ -55,8 +69,11 @@ function createWindow() {
   //   console.log('pref');
   //   mainWindow.webContents.send('shortcut-preferences');
   // })
+
+  setSystemTray();
 }
 
+app.setAppUserModelId(process.execPath)
 // Create window on electron initialization
 app.on('ready', createWindow)
 
@@ -77,6 +94,30 @@ app.on('activate', function () {
     createWindow()
   }
 })
+
+function setSystemTray() {
+  // let trayIcon = `${__dirname}/dist/mdb-electron/assets/icons/chevron.png`
+  let trayIcon = appIcon
+  mdbTray = new Tray(trayIcon)
+  const trayMnu = Menu.buildFromTemplate([
+    { label: 'Preferences', icon: trayIcon, enabled: false },
+    { type: "separator" },
+    { label: 'Quit', click: app.quit }
+  ])
+  mdbTray.setToolTip('Media Database')
+  mdbTray.setContextMenu(trayMnu)
+  mdbTray.on('click', showWindow)
+  mdbTray.on('double-click', showWindow)
+}
+
+// Show and Focus mainWindow
+function showWindow() {
+  mainWindow.show();
+  mainWindow.focus();
+  // if (isMac) {
+  //   app.dock.show();
+  // }
+}
 
 /* IPC Event handling
 ----------------------*/
@@ -101,8 +142,8 @@ ipcMain.on('exit-program', function (event, folder) {
   app.quit()
 })
 // Opens folder with system file explorer.
-ipcMain.on('open-folder', function (event, folder) {
-  console.log('open-folder', folder);
+ipcMain.on('open-file-explorer', function (event, folder) {
+  console.log('open-file-explorer', folder);
   shell.showItemInFolder(folder)
   shell.openItem(folder)
 })
@@ -155,27 +196,26 @@ ipcMain.on('open-link-external', function (event, url) {
  * Initializes scan-library.js
  */
 ipcMain.on('scan-library', function (data) {
-  if (!procSearch) { // if process search is not yet running
+  if (!procScanLibrary) { // if process search is not yet running
     console.log('procSearch true');
-    procSearch = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), {
+    procScanLibrary = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), {
       cwd: __dirname,
       silent: true
     });
-    procSearch.stdout.on('data', function (data) {
+    procScanLibrary.stdout.on('data', function (data) {
       console.log('printing data..');
       console.log(data.toString());
     });
-    // procSearch.on('exit', function () {
-    //     console.log('Search process ended');
-    //     procSearch = null;
-    //     if (awaitingQuit) {
-    //         process.emit('cont-quit');
-    //     }
-    // });
-    // procSearch.on('message', function (m) {
-    //     mainWindow.webContents.send(m[0], m[1]);
-    // });
-    // mainWindow.webContents.send('search-init');
+    procScanLibrary.on('exit', function () {
+      console.log('ScanLibrary process ended');
+      procScanLibrary = null;
+      if (awaitingQuit) {
+        process.emit('cont-quit');
+      }
+    });
+    procScanLibrary.on('message', function (m) {
+      mainWindow.webContents.send(m[0], m[1]);
+    });
   } else {
     console.log('scan library is already running');
   }
@@ -231,20 +271,25 @@ ipcMain.on('save-preferences', function (event, data) {
  */
 ipcMain.on('get-library-movies', function (event, data) {
   console.log('get movies from library..')
-  procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), ['find-all'], {
-    cwd: __dirname,
-    silent: true
-  });
-  procLibraryDb.stdout.on('data', function (data) {
-    console.log(data.toString().slice(0, -1));
-  });
-  procLibraryDb.on('exit', function () {
-    console.log('get-library-movies process ended');
-  });
-  procLibraryDb.on('message', function (m) {
-    mainWindow.webContents.send(m[0], m[1]);
-  });
+  if (!procLibraryDb) {
+    procLibraryDb = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'library-db-service.js'), [data[0], data[1]], {
+      cwd: __dirname,
+      silent: true
+    });
+    procLibraryDb.stdout.on('data', function (data) {
+      console.log(data.toString().slice(0, -1));
+    });
+    procLibraryDb.on('exit', function () {
+      console.log('get-library-movies process ended');
+      procLibraryDb = null
+    });
+    procLibraryDb.on('message', function (m) {
+      console.log('from main', m[0], m[1]);
+      mainWindow.webContents.send(m[0], m[1]);
+    });
+  }
 })
+
 /**
  * Gets the movie from libraryFiles.db
  */
@@ -300,17 +345,134 @@ ipcMain.on('movie-metadata', function (event, data) {
  */
 ipcMain.on('get-image', function (event, data) {
   console.log('image-data-service..', data[0], data[1])
-  offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'image-data-service.js'), [data[0], data[1], data[2], data[3]], {
+  procmovieImageService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'image-data-service.js'), [data[0], data[1], data[2], data[3]], {
     cwd: __dirname,
     silent: true
   });
-  offlineMovieDataService.stdout.on('data', function (data) {
+  procmovieImageService.stdout.on('data', function (data) {
     console.log(data.toString().slice(0, -1));
   });
-  offlineMovieDataService.on('exit', function () {
+  procmovieImageService.on('exit', function () {
     console.log('image-data process ended');
   });
-  offlineMovieDataService.on('message', function (m) {
+  procmovieImageService.on('message', function (m) {
     mainWindow.webContents.send(m[0], m[1]); // reply
   });
+})
+
+// TORRENTS
+ipcMain.on('torrent-search', function (event, data) {
+  console.log('data: ', data[0], data[1]);
+
+  if (!procTorrentSearch) { // if process search is not yet running
+    console.log('procTorrentSearch ', data);
+    procTorrentSearch = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'search-torrent.js'), [data[0], [data[1]]], {
+      cwd: __dirname,
+      silent: true
+    });
+    procTorrentSearch.stdout.on('data', function (data) {
+      console.log('printing data..');
+      console.log(data.toString());
+    });
+  } else {
+    console.log('One Search process is already running');
+  }
+})
+
+// BOOKMARK
+ipcMain.on('bookmark', function (event, data) {
+  if (!procBookmark) {
+    console.log('procBookmark ', data);
+    procBookmark = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'user-db-service.js'), [data[0], [data[1]]], {
+      cwd: __dirname,
+      silent: true
+    });
+    procBookmark.stdout.on('data', function (data) {
+      console.log('printing data..');
+      console.log(data.toString());
+    });
+    procBookmark.on('exit', function () {
+      console.log('procBookmark process ended');
+      procBookmark = null
+    });
+    procBookmark.on('message', function (m) {
+      console.log('bookmark in IPCMAIN', m);
+      mainWindow.webContents.send(m[0], m[1]); // reply
+    });
+  }
+})
+
+// WATCHED
+ipcMain.on('watched', function (event, data) {
+  if (!procWatched) {
+    console.log('procWatched ', data);
+    procWatched = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'watched-db-service.js'), [data[0], [data[1]]], {
+      cwd: __dirname,
+      silent: true
+    });
+    procWatched.stdout.on('data', function (data) {
+      console.log('printing data..');
+      console.log(data.toString());
+    });
+    procWatched.on('exit', function () {
+      console.log('procWatched process ended');
+      procWatched = null
+    });
+    procWatched.on('message', function (m) {
+      console.log('watched in IPCMAIN', m);
+      mainWindow.webContents.send(m[0], m[1]); // reply
+    });
+  }
+})
+
+ipcMain.on('open-video', function (event, data) {
+  if (!procVideoService) {
+    console.log('procVideoService ', data);
+    procVideoService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'video-service.js'), [data], {
+      cwd: __dirname,
+      silent: true
+    });
+    procVideoService.stdout.on('data', function (data) {
+      console.log('printing data..');
+      console.log(data.toString());
+    });
+    procVideoService.on('exit', function () {
+      console.log('video service process ended');
+      procVideoService = null
+    });
+    procVideoService.on('message', function (m) {
+      console.log('video service in IPCMAIN', m);
+      mainWindow.webContents.send(m[0], m[1]); // reply
+    });
+  }
+})
+
+ipcMain.on('firebase-provider', function (event, data) {
+  if (!procVideoService) {
+    console.log('firebase ', data);
+    // cp.
+    procVideoService = cp.fork(path.join(__dirname, 'firebase-service.js'), [data], {
+      // procVideoService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'firebase-service.js'), [data], {
+      cwd: __dirname,
+      silent: true
+    });
+    procVideoService.stdout.on('data', function (data) {
+      console.log('printing data..');
+      console.log(data.toString());
+    });
+    procVideoService.on('exit', function () {
+      console.log('firebase service process ended');
+      procVideoService = null
+    });
+    procVideoService.on('error', (err) => {
+      console.log("\n\t\tERROR: spawn failed! (" + err + ")");
+    });
+    procVideoService.on('message', function (m) {
+      console.log('firebase service in IPCMAIN', m);
+      mainWindow.webContents.send(m[0], m[1]); // reply
+      if (m[0] === 'app-open') {
+        shell.openExternal('http:\\localhost:4000')
+      }
+    });
+  }
 })

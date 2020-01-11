@@ -1,8 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs'
-import { IpcService } from '../../services/ipc.service';
+import { IpcService, IpcCommand } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
+import { REGEX_PREFIX } from '../../constants';
 declare var $: any;
 @Component({
   selector: 'app-preferences',
@@ -84,7 +85,7 @@ export class PreferencesComponent implements OnInit {
    * Get list of library folders
    */
   onGetLibraryFolders() {
-    this.ipcService.getLibraryFolders()
+    this.ipcService.call(IpcCommand.RetrieveLibraryFolders)
   }
 
   /**
@@ -109,7 +110,7 @@ export class PreferencesComponent implements OnInit {
    */
   onScanLibrary() {
     console.log('onScanLibrary');
-    this.ipcService.scanLibrary()
+    this.ipcService.call(IpcCommand.ScanLibrary)
   }
   /**
    * Updates thepiratebay torrent dump
@@ -131,7 +132,7 @@ export class PreferencesComponent implements OnInit {
    */
   onSave() {
     this.preferencesObject.libraryFolders = this.libraryFolders
-    this.ipcService.savePreferences(this.preferencesObject)
+    this.ipcService.call(IpcCommand.SavePreferences, this.preferencesObject)
     console.log('onSave');
   }
 
@@ -169,14 +170,13 @@ export class PreferencesComponent implements OnInit {
    * @param folder folder directory to open
    */
   onOpenFolder(folder: string) {
-    const prefixRegex = new RegExp(`^([a-z]:)`, 'gi') // if absolute e.g. c:/
     let folderToOpen = ''
-    if (folder.match(prefixRegex) == null) { // not match
+    if (folder.match(REGEX_PREFIX) == null) { // not match
       folderToOpen = this.currentFolder + folder;
     } else {
       folderToOpen = folder
     }
-    this.ipcService.openFileExplorer(folderToOpen)
+    this.ipcService.call(IpcCommand.OpenInFileExplorer, folderToOpen)
   }
 
   // modal file explorer
@@ -196,8 +196,7 @@ export class PreferencesComponent implements OnInit {
     } else {
       this.previousFolder = this.currentFolder
     }
-
-    this.ipcService.openParentFolder(this.currentFolder)
+    this.ipcService.call(IpcCommand.GoToFolder, [IpcCommand.Up, this.currentFolder])
   }
 
   onGoToFolder(folder: string) {

@@ -29,6 +29,7 @@
 
 * {
   -webkit-user-select: none;
+  color: whitesmoke
 }
 
 p,
@@ -148,7 +149,7 @@ body {
 .movie-card {
   padding: 5px;
   outline: none;
-  margin-left: 10px
+  margin: auto;
 }
 
 .overlay {
@@ -188,7 +189,8 @@ body {
 }
 
 .movie-card-image-container {
-  background-color: rgb(32, 32, 32);
+  // background-color: rgb(32, 32, 32);
+  background-color: white;
   box-shadow: 0 0 10px black;
   position: relative;
   background-size: cover;
@@ -210,12 +212,7 @@ body {
   white-space: nowrap;
   overflow: hidden !important;
   text-overflow: ellipsis;
-  cursor: pointer;
   margin-bottom: 0px;
-}
-
-.movie-card-title:hover {
-  text-decoration: underline;
 }
 
 // the circle one
@@ -231,6 +228,18 @@ body {
   z-index: 3;
 }
 
+// bookmark
+.movie-bookmark {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  height: 15px;
+  width: 15px;
+  background-color: rgb(151, 151, 151);
+  border-radius: 50%;
+  box-shadow: 0 0 10px #969696;
+  z-index: 3;
+}
 
 .selected-movie-card-image-container {
   background-color: rgb(32, 32, 32);
@@ -254,6 +263,13 @@ body {
   text-decoration: underline;
 }
 
-// selected-movie-card-image-container:hover .overlay-remove {
-//   opacity: .5;
-// }
+.image-container {
+  background-size: cover;
+  background-position: center;
+  background-color: white;
+}
+
+.cover-full {
+  background-size: cover;
+  background-position: center;
+}

@@ -1,7 +1,7 @@
 /**
  * Mock data and Defaults. For pre-defined lists and offline data
  */
-import { } from './subject'
+
 import { ITmdbResultObject, ILibraryMovie, IPreferences, IGenre, ITorrent, IOmdbMovieDetail } from './interfaces'
 import { Injectable } from '@angular/core'
 
@@ -78,7 +78,7 @@ export const MOCK_MOVIE_DETAIL = {
   Title: 'Reservoir Dogs',
   Year: 1992,
   Plot:
-    'Eight men eat breakfast at a Los Angeles diner before carrying out a diamond heist. Mob boss Joe Cabot and his son and underboss "Nice Guy" Eddie Cabot are responsible for planning the job. The rest of the men use aliases issued by Joe Cabot: Mr. Brown, Mr. White, Mr. Blonde, Mr. Blue, Mr. Orange and Mr. Pink.',
+    `Eight men eat breakfast at a Los Angeles diner before carrying out a diamond heist. Mob boss Joe Cabot and his son and underboss 'Nice Guy' Eddie Cabot are responsible for planning the job. The rest of the men use aliases issued by Joe Cabot: Mr. Brown, Mr. White, Mr. Blonde, Mr. Blue, Mr. Orange and Mr. Pink.`,
   genre: '',
   isAvailable: true,
   imageDirectory: '',
@@ -153,7 +153,8 @@ export let DISPLAYEDMOVIES = [
     plot:
       'A group of intergalactic criminals must pull together to stop a fanatical warrior with plans to purge the universe.',
     imdbId: 'tt2015381',
-    torrents: []
+    torrents: [],
+    id: 118340
   },
   {
     title: 'The Wailing',
@@ -161,7 +162,8 @@ export let DISPLAYEDMOVIES = [
     plot:
       'Soon after a stranger arrives in a little village, a mysterious sickness starts spreading. A policeman, drawn into the incident, is forced to solve the mystery in order to save his daughter.',
     imdbId: 'tt5215952',
-    torrents: []
+    torrents: [],
+    id: 293670
   },
   {
     title: 'First Man',
@@ -169,7 +171,8 @@ export let DISPLAYEDMOVIES = [
     plot:
       'A look at the life of the astronaut, Neil Armstrong, and the legendary space mission that led him to become the first man to walk on the Moon on July 20, 1969.',
     imdbId: 'tt1213641',
-    torrents: []
+    torrents: [],
+    id: 369972
   },
   {
     title: 'The Karate Kid',
@@ -177,7 +180,8 @@ export let DISPLAYEDMOVIES = [
     plot:
       'A Japanese martial arts instructor agrees to teach karate to a bullied teenager.',
     imdbId: 'tt0087538',
-    torrents: []
+    torrents: [],
+    id: 1885
   },
   {
     title: 'Top Gun',
@@ -185,7 +189,8 @@ export let DISPLAYEDMOVIES = [
     plot: `As students at the United States Navys elite fighter weapons school compete to be best in the class, one daring young pilot learns a few things from a civilian instructor that are not taught in the classroom.
     `,
     imdbId: 'tt0092099',
-    torrents: []
+    torrents: [],
+    id: 744
   },
   {
     title: 'Reservoir Dogs',
@@ -193,7 +198,8 @@ export let DISPLAYEDMOVIES = [
     plot:
       'When a simple jewelry heist goes horribly wrong, the surviving criminals begin to suspect that one of them is a police informant.',
     imdbId: 'tt0105236',
-    torrents: []
+    torrents: [],
+    id: 500
   },
   {
     title: 'Spider-Man',
@@ -201,7 +207,8 @@ export let DISPLAYEDMOVIES = [
     plot:
       'When bitten by a genetically modified spider, a nerdy, shy, and awkward high school student gains spider-like abilities that he eventually must use to fight evil as a superhero after tragedy befalls his family.',
     imdbId: 'tt0145487',
-    torrents: []
+    torrents: [],
+    id: 557
   },
   {
     title: 'Superman Returns',
@@ -209,7 +216,8 @@ export let DISPLAYEDMOVIES = [
     plot:
       'Superman returns to Earth after spending five years in space examining his homeworld Krypton. But he finds things have changed while he was gone, and he must once again prove himself important to the world.',
     imdbId: 'tt0348150',
-    torrents: []
+    torrents: [],
+    id: 1452
   },
   {
     title: 'Home Alone',
@@ -217,7 +225,8 @@ export let DISPLAYEDMOVIES = [
     plot:
       'An eight-year-old troublemaker must protect his house from a pair of burglars when he is accidentally left home alone by his family during Christmas vacation.',
     imdbId: 'tt0099785',
-    torrents: []
+    torrents: [],
+    id: 771
   }
 ]
 // used in top-nav for search
@@ -280,6 +289,7 @@ export class DisplayedTorrents {
     return this.myDisplayedTorrents
   }
 }
+
 @Injectable()
 export class DisplayedTorrent {
   private added?: string
@@ -306,116 +316,6 @@ export class DisplayedTorrent {
   }
 }
 
-export const GENRES: IGenre[] = [
-  {
-    id: 28,
-    name: 'Action'
-  },
-  {
-    id: 12,
-    name: 'Adventure'
-  },
-  {
-    id: 16,
-    name: 'Animation'
-  },
-  {
-    id: 35,
-    name: 'Comedy'
-  },
-  {
-    id: 80,
-    name: 'Crime'
-  },
-  {
-    id: 99,
-    name: 'Documentary'
-  },
-  {
-    id: 18,
-    name: 'Drama'
-  },
-  {
-    id: 10751,
-    name: 'Family'
-  },
-  {
-    id: 14,
-    name: 'Fantasy'
-  },
-  {
-    id: 36,
-    name: 'History'
-  },
-  {
-    id: 27,
-    name: 'Horror'
-  },
-  {
-    id: 10402,
-    name: 'Music'
-  },
-  {
-    id: 9648,
-    name: 'Mystery'
-  },
-  {
-    id: 10749,
-    name: 'Romance'
-  },
-  {
-    id: 878,
-    name: 'Science Fiction'
-  },
-  {
-    id: 10770,
-    name: 'TV Movie'
-  },
-  {
-    id: 53,
-    name: 'Thriller'
-  },
-  {
-    id: 10752,
-    name: 'War'
-  },
-  {
-    id: 37,
-    name: 'Western'
-  },
-  // mdb reserved
-  {
-    id: 20000,
-    name: 'Film-Noir'
-  },
-  {
-    // similar genre: Music id:10402
-    id: 20001,
-    name: 'Musical'
-  },
-  {
-    id: 20002,
-    name: 'News'
-  },
-  {
-    id: 20003,
-    name: 'Reality-TV'
-  },
-  {
-    // similar genre: Science Fiction id:878
-    id: 20004,
-    name: 'Sci-Fi'
-  },
-  {
-    // another media type
-    id: 20005,
-    name: 'Short'
-  },
-  {
-    id: 20006,
-    name: 'Sport'
-  }
-]
 
 export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
   page: 1,
@@ -453,7 +353,7 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       title: 'Pulp Fiction',
       vote_average: 8.4,
       overview:
-        "A burger-loving hit man, his philosophical partner, a drug-addled gangster's moll and a washed-up boxer converge in this sprawling, comedic crime caper. Their adventures unfurl in three stories that ingeniously trip back and forth in time.",
+        `A burger-loving hit man, his philosophical partner, a drug-addled gangster's moll and a washed-up boxer converge in this sprawling, comedic crime caper. Their adventures unfurl in three stories that ingeniously trip back and forth in time.`,
       release_date: '1994-10-14'
     },
     {
@@ -692,7 +592,7 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       title: 'Bambi',
       vote_average: 6.9,
       overview:
-        "Bambi's tale unfolds from season to season as the young prince of the forest learns about life, love, and friends.",
+        `Bambi's tale unfolds from season to season as the young prince of the forest learns about life, love, and friends.`,
       release_date: '1942-08-21'
     },
     {
@@ -709,7 +609,7 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       title: "Beethoven's 2nd",
       vote_average: 5.2,
       overview:
-        "Beethoven is back -- and this time, he has a whole brood with him now that he's met his canine match, Missy, and fathered a family. The only problem is that Missy's owner, Regina, wants to sell the puppies and tear the clan apart. It's up to Beethoven and the Newton kids to save the day and keep everyone together.",
+        `Beethoven is back -- and this time, he has a whole brood with him now that he's met his canine match, Missy, and fathered a family. The only problem is that Missy's owner, Regina, wants to sell the puppies and tear the clan apart. It's up to Beethoven and the Newton kids to save the day and keep everyone together.`,
       release_date: '1993-12-16'
     },
     {
@@ -743,7 +643,7 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       title: 'Speed',
       vote_average: 6.9,
       overview:
-        "Los Angeles SWAT cop Jack Traven is up against bomb expert Howard Payne, who's after major ransom money. First it's a rigged elevator in a very tall building. Then it's a rigged bus--if it slows, it will blow, bad enough any day, but a nightmare in LA traffic. And that's still not the end.",
+        `Los Angeles SWAT cop Jack Traven is up against bomb expert Howard Payne, who's after major ransom money. First it's a rigged elevator in a very tall building. Then it's a rigged bus--if it slows, it will blow, bad enough any day, but a nightmare in LA traffic. And that's still not the end.`,
       release_date: '1994-06-09'
     },
     {
@@ -760,162 +660,150 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       title: 'The Nightmare Before Christmas',
       vote_average: 7.8,
       overview:
-        "Tired of scaring humans every October 31 with the same old bag of tricks, Jack Skellington, the spindly king of Halloween Town, kidnaps Santa Claus and plans to deliver shrunken heads and other ghoulish gifts to children on Christmas morning. But as Christmas approaches, Jack's rag-doll girlfriend, Sally, tries to foil his misguided plans.",
+        `Tired of scaring humans every October 31 with the same old bag of tricks, Jack Skellington, the spindly king of Halloween Town, kidnaps Santa Claus and plans to deliver shrunken heads and other ghoulish gifts to children on Christmas morning. But as Christmas approaches, Jack's rag-doll girlfriend, Sally, tries to foil his misguided plans.`,
       release_date: '1993-10-09'
     }
   ]
 }
 
 export const TEST_TMDB_MOVIE_DETAILS = {
-  "adult": false,
-  "backdrop_path": "/wMgbnUVS9wbRGAdki8fqxKU1O0N.jpg",
-  "belongs_to_collection": null,
-  "budget": 55000000,
-  "genres": [{
-    "id": 35,
-    "name": "Comedy"
+  adult: false,
+  backdrop_path: '/wMgbnUVS9wbRGAdki8fqxKU1O0N.jpg',
+  belongs_to_collection: null,
+  budget: 55000000,
+  genres: [{
+    id: 35,
+    name: 'Comedy'
   }, {
-    "id": 18,
-    "name": "Drama"
+    id: 18,
+    name: 'Drama'
   }, {
-    "id": 10749,
-    "name": "Romance"
+    id: 10749,
+    name: 'Romance'
   }],
-  "homepage": null,
-  "id": 13,
-  "imdb_id": "tt0109830",
-  "original_language": "en",
-  "original_title": "Forrest Gump",
-  "overview": "A man with a low IQ has accomplished great things in his life and been present during significant historic events—in each case, far exceeding what anyone imagined he could do. But despite all he has achieved, his one true love eludes him.",
-  "popularity": 23.858,
-  "poster_path": "/yE5d3BUhE8hCnkMUJOo1QDoOGNz.jpg",
-  "production_companies": [{
-    "id": 4,
-    "logo_path": "/fycMZt242LVjagMByZOLUGbCvv3.png",
-    "name": "Paramount",
-    "origin_country": "US"
+  homepage: null,
+  id: 13,
+  imdb_id: 'tt0109830',
+  original_language: 'en',
+  original_title: 'Forrest Gump',
+  overview: 'A man with a low IQ has accomplished great things in his life and been present during significant historic events—in each case, far exceeding what anyone imagined he could do. But despite all he has achieved, his one true love eludes him.',
+  popularity: 23.858,
+  poster_path: '/yE5d3BUhE8hCnkMUJOo1QDoOGNz.jpg',
+  production_companies: [{
+    id: 4,
+    logo_path: '/fycMZt242LVjagMByZOLUGbCvv3.png',
+    name: 'Paramount',
+    origin_country: 'US'
   }],
-  "production_countries": [{
-    "iso_3166_1": "US",
-    "name": "United States of America"
+  production_countries: [{
+    iso_3166_1: 'US',
+    name: 'United States of America'
   }],
-  "release_date": "1994-07-06",
-  "revenue": 677945399,
-  "runtime": 142,
-  "spoken_languages": [{
-    "iso_639_1": "en",
-    "name": "English"
+  release_date: '1994-07-06',
+  revenue: 677945399,
+  runtime: 142,
+  spoken_languages: [{
+    iso_639_1: 'en',
+    name: 'English'
   }],
-  "status": "Released",
-  "tagline": "Life is like a box of chocolates...you never know what you're gonna get.",
-  "title": "Forrest Gump",
-  "video": false,
-  "vote_average": 8.4,
-  "vote_count": 15996
+  status: 'Released',
+  tagline: `Life is like a box of chocolates...you never know what you're gonna get.`,
+  title: 'Forrest Gump',
+  video: false,
+  vote_average: 8.4,
+  vote_count: 15996
 }
 
 
 const TEST_TMDB_MOVIE_DETAIL2 = {
   adult: false,
-  backdrop_path: "/mMZRKb3NVo5ZeSPEIaNW9buLWQ0.jpg",
+  backdrop_path: '/mMZRKb3NVo5ZeSPEIaNW9buLWQ0.jpg',
   belongs_to_collection: null,
   budget: 63000000,
   genres: [
     {
       id: 18,
-      name: "Drama"
+      name: 'Drama'
     }
   ],
-  homepage: "http://www.foxmovies.com/movies/fight-club",
+  homepage: 'http://www.foxmovies.com/movies/fight-club',
   id: 550,
-  imdb_id: "tt0137523",
-  original_language: "en",
-  original_title: "Fight Club",
-  overview: "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \"fight clubs\" forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.",
+  imdb_id: 'tt0137523',
+  original_language: 'en',
+  original_title: 'Fight Club',
+  overview: 'A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \'fight clubs\' forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.',
   popularity: 36.556,
-  poster_path: "/adw6Lq9FiC9zjYEpOqfq03ituwp.jpg",
+  poster_path: '/adw6Lq9FiC9zjYEpOqfq03ituwp.jpg',
   production_companies: [
     {
       id: 508,
-      logo_path: "/7PzJdsLGlR7oW4J0J5Xcd0pHGRg.png",
-      name: "Regency Enterprises",
-      origin_country: "US"
+      logo_path: '/7PzJdsLGlR7oW4J0J5Xcd0pHGRg.png',
+      name: 'Regency Enterprises',
+      origin_country: 'US'
     },
     {
       id: 711,
-      logo_path: "/tEiIH5QesdheJmDAqQwvtN60727.png",
-      name: "Fox 2000 Pictures",
-      origin_country: "US"
+      logo_path: '/tEiIH5QesdheJmDAqQwvtN60727.png',
+      name: 'Fox 2000 Pictures',
+      origin_country: 'US'
     },
     {
       id: 20555,
-      logo_path: "/hD8yEGUBlHOcfHYbujp71vD8gZp.png",
-      name: "Taurus Film",
-      origin_country: "DE"
+      logo_path: '/hD8yEGUBlHOcfHYbujp71vD8gZp.png',
+      name: 'Taurus Film',
+      origin_country: 'DE'
     },
     {
       id: 54051,
       logo_path: null,
-      name: "Atman Entertainment",
-      origin_country: ""
+      name: 'Atman Entertainment',
+      origin_country: ''
     },
     {
       id: 54052,
       logo_path: null,
-      name: "Knickerbocker Films",
-      origin_country: "US"
+      name: 'Knickerbocker Films',
+      origin_country: 'US'
     },
     {
       id: 25,
-      logo_path: "/qZCc1lty5FzX30aOCVRBLzaVmcp.png",
-      name: "20th Century Fox",
-      origin_country: "US"
+      logo_path: '/qZCc1lty5FzX30aOCVRBLzaVmcp.png',
+      name: '20th Century Fox',
+      origin_country: 'US'
     },
     {
       id: 4700,
-      logo_path: "/A32wmjrs9Psf4zw0uaixF0GXfxq.png",
-      name: "The Linson Company",
-      origin_country: ""
+      logo_path: '/A32wmjrs9Psf4zw0uaixF0GXfxq.png',
+      name: 'The Linson Company',
+      origin_country: ''
     }
   ],
   production_countries: [
     {
-      iso_3166_1: "DE",
-      name: "Germany"
+      iso_3166_1: 'DE',
+      name: 'Germany'
     },
     {
-      iso_3166_1: "US",
-      name: "United States of America"
+      iso_3166_1: 'US',
+      name: 'United States of America'
     }],
-  release_date: "1999-10-15",
+  release_date: '1999-10-15',
   revenue: 100853753,
   runtime: 139,
   spoken_languages: [
     {
-      iso_639_1: "en",
-      name: "English"
+      iso_639_1: 'en',
+      name: 'English'
     }
   ],
-  status: "Released",
-  tagline: "Mischief. Mayhem. Soap.",
-  title: "Fight Club",
+  status: 'Released',
+  tagline: 'Mischief. Mayhem. Soap.',
+  title: 'Fight Club',
   video: false,
   vote_average: 8.4,
   vote_count: 17355
 }
 
-export const TROUBLE_QUOTES = [
-  { quote: 'I see dead people.' },
-  { quote: 'Houston, we have a problem.' },
-  { quote: 'Just keep swimming.' },
-]
-
-export const MOVIE_QUOTES = [
-  { title: `Gone With the Wind`, year: 1939, quote: `Frankly, my dear, I don't give a damn.`, backdrop: '' },
-  { title: 'The Room', year: 2003, quote: `You are tearing me apart, Lisa!`, backdrop: '' },
-  { title: 'Dr. Strangelove', year: 1964, quote: `Gentlemen, you can't fight in here! This is the War Room!`, backdrop: '' },
-  { title: 'Titanic', year: 1997, quote: `I'm king of the world!`, backdrop: '' },
-]
 
 export const DEFAULT_PREFERENCES: IPreferences = {
   frequencyUnit: 'day',
@@ -925,59 +813,3 @@ export const DEFAULT_PREFERENCES: IPreferences = {
   isEnableCache: true,
   libraryFolders: []
 }
-
-export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
-export const DECADES = [
-  {
-    display: '1910s',
-    value: 1910
-  },
-  {
-    display: '1920s',
-    value: 1920
-  },
-  {
-    display: '1930s',
-    value: 1930
-  },
-  {
-    display: '1940s',
-    value: 1940
-  },
-  {
-    display: '1950s',
-    value: 1950
-  },
-  {
-    display: '1960s',
-    value: 1960
-  },
-  {
-    display: '1970s',
-    value: 1970
-  },
-  {
-    display: '1980s',
-    value: 1980
-  },
-  {
-    display: '1990s',
-    value: 1990
-  },
-  {
-    display: '2000s',
-    value: 2000
-  },
-  {
-    display: '2010s',
-    value: 2010
-  }]
-
-export const TMDB_IMAGE_BASE_URL = 'http://image.tmdb.org/t/p/'
-export const TMDB_IMAGE_SECURE_BASE_URL = 'https://image.tmdb.org/t/p/'
-export const TMDB_BACKGROUND_SIZES = ['w300', 'w780', 'w1280', 'original']
-export const TMDB_LOGO_SIZES = ['w45', 'w92', 'w154', 'w185', 'w300', 'w500', 'original']
-export const TMDB_POSTER_SIZES = ['w92', 'w154', 'w185', 'w342', 'w500', 'w780', 'original']
-export const TMDB_PROFILE_SIZES = ['w45', 'w185', 'h632', 'original']
-export const TMDB_STILL_SIZES = ['w92', 'w185', 'w300', 'original']

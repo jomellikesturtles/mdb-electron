@@ -1,16 +1,26 @@
 
-import { Component, OnInit } from '@angular/core';
-// import { Movie, MovieGenre, IGenre } from '../../subject';
+import { Component, OnInit, Input } from '@angular/core';
+import { Observable } from 'rxjs'
 import { IOmdbMovieDetail, MovieGenre, IGenre } from '../../interfaces';
-import { MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
-// import { SELECTEDMOVIE, MOVIES, MOVIEGENRES, DECADES, GENRES } from '../../mock-data';
+import { MOVIES, MOVIEGENRES } from '../../mock-data';
+import { DECADES, GENRES, REGEX_IMDB_ID } from '../../constants';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
-import { IpcService } from '../../services/ipc.service'
+import { IpcService, IpcCommand } from '../../services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
+import { Store, Select } from '@ngxs/store'
+import { Add, CountState, UserState } from '../../app.state'
+import { FirebaseService } from '../../services/firebase.service';
+import { SetUser } from '../../app.actions';
+import { delay } from 'rxjs/operators';
 declare var jquery: any
 declare var $: any
+
+enum STATUS {
+  login = 'LOGIN',
+  logout = 'LOGOUT'
+}
 
 @Component({
   selector: 'app-top-navigation',
@@ -18,26 +28,29 @@ declare var $: any
   styleUrls: ['./top-navigation.component.scss']
 })
 export class TopNavigationComponent implements OnInit {
-
+  @Input() data: Observable<any>
+  @Select(CountState) count$: Observable<number>
+  @Select(state => state.UserState) user$: Observable<any>
   constructor(
     private dataService: DataService,
+    private firebaseService: FirebaseService,
     private ipcService: IpcService,
     private movieService: MovieService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private location: Location) { }
+    private location: Location,
+    private store: Store) { }
 
+  status = 'LOGIN'
   browserConnection = navigator.onLine;
   selectedMovie: IOmdbMovieDetail
   numbers;
-  minYear = 1888;
-  maxYear = 2018;
   currentYear = new Date().getFullYear()
   genres = ['Action', 'Adventure', 'Documentary', 'Drama', 'Horror', 'Sci-Fi', 'Thriller'];
   movieGenres = MOVIEGENRES;
   types = ['TV Series', 'Movie', 'Short'];
   searchQuery: ISearchQuery = {
-    keywords: '',
+    query: '',
     startYear: 1969,
     endYear: 2018,
     genres: this.movieGenres,
@@ -57,10 +70,24 @@ export class TopNavigationComponent implements OnInit {
   searchHistoryMaxLength = 4
   decadesList = DECADES
   genresList = GENRES
+  isSignedIn = false
 
   ngOnInit() {
+    this.init()
   }
 
+  init() {
+    const e = localStorage.getItem('user')
+    // this.user$.pipe(delay(1000)).subscribe(e => {
+    if (e === null) {
+      this.status = 'LOGIN'
+      this.isSignedIn = false
+    } else {
+      this.isSignedIn = true
+      this.status = ''
+    }
+    // })
+  }
   /**
    * Go to previous location
    */
@@ -68,6 +95,12 @@ export class TopNavigationComponent implements OnInit {
     this.location.back()
   }
 
+  /**
+   * Opens advanced search options.
+   */
+  onAdvancedSearch() {
+
+  }
   /**
    * Initialize search
    */
@@ -78,19 +111,20 @@ export class TopNavigationComponent implements OnInit {
       // this.searchHistoryList = this.searchHistoryList.splice(1)
       this.searchHistoryList = this.searchHistoryList.slice(0, this.searchHistoryMaxLength)
     }
-    // const imdbIdRegex = new RegExp(`(^tt[0-9]{0,7})$`, `g`)
-    // const enteredQuery = val.keywords
+    const enteredQuery = val
     // this.isSearchDirty = true
     // this.currentPage = 1
     // this.numberOfPages = 1
     // this.numberOfResults = 0
     // this.currentSearchQuery = enteredQuery
     // // tt0092099 example
-    // if (enteredQuery.match(imdbIdRegex)) {
-    //   this.searchByImdbId(enteredQuery)
-    // } else {
-    //   this.searchByTitle(enteredQuery)
-    // }
+    if (enteredQuery.match(REGEX_IMDB_ID)) {
+      console.log('searchByImdbId');
+      // this.searchByImdbId(enteredQuery)
+    } else {
+      console.log('searchByTitle');
+      this.searchByTitle(enteredQuery)
+    }
   }
 
   /**
@@ -113,40 +147,44 @@ export class TopNavigationComponent implements OnInit {
    * @param enteredQuery query to search
    */
   searchByTitle(enteredQuery) {
-    this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
     // this.dataService.currentSearchQuery = enteredQuery
-    // this.movieService.searchMovieByTitle(enteredQuery).subscribe(data => {
-    //   this.numberOfPages = data.total_pages;
-    //   this.numberOfResults = data.total_results;
-    //   const resultMovies = data.results;
-    //   this.selectedMovie = data;
-    //   console.log('searchMovieByTitle data', data);
-    //   if (resultMovies != undefined) {
-    //     this.movies = resultMovies.filter(obj => {
-    //       return obj.media_type === 'movie'
-    //     })
-    //     this.hasSearchResults = true
-    //   } else {
-    //     this.hasSearchResults = false
-    //     // insert code for not found
-    //   }
-    // })
+    if (this.searchQuery && this.searchQuery.query.length > 0) {
+      this.dataService.updateSearchQuery(this.searchQuery)
+      this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
+    }
+  }
+
+  openProfile() {
+
+  }
+
+  signOut() {
+    this.firebaseService.signOut()
+  }
+
+  changeCredentialState(actionName: string) {
+    this.user$.subscribe(e => {
+      // console.log('user$', user$);
+      // this.store.dispatch(new SetUser())
+    })
+    // if (actionName === STATUS.login) {
+    //   this.status = STATUS.logout
+    // }
   }
 
   onMinimize() {
-    this.ipcService.minimizeWindow()
+    this.ipcService.call(IpcCommand.MinimizeApp)
   }
   onRestore() {
-    this.ipcService.restoreWindow()
+    this.ipcService.call(IpcCommand.RestoreApp)
   }
   onExit() {
-    console.log('onexit');
-    this.ipcService.exitProgram()
+    this.ipcService.call(IpcCommand.ExitApp)
   }
 }
 
 export interface ISearchQuery {
-  keywords: string,
+  query: string,
   startYear: number,
   endYear: number,
   genres: MovieGenre[],

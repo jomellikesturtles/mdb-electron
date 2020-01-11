@@ -1,4 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { REGEX_TMDB_RUNTIME } from './constants';
+import { UtilsService } from './services/utils.service';
 
 @Pipe({
   name: 'mdbPipes'
@@ -18,8 +20,10 @@ export class MdbPipesPipe implements PipeTransform {
  */
 @Pipe({ name: 'releaseYear' })
 export class ReleaseYearPipe implements PipeTransform {
+  constructor(
+    private utilsService: UtilsService) { }
   transform(value: string): string {
-    return value.substr(value.lastIndexOf(' ') + 1);
+    return this.utilsService.getYear(value)
   }
 }
 
@@ -45,7 +49,7 @@ export class RuntimeDisplayPipe implements PipeTransform {
   transform(value: string | number): string {
     let toReturn = ''
     if (typeof value === 'number') {
-      const runtimeHour = parseInt((value / 60).toFixed(), 10)
+      const runtimeHour = Math.floor(value / 60)
       const valueRemainder = (value % 60)
       if (runtimeHour === 1) {
         toReturn += `${runtimeHour} hour`
@@ -60,11 +64,10 @@ export class RuntimeDisplayPipe implements PipeTransform {
         }
       }
     } else if (typeof value === 'string') {
-      const tmdbRuntimeRegex = new RegExp(`([\\d,]+)(\\s)(min)`, `gi`);
-      const regexResults = tmdbRuntimeRegex.exec(value)
+      const regexResults = REGEX_TMDB_RUNTIME.exec(value)
       if (value !== 'N/A') {
         if (regexResults != null) {
-          const runtimeHour = parseInt((parseInt(value, 10) / 60).toFixed(), 10)
+          const runtimeHour = Math.floor(parseInt(value, 10) / 60)
           const integerValue = parseInt(value, 10)
           const valueRemainder = integerValue % 60
           if (runtimeHour === 1) {

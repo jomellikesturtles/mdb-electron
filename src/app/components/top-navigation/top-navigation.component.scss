@@ -11,7 +11,9 @@
   justify-content: flex-start
 }
 
--webkit-app-region-
+* {
+  // color:white
+}
 
 /* Links inside the navbar */
 .navbar a {
@@ -47,11 +49,12 @@
   -webkit-app-region: no-drag;
   height: 30px;
   width: 138px;
-  margin-left: auto;
   overflow: hidden;
   position: fixed;
   top: 0;
   right: 0;
+  z-index: 3000;
+  margin-left: auto;
 }
 
 .window-icon-bg {
@@ -90,4 +93,39 @@
 
 .criteria-item * {
   cursor: pointer;
+}
+
+
+#searchinput {
+  width: 200px;
+}
+
+#searchClear {
+  position: absolute;
+  filter: invert(1) contrast(0);
+  color: #ccc;
+  position: absolute;
+  background-position: center;
+  background-size: cover;
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  right: 20px;
+  margin: auto;
+  transform: translateY(75%);
+}
+
+
+#searchEnter {
+  position: relative;
+  filter: invert(1) contrast(1);
+  color: #ccc;
+  background-position: center;
+  background-size: cover;
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  // right: 20px;
+  margin: auto;
+  // transform: translateY(75%);
 }

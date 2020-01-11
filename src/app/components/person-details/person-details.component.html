@@ -2,42 +2,45 @@
   //     "w185",
   //     "h632",
   //     "original" -->
-<div class='container' *ngIf="hasData">
-  <div class='row'>
-    <div class='col-md-4'>
-      <div style='border-radius:50%'>
-        <!-- image -->
-        <div style='height:500px; width:300px;  position: relative;
-        background-size: cover;
-        background-position: center;'
-          [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/h632'+person.profile_path+')' }"></div>
+  <div class='container' *ngIf="hasData">
+    <div class='row'>
+      <div class='col-md-4'>
+        <div style='border-radius:50%'>
+          <!-- image -->
+          <div class='cover-full' style='height:500px; width:300px;  position: relative;background-color: white;'
+            [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/h632'+person.profile_path+')' }"></div>
+        </div>
+      </div>
+      <div class='col-md-8'>
+        <!-- details -->
+        <h2>{{person.name}}</h2>
+        <p>{{person.biography}}</p>
       </div>
     </div>
-    <div class='col-md-8'>
-      <!-- details -->
-      <h2>{{person.name}}</h2>
-      <p>{{person.biography}}</p>
+    <!-- <div class='row'> -->
+    <div *ngFor="let creditCast of creditsCast" class='row'>
+      <div>
+        <div class='col col-md-4'>
+          <div class='cover-full'  style='height:250px; width:100px;background-color: white;'
+            [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/h632'+creditCast.poster_path+')' }">
+          </div>
+        </div>
+        <div class='col col-md-4'>
+          <p class='text-hyperlink' (click)='goToMovie(creditCast.id)'>{{creditCast.title}}</p>
+        </div>
+        <div class='col col-md-4'>
+          <p>{{creditCast.character}}</p>
+        </div>
+      </div>
+    </div>
+    <div *ngFor="let creditCrew of creditsCrew" class='row'>
+      <div>
+        <div class='col-md-6'>
+          <p class='text-hyperlink' (click)='goToMovie(creditCrew.id)'>{{creditCrew.title}}</p>
+        </div>
+        <div class='col-md-6'>
+          <p>{{creditCrew.job}}</p>
+        </div>
+      </div>
     </div>
   </div>
-  <!-- <div class='row'> -->
-  <div *ngFor="let creditCast of creditsCast" class='row'>
-    <div>
-      <div class='col-md-6'>
-        <p class='text-hyperlink' (click)='goToMovie(creditCast.id)'>{{creditCast.title}}</p>
-      </div>
-      <div class='col-md-6'>
-        <p>{{creditCast.character}}</p>
-      </div>
-    </div>
-  </div>
-  <div *ngFor="let creditCrew of creditsCrew" class='row'>
-    <div>
-      <div class='col-md-6'>
-        <p class='text-hyperlink' (click)='goToMovie(creditCrew.id)'>{{creditCrew.title}}</p>
-      </div>
-      <div class='col-md-6'>
-        <p>{{creditCrew.job}}</p>
-      </div>
-    </div>
-  </div>
-</div>

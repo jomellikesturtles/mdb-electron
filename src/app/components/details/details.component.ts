@@ -1,16 +1,18 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { IOmdbMovieDetail, IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail } from '../../interfaces';
+import { IOmdbMovieDetail, IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail, TmdbParameters } from '../../interfaces';
 import { MdbMovieDetails } from '../../classes';
 import { TEST_MOVIE_DETAIL, TEST_TMDB_MOVIE_DETAILS } from '../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
+import { BookmarkService } from '../../services/bookmark.service'
 import { DataService } from '../../services/data.service';
 import { MovieService } from '../../services/movie.service';
 import { TorrentService } from '../../services/torrent.service';
 import { UtilsService } from '../../services/utils.service';
-import { IpcService } from '../../services/ipc.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { IpcService, IpcCommand } from '../../services/ipc.service';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { Observable } from 'rxjs';
-// import { ReleaseYearPipe } from '../../mdb-pipes.pipe';
+import { TROUBLE_QUOTES } from '../../constants';
+import { TMDB_FULL_MOVIE_DETAILS } from '../../mock-data-movie-details';
 declare var $: any
 
 @Component({
@@ -36,15 +38,29 @@ export class DetailsComponent implements OnInit, OnDestroy {
   testSelectedMovie = TEST_TMDB_MOVIE_DETAILS
   testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
   isAvailable = false
+  isVideoAvailable = false
   hasData = false
   movieMetadataSubscription
   libraryMovieSubscription
-  myVideoPath = null
+  bookmarksSingleSubscription = null
+  watchedSingleSubscription = null
+  videoFileSubscription = null
+  myVideoPath = ''
+  troubleQuote
+  movieDetailsDirectors
+  movieDetailsWriters
+  movieDetailsProducers
+  movieCertification
   movieDetails = new MdbMovieDetails()
+  userLocation = 'US'
+  procBookmark = false
+  procWatched = false
+  procVideo = false
 
   constructor(
     private sanitizer: DomSanitizer,
     private activatedRoute: ActivatedRoute,
+    private bookmarkService: BookmarkService,
     private dataService: DataService,
     private movieService: MovieService,
     private ipcService: IpcService,
@@ -55,20 +71,31 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-
-    // this.selectedMovie = this.testSelectedMovie
-
+    // this.movieService.getBookmark(123123).subscribe(e => {
+    //   console.log(e);
+    // })
+    this.getTroubleQuote()
     this.activatedRoute.params.subscribe(params => {
       console.log('activatedRoute.params', params);
       if (params.id) {
-        console.log('params.imdbId true');
-        // this.imdbId = params.id;
         this.getMovieOnline(params.id)
       } else {
         this.hasData = false
       }
     });
-
+    // this.selectedMovie = this.testSelectedMovie
+    console.time('convertTime');
+    // this.convertObject(TMDB_FULL_MOVIE_DETAILS)
+    console.timeEnd('convertTime');
+    // this.loadVideoData()
+    // this.getMovieFromLibrary()
+    // this.getTorrents()
+    this.router.events.subscribe((evt) => {
+      if (!(evt instanceof NavigationEnd)) {
+        return;
+      }
+      window.scrollTo(0, 0)
+    });
     // this.movieMetadataSubscription = this.ipcService.movieMetadata.subscribe(value => {
     //   // console.log('this.ipcService.movieMetadata.subscribe ', value)
     //   if (value.length !== 0) {
@@ -107,8 +134,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // // end of commented for test
     $('[data-toggle="popover"]').popover()
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
-    this.getMarkAsWatched()
-    // this.getMovieCredits()
   }
 
   ngOnDestroy(): void {
@@ -117,10 +142,23 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // this.selectedMovie = null
   }
 
+  /**
+   * Loads minor video data.
+   */
+  loadVideoData() {
+    this.movieDetailsDirectors = this.getDirectors()
+    this.movieDetailsWriters = this.getWriters()
+    this.movieDetailsProducers = this.getProducers()
+    this.movieCertification = this.getMovieCertification()
+    this.getBookmark()
+    this.getWatched()
+    this.getVideo()
+  }
+
   convertObject(v) {
 
     Object.keys(v).forEach(key => {
-      console.log(`converting ${key} with value `, v[key]);
+      console.log('key: ', key, ' value: ', v[key], ' ')
       switch (key) {
         case 'Actors':
           this.movieDetails.releaseDate = v[key]
@@ -203,71 +241,99 @@ export class DetailsComponent implements OnInit, OnDestroy {
           break;
       }
     });
-
-    Object.keys(this.movieDetails).forEach(key => {
-      console.log(`movieDetails key ${key} with value `, v[key]);
-    })
+    this.loadVideoData()
+    // Object.keys(this.movieDetails).forEach(key => {
+    //   console.log(`movieDetails key ${key} with value `, v[key]);
+    // })
   }
 
   getMovieCredits() {
+    // TmdbParameters.
     const tmdbId = this.movieDetails.tmdbId
-    this.movieService.getMovieCredits(tmdbId).subscribe(data => {
+    this.movieService.getTmdbMovieDetails(tmdbId).subscribe(data => {
       console.log('got from getMovieCredits ', data)
       // this.selectedMovie = data;
       // this.saveMovieDataOffline(data)
     });
   }
 
-  /**
-   * Gets movie's watchlist status
-   * @param val imdb id
-   */
-  getToWatchlist(val: string) {
-    this.ipcService.getWatchlist(val)
+  getVideo() {
+    // throw new Error("Method not implemented.");
+    this.ipcService.call(IpcCommand.OpenVideo, this.movieDetails.tmdbId)
+    this.procVideo = true
+    this.videoFileSubscription = this.ipcService.videoFile.subscribe(data => {
+      if (data === null || data === 0) {
+        this.isVideoAvailable = false
+      } else {
+        this.isVideoAvailable = true
+      }
+      this.procVideo = false
+      this.cdr.detectChanges()
+    })
+  }
+
+  async getBookmark() {
+    // this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.BookmarkGet, this.movieDetails.tmdbId])
+    // this.procBookmark = true
+    // this.bookmarksSingleSubscription = this.ipcService.bookmarkSingle.subscribe(data => {
+    //   if (data === null || data.id === '') {
+    //     this.isBookmarked = false
+    //   } else {
+    //     this.isBookmarked = true
+    //   }
+    //   this.procBookmark = false
+    //   this.cdr.detectChanges()
+    // })
+    // this.procBookmark = true
+    const bookmark = await this.bookmarkService.getBookmark(this.movieDetails.tmdbId)
+    console.log('bookmark:', bookmark)
   }
 
   /**
-   * Adds movie into user's watchlist
-   * @param val imdb id
+   * Toggles movie from user's watchlist or bookmarks
    */
-  addBookmark(val?: string) {
-    this.ipcService.addToWatchlist(val)
-  }
-
-  /**
-   * Removes movie from user's watchlist
-   * @param val imdb id
-   */
-  removeBookmark(val: string) {
-    this.ipcService.removeFromWatchlist(val)
+  toggleBookmark() {
+    // this.procBookmark = true
+    // if (this.isBookmarked === true) {
+    //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-remove', this.movieDetails.tmdbId])
+    // } else {
+    //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-add', this.movieDetails.tmdbId])
+    // }
+    const releaseYear = parseInt(this.getYear(this.movieDetails.releaseDate), 10)
+    const movieObject = {
+      tmdbId: this.movieDetails.tmdbId,
+      title: this.movieDetails.title,
+      year: releaseYear ? releaseYear : 0,
+    }
+    console.log('object to toggle :', movieObject);
+    this.bookmarkService.saveBookmark(movieObject)
+    // this.bookmarkService.saveBookmark(this.movieDetails.tmdbId)
   }
 
   /**
    * Gets the mark as watched status of the movie
-   * @param val imdb id
    */
-  getMarkAsWatched(val?: string) {
-    if (!val) {
-      this.ipcService.getMarkAsWatched(this.movieDetails.imdbId)
+  getWatched() {
+    this.ipcService.call(IpcCommand.Watched, [IpcCommand.Get, this.movieDetails.tmdbId])
+    this.procWatched = true
+    this.watchedSingleSubscription = this.ipcService.watchedSingle.subscribe(data => {
+      if (data === null || data.id === '') {
+        this.isWatched = false
+      } else {
+        this.isWatched = true
+      }
+      this.procWatched = false
+      this.cdr.detectChanges()
+    })
+  }
+
+  toggleWatched() {
+    this.procWatched = true
+    if (this.isWatched === true) {
+      this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieDetails.tmdbId])
     } else {
-      this.ipcService.getMarkAsWatched(val)
+      this.ipcService.call(IpcCommand.Watched, [IpcCommand.Remove, this.movieDetails.tmdbId])
     }
-  }
-
-  /**
-   * Adds watched status of the movie
-   * @param val imdb id
-   */
-  addMarkAsWatched(val: string) {
-    this.ipcService.addMarkAsWatched(val)
-  }
-
-  /**
-   * Removes watched status of the movie
-   * @param val imdb id
-   */
-  removeMarkAsWatched(val: string) {
-    this.ipcService.removeMarkAsWatched(val)
   }
 
   /**
@@ -275,25 +341,23 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param val imdb id
    */
   getMovieDataOffline(val: any) {
-    this.ipcService.getMovieMetadata(val)
+    this.ipcService.call(IpcCommand.MovieMetadata, [IpcCommand.Get, val])
   }
 
-  getMovieFromLibrary(val: any) {
-    // this.ipcService.getMovieFromLibrary(val).then(value => {
-    //   console.log('getMovieFromLibrary', value);
-    //   this.selectedMovie = value
-    // }).catch(e => {
-    //   console.log(e);
-    // })
+  async getMovieFromLibrary() {
+    const val = this.movieDetails.tmdbId
+    const result = await this.ipcService.getMovieFromLibrary(val)
+    console.log(result);
+    this.myVideoPath = 'file:///' + result.directoryList[0]
+    this.cdr.detectChanges()
   }
 
   saveMovieDataOffline(val: any) {
-    console.log('setMovieMetadata ', val)
-    this.ipcService.setMovieMetadata(val)
+    this.ipcService.call(IpcCommand.MovieMetadata, [IpcCommand.Set, val])
   }
   /**
    * Gets movie details, torrents
-   * @param val imdb id
+   * @param val tmdb id
    */
   getMovieOnline(val: any) {
     // tt2015381 is Guardians of the galaxy 2014; for testing only
@@ -311,6 +375,16 @@ export class DetailsComponent implements OnInit, OnDestroy {
       this.hasData = true
       this.saveMovieDataOffline(data)
     });
+  }
+
+  /**
+   * Gets the movie's certification based on user' location.
+   */
+  getMovieCertification() {
+    const myLoc = this.movieDetails.release_dates.results.find((e) => { return e.iso_3166_1 === this.userLocation })
+    let toReturn = myLoc.release_dates.find((e) => { return e.type === 3 })
+    toReturn = toReturn.certification
+    return toReturn
   }
 
   /**
@@ -347,40 +421,20 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Gets video path.
-   */
-  getVideoPath() {
-
-    // commented for angular mode
-    // this.ipcService.getMovieFromLibrary(500).then(value => {
-    //   console.log('getMovieFromLibrary', value);
-    //   console.log(typeof value);
-
-    //   const libraryInfo: LibraryInfo = (value)
-
-    //   console.log(value['directoryList']);
-    //   console.log(value['directoryList'][0]);
-    //   const filePrefix = 'file:///'
-    //   console.log(`${filePrefix}${libraryInfo.directoryList[0]}`)
-    //   this.myVideoPath = `${filePrefix}${libraryInfo.directoryList[0]}`
-    //   return `${filePrefix}${libraryInfo.directoryList[0]}`
-    // }).catch(e => {
-    //   console.log(e);
-    // })
-  }
-
-  /**
    * Gets torrents from online and offline
    * @param val name
    * @returns Torrent object
    */
-  getTorrents(val: string) {
-    console.log('getTorrents initializing... with val ', val);
-    this.torrentService.getTorrents(val).subscribe(data => {
+  getTorrents() {
+    const releaseYear = this.getYear(this.movieDetails.releaseDate)
+    const query = [this.movieDetails.title, releaseYear]
+    console.log('getTorrents initializing... with val ', query);
+    this.torrentService.getTorrents(query).subscribe(data => {
+      console.log(data);
       const resultTorrents = data;
       this.torrents = resultTorrents.filter(obj => {
         if (!obj.name) {
-          obj.name = `${this.selectedMovie.Title} ${obj.quality} ${obj.type}`;
+          obj.name = `${this.movieDetails.Title} ${obj.quality} ${obj.type}`;
         }
         return obj;
       });
@@ -389,25 +443,52 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Opens link externally
-   * @param param1 link to open
+   * @param param1 link type
+   * @param param2 id
    */
-  goToLink(param1) {
+  goToLink(param1: string, param2?) {
     let url = ''
+    console.log('1:', param1, ' 2:', param2);
     switch (param1) {
       case 'google':
-        url = `https://www.google.com/search?q=${this.movieDetails.title} ${this.movieDetails.releaseYear}`
+        let releaseYear
+        if (!this.movieDetails.releaseYear) {
+          releaseYear = this.getYear(this.movieDetails.releaseDate);
+        } else {
+          releaseYear = this.movieDetails.releaseYear
+        }
+        url = `https://www.google.com/search?q=${this.movieDetails.title} ${releaseYear}`
         break;
       case 'imdb':
         url = `https://www.imdb.com/title/${this.movieDetails.imdbId}`
         break;
+      case 'tmdb':
+        url = `https://www.themoviedb.org/movie/${this.movieDetails.tmdbId}`
+        break;
+      case 'facebook':
+        url = `https://www.facebook.com/${this.movieDetails.external_ids.facebook_id}`
+        break;
+      case 'twitter':
+        url = `https://twitter.com/${this.movieDetails.external_ids.twitter_id}`
+        break;
+      case 'instagram':
+        url = `https://instagram.com/${this.movieDetails.external_ids.instagram_id}`
+        break;
+      case 'website':
+        url = `${this.movieDetails.website}`
+        break;
       default:
         break;
     }
-    this.ipcService.openLinkExternal(url)
+    const environment = location.protocol
+    if (environment === 'file:') {
+      this.ipcService.call(IpcCommand.OpenLinkExternal, url)
+    } else if (environment === 'http:' || environment === 'https:') {
+      window.open(url)
+    }
   }
 
   goToMovie(val) {
-    // this.selectedMovie = movie;
     const highlightedId = val
     this.dataService.updateHighlightedMovie(highlightedId);
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
@@ -417,12 +498,56 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.router.navigate([`/person-details/${val}`], { relativeTo: this.activatedRoute });
   }
 
-  goToMoviePersons() {
-    // this.router.navigate([`/person-details/${highlightedId}`], { relativeTo: this.activatedRoute });
+  goToFullCredits() {
+    const val = this.movieDetails.tmdbId
+    this.router.navigate([`/credits/${val}`], { relativeTo: this.activatedRoute });
+  }
+
+  goToReleaseYear(val) {
+    this.dataService.updateDiscoverQuery(['year', val])
+    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
+  }
+
+  goToGenre(val) {
+    this.dataService.updateDiscoverQuery(['genre', val])
+    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
+  }
+
+  goToCertification(val) {
+    this.dataService.updateDiscoverQuery(['certification', val])
+    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
   }
 
   getYear(val: string) {
     return this.utilsService.getYear(val)
+  }
+
+  getDirectors() {
+    const toReturn = []
+    this.movieDetails.credits.crew.forEach(crew => {
+      if (crew.job === 'Director') { toReturn.push(crew) }
+    });
+    return toReturn
+  }
+
+  getWriters() {
+    const toReturn = []
+    this.movieDetails.credits.crew.forEach(crew => {
+      if (crew.job === 'Screenplay') { toReturn.push(crew) }
+    });
+    return toReturn
+  }
+  getProducers() {
+    const toReturn = []
+    this.movieDetails.credits.crew.forEach(crew => {
+      if (crew.job === 'Producer') { toReturn.push(crew) }
+    });
+    return toReturn
+  }
+
+  getTroubleQuote() {
+    const length = TROUBLE_QUOTES.length
+    this.troubleQuote = TROUBLE_QUOTES[Math.floor(Math.random() * (-1 - length + 1)) + length]
   }
   sanitize(torrent: ITorrent) {
     return this.torrentService.sanitize(torrent);
@@ -453,9 +578,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
 // @Pipe({ name: 'simplifySize' })
 // export class SimplifySizePipe implements PipeTransform {
 //   transform(val: string): string {
-//     const fileSizeRegex = new RegExp(`^([0-9])\\d+$`, `g`);
 //     let output = '';
-//     if (!val.trim().match(fileSizeRegex)) {
+//     if (!val.trim().match(FILE_SIZE_REGEX)) {
 //       output = val;
 //     } else {
 //       let value = Number(val);

@@ -14,7 +14,7 @@ export class DataService {
   currentMovie = this.selectedMovieSource.asObservable()
 
   private searchQuerySource = new BehaviorSubject<any>('')
-  currentSearchQuery = this.searchQuerySource.asObservable()
+  searchQuery = this.searchQuerySource.asObservable()
 
   private searchResultsSource = new BehaviorSubject<any>('')
   currentSearchResults = this.searchResultsSource.asObservable()
@@ -22,22 +22,16 @@ export class DataService {
   private selectedMoviesSource = new BehaviorSubject<any>('')
   selectedMovies = this.selectedMoviesSource.asObservable()
 
+  private discoverMoviesSource = new BehaviorSubject<any>('')
+  discoverQuery = this.discoverMoviesSource.asObservable()
+
+  // private isTestRunSource = new BehaviorSubject<any>('')
+  // isTestRun = this.getIsTestRun.asObservable()
+
   constructor() { }
 
-  /**
-   * web(angular) or desktop(electron)
-   */
-  getMode() {
-    return 'web'
-    // return 'desktop'
-  }
-
-  /**
-   * set true if working in strict/corporate network, false if not.
-   */
-  isMockDataOnly() {
+  getIsTestRun() {
     return true
-    // return false
   }
 
   setDashboardData(data: any[]) {
@@ -59,6 +53,16 @@ export class DataService {
     return this.dashboardData && this.dashboardData.length
   }
 
+  setSearchQuery(val) {
+    console.log(val);
+    this.searchQuery = val;
+  }
+
+  getSearchQuery() {
+    console.log(this.searchQuery);
+    return this.searchQuery;
+  }
+
   updateHighlightedMovie(val: any) {
     console.log('updatedHighlightedMovie ', val)
     this.selectedMovieSource.next(val)
@@ -76,5 +80,17 @@ export class DataService {
   updateSelectedMovies(val: any) {
     console.log('selectedMovies ', val)
     this.selectedMoviesSource.next(val)
+  }
+
+  // updateDiscoverQuery(type: string, val: string | null | number) {
+  updateDiscoverQuery(val: string[]) {
+    console.log(val);
+    // this.discoverQuery = val;
+    this.discoverMoviesSource.next(val)
+  }
+
+  getDiscoverQuery() {
+    console.log(this.discoverQuery);
+    return this.discoverQuery;
   }
 }

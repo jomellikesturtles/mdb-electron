@@ -12,14 +12,14 @@ let query = 'tt0031381';
 let releaseFrom = 2012
 let releaseTo = 2019
 let searchQuery = {
-    // title: 'guardians of the galaxy'.toLowerCase(),
-    title: '[',
-    genres: [''],
-    titleType: ['movie', 'tvMovie'],
-    releaseFrom: 2014,
-    releaseTo: 2019,
-    ratingFrom: 7.0,
-    ratingTo: 9.8
+  // title: 'guardians of the galaxy'.toLowerCase(),
+  title: '[',
+  genres: [''],
+  titleType: ['movie', 'tvMovie'],
+  releaseFrom: 2014,
+  releaseTo: 2019,
+  ratingFrom: 7.0,
+  ratingTo: 9.8
 }
 let count = parseInt(args[1]);
 let smart = (args[2] === 'true');
@@ -35,7 +35,7 @@ let result = [];
 
 // /**
 //  * Search by criteria, start year, end year, primary title
-//  * @param {*} record 
+//  * @param {*} record
 //  */
 // function titleCondition(record) {
 //     // id;query, yearfrom,yearto, ratings, genres, titleType
@@ -57,64 +57,71 @@ let result = [];
 
 /**
  * Processes and searches each chunk of DB as it is read into memory
- * @param {*} results 
- * @param {*} parser 
+ * @param {*} results
+ * @param {*} parser
  */
 function procData(results, parser) {
 
-    // var condition = currentCondition ? titleCondition : ratingCondition;
-    for (let c = 0; c < results.data.length; c++) {
-        let record = results.data[c];
+  // var condition = currentCondition ? titleCondition : ratingCondition;
+  for (let c = 0; c < results.data.length; c++) {
+    let record = results.data[c];
 
-        console.log('record', record)
-        // if (condition(record)) {
+    console.log('record', record)
+    // if (condition(record)) {
 
-        //     // if (i > count) { //count: sets limits of how many results to display
-        //     //     parser.abort();
-        //     //     stream.close();
-        //     //     break;
-        //     // } else {
-        //     // result.push(resultObjectTemplate(record));
-        // }
-    }
+    //     // if (i > count) { //count: sets limits of how many results to display
+    //     //     parser.abort();
+    //     //     stream.close();
+    //     //     break;
+    //     // } else {
+    //     // result.push(resultObjectTemplate(record));
+    // }
+  }
 }
 
 /**
  * Finish search, exit the process
  */
 function finSearch() {
-    console.log('result: ', result);
-    console.timeEnd('searchLapse')
-    process.exit(0);
+  console.log('result: ', result);
+  console.timeEnd('searchLapse')
+  process.exit(0);
 };
 
 /**
 * Initialize search
 */
 function initSearch() {
-    console.log('initSearch');
-    const titleBasicsTSV = path.join(process.cwd(), 'src', 'assets', 'movie database', 'title.basics.tsv', 'data.tsv')
-    console.log('titleBasicsTSV', titleBasicsTSV);
-    stream = fs.createReadStream(titleBasicsTSV)
-        .once('open', function () {
-            papa.parse(stream, {
-                delimiter: '\t',
-                escapeChar: '\\',
-                header: true,
-                chunk: procData,
-                complete: finSearch,
-                error: function (error) {
-                    console.log(error);
-                }
-            });
-        })
-        .on('error', function (err) {
-            process.send(['search-failed', 'read']); //mainWindow.webContents.send('search-failed', 'read');
-            console.log(err);
-        });
+  console.log('initSearch');
+  const titleBasicsTSV = path.join(process.cwd(), 'src', 'assets', 'movie database', 'title.basics.tsv', 'data.tsv')
+  console.log('titleBasicsTSV', titleBasicsTSV);
+  stream = fs.createReadStream(titleBasicsTSV)
+    .once('open', function () {
+      papa.parse(stream, {
+        delimiter: '\t',
+        escapeChar: '\\',
+        header: true,
+        chunk: procData,
+        complete: finSearch,
+        error: function (error) {
+          console.log(error);
+        }
+      });
+    })
+    .on('error', function (err) {
+      process.send(['search-failed', 'read']); //mainWindow.webContents.send('search-failed', 'read');
+      console.log(err);
+    });
 }
 
 console.time('searchLapse')
-initSearch()
+// initSearch()
 console.log('result: ', result);
 // console.timeEnd('searchLapse')
+
+var callMe = function callMe(arg1) {
+
+  console.log('callme', arg1);
+  initSearch()
+}
+module.exports.callMe = callMe
