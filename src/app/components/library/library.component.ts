@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
-import { TEST_LIBRARY_MOVIES } from '../../mock-data'
+import { TEST_LIBRARY_MOVIES, TMDB_SEARCH_RESULTS } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
 import { REGEX_IMAGE_SIZE } from '../../constants';
 import { DataService } from '../../services/data.service';
@@ -50,17 +50,6 @@ export class LibraryComponent implements OnInit {
   }
 
   /**
-   * Gets details of movie
-   */
-  getMovieDetails(imdbId) {
-    console.log('getMovieDetails', imdbId);
-    this.movieService.getMovieInfo(imdbId).subscribe(data => {
-      console.log(data);
-      this.movies.push(data)
-    })
-  }
-
-  /**
    * Minimizes size of poster to download
    * @param poster old poster
    * @returns newPoster new Poster
@@ -74,19 +63,22 @@ export class LibraryComponent implements OnInit {
    * Gets movies from library db
    */
   getMoviesFromLibrary() {
-    this.ipcService.getMoviesFromLibrary()
-    this.isFetchingData = true
-    this.ipcService.libraryMovies.subscribe((value) => {
-      if (value.length !== 0) {
-        this.libraryMovies = value
-        this.libraryMovies.forEach(libraryMovie => {
-          console.log('ibraryMovies.forEach', libraryMovie);
-          this.movies.push(libraryMovie)
-        });
-      }
-      this.isFetchingData = false
-      this.cdr.detectChanges()
-    })
+    this.libraryMovies = TMDB_SEARCH_RESULTS.results
+    // commented for TEST
+    // this.ipcService.getMoviesFromLibrary()
+    // this.isFetchingData = true
+    // this.ipcService.libraryMovies.subscribe((value) => {
+    //   if (value.length !== 0) {
+    //     this.libraryMovies = value
+    //     this.libraryMovies.forEach(libraryMovie => {
+    //       console.log('ibraryMovies.forEach', libraryMovie);
+    //       this.movies.push(libraryMovie)
+    //     });
+    //   }
+    //   this.isFetchingData = false
+    //   this.cdr.detectChanges()
+    // })
+    // end of commented for TEST
   }
 
   async getMoviesFromLibrary2() {
@@ -99,36 +91,6 @@ export class LibraryComponent implements OnInit {
 
     // this.movies.push(...result)
     // this.cdr.detectChanges()
-  }
-
-  /**
-   * Selects movie and show a preview
-   * @param movie movie to select
-   */
-  onSelect(movie) {
-    console.log('selected movie: ', movie)
-    // this.selectedMovie = movie;
-    const highlightedId = movie.imdbId ? movie.imdbId : movie.tmdbId;
-    this.dataService.updateHighlightedMovie(highlightedId);
-    // this.navigationService.goToPage()
-    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
-  }
-
-  /**
-   * Gets the year.
-   * @param releaseDate release date with format YYYY-MM-DD
-   */
-  getYear(releaseDate: string): string {
-    return this.utilsService.getYear(releaseDate)
-  }
-
-  /**
-   * Go to movie's details
-   * @param movie movie to view
-   */
-  goToMovie(movie) {
-    console.log(movie);
-    this.router.navigate([`/details/${movie.imdbID}`], { relativeTo: this.activatedRoute });
   }
 
   getMoreResults() {
@@ -145,15 +107,4 @@ export class LibraryComponent implements OnInit {
   //   this.cdr.detectChanges()
   // }
 
-  onHighlight() {
-    this.moviesList$.subscribe(e => {
-      e.movies.forEach(element => {
-        this.libraryMovies.forEach(res => {
-          if (element.id === res.id) {
-            res.isHighlighted = true
-          }
-        })
-      })
-    })
-  }
 }

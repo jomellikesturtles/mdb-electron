@@ -391,7 +391,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets the movie poster
    */
   getMoviePoster() {
-    this.ipcService.getImage(this.selectedMovie.Poster, this.selectedMovie.imdbID, 'poster')
+    this.ipcService.call(IpcCommand.GetImage, [this.selectedMovie.Poster, this.selectedMovie.imdbID, 'poster'])
     return this.selectedMovie.Poster
   }
 

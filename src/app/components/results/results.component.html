@@ -15,9 +15,8 @@
 
   <h1 *ngIf="currentSearchQuery">Search results for "{{currentSearchQuery}}"</h1>
   <div *ngIf='hasSearchResults' class='movie-cards-display-grid'>
-    <div id="results-panel" *ngFor="let movie of searchResults" class='movie-card' [ngStyle]="{'width': cardWidth}"
-      [ngClass]="{'movie-card-selected': movie.isHighlighted}">
-
+    <div id="results-panel" *ngFor="let movie of searchResults">
+      <app-movie-card [movie]='movie' [cardWidth]='cardWidth'></app-movie-card>
       <!-- alt image -->
       <!-- <div style=' text-align: center; color: white;' [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')'}"
         class='movie-card-image-container'>
@@ -25,29 +24,6 @@
         <div class="overlay overlay-add">
         </div>-->
       <!-- end of alt image -->
-
-      <div
-        [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
-        class='movie-card-image-container' (click)=onHighlight(movie)>
-
-        <div class='movie-available' data-toggle='tooltip' title='Available offline'>
-        </div>
-        <div class="overlay overlay-add">
-        </div>
-      </div>
-      <div class="card-body movie-card-body">
-        <div class="movie-card-text">
-          <h6 (click)="onSelect(movie)" class='text-primary movie-card-title card-title text-hyperlink'
-            data-toggle="tooltip" title="{{movie.title}}">{{movie.title}}</h6>
-          <!-- <h6 class="card-title text-hyperlink" (click)="onSelect(movie)" class='text-primary movie-card-title'
-            data-toggle="tooltip" title="{{movie.title}}">{{movie.title}}</h6> -->
-          <label class='text-hyperlink' style='float: left'>{{getYear(movie.release_date)}}</label>
-          <label *ngIf='movie.vote_average>0' style='float: right' data-toggle='tooltip'
-            title='{{movie.vote_count}} votes'><img style='height:10px;
-            -webkit-filter: invert(1);margin-bottom: 4px;
-margin-right: 2px;' src='./assets/icons/star.svg' />{{movie.vote_average}}</label>
-        </div>
-      </div>
     </div>
     <div *ngIf='currentSearchQuery' style='width: 100%; text-align: center; height: 80px;'>
       <h5 class='text-hyperlink' *ngIf="hasMoreResults" (click)='getMoreResults()'>Load more results...</h5>

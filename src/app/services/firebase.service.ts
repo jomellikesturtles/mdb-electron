@@ -4,7 +4,7 @@ import { pipe, Observable } from 'rxjs'
 import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFirestore, } from '@angular/fire/firestore'
 import * as firebase from 'firebase';
-import { IpcService, BookmarkChanges } from './ipc.service';
+import { IpcService, BookmarkChanges, IpcCommand } from './ipc.service';
 import { Select, Store } from '@ngxs/store';
 import { UserState } from '../app.state';
 import { RemoveUser } from '../app.actions';
@@ -38,7 +38,7 @@ export class FirebaseService {
    * Syncs bookmarks to and from cloud then executing batch commit.
    */
   synchronizeBookmarks() {
-    this.ipcService.getBookmarkChanges()
+    this.ipcService.call(IpcCommand.GetBookmarkChanges)
     // this.batch = this.db.firestore.batch()
     this.batch = this.db.batch()
     this.ipcService.bookmarkChanges.subscribe(e => {

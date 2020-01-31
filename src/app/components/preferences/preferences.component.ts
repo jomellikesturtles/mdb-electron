@@ -51,10 +51,10 @@ export class PreferencesComponent implements OnInit {
     })
     console.log(typeof libraryFoldersSubscription);
 
-    // this.ipcService.libraryMovies.subscribe((value) => {
-    //   this.libraryMovies = value
-    //   this.cdr.detectChanges()
-    // })
+    this.ipcService.libraryMovies.subscribe((value) => {
+      this.libraryMovies = value
+      this.cdr.detectChanges()
+    })
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
     this.ipcService.getFiles().then(value => {
@@ -116,15 +116,13 @@ export class PreferencesComponent implements OnInit {
    * Updates thepiratebay torrent dump
    */
   onUpdateTorrentDump() {
-    console.log('onUpdateTorrentDump');
-    this.ipcService.sendMessage('update-torrent-dump')
+    this.ipcService.call(IpcCommand.UpdateTorrentDump)
   }
   /**
    * Updates imdb files
    */
   onUpdateOfflineMetadata() {
-    this.ipcService.sendMessage('update-torrent-dump')
-    console.log('onUpdateOfflineMetadata');
+    this.ipcService.call(IpcCommand.UpdateTorrentDump)
   }
 
   /**

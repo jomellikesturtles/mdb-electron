@@ -7,7 +7,7 @@ import { catchError, map, tap, retry } from 'rxjs/operators';
 // import { Test, Movie, Torrent } from '../subject'
 import { ITorrent } from '../interfaces'
 import { forEach } from '@angular/router/src/utils/collection';
-import { IpcService } from '../services/ipc.service'
+import { IpcService, IpcCommand } from '../services/ipc.service'
 import { DomSanitizer } from '@angular/platform-browser'
 import { Pipe, PipeTransform } from '@angular/core';
 import { REGEX_IMDB_ID } from '../constants';
@@ -57,8 +57,7 @@ export class TorrentService {
   async getTorrentsOffline(val: string[]) {
     console.log('in getTorrentsOffline...; to be removed, jquery will handle instead')
 
-    this.ipcService.searchTorrent(val)
-
+    this.ipcService.call(IpcCommand.SearchTorrent, val)
     // return new Promise<any>((resolve, reject) => {
     //   this.ipcRenderer.once('library-movies', (event, arg) => {
     //     console.log('library-movies', arg);

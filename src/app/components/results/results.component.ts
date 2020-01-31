@@ -52,13 +52,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.selectedMovies = []
-    this.searchResults.forEach(element => {
-      element.isHighlighted = false
-    });
-    this.searchResults = []
   }
 
+  /**
+   * Subscribes to list of highlighted movies.
+   */
   getData() {
     this.moviesList$.subscribe(moviesResult => {
       console.log('moviesresult: ', moviesResult)
@@ -91,92 +89,22 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.currentSearchQuery = this.searchQuery.query
     });
   }
-  onClearSelected(): void {
-    this.selectedMovies.forEach(element => {
-      element.isHighlighted = false
-    });
-    this.selectedMovies = []
-  }
-
-  /**
-   * Adds bookmark for single movie.
-   * @param val tmdb id
-   */
-  onAddBookmarkSingle(val): void {
-    this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.Add, val])
-  }
-
-  /**
-   * Removes bookmark for single movie.
-   * @param val tmdb id
-   */
-  onRemoveBookmarkSingle(val): void {
-    this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.Remove, val])
-  }
-
-  onHighlight(movie): void {
-    console.log(this.selectedMovies);
-    movie.isHighlighted = !movie.isHighlighted
-    if (movie.isHighlighted) {
-      this.selectedMovies.push(movie)
-      this.store.dispatch(new AddMovie(movie))
-    } else {
-      this.selectedMovies = this.selectedMovies.filter((value, index, arr) => {
-        return value !== movie;
-      })
-      this.store.dispatch(new RemoveMovie(movie))
-    }
-  }
-
-  /**
-   * Opens the movie's details page.
-   * @param movie the movie to open
-   */
-  onSelect(movie: ITmdbResult): void {
-    this.selectedMovie = movie;
-    const highlightedId = movie.id;
-    this.dataService.updateHighlightedMovie(highlightedId);
-    // this.navigationService.goToPage()
-    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
-
-    // below is for imdb id, but we will settle for tmdb id for now
-    // this.movieService.getExternalId(movie.id).subscribe(data => {
-    //   const highlightedId = data.imdb_id;
-    //   localStorage.setItem('imdb_id', highlightedId)
-    //   this.dataService.updateHighlightedMovie(highlightedId);
-    //   this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
-    // })
-  }
-
-  /**
-   * Gets the year.
-   * @param releaseDate release date with format YYYY-MM-DD
-   */
-  getYear(releaseDate: string): string {
-    return this.utilsService.getYear(releaseDate)
-  }
-
-  getPoster(poster: string) {
-    console.log(this.movieService.getMoviePoster(poster))
-    // return poster;
-    return false
-  }
 
   getSearchResults() {
     // commented for actual
-    // this.searchResults = TMDB_SEARCH_RESULTS.results
+    this.searchResults = TMDB_SEARCH_RESULTS.results
     // end of commented for actual
     const params = [
       [TmdbSearchMovieParameters.Query, this.searchQuery.query]
     ]
-    this.movieService.searchTmdbMovie(params).subscribe(data => {
-      this.searchResults.push(...data.results)
-      if (data.total_pages > this.currentPage) {
-        this.hasMoreResults = true
-      }
-      this.setHighlights()
-      this.cdr.detectChanges()
-    })
+    // this.movieService.searchTmdbMovie(params).subscribe(data => {
+    //   this.searchResults.push(...data.results)
+    //   if (data.total_pages > this.currentPage) {
+    //     this.hasMoreResults = true
+    //   }
+    //   this.setHighlights()
+    //   this.cdr.detectChanges()
+    // })
   }
 
   /**

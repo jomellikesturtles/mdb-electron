@@ -1,12 +1,7 @@
 import {
-  Component,
-  OnInit,
-  ChangeDetectorRef,
-  Input,
-  ChangeDetectionStrategy,
+  AfterViewInit, Component, OnInit, ChangeDetectorRef, ElementRef, Input, ChangeDetectionStrategy, ViewChild, OnDestroy
 } from '@angular/core'
 import { Observable } from 'rxjs'
-import { TorrentService } from '../../services/torrent.service'
 import { MovieService } from '../../services/movie.service'
 import { DataService } from '../../services/data.service'
 import { IpcService } from '../../services/ipc.service'
@@ -16,11 +11,9 @@ import { ITmdbResult, ILibraryInfo, TmdbParameters, GenreCodes } from '../../int
 import { TMDB_SEARCH_RESULTS } from '../../mock-data'
 import { GENRES } from '../../constants'
 import { Select, Store } from '@ngxs/store'
-import { AddMovie, RemoveMovie } from '../../movie.actions'
-import { SelectedMoviesState } from '../../movie.state'
-import { SelectedMovie } from '../bulk-download/bulk-download.component'
 import { DomSanitizer } from '@angular/platform-browser'
 import { BookmarkService } from '../../services/bookmark.service'
+
 declare var $: any
 
 @Component({
@@ -29,21 +22,7 @@ declare var $: any
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class DashboardComponent implements OnInit {
-  @Input() data: Observable<any>
-  @Select(state => state.moviesList) moviesList$
-
-  browserConnection = navigator.onLine
-  nameString = 'name'
-  selectedMovies = []
-  sampleListMovies: ITmdbResult[] = []
-  topMoviesFromYear = []
-  dashboardLists = []
-  selectedMovie = null
-  selectedMovieBookmarkStatus = false
-  isHighlighted = false
-  cardWidth = '130px'
-  clipSrc = null
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private bookmarkService: BookmarkService,
@@ -55,8 +34,47 @@ export class DashboardComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private domSanitizer: DomSanitizer,
-    private store: Store
   ) { }
+
+  isYTReady: boolean
+  hasAlreadySelected: any
+  @Input() data: Observable<any>
+  @Select(state => state.moviesList) moviesList$
+  @ViewChild('player') thePlayer: ElementRef;
+
+  browserConnection = navigator.onLine
+  theLink = ''
+  nameString = 'name'
+  selectedMovies = []
+  sampleListMovies: ITmdbResult[] = []
+  topMoviesFromYear = []
+  dashboardLists = []
+  selectedMovie: ITmdbResult = {
+    popularity: 0,
+    id: -1,
+    video: false,
+    vote_count: 0,
+    vote_average: -1,
+    title: '',
+    release_date: '',
+    original_language: '',
+    original_title: '',
+    genre_ids: [],
+    backdrop_path: '',
+    adult: false,
+    overview: '',
+    poster_path: '',
+    isAvailable: false
+  }
+  selectedMovieBookmarkStatus = false
+  isHighlighted = false
+  cardWidth = '130px'
+  clipSrc = null
+  youtubeUrl = ''
+  tag
+  player;
+  done = false;
+  globalPlayerApiScript
 
   ngOnInit() {
     this.sampleListMovies = TMDB_SEARCH_RESULTS.results
@@ -131,6 +149,91 @@ export class DashboardComponent implements OnInit {
 
     $('[data-toggle="popover"]').popover()
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
+    this.frameready()
+  }
+
+  setVideo(videoId: string) {
+    this.player.loadVideoById(videoId);
+  }
+
+  frameready() {
+    (window as any).onYouTubeIframeAPIReady = () => {
+      console.log('INFRAMEREADY')
+      this.player = new (window as any).YT.Player('player', {
+        height: '100%',
+        width: '100%',
+        events: {
+          onReady: (event) => this.onPlayerReady(event),
+          onStateChange: (event) => this.onPlayerStateChange(event)
+        },
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          modestbranding: 1,
+          rel: 1,
+          showInfo: 0,
+          disablekb: 1
+        }
+      });
+    }
+  }
+
+  ngAfterViewInit(): void {
+  }
+
+  ngOnDestroy(): void {
+    this.removeYoutube()
+  }
+
+  generateYoutube(): void {
+    const doc = (window as any).document;
+    const playerApiScript = doc.createElement('script');
+    playerApiScript.type = 'text/javascript';
+    playerApiScript.src = 'https://www.youtube.com/iframe_api';
+    this.globalPlayerApiScript = playerApiScript
+    doc.body.appendChild(this.globalPlayerApiScript);
+  }
+
+  removeYoutube() {
+    const doc = (window as any).document;
+    if (this.globalPlayerApiScript) {
+      doc.body.removeChild(this.globalPlayerApiScript)
+      this.globalPlayerApiScript = null
+    }
+  }
+
+  // The API calls this function when the player's state changes.
+  onPlayerStateChange(event) {
+    /**
+     * -1 (unstarted)
+     * 0 (ended)
+     * 1 (playing)
+     * 2 (paused)
+     * 3 (buffering)
+     * 5 (video cued).
+     * YT.PlayerState.ENDED
+     * YT.PlayerState.PLAYING
+     * YT.PlayerState.PAUSED
+     * YT.PlayerState.BUFFERING
+     * YT.PlayerState.CUED
+     */
+    console.log('onPlayerStateChange: ', event.data);
+    if (event.data === 1) {
+      this.isYTReady = true
+    }
+    if (event.data === -1 || event.data === 0) {
+      this.isYTReady = false
+    }
+    this.cdr.detectChanges()
+  }
+
+  // The API will call this function when the video player is ready
+  onPlayerReady(event) {
+    console.log('ONPLAYERREADY');
+    event.target.cueVideoById({
+      videoId: this.youtubeUrl
+    });
+    event.target.playVideo();
   }
 
   /**
@@ -144,27 +247,6 @@ export class DashboardComponent implements OnInit {
       }
     }
     this.cdr.detectChanges()
-  }
-
-  /**
-   * Downloads highlighted/selected movies
-   */
-  onDownloadSelected() {
-    this.dataService.updateSelectedMovies(this.selectedMovies)
-    this.router.navigate([`/bulk-download`], {
-      relativeTo: this.activatedRoute
-    })
-  }
-
-  /**
-   * Clears highlighted/selected movies.
-   * TODO: Remove. It is alredy in the selected-movies component.
-   */
-  onClearSelected() {
-    this.selectedMovies.forEach(element => {
-      element.isHighlighted = false
-    })
-    this.selectedMovies = []
   }
 
   /**
@@ -233,28 +315,29 @@ export class DashboardComponent implements OnInit {
     this.ipcService.getMoviesFromLibrary()
   }
 
-  /**
-   * Adds movie object to the selected movies list
-   * @param movie current selected movie
-   */
-  onHighlight(movie: any) {
-    movie.isHighlighted = !movie.isHighlighted
-    if (movie.isHighlighted) {
-      this.selectedMovies.push(movie)
-      this.store.dispatch(new AddMovie(movie))
-    } else {
-      this.selectedMovies = this.selectedMovies.filter((value, index, arr) => {
-        return value !== movie
-      })
-      this.store.dispatch(new RemoveMovie(movie))
-    }
-  }
+  // onHighlight(movie: any) {
+  //   movie.isHighlighted = !movie.isHighlighted
+  //   if (movie.isHighlighted) {
+  //     this.selectedMovies.push(movie)
+  //     this.store.dispatch(new AddMovie(movie))
+  //   } else {
+  //     this.selectedMovies = this.selectedMovies.filter((value, index, arr) => {
+  //       return value !== movie
+  //     })
+  //     this.store.dispatch(new RemoveMovie(movie))
+  //   }
+  // }
 
   /**
+   * TODO: Simplify component code. Transfer codes to the service.
    * Performs actions for selected movie.
    * @param movie the selected movie
    */
   onSelect(movie: any) {
+    if (this.selectedMovie.id === movie.id) {
+      return
+    }
+    let videoId = ''
     const results = []
     this.selectedMovie = movie
     let title = movie.title.toLowerCase()
@@ -267,13 +350,18 @@ export class DashboardComponent implements OnInit {
           results.push({ title: snipTitle, videoId: element.id.videoId })
         }
       })
-      // LHAQjlufY0A
       // HiN6Ag5-DrU?VQ=HD720
-      console.log('clips list length: ', results.length);
       const index = Math.round(Math.random() * (results.length - 1))
-      console.log('clip index: ', index, results[index]);
-      this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${results[index].videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`)
-      this.cdr.detectChanges();
+      console.log('clips list length: ', results.length, ' clip index: ', index, results[index]);
+
+      videoId = results[index].videoId
+      this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`)
+      this.youtubeUrl = videoId
+      if (!this.hasAlreadySelected) {
+        this.generateYoutube()
+        this.hasAlreadySelected = true
+      }
+      this.setVideo(videoId)
     })
     this.getBookmarkStatus(movie.id)
   }
@@ -338,6 +426,7 @@ export class DashboardComponent implements OnInit {
     const container = document.getElementById('topMoviesFromYearPanel')
     this.sideScroll(container, 'left', 25, 100, 10)
   }
+
   scrollNext() {
     const container = document.getElementById('topMoviesFromYearPanel')
     this.sideScroll(container, 'right', 25, 100, 10)

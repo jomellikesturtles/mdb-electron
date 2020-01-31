@@ -1,39 +1,16 @@
 <app-selected-list></app-selected-list>
 <div class="container-fluid">
   <button class='btn btn-info'>Scan library</button>
-  <!-- <div *ngIf='!hasSearchResults'>
-    <h1 class='jumbo-message'>No results found for '{{currentSearchQuery}}' :(</h1>
+  <!-- <div *ngIf='!hasLibraryResults'>
+    <h1 class='jumbo-message'>No offline movies found.</h1>
   </div> -->
 
-  <!-- <div *ngIf='hasSearchResults' class='movie-cards-display-grid'> -->
+  <!-- <div *ngIf='hasLibraryResults' class='movie-cards-display-grid'> -->
   <div class='movie-cards-display-grid'>
-    <!-- <h1 *ngIf="currentSearchQuery">Search results for "{{currentSearchQuery}}"</h1> -->
-    <div id="results-panel" *ngFor="let movie of libraryMovies" class='movie-card' [ngStyle]="{'width': cardWidth}"
-      [ngClass]="{'movie-card-selected': movie.isHighlighted}">
-
-      <div
-        [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
-        class='movie-card-image-container' (click)=onHighlight(movie)>
-        <!-- <div
-        [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
-        class='movie-card-image-container' (click)=onHighlight(movie)> -->
-
-        <div class='movie-available' data-toggle='tooltip' title='Available offline'>
-        </div>
-        <div class="overlay overlay-add">
-        </div>
-      </div>
-      <div class="card-body movie-card-body">
-        <div class="movie-card-text">
-          <h6 (click)="onSelect(movie)" class='text-hyperlink text-primary movie-card-title card-title'
-            data-toggle="tooltip" title="{{movie.title}}">{{movie.title}}</h6>
-          <!-- <label style='float: left'>{{getYear(movie.release_date)}}</label>
-          <label style='float: right'>{{movie.vote_average}}</label> -->
-        </div>
-      </div>
+    <div id="results-panel" *ngFor="let movie of libraryMovies">
+      <app-movie-card [movie]='movie' [cardWidth]='cardWidth'></app-movie-card>
     </div>
     <div *ngIf="!isFetchingData" style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
-      <!-- <h5 class='text-hyperlink' (click)='getMoviesFromLibrary()'>Load more results...</h5> -->
       <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
     </div>
   </div>

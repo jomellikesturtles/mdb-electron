@@ -6,16 +6,15 @@ const searchMovie = require('./search-movie')
 const fs = require('fs');
 const path = require('path');
 var DataStore = require('nedb')
-const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
+const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg', ]
 const ffmpeg = require('fluent-ffmpeg')
 var libraryDbService = require('./library-db-service-2.js')
-var config = new DataStore(
-  {
-    filename: '../config/config.db',
-    // filename: path.join(__dirname, '..', 'config', 'config.db'), // for node only
-    // filename: '../config/config.db',
-    autoload: true
-  })
+var config = new DataStore({
+  filename: '../config/config.db',
+  // filename: path.join(__dirname, '..', 'config', 'config.db'), // for node only
+  // filename: '../config/config.db',
+  autoload: true
+})
 
 process.on('uncaughtException', function (error) {
   console.log(error);
@@ -99,7 +98,7 @@ function getTitleAndYear(parentFolder, fullFileName) {
   var titleRegex = new RegExp(fileTitleRegexStr, 'gmi')
   var result = null
   result = titleRegex.exec(fullFileName)
-  if (result[1]) {//if not blank or undefined
+  if (result[1]) { //if not blank or undefined
     return result
   } else {
     titleRegex = new RegExp(folderTitleRegexStr, 'gmi')
@@ -165,8 +164,7 @@ function readDirectory(startPath) {
 
     if (stat.isDirectory()) {
       readDirectory(filename); //recurse
-    }
-    else {
+    } else {
       if (isVideoFile(filename)) {
         console.log(filename);
         addToList(startPath, files[i])
@@ -189,7 +187,9 @@ function readDirectory(startPath) {
 function getLibraryFolders() {
   return new Promise(function (resolve, reject) {
     var foldersList = null
-    config.findOne({ type: 'libraryFolders' }, function (err, dbPref) {
+    config.findOne({
+      type: 'libraryFolders'
+    }, function (err, dbPref) {
       if (!err) {
         if (dbPref) {
           foldersList = dbPref.foldersList
@@ -213,7 +213,6 @@ async function scanExistingLibraryMovies() {
   libraryDbService.count().then(async count => {
     totalCount = count
     console.log('count:', count);
-
     while (page < totalCount) {
       promises[page] = new Promise((resolve, reject) => {
 
@@ -235,6 +234,21 @@ async function scanExistingLibraryMovies() {
   })
 }
 
+
+async function identifyMovies() {
+  const totalCount = await libraryDbService.count()
+  console.log('count:', totalCount);
+  let index = 0
+  while (index < totalCount) {
+    // libraryDbService.getLibraryFilesTitleAndYear(index, 1).then(fullFilePath => {
+    // })
+    const title = await libraryDbService.getLibraryFilesTitleAndYear(index, 1)
+    console.log(title)
+    // S
+    index++;
+  }
+}
+
 /**
  * Starts scan. First checks for the folders in the database.
  */
@@ -249,9 +263,11 @@ async function initializeScan() {
       readDirectory(folder);
     });
   })
+  identifyMovies()
 }
 
-initializeScan();
+identifyMovies()
+// initializeScan();
 
 // var regexList =
 // Tested: `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`

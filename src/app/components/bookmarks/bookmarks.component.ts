@@ -11,6 +11,8 @@ import { FirebaseService } from '../../services/firebase.service';
 import { MovieService } from '../../services/movie.service';
 import { UtilsService } from '../../services/utils.service';
 import { BookmarkService } from '../../services/bookmark.service';
+import { TMDB_SEARCH_RESULTS } from '../../mock-data';
+import { Select } from '@ngxs/store';
 
 @Component({
   selector: 'app-bookmarks',
@@ -19,6 +21,7 @@ import { BookmarkService } from '../../services/bookmark.service';
 })
 export class BookmarksComponent implements OnInit {
 
+  @Select(state => state.moviesList) moviesList$
   procSync = false
   // bookmarksList: IBookmark[] = [
   //   { tmdbId: 0, imdbId: 'tt0910970', userId: '', },
@@ -69,6 +72,7 @@ export class BookmarksComponent implements OnInit {
     //   console.log(e);
     //   this.moviesDisplayList.push(e.movie_results[0])
     // })
+    this.getData()
     this.getBookmarkedMovies()
   }
 
@@ -79,16 +83,30 @@ export class BookmarksComponent implements OnInit {
     // });
   }
 
-  onHighlight(movie) {
-
-  }
-
-  onSelect(movie) {
-
-  }
-
-  getYear(val) {
-    return this.utilsService.getYear(val)
+  /**
+   * Subscribes to list of highlighted movies.
+   */
+  getData() {
+    this.moviesList$.subscribe(moviesResult => {
+      console.log('moviesresult: ', moviesResult)
+      if (moviesResult.change === 'add') {
+        this.moviesDisplayList.forEach(element => {
+          if (moviesResult.idChanged === element.id) {
+            element.isHighlighted = true
+          }
+        })
+      } else if (moviesResult.change === 'remove') {
+        this.moviesDisplayList.forEach(element => {
+          if (moviesResult.idChanged === element.id) {
+            element.isHighlighted = false
+          }
+        })
+      } else if (moviesResult.change === 'clear') {
+        this.moviesDisplayList.forEach(element => {
+          element.isHighlighted = false
+        })
+      }
+    });
   }
 
   getMoreResults() {
@@ -99,18 +117,17 @@ export class BookmarksComponent implements OnInit {
    * Gets bookmarks by ajax.
    */
   async getBookmarkedMovies() {
-    this.bookmarksList = await this.bookmarkService.getBookmarksMultiple()
-    console.log('getBookmarkedMovies: ', this.bookmarksList);
-    this.bookmarksList.forEach(element => {
-      // this.movieService.getTmdbMovieDetails().subscribe
-      this.movieService.getTmdbMovieDetails(element.tmdbId).subscribe(e => {
-        // this.movieService.getFindMovie(element.imdbId).subscribe(e => {
-        // console.log();
-
-        this.moviesDisplayList.push(e)
-        // this.moviesDisplayList.push(e.movie_results[0])
-      })
-    });
+    this.moviesDisplayList = TMDB_SEARCH_RESULTS.results
+    // commented for TEST
+    // this.bookmarksList = await this.bookmarkService.getBookmarksMultiple()
+    // console.log('getBookmarkedMovies: ', this.bookmarksList);
+    // this.bookmarksList.forEach(element => {
+    //   // this.movieService.getTmdbMovieDetails().subscribe
+    //   this.movieService.getTmdbMovieDetails(element.tmdbId).subscribe(e => {
+    //     // this.movieService.getFindMovie(element.imdbId).subscribe(e => {
+    //     this.moviesDisplayList.push(e)
+    //   })
+    // });
   }
 }
 export interface IBookmark {

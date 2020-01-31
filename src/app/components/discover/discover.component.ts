@@ -3,6 +3,7 @@ import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
 import { TmdbParameters, GenreCodes } from '../../interfaces';
 import { UtilsService } from '../../services/utils.service';
+import { TMDB_SEARCH_RESULTS } from '../../mock-data';
 
 @Component({
   selector: 'app-discover',
@@ -29,10 +30,12 @@ export class DiscoverComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.dataService.discoverQuery.subscribe(data => {
-      console.log('fromdataservice: ', data);
-      this.discoverQuery(data[0], data[1])
-    });
+    this.discoverResults = TMDB_SEARCH_RESULTS.results
+    this.hasResults = true
+    // this.dataService.discoverQuery.subscribe(data => {
+    //   console.log('fromdataservice: ', data);
+    //   this.discoverQuery(data[0], data[1])
+    // });
   }
 
   /**
@@ -41,6 +44,7 @@ export class DiscoverComponent implements OnInit {
    * @param val type value
    */
   discoverQuery(type: string, val: string | number): void {
+    // commented for TESTING
     const params = []
     let tempTitle = ''
     // cert,year,genre
@@ -68,14 +72,7 @@ export class DiscoverComponent implements OnInit {
       }
       this.cdr.detectChanges()
     });
-  }
-
-  onHighlight(val): void {
-
-  }
-
-  onSelect(val): void {
-
+    // commented for TESTING
   }
 
   getMoreResults() {

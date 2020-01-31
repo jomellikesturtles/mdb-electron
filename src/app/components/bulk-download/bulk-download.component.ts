@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 // import { Torrent, Movie, Test } from '../../subject'
 import { ITorrent } from '../../interfaces'
 import { MovieService } from '../../services/movie.service'
-import { IpcService } from '../../services/ipc.service'
+import { IpcService, IpcCommand } from '../../services/ipc.service'
 import { DISPLAYEDMOVIES, MOVIEGENRES } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../services/data.service'
@@ -60,7 +60,7 @@ export class BulkDownloadComponent implements OnInit {
   }
 
   getTorrentsByTitleAlgorithm(value) {
-    this.ipcService.getTorrentsByTitle(value)
+    this.ipcService.call(IpcCommand.GetTorrentsTitle, value)
   }
 
   getTorrentByTitle(movie) {
