@@ -171,13 +171,6 @@ function readDirectory(startPath) {
       }
     }
   }
-  // fs.readdir(folderpath, (err, files) => {
-  //     console.log(files)
-  //     files.forEach(element => {
-  //         console.log(element)
-  //         console.log(getExtension(element))
-  //     });
-  // })
 }
 
 /**

@@ -3,7 +3,7 @@ import { TEST_LIBRARY_MOVIES, TMDB_SEARCH_RESULTS } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
 import { REGEX_IMAGE_SIZE } from '../../constants';
 import { DataService } from '../../services/data.service';
-import { IpcService } from '../../services/ipc.service';
+import { IpcService, IpcCommand } from '../../services/ipc.service';
 import { MovieService } from '../../services/movie.service';
 import { Observable } from 'rxjs'
 import { UtilsService } from '../../services/utils.service';
@@ -107,4 +107,7 @@ export class LibraryComponent implements OnInit {
   //   this.cdr.detectChanges()
   // }
 
+  onScanLibrary() {
+    this.ipcService.call(IpcCommand.ScanLibrary)
+  }
 }

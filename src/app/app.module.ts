@@ -37,6 +37,7 @@ import { CountState } from './app.state';
 import { SelectedListComponent } from './components/selected-list/selected-list/selected-list.component';
 import { SelectedMoviesState } from './movie.state';
 import { MovieCardComponent } from './components/movie-card/movie-card.component';
+import { NotificationComponent } from './components/notification/notification.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -66,7 +67,8 @@ import { MovieCardComponent } from './components/movie-card/movie-card.component
     RepeatPasswordValidatorDirective,
     CredentialsDirective,
     SelectedListComponent,
-    MovieCardComponent
+    MovieCardComponent,
+    NotificationComponent
   ],
   imports: [
     BrowserModule,
