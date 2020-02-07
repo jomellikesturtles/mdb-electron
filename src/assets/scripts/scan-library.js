@@ -18,7 +18,6 @@ var config = new DataStore({
 
 process.on('uncaughtException', function (error) {
   console.log(error);
-  // process.send(['scrape-failed', 'general']); //mainWindow.webContents.send('scrape-failed', 'general');
 });
 
 
@@ -77,14 +76,7 @@ function addToList(folderPath, fileName) {
     title: title,
     year: year
   }
-  // durationMins: 123,
-  // hasDuplicateTitle: false,
-  // console.log(fileInfo);
-  // libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) {
-  // if (!err) {
   saveToLibraryDb(fileInfo);
-  // }
-  // })
 }
 /**
  * Gets the movie title based on regex
@@ -168,6 +160,7 @@ function readDirectory(startPath) {
       if (isVideoFile(filename)) {
         console.log(filename);
         addToList(startPath, files[i])
+        process.send(['found-video-library', filename])
       }
     }
   }

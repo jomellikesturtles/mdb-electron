@@ -32,7 +32,7 @@ export class AppStateModel implements IAppStateModel {
   private _environment: 'web' | 'desktop' | string
   private _isOnline: boolean
 
-  get database() {
+  get  database() {
     return 'nedb'
   }
 

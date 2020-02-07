@@ -22,7 +22,7 @@
               </div>
               <div *ngIf="!isBookmarked">
                 <button [disabled]='procBookmark' class='btn btn-success btn-small' (click)='toggleBookmark()'>
-                  Add to bookmark
+                  Add bookmark
                 </button>
               </div>
               <div *ngIf="isWatched">
@@ -47,6 +47,7 @@
                 ({{movieDetails.releaseDate|releaseYear}})
               </h2>
               <h2 (click)='goToCertification(movieCertification)'>{{movieCertification}}</h2>
+              <button class='btn btn-primary'>Play</button>
             </div>
 
             <p id="movie-plot" style='overflow-wrap: break-word !important;

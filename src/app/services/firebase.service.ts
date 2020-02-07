@@ -59,16 +59,19 @@ export class FirebaseService {
    * @param operator firebase operator
    * @param value value to compare
    */
-  getFromFirestore(collection: string, columnName: string, operator: FirebaseOperator, value: any) {
+  getFromFirestore(collectionName: string, columnName: string, operator: FirebaseOperator, value: any) {
     return new Promise(resolve => {
-      this.db.collection(collection).where(columnName, operator, value).get().then((snapshot) => {
+      this.db.collection(collectionName).where(columnName, operator, value).get().then((snapshot) => {
         console.log('SNAPSHOT: ', snapshot);
         if (!snapshot.empty) {
-          const user = snapshot.docs[0]
-          console.log('snapshot.docs[0]', user);
+          // const user = snapshot.docs[0]
+          // console.log('snapshot.docs[0]', user);
+          const objectToReturn = snapshot.docs[0].data()
+          objectToReturn['documentId'] = snapshot.docs[0].id
+          resolve(objectToReturn)
+        } else {
+          resolve(null)
         }
-        console.log('snapshot.docs[0].data', snapshot.docs[0].data());
-        resolve(snapshot.docs[0].data())
       }).catch(err => {
         console.log('Error getting document', err);
       });
@@ -94,11 +97,29 @@ export class FirebaseService {
    * @param data data to insert/add
    */
   insertIntoFirestore(collection: CollectionName, data: object) {
-    this.db.collection(collection).add(data).then(e => {
-      console.log(e);
+    return new Promise(resolve => {
+      this.db.collection(collection).add(data).then(e => {
+        console.log(e);
+        if (e.id) {
+          resolve(e.id)
+        } else {
+          resolve(null)
+        }
+      })
     })
   }
 
+  deleteFromFirestore(collectionName: CollectionName, docId: string) {
+    return new Promise(resolve => {
+      this.db.collection(collectionName).doc(docId).delete().then(function (e) {
+        console.log("Document successfully deleted!");
+        console.log(e)
+        resolve('success')
+      }).catch(function (error) {
+        console.error("Error removing document: ", error);
+      });
+    })
+  }
   /**
    * Inserts data into firestore.
    * @param collectionName name of the collection

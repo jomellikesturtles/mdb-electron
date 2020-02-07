@@ -56,6 +56,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   procBookmark = false
   procWatched = false
   procVideo = false
+  bookmarkDocId = ''
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -71,21 +72,19 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // this.movieService.getBookmark(123123).subscribe(e => {
-    //   console.log(e);
-    // })
     this.getTroubleQuote()
-    this.activatedRoute.params.subscribe(params => {
-      console.log('activatedRoute.params', params);
-      if (params.id) {
-        this.getMovieOnline(params.id)
-      } else {
-        this.hasData = false
-      }
-    });
+    // this.activatedRoute.params.subscribe(params => {
+    //   console.log('activatedRoute.params', params);
+    //   if (params.id) {
+    //     this.getMovieOnline(params.id)
+    //   } else {
+    //     this.hasData = false
+    //   }
+    // });
     // this.selectedMovie = this.testSelectedMovie
     console.time('convertTime');
-    // this.convertObject(TMDB_FULL_MOVIE_DETAILS)
+    this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
+    this.loadVideoData()
     console.timeEnd('convertTime');
     // this.loadVideoData()
     // this.getMovieFromLibrary()
@@ -156,95 +155,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   convertObject(v) {
-
-    Object.keys(v).forEach(key => {
-      console.log('key: ', key, ' value: ', v[key], ' ')
-      switch (key) {
-        case 'Actors':
-          this.movieDetails.releaseDate = v[key]
-          break;
-        case 'adult':
-          this.movieDetails.isAdult = v[key]
-          break;
-        case 'Awards':
-          this.movieDetails.awards = v[key]
-          break;
-        case 'backdrop_path':
-          this.movieDetails.backgroundPath = v[key]
-          break;
-        case 'belongs_to_collection':
-          this.movieDetails.belongsToCollection = v[key]
-          break;
-        case 'BoxOffice':
-        case 'revenue':
-          this.movieDetails.boxOffice = v[key]
-          break;
-        case 'Director':
-          this.movieDetails.director = v[key]
-          break;
-        case 'Genre':
-          this.movieDetails.genres = v[key]
-          break;
-        case 'homepage':
-          this.movieDetails.website = v[key]
-          break;
-        case 'id':
-          this.movieDetails.tmdbId = v[key]
-          break;
-        case 'imdb_id':
-        case 'imdbID':
-          this.movieDetails.imdbId = v[key]
-          break;
-        case 'Language':
-        case 'spoken_languages':
-          this.movieDetails.languages = v[key]
-          break;
-        case 'original_language':
-          this.movieDetails.originalLanguage = v[key]
-          break;
-        case 'original_title':
-          this.movieDetails.originalTitle = v[key]
-          break;
-        case 'Poster':
-        case 'poster_path':
-          this.movieDetails.posterPath = v[key]
-          break;
-        case 'Plot':
-        case 'overview':
-          this.movieDetails.plot = v[key]
-          break;
-        case 'Title':
-          this.movieDetails.title = v[key]
-          break;
-        case 'TmdbID':
-          this.movieDetails.tmdbId = v[key]
-          break;
-        case 'release_date':
-        case 'Released':
-          this.movieDetails.releaseDate = v[key]
-          break;
-        case 'vote_average':
-          this.movieDetails.voteAverage = v[key]
-          break;
-        case 'vote_count':
-          this.movieDetails.voteCount = v[key]
-          break;
-        case 'Writer':
-          this.movieDetails.writer = v[key]
-          break;
-        case 'Year':
-          this.movieDetails.releaseYear = v[key]
-          break;
-
-        default:
-          this.movieDetails[key] = v[key]
-          break;
-      }
-    });
     this.loadVideoData()
-    // Object.keys(this.movieDetails).forEach(key => {
-    //   console.log(`movieDetails key ${key} with value `, v[key]);
-    // })
   }
 
   getMovieCredits() {
@@ -272,6 +183,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     })
   }
 
+  /**
+   * Gets bookmark status.
+   */
   async getBookmark() {
     // this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.BookmarkGet, this.movieDetails.tmdbId])
     // this.procBookmark = true
@@ -284,21 +198,31 @@ export class DetailsComponent implements OnInit, OnDestroy {
     //   this.procBookmark = false
     //   this.cdr.detectChanges()
     // })
-    // this.procBookmark = true
+    this.procBookmark = true
     const bookmark = await this.bookmarkService.getBookmark(this.movieDetails.tmdbId)
-    console.log('bookmark:', bookmark)
+
+    if (bookmark) {
+      this.isBookmarked = true;
+      this.bookmarkDocId = bookmark['documentId']
+    } else {
+      this.isBookmarked = false;
+    }
+    console.log('BOOKMARK: ', bookmark)
+    this.procBookmark = false
+    this.cdr.detectChanges()
   }
 
   /**
    * Toggles movie from user's watchlist or bookmarks
    */
-  toggleBookmark() {
+  async toggleBookmark() {
     // this.procBookmark = true
     // if (this.isBookmarked === true) {
     //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-remove', this.movieDetails.tmdbId])
     // } else {
     //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-add', this.movieDetails.tmdbId])
     // }
+    this.procBookmark = true
     const releaseYear = parseInt(this.getYear(this.movieDetails.releaseDate), 10)
     const movieObject = {
       tmdbId: this.movieDetails.tmdbId,
@@ -306,8 +230,18 @@ export class DetailsComponent implements OnInit, OnDestroy {
       year: releaseYear ? releaseYear : 0,
     }
     console.log('object to toggle :', movieObject);
-    this.bookmarkService.saveBookmark(movieObject)
-    // this.bookmarkService.saveBookmark(this.movieDetails.tmdbId)
+    let bookmark
+    if (this.isBookmarked) {
+      bookmark = await this.bookmarkService.removeBookmark(this.bookmarkDocId)
+      this.bookmarkDocId = ''
+    } else {
+      bookmark = await this.bookmarkService.saveBookmark(movieObject)
+      this.bookmarkDocId = bookmark
+    }
+    this.isBookmarked = (this.bookmarkDocId) ? true : false
+    console.log("BOOKMARKADD:", bookmark)
+    this.procBookmark = false
+    this.cdr.detectChanges()
   }
 
   /**
@@ -371,7 +305,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
       console.log('got from getMovieOnline ', data)
       this.selectedMovie = data;
       const myObject = this.selectedMovie
-      this.convertObject(myObject)
+      // this.convertObject(myObject)
+      this.movieDetails.convertToMdbObject(myObject)
       this.hasData = true
       this.saveMovieDataOffline(data)
     });
