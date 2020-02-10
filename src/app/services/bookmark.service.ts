@@ -7,10 +7,11 @@ import { IpcService } from './ipc.service'
 export class BookmarkService {
 
   constructor(private firebaseService: FirebaseService) { }
-  // AppStateModel.
+
   getBookmark(id) {
     return new Promise(resolve => {
       this.firebaseService.getFromFirestore(CollectionName.Bookmark, 'tmdbId', FirebaseOperator.Equal, id).then(e => {
+        console.log('BOOKMARK: ', e)
         resolve(e)
       })
     })
@@ -19,7 +20,7 @@ export class BookmarkService {
   saveBookmark(data) {
     return new Promise(resolve => {
       this.firebaseService.insertIntoFirestore(CollectionName.Bookmark, data).then(e => {
-      // this.firebaseService.insertIntoFirestore(CollectionName.Bookmark, { tmdbId: data }).then(e => {
+        // this.firebaseService.insertIntoFirestore(CollectionName.Bookmark, { tmdbId: data }).then(e => {
         resolve(e)
       })
     })
@@ -33,8 +34,6 @@ export class BookmarkService {
     })
   }
 
-
-
   saveBookmarkMulti(data: object[]) {
     const list = []
     data.forEach(element => {
@@ -42,7 +41,6 @@ export class BookmarkService {
     })
     this.firebaseService.insertIntoFirestoreMulti(CollectionName.Bookmark, list)
   }
-
 
   /**
    * Gets multiple bookmarks.

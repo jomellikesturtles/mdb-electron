@@ -8,6 +8,7 @@ import { AngularFireAuth, AngularFireAuthModule } from '@angular/fire/auth'
 // import {  } from '@angular/fire/angularfire2'
 import { IpcService } from '../../services/ipc.service';
 import { FirebaseService } from '../../services/firebase.service';
+import { UtilsService } from '../../services/utils.service';
 
 @Component({
   selector: 'app-signin',
@@ -44,12 +45,13 @@ export class SigninComponent implements OnInit {
     private auth: AngularFireAuth,
     private authModule: AngularFireAuthModule,
     private firebaseService: FirebaseService,
-    private ipcService: IpcService
+    private ipcService: IpcService,
+    private utilsService: UtilsService
   ) { }
 
   ngOnInit() {
-    const protocol = window.location.protocol
-    if (protocol === 'http:' || protocol === 'https:') {
+    const env = this.utilsService.getEnvironment()
+    if (env === 'web') {
       this.isOAuthValid = true
     }
 

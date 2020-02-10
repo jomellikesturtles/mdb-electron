@@ -44,4 +44,18 @@ export class UtilsService {
     }, 3000);
   }
 
+  /**
+   * Gets browser environment
+   * @returns toReturn desktop or web
+   */
+  getEnvironment(): string {
+    let toReturn = 'desktop'
+    const environment = location.protocol
+    if (environment === 'http:' || environment === 'https:') {
+      toReturn = 'web'
+    } else if (environment === 'file:') {
+      toReturn = 'desktop'
+    }
+    return toReturn
+  }
 }

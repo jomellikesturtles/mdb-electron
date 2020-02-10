@@ -40,6 +40,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   hasAlreadySelected: any
   @Input() data: Observable<any>
   @Select(state => state.moviesList) moviesList$
+  @Select(state => state) appRun$
   @ViewChild('player') thePlayer: ElementRef;
 
   browserConnection = navigator.onLine
@@ -79,10 +80,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.sampleListMovies = TMDB_SEARCH_RESULTS.results
     this.sampleListMovies[this.nameString] = `Sample Data`
-    this.dashboardLists.push(this.sampleListMovies)
+    // this.dashboardLists.push(this.sampleListMovies)
     this.getNowShowingMovies()
     this.getTopMoviesFromYear()
-    // this.getTopGenreMovie()
+    this.getTopGenreMovie()
     this.getAvailability()
 
     // COMMENTED FOR TEST DATA ONLY
@@ -149,6 +150,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     $('[data-toggle="popover"]').popover()
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
+    this.appRun$.subscribe(e => {
+      console.log('ISMOCKDATA', e)
+    })
     this.frameready()
   }
 

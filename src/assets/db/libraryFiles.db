@@ -1,6 +1,8 @@
-{"tmdbId":10681,"imdbId":"tt0910970","title":"Wall·E","year":2008,"directoryList":["D:\\media server\\movies\\Wall·E-2008.mp4"],"_id":"IS0KN0OLfDwBY0SX"}
-{"imdbId":"tt2015381","title":"Guardians of the Galaxy","year":2014,"directoryList":["C:\\Guardians of the Galaxy.mp4"],"_id":"W1geTp6I5f61nI1p"}
-{"tmdbId":13,"imdbId":"tt0111161","title":"Forrest Gump","year":1994,"directoryList":["D:\\media server\\movies\\Forrest Gump.mp4"],"_id":"WOMxLFoIqkm1tbIB"}
-{"imdbId":"tt0120338","title":"Titanic","year":1997,"directoryList":["D:\\titanic.mp4"],"_id":"Ztnh2dc4KUIHcAuC"}
-{"imdbId":"tt0105236","title":"Reservoir Dogs","year":1994,"directoryList":["D:\\movies\\reservoir dogs.mp4"],"_id":"ydmD9R461MuTribJ"}
-{"$$indexCreated":{"fieldName":"imdbId","unique":true,"sparse":false}}
+{"fullFilePath":"D:\\media server\\movies\\Wall·E - 2008.mp4","title":"WALL·E","year":2008,"tmdbId":10681,"_id":"DlDWTgYwi1uYzOV7"}
+{"fullFilePath":"D:\\media server\\movies\\Forrest Gump.mp4","title":"Forrest Gump","year":1994,"tmdbId":13,"_id":"IWw7agroWBGgDREX"}
+{"fullFilePath":"D:\\media server\\movies\\I.Am.Mother.2019.1080p.WEBRip.x264-[YTS.LT].mp4","title":"I Am Mother","year":2019,"tmdbId":505948,"_id":"TQ0E6PnAtZPd5B3P"}
+{"fullFilePath":"D:\\media server\\movies\\Toy Story 4 (2019) [BluRay] [1080p] [YTS.LT]\\Toy.Story.4.2019.1080p.BluRay.x264-[YTS.LT].mp4","title":"Toy Story 4","year":2019,"tmdbId":301528,"_id":"YKn2xZTS0ZDngu8D"}
+{"fullFilePath":"D:\\media server\\movies\\Wall·E-2008.mp4","title":"WALL·E","year":2008,"tmdbId":10681,"_id":"aiyd4bk3lyCyBAQX"}
+{"fullFilePath":"D:\\media server\\movies\\video-1502671863.mp4","title":"video-1502671863","year":0,"tmdbId":0,"_id":"mn3dtZuGxKrWhsDD"}
+{"fullFilePath":"D:\\media server\\movies\\videoplayback.mp4","title":"videoplayback","year":0,"tmdbId":0,"_id":"uQsSRflzgRMFCZIn"}
+{"$$indexCreated":{"fieldName":"fullFilePath","unique":true,"sparse":false}}

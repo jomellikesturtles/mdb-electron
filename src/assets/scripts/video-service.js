@@ -7,12 +7,12 @@ let tmdbIdArg = args[0];
 // let imdbIdArg = args[2];
 const app = express()
 const DataStore = require('nedb')
-
+const libraryDbService = require('./library-db-service-2')
 process.on('uncaughtException', function (error) {
   console.log('ERROR!!!!!!!!!!!!!!!!!!!!!!!!!', error);
   process.send(['operation-failed', 'general']);
 });
-
+// process.send = process.send || function () {};
 console.log('IN VIDEO SERVICE');
 
 var libraryFilesDb = new DataStore({
@@ -48,7 +48,7 @@ function openStream(filePath) {
       }
       res.writeHead(206, head)
       file.pipe(res)
-      process.send(['video-success'])
+      // process.send(['video-success'])
     } else {
       const head = {
         'Content-Length': fileSize,
@@ -56,12 +56,20 @@ function openStream(filePath) {
       }
       res.writeHead(206, head)
       fs.createReadStream(filePath).pipe(res)
-      process.send(['video-success'])
+      // process.send(['video-success'])
     }
   })
 
   app.listen(3000, function () {
-    console.log('listing from 3000...');
+    console.log('listening from 3000...');
+  })
+}
+
+function initialize() {
+  console.log(args)
+  libraryDbService.getLibraryFilesByTmdbId(parseInt(tmdbIdArg)).then(theFiles => {
+    console.log(theFiles)
+    openStream(theFiles[0].fullFilePath)
   })
 }
 
@@ -73,5 +81,8 @@ function getFromLibrary() {
     openStream(firstDirectory)
   })
 }
+// getFromLibrary()
+// console.log('thefile:', libraryDbService.getLibraryFilesByTmdbId(505948))
+initialize()
 
-getFromLibrary()
+// getFromLibrary()

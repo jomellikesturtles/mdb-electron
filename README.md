@@ -94,6 +94,12 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
   - search-movie
   - search-torrent
   - scan-library
+- NEDB
+  - config (configuration and settings)
+  - bookmarks
+  - watched ({_id,tmdbId,imdbId,timestamp,percentage})
+  - moviedata (movie metadata for offline use)
+  - libraryFiles (contains full file path of movie video and its matched tmdb id)
 
 ## Development Notes
 
@@ -208,13 +214,9 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 > major
 
 - api search
-- integrate external javascript
 - upload offline files
 - handle large http: chunking, pagination, (filter)
 - torrent apis
-- fix the services
-  - data
-    - passing/sharing global variables
 - ipcRenderers/main
   - config db service
   - library db service
@@ -224,16 +226,11 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 
 > minor
 
-- youtube iframe for trailers
 - lazy loading
-- subtitles, trailers apis
+- subtitles apis
 - loading screen
 - shortcut keys
 - notifications
-
-> bugs
-
-- fileService readFile(), searchTorrentByName() loads prematurely
 
 > unsorted
 
@@ -335,15 +332,6 @@ UI and functionalities are influenced by follows: (in descending order)
 - https://trac.opensubtitles.org/projects/opensubtitles/wiki/DevReadFirst
 - https://forum.opensubtitles.org/viewtopic.php?f=8&t=16453#p39771
 
-## changes from office
-
-- adm-zip
-- bittorrent-tracker, bittorrent-dht, rimraf, moment
-
-- changes 2
-
-- libraryFiles.db,mock-data,subject,results
-
 ## notes
 
 - tsv parse search is faster than nedb; ~2s vs ~15s
@@ -354,14 +342,6 @@ UI and functionalities are influenced by follows: (in descending order)
 - omdb and Imdb has same genre in movies
 
 https://api.themoviedb.org/3/movie/157336?api_key=a636ce7bd0c125045f4170644b4d3d25&append_to_response=videos,images,credits,changes,translations,similar,external_ids,ss
-
-api_key
-string
-1 validations
-required
-language
-string
-Specify a language to query translatable fields with.
 
 $env:debug=electron-packager . --overwrite --platform=win32 --arch=x64 --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"myapp\"
 

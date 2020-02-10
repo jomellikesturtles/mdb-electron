@@ -2,46 +2,33 @@
  * scans library folders for potential video files
  */
 const promise = require('promise')
+// const cp = require('child_process');
 const searchMovie = require('./search-movie')
 const fs = require('fs');
 const path = require('path');
 var DataStore = require('nedb')
-const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg', ]
+const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const ffmpeg = require('fluent-ffmpeg')
 var libraryDbService = require('./library-db-service-2.js')
+var identifyMovie = require('./identify-movie')
 var config = new DataStore({
   filename: '../config/config.db',
   // filename: path.join(__dirname, '..', 'config', 'config.db'), // for node only
   // filename: '../config/config.db',
   autoload: true
 })
-
+// process.argv
 process.on('uncaughtException', function (error) {
   console.log(error);
 });
+// process.send = process.send || function () { };
 
-
-/**
- * Gets the info of the movie from tmdb or omdb
- */
-function getMovieInfo() {
-  // http://www.omdbapi.com/?t=wall-e&apikey=3a2fe8bf
-}
-
+// Toy.Story.4
 /**
  * Insert into libraryFiles.db
  * @param {*} params
  */
 function saveToLibraryDb(params) {
-
-  // libraryFilesDb.insert(params, function (err, numpReplaced) {
-  //   console.log('adding');
-  //   if (!err || (numpReplaced < 1)) {
-  //     console.log("replaced---->" + numReplaced);
-  //   } else {
-  //     console.log(err);
-  //   }
-  // })
   libraryDbService.insertLibraryFiles(params)
 }
 
@@ -67,14 +54,15 @@ function addToList(folderPath, fileName) {
 
   const fileInfo = {
     fullFilePath: fullFilePath,
-    dir: dir,
-    parentFolder: parentFolder,
-    byteSize: byteSize,
-    extension: extension,
-    fullFileName: fullFileName,
-    hasSiblings: hasSiblings,
+    // dir: dir,
+    // parentFolder: parentFolder,
+    // byteSize: byteSize,
+    // extension: extension,
+    // fullFileName: fullFileName,
+    // hasSiblings: hasSiblings,
     title: title,
-    year: year
+    year: parseInt(year, 10),
+    tmdbId: 0
   }
   saveToLibraryDb(fileInfo);
 }
@@ -220,17 +208,18 @@ async function scanExistingLibraryMovies() {
   })
 }
 
-
 async function identifyMovies() {
   const totalCount = await libraryDbService.count()
-  console.log('count:', totalCount);
   let index = 0
   while (index < totalCount) {
-    // libraryDbService.getLibraryFilesTitleAndYear(index, 1).then(fullFilePath => {
-    // })
-    const title = await libraryDbService.getLibraryFilesTitleAndYear(index, 1)
-    console.log(title)
-    // S
+    const libraryFile = await libraryDbService.getLibraryFilesByStep(index, 1)
+    if (!libraryFile.tmdbId) {
+      const identityResult = await identifyMovie.identifyMovie(libraryFile.title)
+      if (identityResult.tmdbId != 0) { // if query has returned a movie
+        const replacementObj = { tmdbId: identityResult.tmdbId, title: identityResult.title, year: parseInt(identityResult.year, 10) }
+        const updateLibDb = await libraryDbService.updateFields(libraryFile._id, replacementObj)
+      }
+    }
     index++;
   }
 }
@@ -240,20 +229,38 @@ async function identifyMovies() {
  */
 async function initializeScan() {
 
+  console.log('process not object')
+  if (typeof window === 'undefined') {
+    console.log('window undefined')
+  } else {
+    console.log('window not undefined')
+  }
+  if (typeof process === 'object') {
+    console.log('process object')
+  } else {
+    console.log('process not object')
+  }
   let result = await scanExistingLibraryMovies()
-  console.log('inresults');
-  console.log(result);
+  // console.log('inresults');
+  // console.log(result);
 
   getLibraryFolders().then(function (libraryFolders) {
     libraryFolders.forEach(folder => {
       readDirectory(folder);
     });
+    identifyMovies()
   })
-  identifyMovies()
 }
 
-identifyMovies()
+function initializeScan2() {
+  console.log('INITILIZSCAN2')
+}
+
+// identifyMovie.identifyMovie('titanic', 1997)
+initializeScan2();
 // initializeScan();
+
+
 
 // var regexList =
 // Tested: `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`
@@ -269,5 +276,7 @@ identifyMovies()
 
 /**
  * Scan process
- * check contents of libraryFiles.db if existing, if not, delete
+ * 1. check contents of libraryFiles.db if movie file is existing, if not, delete
+ * 2. scan the folders
+ * 3.
  */

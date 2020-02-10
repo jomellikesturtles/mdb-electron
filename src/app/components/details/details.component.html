@@ -39,11 +39,11 @@
           </div>
           <div class="col-sm-8">
 
-
             <h6>{{movieDetails.voteAverage}}</h6>
             <div style='display: flex;'>
               <h2 id="movie-title">{{movieDetails.title}}</h2>&nbsp;
-              <h2 class='text-hyperlink' (click)='goToReleaseYear(getYear(movieDetails.releaseDate))'>
+              <h2 *ngIf="movieDetails.releaseDate" class='text-hyperlink'
+                (click)='goToReleaseYear(getYear(movieDetails.releaseDate))'>
                 ({{movieDetails.releaseDate|releaseYear}})
               </h2>
               <h2 (click)='goToCertification(movieCertification)'>{{movieCertification}}</h2>
@@ -60,20 +60,20 @@
             </span>
 
             <p id="movie-runtime" class="">{{movieDetails.runtime|runtimeDisplay}}</p>
-            <p>Directed by
+            <p *ngIf="movieDetailsDirectors">Directed by
               <span class='text-hyperlink' (click)='goToPerson(director.id)'
                 *ngFor="let director of movieDetailsDirectors; let isLast=last">
                 {{director.name}}{{isLast ? '' : ', '}}
               </span>
             </p>
 
-            <p>Written by
+            <p *ngIf="movieDetailsWriters">Written by
               <span class='text-hyperlink' (click)='goToPerson(writer.id)'
                 *ngFor="let writer of movieDetailsWriters; let isLast=last">
                 {{writer.name}}{{isLast ? '' : ', '}}
               </span>
             </p>
-            <p>Produced by
+            <p *ngIf="movieDetailsProducers">Produced by
               <span class='text-hyperlink' (click)='goToPerson(producer.id)'
                 *ngFor="let producer of movieDetailsProducers; let isLast=last">
                 {{producer.name}}{{isLast ? '' : ', '}}
@@ -97,17 +97,20 @@
                 <div (click)="goToLink('tmdb')" data-toggle='tooltip' title='{{movieDetails.tmdbId}}'>
                   Tmdb
                 </div>
-                <div class='text-hyperlink' (click)="goToLink('website')" data-toggle='tooltip'
-                  title='{{movieDetails.website}}'>
+                <div *ngIf="movieDetails.website" class='text-hyperlink' (click)="goToLink('website')"
+                  data-toggle='tooltip' title='{{movieDetails.website}}'>
                   Website
                 </div>
-                <div class='text-hyperlink' (click)="goToLink('facebook', movieDetails.external_ids.facebook_id)">
+                <div *ngIf="movieDetails.external_ids.facebook_id" class='text-hyperlink'
+                  (click)="goToLink('facebook', movieDetails.external_ids.facebook_id)">
                   Facebook
                 </div>
-                <div class='text-hyperlink' (click)="goToLink('twitter', movieDetails.external_ids.facebook_id)">
+                <div *ngIf="movieDetails.external_ids.instagram_id" class='text-hyperlink'
+                  (click)="goToLink('twitter', movieDetails.external_ids.instagram_id)">
                   Twitter
                 </div>
-                <div class='text-hyperlink' (click)="goToLink('instagram', movieDetails.external_ids.facebook_id)">
+                <div *ngIf="movieDetails.external_ids.twitter_id" class='text-hyperlink'
+                  (click)="goToLink('instagram', movieDetails.external_ids.twitter_id)">
                   Instagram
                 </div>
               </div>
@@ -119,10 +122,11 @@
         </div>
         <h1>video 1</h1>
         <div *ngIf="isVideoAvailable">
-          <video src="/stream" id="videoPlayer" style='height:100%;width:100%' controls>
-            <!-- <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls> -->
-            <source type="video/mp4">
-          </video>
+          <!-- <video src="/stream" id="videoPlayer" style='height:100%;width:100%' controls> -->
+            <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls>
+              </video>
+            <!-- <source type="video/mp4"> -->
+          <!-- </video>F -->
         </div>
         <!-- <video src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4
         " id="videoPlayer" controls>

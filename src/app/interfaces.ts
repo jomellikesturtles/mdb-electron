@@ -1,4 +1,3 @@
-
 // omdb:"N/A"; tmdb:null
 export interface IMdbMovieDetails {
   awards?: string
@@ -49,7 +48,6 @@ export interface IRating {
   Value: string
 }
 
-
 export interface LibraryInfo {
   tmdbId?: null | number | string
   imdbID?: string
@@ -71,7 +69,6 @@ export interface WatchList {
   movieList: string[]
 }
 
-
 export interface ILibraryInfo {
   tmdbId?: null | number | string
   imdbID?: string
@@ -85,7 +82,6 @@ export interface ICollection {
   id: number,
   name: string
 }
-
 
 export interface IProductionCompany {
   id: number;
@@ -103,7 +99,6 @@ export interface ISpokenLanguage {
   iso_639_1: string;
   name: string;
 }
-
 
 export interface IOmdbMovieDetail {
   Title: string
@@ -218,15 +213,12 @@ export interface MdbMovieDetails {
 // // vote_average: number;
 // // vote_count: number;
 
-
-
 export interface ITmdbResultObject {
   page: number;
   total_results: number;
   total_pages: number;
   results: ITmdbResult[];
 }
-
 
 export interface ITmdbResult {
   popularity: number
@@ -365,7 +357,6 @@ export interface ITorrent {
 
 export interface ISearch {
   page: number
-
 }
 
 export enum OmdbParameters {
@@ -486,8 +477,6 @@ export interface IPersonDetails {
   popularity: number;
 }
 
-
-
 export interface IPersonCredits {
   cast: IPersonCastCrew[];
   crew: IPersonCastCrew[];
@@ -547,7 +536,6 @@ export interface IProfile {
   width: number;
 }
 
-
 export interface ICredits {
   cast: ICast[];
   crew: ICrew[];
@@ -595,7 +583,6 @@ export interface ICrew {
   release_date: string;
 }
 
-
 export enum GenreCodes {
   Action = 28,
   Adventure = 12,
@@ -616,7 +603,6 @@ export enum GenreCodes {
   Thriller = 53,
   War = 10752,
   Western = 37,
-
   // mdb reserved
   FilmNoir = 20000,
   // similar genre: Music id:10402
@@ -631,35 +617,7 @@ export enum GenreCodes {
 }
 
 
-
 /**
- *
-export interface Credits {
-    cast: Cast[];
-    crew: Crew[];
-}
-
-export interface Cast {
-    cast_id:      number;
-    character:    string;
-    credit_id:    string;
-    gender:       number;
-    id:           number;
-    name:         string;
-    order:        number;
-    profile_path: null | string;
-}
-
-export interface Crew {
-    credit_id:    string;
-    department:   Department;
-    gender:       number;
-    id:           number;
-    job:          string;
-    name:         string;
-    profile_path: null | string;
-}
-
 export enum Department {
     Art = "Art",
     Camera = "Camera",

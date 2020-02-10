@@ -26,6 +26,7 @@ export enum Channel {
   ScannedSuccess = 'scanned-success',
   VideoSuccess = 'video-success',
   WatchedSuccess = 'watched-success',
+  MovieIdentified = 'movie-identified-success', // emits when movie from library is identified
 }
 
 @Injectable({
@@ -44,13 +45,15 @@ export class IpcService {
   scannedMovieMulti = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   videoFile = new BehaviorSubject<any>([])
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
+  movieIdentified = new BehaviorSubject<any>({ id: 0 })
   private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone,
     // private cdr: ChangeDetectorRef
   ) ////
   {
-    // this.ipcRenderer = (window as any).require('electron').ipcRenderer
+    // UNCOMMENT IF IN ELECTRON MODE
+    this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
     // function enumKeys<E>(e: E): (keyof E)[] {
     //   return Object.keys(e) as (keyof E)[];
@@ -73,6 +76,7 @@ export class IpcService {
   }
 
   call(message: IpcCommand, args?: any) {
+    console.log(`IPC Command: ${message}, args: ${args}`)
     this.ipcRenderer.send(message, args)
   }
 

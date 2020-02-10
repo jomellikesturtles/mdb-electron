@@ -1,7 +1,6 @@
 /**
  * Constants
  */
-
 import { IGenre } from './interfaces'
 
 export const TMDB_IMAGE_BASE_URL = 'http://image.tmdb.org/t/p/'
@@ -15,50 +14,17 @@ export const TMDB_STILL_SIZES = ['w92', 'w185', 'w300', 'original']
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 export const DECADES = [
-  {
-    display: '1910s',
-    value: 1910
-  },
-  {
-    display: '1920s',
-    value: 1920
-  },
-  {
-    display: '1930s',
-    value: 1930
-  },
-  {
-    display: '1940s',
-    value: 1940
-  },
-  {
-    display: '1950s',
-    value: 1950
-  },
-  {
-    display: '1960s',
-    value: 1960
-  },
-  {
-    display: '1970s',
-    value: 1970
-  },
-  {
-    display: '1980s',
-    value: 1980
-  },
-  {
-    display: '1990s',
-    value: 1990
-  },
-  {
-    display: '2000s',
-    value: 2000
-  },
-  {
-    display: '2010s',
-    value: 2010
-  }]
+  { display: '1910s', value: 1910 },
+  { display: '1920s', value: 1920 },
+  { display: '1930s', value: 1930 },
+  { display: '1940s', value: 1940 },
+  { display: '1950s', value: 1950 },
+  { display: '1960s', value: 1960 },
+  { display: '1970s', value: 1970 },
+  { display: '1980s', value: 1980 },
+  { display: '1990s', value: 1990 },
+  { display: '2000s', value: 2000 },
+  { display: '2010s', value: 2010 }]
 
 export const TROUBLE_QUOTES = [
   { title: `The Sixth Sense`, year: 1999, quote: 'I see dead people.' },
@@ -79,116 +45,41 @@ export const MOVIE_QUOTES = [
   { title: 'Titanic', year: 1997, quote: `I'm king of the world!`, backdrop: '' },
 ]
 
-
 export const GENRES: IGenre[] = [
-  {
-    id: 28,
-    name: 'Action'
-  },
-  {
-    id: 12,
-    name: 'Adventure'
-  },
-  {
-    id: 16,
-    name: 'Animation'
-  },
-  {
-    id: 35,
-    name: 'Comedy'
-  },
-  {
-    id: 80,
-    name: 'Crime'
-  },
-  {
-    id: 99,
-    name: 'Documentary'
-  },
-  {
-    id: 18,
-    name: 'Drama'
-  },
-  {
-    id: 10751,
-    name: 'Family'
-  },
-  {
-    id: 14,
-    name: 'Fantasy'
-  },
-  {
-    id: 36,
-    name: 'History'
-  },
-  {
-    id: 27,
-    name: 'Horror'
-  },
-  {
-    id: 10402,
-    name: 'Music'
-  },
-  {
-    id: 9648,
-    name: 'Mystery'
-  },
-  {
-    id: 10749,
-    name: 'Romance'
-  },
-  {
-    id: 878,
-    name: 'Science Fiction'
-  },
-  {
-    id: 10770,
-    name: 'TV Movie'
-  },
-  {
-    id: 53,
-    name: 'Thriller'
-  },
-  {
-    id: 10752,
-    name: 'War'
-  },
-  {
-    id: 37,
-    name: 'Western'
-  },
+  { id: 28, name: 'Action' },
+  { id: 12, name: 'Adventure' },
+  { id: 16, name: 'Animation' },
+  { id: 35, name: 'Comedy' },
+  { id: 80, name: 'Crime' },
+  { id: 99, name: 'Documentary' },
+  { id: 18, name: 'Drama' },
+  { id: 10751, name: 'Family' },
+  { id: 14, name: 'Fantasy' },
+  { id: 36, name: 'History' },
+  { id: 27, name: 'Horror' },
+  { id: 10402, name: 'Music' },
+  { id: 9648, name: 'Mystery' },
+  { id: 10749, name: 'Romance' },
+  { id: 878, name: 'Science Fiction' },
+  { id: 10770, name: 'TV Movie' },
+  { id: 53, name: 'Thriller' },
+  { id: 10752, name: 'War' },
+  { id: 37, name: 'Western' },
   // mdb reserved
-  {
-    id: 20000,
-    name: 'Film-Noir'
+  { id: 20000, name: 'Film-Noir' },
+  {// similar genre: Music id:10402
+    id: 20001, name: 'Musical'
   },
-  {
-    // similar genre: Music id:10402
-    id: 20001,
-    name: 'Musical'
-  },
-  {
-    id: 20002,
-    name: 'News'
-  },
-  {
-    id: 20003,
-    name: 'Reality-TV'
-  },
+  { id: 20002, name: 'News' },
+  { id: 20003, name: 'Reality-TV' },
   {
     // similar genre: Science Fiction id:878
-    id: 20004,
-    name: 'Sci-Fi'
+    id: 20004, name: 'Sci-Fi'
   },
-  {
-    // another media type
-    id: 20005,
-    name: 'Short'
+  {// another media type
+    id: 20005, name: 'Short'
   },
-  {
-    id: 20006,
-    name: 'Sport'
-  }
+  { id: 20006, name: 'Sport' }
 ]
 
 export const REGEX_IMDB_ID = new RegExp(`(^tt[0-9]{7})$`, `gi`);
@@ -223,13 +114,13 @@ export const MY_API_FILMS_API_KEY = 'c7e516ed-d9fe-4f3f-b1d9-fde33f63c816'
 export const TRAK_TV_API_KEY = 'b4f1b1e56c6b78ed8970ba48ed2b6d1fcc517d09164af8c10e2be56c45f5f9a7'
 export const TRAK_TV_API_KEY_SECRET = '76c26a018cc31652644caf51928efedf75d301eed404b51e218edefdb661dc36'
 export const FANART_TV_API_KEY = '295c36bf9229fd8369928b7360554c9a'
-export const YOUTUBE_API_KEY= 'AIzaSyAC1kcZu_DoO7mbrMxMuCpO57iaDByGKV0'
+export const YOUTUBE_API_KEY = 'AIzaSyAC1kcZu_DoO7mbrMxMuCpO57iaDByGKV0'
 
-  // https://api.themoviedb.org/3/movie/550/videos?api_key=a636ce7bd0c125045f4170644b4d3d25 --getting trailer 1
-  // https://api.trakt.tv/?trakt-api-key=b4f1b1e56c6b78ed8970ba48ed2b6d1fcc517d09164af8c10e2be56c45f5f9a7&trakt-api-version=2&query=batman`
-  // http://www.omdbapi.com//?i=tt0499549&apikey=3a2fe8bf\
-  // /search/:type?query=
-  // https://api.trakt.tv/search/text?query=titanic
-  // https://api.themoviedb.org/3/movie/550?api_key=a636ce7bd0c125045f4170644b4d3d25
-  // http://www.myapifilms.com/imdb/idIMDB?title=matrix&token=c7e516ed-d9fe-4f3f-b1d9-fde33f63c816
-    // http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
+// https://api.themoviedb.org/3/movie/550/videos?api_key=a636ce7bd0c125045f4170644b4d3d25 --getting trailer 1
+// https://api.trakt.tv/?trakt-api-key=b4f1b1e56c6b78ed8970ba48ed2b6d1fcc517d09164af8c10e2be56c45f5f9a7&trakt-api-version=2&query=batman`
+// http://www.omdbapi.com//?i=tt0499549&apikey=3a2fe8bf\
+// /search/:type?query=
+// https://api.trakt.tv/search/text?query=titanic
+// https://api.themoviedb.org/3/movie/550?api_key=a636ce7bd0c125045f4170644b4d3d25
+// http://www.myapifilms.com/imdb/idIMDB?title=matrix&token=c7e516ed-d9fe-4f3f-b1d9-fde33f63c816
+// http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a

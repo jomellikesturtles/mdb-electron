@@ -34,6 +34,7 @@ import { RepeatPasswordValidatorDirective } from './directives/repeat-password.d
 import { CredentialsDirective } from './directives/credentials.directive';
 import { NgxsModule } from '@ngxs/store';
 import { CountState } from './app.state';
+import { AppRunState } from './states/app-run.state';
 import { SelectedListComponent } from './components/selected-list/selected-list/selected-list.component';
 import { SelectedMoviesState } from './movie.state';
 import { MovieCardComponent } from './components/movie-card/movie-card.component';
@@ -79,7 +80,7 @@ import { NotificationComponent } from './components/notification/notification.co
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,
-    NgxsModule.forRoot([CountState, SelectedMoviesState]),
+    NgxsModule.forRoot([CountState, SelectedMoviesState, AppRunState]),
     // HttpParams
   ],
   providers: [],

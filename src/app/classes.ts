@@ -59,7 +59,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   convertToMdbObject(value) {
 
     Object.keys(value).forEach(key => {
-      console.log('key: ', key, ' value: ', value[key], ' ')
+      // console.log('key: ', key, ' value: ', value[key], ' ')
       switch (key) {
         case 'Actors':
           this._releaseDate = value[key]

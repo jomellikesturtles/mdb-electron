@@ -73,43 +73,23 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getTroubleQuote()
-    // this.activatedRoute.params.subscribe(params => {
-    //   console.log('activatedRoute.params', params);
-    //   if (params.id) {
-    //     this.getMovieOnline(params.id)
-    //   } else {
-    //     this.hasData = false
-    //   }
-    // });
-    // this.selectedMovie = this.testSelectedMovie
-    console.time('convertTime');
-    this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
-    this.loadVideoData()
-    console.timeEnd('convertTime');
-    // this.loadVideoData()
-    // this.getMovieFromLibrary()
-    // this.getTorrents()
+    this.activatedRoute.params.subscribe(params => {
+      console.log('activatedRoute.params', params);
+      if (params.id) {
+        this.getMovieOnline(params.id)
+      } else {
+        this.hasData = false
+      }
+    });
+    // console.time('convertTime');
+    // this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
+    // console.timeEnd('convertTime');
     this.router.events.subscribe((evt) => {
       if (!(evt instanceof NavigationEnd)) {
         return;
       }
       window.scrollTo(0, 0)
     });
-    // this.movieMetadataSubscription = this.ipcService.movieMetadata.subscribe(value => {
-    //   // console.log('this.ipcService.movieMetadata.subscribe ', value)
-    //   if (value.length !== 0) {
-    //     if (String(value) === 'empty') {
-    //       console.log('getting from online')
-    //       this.getMovieOnline(imdbId)
-    //       this.getBackdrop(imdbId);
-    //     } else {
-    //       console.log('got from offline ', value)
-    //       this.selectedMovie = value;
-    //       this.getBackdrop(imdbId);
-    //     }
-    //   }
-    //   this.cdr.detectChanges()
-    // })
 
     // get availability of movie
     // this.libraryMovieSubscription = this.ipcService.libraryMovie.subscribe(value => {
@@ -119,26 +99,16 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
     // // commented for test
     // const imdbId = this.activatedRoute.snapshot.paramMap;
-    // this.dataService.currentMovie.subscribe(data => {
-    //   // ran twice
-    //   console.log('fromdataservice: ', data);
-    //   if (data) {
-    //     this.getMovie(data);
-    //     this.getBackdrop(data);
-    //   } else {
-    //     this.getMovie(imdbId);
-    //     this.getBackdrop(imdbId);
-    //   }
-    // });
     // // end of commented for test
     $('[data-toggle="popover"]').popover()
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
   }
 
   ngOnDestroy(): void {
-    // this.movieMetadataSubscription.unsubscribe()
-    // this.libraryMovieSubscription.unsubscribe()
-    // this.selectedMovie = null
+    this.movieMetadataSubscription.unsubscribe()
+    this.libraryMovieSubscription.unsubscribe()
+    this.selectedMovie = null
+    this.isVideoAvailable = false
   }
 
   /**
@@ -305,10 +275,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
       console.log('got from getMovieOnline ', data)
       this.selectedMovie = data;
       const myObject = this.selectedMovie
-      // this.convertObject(myObject)
       this.movieDetails.convertToMdbObject(myObject)
+      this.loadVideoData()
       this.hasData = true
-      this.saveMovieDataOffline(data)
+      // COMMENTED UNTIL 'error spawn ENAMETOOLONG' is fixed.
+      // this.saveMovieDataOffline(this.movieDetails)
     });
   }
 
@@ -415,10 +386,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-    const environment = location.protocol
-    if (environment === 'file:') {
+    const environment = this.utilsService.getEnvironment()
+    if (environment === 'desktop') {
       this.ipcService.call(IpcCommand.OpenLinkExternal, url)
-    } else if (environment === 'http:' || environment === 'https:') {
+    } else if (environment === 'web') {
       window.open(url)
     }
   }

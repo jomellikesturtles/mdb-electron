@@ -20,6 +20,7 @@ let procTorrentSearch;
 let procVideoService
 let offlineMovieDataService;
 let procmovieImageService;
+let procScanLibrary;
 let mainWindow
 let mdbTray
 const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`
@@ -195,29 +196,26 @@ ipcMain.on('open-link-external', function (event, url) {
 /**
  * Initializes scan-library.js
  */
-ipcMain.on('scan-library', function (data) {
-  if (!procScanLibrary) { // if process search is not yet running
+ipcMain.on('scan-library', function (event, data) {
+  console.log('scan-librarye');
+  if (!procVideoService) { // if process search is not yet running
     console.log('procSearch true');
-    procScanLibrary = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), {
+    procVideoService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), [data], {
       cwd: __dirname,
       silent: true
     });
-    procScanLibrary.stdout.on('data', function (data) {
+    procVideoService.stdout.on('data', function (data) {
       console.log('printing data..');
       console.log(data.toString());
     });
-    procScanLibrary.on('exit', function () {
+    procVideoService.on('exit', function () {
       console.log('ScanLibrary process ended');
-      procScanLibrary = null;
-      if (awaitingQuit) {
-        process.emit('cont-quit');
-      }
+      procVideoService = null;
     });
-    procScanLibrary.on('message', function (m) {
+    procVideoService.on('message', function (m) {
+      console.log('scan-library in IPCMAIN', m);
       mainWindow.webContents.send(m[0], m[1]);
     });
-  } else {
-    console.log('scan library is already running');
   }
 })
 
@@ -316,16 +314,19 @@ ipcMain.on('get-torrents-title', function (event, data) {
 
 /**
  * Gets all movies from movieData.db
+ * TODO: minify the param2 to just the basic movie metadata. Otherwise, it will an error: 'error spawn ENAMETOOLONG'
  */
 ipcMain.on('movie-metadata', function (event, data) {
   // console.log('movies into movie-metadata-service..', data[0], data[1])
   let param2 = ''
-  if (data[0] == 'set') {
-    param2 = JSON.stringify(data[1])
-  } else {
-    param2 = data[1]
-  }
-  offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'offline-movie-data-service.js'), [data[0], param2], {
+  // if (data[0] == 'set') {
+  //   param2 = JSON.stringify(data[1])
+  // } else {
+  //   param2 = data[1]
+  // }
+  // console.log(data[0])
+  // console.log(param2)
+  offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'offlineMetadataService.js'), [data[0], param2], {
     cwd: __dirname,
     silent: true
   });
@@ -425,6 +426,9 @@ ipcMain.on('watched', function (event, data) {
   }
 })
 
+/**
+ * Gets the video by id and streams to localhost.
+ */
 ipcMain.on('open-video', function (event, data) {
   if (!procVideoService) {
     console.log('procVideoService ', data);
