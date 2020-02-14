@@ -1,3 +1,16 @@
+<div id='videoPlayer' [hidden]='!showVideo' id='target'
+  style='background-color: black;width: 100%;height: calc(100vh - 50px);'>
+  <!-- <video *ngIf="showVideo" src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4 -->
+  <!-- " id="videoPlayer" controls style="width: 100%;height:100%;"> -->
+  <video *ngIf="showVideo" style="width:100%;height:100%;" poster="" controls preload="none">
+    <!-- <video *ngIf="showVideo" controlsList="nodownload" style="width:100%;height:100%;" poster="" controls preload="none"> -->
+    <source src="https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4" type="video/mp4">
+    <track label="English subtitles" kind="subtitles" srclang="en" src="assets/sample-subtitles.vtt" default>
+    <!-- <track label="English subtitles" kind="subtitles" srclang="en" src="/assets/sample-subtitles.srt" default> -->
+  </video>
+  <!-- </video> -->
+</div>
+
 <div
   [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(' + movieDetails.backgroundPath + ')'}"
   style='background-size: cover;background-repeat: no-repeat;background-position: center;
@@ -43,18 +56,18 @@
             <div style='display: flex;'>
               <h2 id="movie-title">{{movieDetails.title}}</h2>&nbsp;
               <h2 *ngIf="movieDetails.releaseDate" class='text-hyperlink'
-                (click)='goToReleaseYear(getYear(movieDetails.releaseDate))'>
+                (click)='goToDiscover("year",getYear(movieDetails.releaseDate))'>
                 ({{movieDetails.releaseDate|releaseYear}})
               </h2>
-              <h2 (click)='goToCertification(movieCertification)'>{{movieCertification}}</h2>
-              <button class='btn btn-primary'>Play</button>
+              <h2 (click)='goToDiscover("certification",movieCertification)'>{{movieCertification}}</h2>
+              <button (click)='playVideo()' class='btn btn-primary'>Play</button>
             </div>
 
             <p id="movie-plot" style='overflow-wrap: break-word !important;
             word-wrap: break-word !important;
             white-space: pre-line;'>{{movieDetails.plot}}</p>
 
-            <span class='text-hyperlink' (click)='goToGenre(item)'
+            <span class='text-hyperlink' (click)='goToDiscover("genre",item)'
               *ngFor="let item of movieDetails.genres; let isLast=last">
               {{item}}{{isLast ? '' : ', '}}
             </span>
@@ -123,10 +136,10 @@
         <h1>video 1</h1>
         <div *ngIf="isVideoAvailable">
           <!-- <video src="/stream" id="videoPlayer" style='height:100%;width:100%' controls> -->
-            <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls>
-              </video>
-            <!-- <source type="video/mp4"> -->
-          <!-- </video>F -->
+          <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls>
+          </video>
+          <!-- <source type="video/mp4"> -->
+          <!-- </video> -->
         </div>
         <!-- <video src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4
         " id="videoPlayer" controls>
@@ -195,7 +208,7 @@
               <div>
                 <h6 (click)='goToMovie(recommendedMovie.id)' class='text-hyperlink'>{{recommendedMovie.title}}</h6>
                 <p class='text-hyperlink' style='margin-left: 5px;'
-                  (click)='goToReleaseYear(getYear(recommendedMovie.release_date))'>
+                  (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>
                   {{recommendedMovie.release_date|releaseYear}}</p>
               </div>
             </div>

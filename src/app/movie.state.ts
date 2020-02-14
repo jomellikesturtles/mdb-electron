@@ -1,5 +1,7 @@
 import { Action, StateContext, Select, State, Selector } from '@ngxs/store'
-import { AddMovie, RemoveMovie, ClearList } from './movie.actions'
+import { AddMovie, RemoveMovie, ClearList, AddWatched, AddBookmark } from './movie.actions'
+import { BookmarkService } from './services/bookmark.service'
+import { IBookmark } from './components/bookmarks/bookmarks.component'
 
 export interface MovieList {
   id: number,
@@ -11,8 +13,8 @@ export interface MovieList {
 
 }
 export interface MovieListStateModel {
-  change: 'add' | 'remove' | 'clear' | '';
-  idChanged: number;
+  change: 'add' | 'remove' | 'clear' | 'watched' | '';
+  idChanged?: number | number[];
   movies: MovieList[];
 }
 
@@ -34,6 +36,8 @@ export class SelectedMoviesState {
   }
   @Action(AddMovie)
   addMovie(context: StateContext<MovieListStateModel>, action: AddMovie) {
+    console.log('ACTION: ', action)
+    console.log('ACTION PAYLOAD: ', action.payload)
     const current = context.getState()
     const movies = [...current.movies, action.payload]
     context.patchState({
@@ -61,5 +65,79 @@ export class SelectedMoviesState {
       change: 'clear',
       idChanged: 0
     })
+  }
+
+  @Action(AddWatched)
+  addWatched(context: StateContext<MovieListStateModel>, action: AddWatched) {
+    const current = context.getState()
+    console.log('BEFORE:', current.movies)
+    const numberList = []
+    current.movies.forEach(e => {
+
+      e.isWatched = true; e.watchedProgress = '100%'; numberList.push(e.id)
+    })
+
+    // this.watched = {
+    //   percentage: '100%',
+    //   tmdbId: this.movie.id,
+    //   cre8Ts: new Date().getTime(),
+    //   id: '',
+    //   imdbId: '',
+    //   timestamp: 0
+    // }
+    const movies = current.movies
+
+    console.log('AFTER:', current.movies)
+    context.patchState({
+      movies,
+      change: 'watched',
+      idChanged: numberList,
+    })
+  }
+
+  @Action(AddBookmark)
+  addBookmark(context: StateContext<MovieListStateModel>, bookmarkService: BookmarkService) {
+    const current = context.getState()
+    console.log('BEFORE:', current.movies)
+    const bookmarksList = []
+    const createTimestamp = new Date().getDate()
+    current.movies.forEach(e => {
+      const bookmark: IBookmark = {
+        tmdbId: e.id ? e.id : 0,
+        imdbId: e.imdbId ? e.imdbId : '',
+        createTs: createTimestamp
+      }
+      bookmarksList.push(bookmark)
+      // e.bookmark = bookmark
+    })
+
+    bookmarkService.saveBookmarkMulti(bookmarksList)
+
+    // current.movies.forEach(e => {
+    //   const bookmark: IBookmark = {
+    //     tmdbId: e.id ? e.id : 0,
+    //     imdbId: e.imdbId ? e.imdbId : '',
+    //     createTs: createTimestamp
+    //   }
+    //   e.bookmark = bookmark
+    // })
+
+    // this.watched = {
+    //   percentage: '100%',
+    //   tmdbId: this.movie.id,
+    //   cre8Ts: new Date().getTime(),
+    //   id: '',
+    //   imdbId: '',
+    //   timestamp: 0
+    // }
+
+    const movies = current.movies
+
+    // console.log('AFTER:', current.movies)
+    // context.patchState({
+    //   movies,
+    //   change: 'watched',
+    //   idChanged: numberList,
+    // })
   }
 }

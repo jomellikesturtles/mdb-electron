@@ -202,9 +202,11 @@ body {
   opacity: .5;
 }
 
-.movie-card-image-container:hover .overlay {
+.overlay:hover{
   opacity: .5;
 }
+// .movie-card-image-container:hover .overlay {
+// }
 
 .movie-card-title {
   display: inline-block;
@@ -235,9 +237,38 @@ body {
   left: 5%;
   height: 15px;
   width: 15px;
-  background-color: rgb(151, 151, 151);
-  border-radius: 50%;
-  box-shadow: 0 0 10px #969696;
+  // background-color: rgb(151, 151, 151);
+  // border-radius: 50%;
+  // box-shadow: 0 0 10px #969696;
+  z-index: 3;
+}
+
+.movie-bookmark:hover {
+  cursor: pointer;
+  filter: invert(1)
+}
+
+.movie-mark-as-watched{
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  // height: 15px;
+  // width: 15px;
+  z-index: 3;
+}
+.movie-mark-as-watched:hover {
+filter:invert(1)
+}
+
+.movie-progress-bar {
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  height: 3px;
+  width: 100%;
+  background-color: rgb(255, 62, 4);
+  // border-radius: 50%;
+  // box-shadow: 0 0 10px #969696;
   z-index: 3;
 }
 

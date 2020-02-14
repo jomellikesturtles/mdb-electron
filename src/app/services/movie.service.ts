@@ -258,6 +258,19 @@ export class MovieService {
     return this.http.get<any>(baseUrl, httpOptions).pipe(map((e) => e.items))
   }
 
+  getOne() {
+    const baseUrl = 'http://www.omdbapi.com/?s=titanic&apikey=3a2fe8bf'
+    // const baseUrl = 'http://localhost:9009/song/getTestSong'
+
+    const httpOptions = {
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      // params: myHttpParam
+    };
+
+    return this.http.get<any>(baseUrl).pipe(tap(_ => this.log('')),
+    catchError(this.handleError<any>('getBookmark')))
+  }
+
   /**
    * Error handler.
    * @param operation

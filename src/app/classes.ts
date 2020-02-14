@@ -1,5 +1,6 @@
 import { IMdbMovieDetails, IRating, ILibraryInfo, IGenre, ISpokenLanguage } from './interfaces'
-import { MONTHS, REGEX_TMDB_RELEASE_DATE, REGEX_OMDB_BOX_OFFICE } from './constants'
+import { MONTHS, REGEX_OMDB_BOX_OFFICE, STRING_REGEX_OMDB_RELEASE_DATE } from './constants'
+import { UtilsService } from './services/utils.service';
 
 /**
  * The main class.
@@ -243,7 +244,9 @@ export class MdbMovieDetails implements IMdbMovieDetails {
    * @param v date to set
    */
   set releaseDate(v: string) {
-    const regexResults = REGEX_TMDB_RELEASE_DATE.exec(v)
+
+    const REGEX_OMDB_RELEASE_DATE = new RegExp(STRING_REGEX_OMDB_RELEASE_DATE, `gi`);
+    const regexResults = REGEX_OMDB_RELEASE_DATE.exec(v)
     if (regexResults != null) {
       const date = new Date()
       date.setFullYear(parseInt(regexResults[1], 10))

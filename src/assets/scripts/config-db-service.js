@@ -60,6 +60,8 @@ function initializeDataAccess(command, data1, data2) {
   }
 }
 
+console.log('asd')
+
 // module.exports = {
 //   count: count,
 //   insertLibraryFiles: insertLibraryFiles,

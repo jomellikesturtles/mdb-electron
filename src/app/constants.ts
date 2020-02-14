@@ -84,13 +84,10 @@ export const GENRES: IGenre[] = [
 
 export const REGEX_IMDB_ID = new RegExp(`(^tt[0-9]{7})$`, `gi`);
 export const REGEX_TMDB_RUNTIME = new RegExp(`([\\d,]+)(\\s)(min)`, `gi`);
-export const REGEX_OMDB_RELEASE_DATE = new RegExp(`^(\\d{2})+\\s+([a-z]{3,})+\\s+(\\d{4})+`, `gi`);
-export const REGEX_TMDB_RELEASE_DATE = new RegExp(`([0-9]{2,4})-([0-9]{2})-([0-9]{2})`, `gi`);
 export const REGEX_PREFIX = new RegExp(`^([a-z]:)`, 'gi') // if file absolute e.g. c:/
 export const REGEX_FILE_SIZE = new RegExp(`^([0-9])\\d+$`, `g`);
 export const REGEX_OMDB_BOX_OFFICE = new RegExp(`(\\$+[\\d,]+)`, `gi`);
 export const REGEX_IMAGE_SIZE = new RegExp(`(SX)+([\\d])+(.jpg|.jpeg)`, `gi`)
-export const REGEX_YEAR_ONLY = new RegExp(`^([0-9]{4})$`, `gi`);
 
 export const STRING_REGEX_IMDB_ID = `(^tt[0-9]{7})$`;
 export const STRING_REGEX_TMDB_RUNTIME = `([\\d,]+)(\\s)(min)`;

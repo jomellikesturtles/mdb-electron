@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService, FirebaseOperator, CollectionName } from './firebase.service'
 import { IpcService } from './ipc.service'
+import { Observable, from } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class BookmarkService {
+
+  bookmarkObservable = new Observable<any>()
 
   constructor(private firebaseService: FirebaseService) { }
 
@@ -12,6 +15,7 @@ export class BookmarkService {
     return new Promise(resolve => {
       this.firebaseService.getFromFirestore(CollectionName.Bookmark, 'tmdbId', FirebaseOperator.Equal, id).then(e => {
         console.log('BOOKMARK: ', e)
+        // bookmarkObservable=
         resolve(e)
       })
     })
@@ -36,10 +40,10 @@ export class BookmarkService {
 
   saveBookmarkMulti(data: object[]) {
     const list = []
-    data.forEach(element => {
-      list.push({ tmdbId: element })
-    })
-    this.firebaseService.insertIntoFirestoreMulti(CollectionName.Bookmark, list)
+    // data.forEach(element => {
+    //   list.push({ tmdbId: element })
+    // })
+    this.firebaseService.insertIntoFirestoreMulti(CollectionName.Bookmark, data)
   }
 
   /**
@@ -55,3 +59,11 @@ export class BookmarkService {
     })
   }
 }
+
+  // /**
+  //  * Adds bookmark for single movie.
+  //  * @param val tmdb id
+  //  */
+  // onAddBookmarkSingle(val): void {
+  //   this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.Add, val])
+  // }

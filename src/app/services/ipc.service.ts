@@ -53,7 +53,7 @@ export class IpcService {
   ) ////
   {
     // UNCOMMENT IF IN ELECTRON MODE
-    this.ipcRenderer = (window as any).require('electron').ipcRenderer
+    // this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
     // function enumKeys<E>(e: E): (keyof E)[] {
     //   return Object.keys(e) as (keyof E)[];

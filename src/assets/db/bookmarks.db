@@ -1,9 +1,10 @@
 {"imdbId":"g","_id":"DxBFKWM9X2Zwku6Q"}
 {"tmdbId":10681,"imdbId":"","_id":"H8nyAZwPB4rImkrQ"}
+{"tmdbId":23322,"imdbId":"tt0028434","timestamp":1581590382142,"_id":"HPkLBaWkTQa98dNC"}
 {"tmdbId":122,"imdbId":"tt122","_id":"KDVaUmal8VgPPFZU"}
-{"imdbId":"g","_id":"aigaj5vQ1DwT5HTg"}
-{"imdbId":"g","_id":"kIPqtcknHE4dvMMI"}
+{"tmdbId":123456,"imdbId":"tt00289093","timestamp":1581590341421,"_id":"lriBo8InP7rBxDql"}
+{"tmdbId":2332,"imdbId":"tt00289079","timestamp":1581590374259,"_id":"n5YKOAE5yxXjvxKN"}
 {"tmdbId":123,"imdbId":"tt123","_id":"qQdb4VEVaOcmQEhD"}
 {"tmdbId":124,"imdbId":"tt124","_id":"uECKii5zbWVAS7le"}
 {"tmdbId":10683,"_id":"wL64u9tBOADNKOQH"}
-{"$$indexCreated":{"fieldName":"tmdbId","unique":true,"sparse":true}}
+{"$$indexCreated":{"fieldName":"tmdbId","unique":true,"sparse":false}}

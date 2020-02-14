@@ -133,8 +133,8 @@ export class BookmarksComponent implements OnInit {
 export interface IBookmark {
   tmdbId: number,
   imdbId: string,
-  userId: string,
-  createTs?: Date,
+  userId?: string,
+  createTs?: number,
   updateTs?: Date,
   change?: 'add' | 'delete' | 'update',
 }

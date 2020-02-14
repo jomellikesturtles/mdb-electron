@@ -58,6 +58,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
    * Subscribes to list of highlighted movies.
    */
   getData() {
+
+    this.movieService.getOne().subscribe(data => {
+      console.log('LOCALHOST: ', data)
+    })
+
     this.moviesList$.subscribe(moviesResult => {
       console.log('moviesresult: ', moviesResult)
 
@@ -77,6 +82,16 @@ export class ResultsComponent implements OnInit, OnDestroy {
         this.searchResults.forEach(element => {
           element.isHighlighted = false
         })
+      } else if (moviesResult.change === 'watched') {
+        this.searchResults.forEach(element => {
+          moviesResult.idChanged.forEach(mrId => {
+            if (mrId === element.id) {
+              // element.isWatched = true
+              // element.watchedProgress = "100%"
+              // this.cdr.detectChanges()
+            }
+          });
+        })
       }
     });
 
@@ -92,19 +107,19 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   getSearchResults() {
     // commented for actual
-    // this.searchResults = TMDB_SEARCH_RESULTS.results
+    this.searchResults = TMDB_SEARCH_RESULTS.results
     // end of commented for actual
-    const params = [
-      [TmdbSearchMovieParameters.Query, this.searchQuery.query]
-    ]
-    this.movieService.searchTmdbMovie(params).subscribe(data => {
-      this.searchResults.push(...data.results)
-      if (data.total_pages > this.currentPage) {
-        this.hasMoreResults = true
-      }
-      this.setHighlights()
-      this.cdr.detectChanges()
-    })
+    // const params = [
+    //   [TmdbSearchMovieParameters.Query, this.searchQuery.query]
+    // ]
+    // this.movieService.searchTmdbMovie(params).subscribe(data => {
+    //   this.searchResults.push(...data.results)
+    //   if (data.total_pages > this.currentPage) {
+    //     this.hasMoreResults = true
+    //   }
+    //   this.setHighlights()
+    //   this.cdr.detectChanges()
+    // })
   }
 
   /**
@@ -138,5 +153,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
       })
     })
   }
+
   // download, add to watchlsit, mark as watched
 }

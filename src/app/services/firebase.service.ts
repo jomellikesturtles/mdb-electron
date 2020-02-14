@@ -224,7 +224,7 @@ export enum FirebaseOperator {
   GreaterThanEqual = '>=',
   ArrayContains = 'array-contains',
   In = 'in',
-  ArrayContinsAny = 'array-contains-any'
+  ArrayContainsAny = 'array-contains-any'
   // <, <=, ==, >, >=, array - contains, in, or array - contains - any
 }
 export enum CollectionName {

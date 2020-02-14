@@ -8,7 +8,6 @@ import { MovieService } from '../../services/movie.service';
 import { Observable } from 'rxjs'
 import { UtilsService } from '../../services/utils.service';
 import { Select, Store } from '@ngxs/store'
-import { AddMovie, RemoveMovie } from '../../movie.actions'
 
 @Component({
   selector: 'app-library',
@@ -17,6 +16,7 @@ import { AddMovie, RemoveMovie } from '../../movie.actions'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LibraryComponent implements OnInit {
+
   @Input() data: Observable<any>
   @Select(state => state.moviesList) moviesList$
 

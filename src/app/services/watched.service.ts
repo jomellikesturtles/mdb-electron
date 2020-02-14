@@ -17,6 +17,14 @@ export class WatchedService {
     })
   }
 
+  saveWatched(data) {
+    return new Promise(resolve => {
+      this.firebaseService.insertIntoFirestore(CollectionName.Watched, data).then(e => {
+        resolve(e)
+      })
+    })
+  }
+
   saveWatchedMulti(data: object[]) {
     const list = []
     data.forEach(element => {
@@ -29,7 +37,32 @@ export class WatchedService {
 export interface IWatched {
   tmdbId: number,
   imdbId: string,
-  id: string
+  id: string,
+  cre8Ts: number, // create timestamp
   timestamp?: number,
-  percentage?: number
+  percentage?: string,
+
+  // getTmdbId(): number,
+  // setTmdbId(): void,
+  // getImdbId(): string,
+  // setImdbId(): void
+  // getId(): string,
+  // setId(): void,
+  // getTimestamp(): number,
+  // setTimestamp(): void,
+  // getPercentage(): string,
+  // setPercentage(): void,
 }
+
+// export class Watched implements IWatched {
+//   tmdbId: number
+//   imdbId: string
+//   id: string
+//   cre8Ts: number // create timestamp
+//   timestamp?: number // time spent watched
+//   percentage?: string // percentage from movie length
+
+//   setTimestamp(): void {
+//     this.timestamp = new Date().getTime()
+//   }
+// }

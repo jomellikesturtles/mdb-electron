@@ -13,6 +13,7 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { Observable } from 'rxjs';
 import { TROUBLE_QUOTES } from '../../constants';
 import { TMDB_FULL_MOVIE_DETAILS } from '../../mock-data-movie-details';
+import { from } from 'rxjs';
 declare var $: any
 
 @Component({
@@ -26,7 +27,6 @@ declare var $: any
  * Get movie info, torrent, links, get if available in local
  */
 export class DetailsComponent implements OnInit, OnDestroy {
-  @Input() data: Observable<any>;
 
   isWatched = false
   isBookmarked = false
@@ -34,7 +34,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
   currentMovie: MdbMovieDetails;
   movieBackdrop;
   torrents: ITorrent[] = [];
-  globalImdbId;
   testSelectedMovie = TEST_TMDB_MOVIE_DETAILS
   testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
   isAvailable = false
@@ -57,6 +56,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   procWatched = false
   procVideo = false
   bookmarkDocId = ''
+  showVideo = false
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -73,23 +73,23 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getTroubleQuote()
-    this.activatedRoute.params.subscribe(params => {
-      console.log('activatedRoute.params', params);
-      if (params.id) {
-        this.getMovieOnline(params.id)
-      } else {
-        this.hasData = false
-      }
-    });
+    // commented for test values
+    // this.activatedRoute.params.subscribe(params => {
+    //   console.log('activatedRoute.params', params);
+    //   if (params.id) {
+    //     this.getMovieOnline(params.id)
+    //   } else {
+    //     this.hasData = false
+    //   }
+    // });
+    // end of commented for test values
     // console.time('convertTime');
-    // this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
+
+    // test values
+    this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
+    this.loadVideoData()
+    // end of test values
     // console.timeEnd('convertTime');
-    this.router.events.subscribe((evt) => {
-      if (!(evt instanceof NavigationEnd)) {
-        return;
-      }
-      window.scrollTo(0, 0)
-    });
 
     // get availability of movie
     // this.libraryMovieSubscription = this.ipcService.libraryMovie.subscribe(value => {
@@ -105,10 +105,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.movieMetadataSubscription.unsubscribe()
-    this.libraryMovieSubscription.unsubscribe()
-    this.selectedMovie = null
-    this.isVideoAvailable = false
+    // this.movieMetadataSubscription.unsubscribe()
+    // this.libraryMovieSubscription.unsubscribe()
+    // this.selectedMovie = null
+    // this.isVideoAvailable = false
   }
 
   /**
@@ -124,8 +124,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.getVideo()
   }
 
-  convertObject(v) {
-    this.loadVideoData()
+  playVideo() {
+    this.showVideo = true
   }
 
   getMovieCredits() {
@@ -394,6 +394,16 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Discovers movies based from criteria.
+   * @param type type of discovery. (year, certification, genre)
+   * @param id value to discover
+   */
+  goToDiscover(type: string, id: string) {
+    this.dataService.updateDiscoverQuery([type, id])
+    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
+  }
+
   goToMovie(val) {
     const highlightedId = val
     this.dataService.updateHighlightedMovie(highlightedId);
@@ -407,21 +417,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
   goToFullCredits() {
     const val = this.movieDetails.tmdbId
     this.router.navigate([`/credits/${val}`], { relativeTo: this.activatedRoute });
-  }
-
-  goToReleaseYear(val) {
-    this.dataService.updateDiscoverQuery(['year', val])
-    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
-  }
-
-  goToGenre(val) {
-    this.dataService.updateDiscoverQuery(['genre', val])
-    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
-  }
-
-  goToCertification(val) {
-    this.dataService.updateDiscoverQuery(['certification', val])
-    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
   }
 
   getYear(val: string) {
@@ -443,6 +438,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     });
     return toReturn
   }
+
   getProducers() {
     const toReturn = []
     this.movieDetails.credits.crew.forEach(crew => {
@@ -455,6 +451,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     const length = TROUBLE_QUOTES.length
     this.troubleQuote = TROUBLE_QUOTES[Math.floor(Math.random() * (-1 - length + 1)) + length]
   }
+
   sanitize(torrent: ITorrent) {
     return this.torrentService.sanitize(torrent);
   }
@@ -477,44 +474,3 @@ export class DetailsComponent implements OnInit, OnDestroy {
     document.body.removeChild(selBox);
   }
 }
-
-
-
-
-// @Pipe({ name: 'simplifySize' })
-// export class SimplifySizePipe implements PipeTransform {
-//   transform(val: string): string {
-//     let output = '';
-//     if (!val.trim().match(FILE_SIZE_REGEX)) {
-//       output = val;
-//     } else {
-//       let value = Number(val);
-//       if (value < 1000) {
-//         output = value.toFixed(2).toString() + 'bytes';
-//       } else if (value >= 1000 && value < 1000000) {
-//         value = value / 1000;
-//         output = value.toFixed(2).toString() + 'kB';
-//       } else if (value >= 1000000 && value < 1000000000) {
-//         value = value / 1000000;
-//         output = value.toFixed(2).toString() + 'MB';
-//       } else if (value >= 100000000) {
-//         value = value / 1000000000;
-//         output = value.toFixed(2).toString() + 'GB';
-//       }
-//     }
-//     return output;
-//   }
-// }
-// @Pipe({ name: 'magnet' })
-// export class MagnetPipe implements PipeTransform {
-//   transform(value: string): string {
-//     let output = '';
-//     // let output = 'magnet';
-//     // let client = '?xt=urn:btih';
-//     const hash = value;
-//     const fileName = '&dn=';
-//     output += hash;
-
-//     return output;
-//   }
-// }

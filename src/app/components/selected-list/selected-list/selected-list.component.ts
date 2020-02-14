@@ -9,7 +9,7 @@ import { NavigationService } from '../../../services/navigation.service'
 import { UtilsService } from '../../../services/utils.service'
 import { ISearchQuery } from '../../top-navigation/top-navigation.component';
 import { Select, Store } from '@ngxs/store';
-import { ClearList } from '../../../movie.actions'
+import { ClearList, AddWatched, AddBookmark } from '../../../movie.actions'
 import { RemoveMovie } from '../../../movie.actions';
 import { Observable, Subscriber, Subscription } from 'rxjs';
 import { MovieList } from '../../../movie.state';
@@ -88,22 +88,26 @@ export class SelectedListComponent implements OnInit, OnDestroy {
    * Adds bookmarks to all items in the list.
    */
   addBookmark() {
-    this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.BookmarkAdd, this.movieIdList])
-    const root = this
+    // this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.BookmarkAdd, this.movieIdList])
+    // const root = this
     // this.displayMessage = 'Added to watchlist'
     // this.displaySnackbar = true
-    this.bookmarkService.saveBookmarkMulti(this.movieIdList)
-    this.utilsService.hideSnackbar(root)
+    // this.bookmarkService.saveBookmarkMulti(this.movieIdList)
+    // this.utilsService.hideSnackbar(root)
+
+    this.store.dispatch(new AddBookmark())
   }
 
   markAsWatched() {
-    this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieIdList])
-    // const root = this
     // this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieIdList])
-    // this.displayMessage = 'Marked as watched'
-    // this.displaySnackbar = true
-    // this.utilsService.hideSnackbar(root)
-    this.watchedService.saveWatchedMulti(this.movieIdList)
+    // // const root = this
+    // // this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieIdList])
+    // // this.displayMessage = 'Marked as watched'
+    // // this.displaySnackbar = true
+    // // this.utilsService.hideSnackbar(root)
+    // this.watchedService.saveWatchedMulti(this.movieIdList)
+
+    this.store.dispatch(new AddWatched())
   }
 
   /**

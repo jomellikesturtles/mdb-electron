@@ -27,6 +27,16 @@
       "cwd": "${workspaceRoot}",
       "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
       "program": "${workspaceRoot}/main.js"
-    }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Script",
+      "program": "${workspaceFolder}\\src\\assets\\scripts\\bookmarks-service.js",
+      // "program": "${workspaceFolder}\\async.ts",
+      "outFiles": [
+        "${workspaceFolder}/dist/out-tsc/**/*.js"
+      ]
+    },
   ]
 }
