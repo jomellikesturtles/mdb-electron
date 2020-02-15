@@ -107,19 +107,19 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   getSearchResults() {
     // commented for actual
-    this.searchResults = TMDB_SEARCH_RESULTS.results
+    // this.searchResults = TMDB_SEARCH_RESULTS.results
     // end of commented for actual
-    // const params = [
-    //   [TmdbSearchMovieParameters.Query, this.searchQuery.query]
-    // ]
-    // this.movieService.searchTmdbMovie(params).subscribe(data => {
-    //   this.searchResults.push(...data.results)
-    //   if (data.total_pages > this.currentPage) {
-    //     this.hasMoreResults = true
-    //   }
-    //   this.setHighlights()
-    //   this.cdr.detectChanges()
-    // })
+    const params = [
+      [TmdbSearchMovieParameters.Query, this.searchQuery.query]
+    ]
+    this.movieService.searchTmdbMovie(params).subscribe(data => {
+      this.searchResults.push(...data.results)
+      if (data.total_pages > this.currentPage) {
+        this.hasMoreResults = true
+      }
+      this.setHighlights()
+      this.cdr.detectChanges()
+    })
   }
 
   /**

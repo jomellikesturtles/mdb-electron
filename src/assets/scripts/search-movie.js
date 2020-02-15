@@ -114,9 +114,9 @@ function initSearch() {
     });
 }
 
-console.time('searchLapse')
+// console.time('searchLapse')
 // initSearch()
-console.log('result: ', result);
+// console.log('result: ', result);
 // console.timeEnd('searchLapse')
 
 var callMe = function callMe(arg1) {

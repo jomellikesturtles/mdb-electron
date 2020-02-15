@@ -348,6 +348,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       videoId = results[index].videoId
       this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`)
       this.youtubeUrl = videoId
+      // if results[index].snippet.channelTitle  === 'Movieclips' ---- cut the video by 30seconds
       if (!this.hasAlreadySelected) {
         this.generateYoutube()
         this.hasAlreadySelected = true

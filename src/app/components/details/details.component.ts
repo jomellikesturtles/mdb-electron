@@ -74,20 +74,20 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getTroubleQuote()
     // commented for test values
-    // this.activatedRoute.params.subscribe(params => {
-    //   console.log('activatedRoute.params', params);
-    //   if (params.id) {
-    //     this.getMovieOnline(params.id)
-    //   } else {
-    //     this.hasData = false
-    //   }
-    // });
+    this.activatedRoute.params.subscribe(params => {
+      console.log('activatedRoute.params', params);
+      if (params.id) {
+        this.getMovieOnline(params.id)
+      } else {
+        this.hasData = false
+      }
+    });
     // end of commented for test values
     // console.time('convertTime');
 
     // test values
-    this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
-    this.loadVideoData()
+    // this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
+    // this.loadVideoData()
     // end of test values
     // console.timeEnd('convertTime');
 
@@ -276,6 +276,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
       this.selectedMovie = data;
       const myObject = this.selectedMovie
       this.movieDetails.convertToMdbObject(myObject)
+      // this
       this.loadVideoData()
       this.hasData = true
       // COMMENTED UNTIL 'error spawn ENAMETOOLONG' is fixed.

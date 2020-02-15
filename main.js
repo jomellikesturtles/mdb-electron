@@ -196,23 +196,23 @@ ipcMain.on('open-link-external', function (event, url) {
 /**
  * Initializes scan-library.js
  */
-ipcMain.on('scan-library', function (event, data) {
+ipcMain.on('scan-library', function (event) {
   console.log('scan-librarye');
-  if (!procVideoService) { // if process search is not yet running
+  if (!procScanLibrary) { // if process search is not yet running
     console.log('procSearch true');
-    procVideoService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), [data], {
+    procScanLibrary = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), {
       cwd: __dirname,
       silent: true
     });
-    procVideoService.stdout.on('data', function (data) {
-      console.log('printing data..');
-      console.log(data.toString());
-    });
-    procVideoService.on('exit', function () {
+    // procScanLibrary.stdout.on('data', function (data) {
+    //   console.log('scan-library printing data..');
+    //   console.log(data.toString());
+    // });
+    procScanLibrary.on('exit', function () {
       console.log('ScanLibrary process ended');
-      procVideoService = null;
+      procScanLibrary = null;
     });
-    procVideoService.on('message', function (m) {
+    procScanLibrary.on('message', function (m) {
       console.log('scan-library in IPCMAIN', m);
       mainWindow.webContents.send(m[0], m[1]);
     });

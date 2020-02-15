@@ -1,16 +1,16 @@
 /**
  * scans library folders for potential video files
  */
-const promise = require('promise')
+// const promise = require('promise')
 // const cp = require('child_process');
 const searchMovie = require('./search-movie')
 const fs = require('fs');
 const path = require('path');
-var DataStore = require('nedb')
 const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const ffmpeg = require('fluent-ffmpeg')
 var libraryDbService = require('./library-db-service-2.js')
 var identifyMovie = require('./identify-movie')
+var DataStore = require('nedb')
 var config = new DataStore({
   filename: '../config/config.db',
   // filename: path.join(__dirname, '..', 'config', 'config.db'), // for node only
@@ -19,7 +19,11 @@ var config = new DataStore({
 })
 // process.argv
 process.on('uncaughtException', function (error) {
-  console.log(error);
+  console.log('ERROR: ', error);
+});
+
+process.on('unhandledRejection', function (error) {
+  console.log('unhandledRejection ERROR: ', error);
 });
 // process.send = process.send || function () { };
 
@@ -66,6 +70,7 @@ function addToList(folderPath, fileName) {
   }
   saveToLibraryDb(fileInfo);
 }
+
 /**
  * Gets the movie title based on regex
  * @param {string} parentFolder
@@ -218,6 +223,7 @@ async function identifyMovies() {
       if (identityResult.tmdbId != 0) { // if query has returned a movie
         const replacementObj = { tmdbId: identityResult.tmdbId, title: identityResult.title, year: parseInt(identityResult.year, 10) }
         const updateLibDb = await libraryDbService.updateFields(libraryFile._id, replacementObj)
+        console.log(updateLibDb)
       }
     }
     index++;
@@ -242,7 +248,7 @@ async function initializeScan() {
   }
   let result = await scanExistingLibraryMovies()
   // console.log('inresults');
-  // console.log(result);
+  console.log('result:', result);
 
   getLibraryFolders().then(function (libraryFolders) {
     libraryFolders.forEach(folder => {
@@ -252,18 +258,10 @@ async function initializeScan() {
   })
 }
 
-function initializeScan2() {
-  console.log('INITILIZSCAN2')
-}
-
-// identifyMovie.identifyMovie('titanic', 1997)
-initializeScan2();
-// initializeScan();
-
-
+initializeScan();
 
 // var regexList =
-// Tested: `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`
+// Tested: `^ (.+?)[.(\\t]* (?: (?: (19\\d{ 2} | 20(?: 0\\d | 1[0 - 9]))).*| (?: (?= bluray |\\d + p | brrip | WEBRip)..*)?[.](mkv | avi | mpe ? g | mp4)$)`
 // tested : ^((.*[^ (_.])[ (_.]+((\d{4})([ (_.]+S(\d{1,2})E(\d{1,2}))?(?<!\d{4}[ (_.])S(\d{1,2})E(\d{1,2})|(\d{3}))|(.+))
 
 
