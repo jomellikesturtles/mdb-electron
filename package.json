@@ -17,7 +17,7 @@
     "electron-build-d": "ng build --dev && npm run electron",
     "electron-build": "ng build --prod && electron .",
     "start:electron": "ng build --base-href ./ && electron .",
-    "start:electron2": "ng serve && electron .",
+    "start:electron2": "ng build --prod --aot && electron .",
     "start:server": "node src/assets/scripts/server/main",
     "start:angular-server": " start ng serve & start npm run start:server",
     "start:angular-server2": "start npm start && npm run start:server"

@@ -25,7 +25,7 @@ process.on('uncaughtException', function (error) {
 process.on('unhandledRejection', function (error) {
   console.log('unhandledRejection ERROR: ', error);
 });
-// process.send = process.send || function () { };
+process.send = process.send || function (...args) { DEBUG.log('SIMULATING process.send', ...args) };
 
 // Toy.Story.4
 /**
@@ -254,10 +254,12 @@ async function initializeScan() {
     libraryFolders.forEach(folder => {
       readDirectory(folder);
     });
-    identifyMovies()
+    identifyMovies().then({
+      // process.send('scan-library-success', '')
+    })
   })
 }
-
+console.log('initializing scan')
 initializeScan();
 
 // var regexList =

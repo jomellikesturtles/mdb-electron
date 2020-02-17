@@ -10,6 +10,7 @@ let fs = require('fs');
 const path = require('path');
 var DataStore = require('nedb')
 var utilJs = require('./util.js')
+var bookmarksService = require('./bookmarks-service.js')
 var bookmarksDb = new DataStore({
   filename: path.join(__dirname, '..', 'db', 'bookmarks.db'), // for node only
   //   // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks.db'),
@@ -25,6 +26,8 @@ process.on('uncaughtException', function (error) {
   console.log(error);
   // process.send(['operation-failed', 'general']);
 });
+
+process.send = process.send || function (...args) { DEBUG.log('SIMULATING process.send', ...args) };
 
 // --------- FUNCTIONS
 //--------- BOOKMARK
@@ -171,7 +174,6 @@ function addChanges(type, id) {
   })
 }
 
-
 function initializeService() {
   // "tmdbId":10681,"imdbId":"tt0910970"
   console.log('user-db-service initializeService', command, tmdbIdArg, imdbIdArg);
@@ -186,12 +188,8 @@ function initializeService() {
       break;
     case 'bookmark-remove': removeBookmark()
       break;
-    case 'bookmark-count-all': bookmarksDb.count({}, function (err, count) {
-      if (!err) {
-        console.log(count);
-        // process.send(['bookmark-count-all', count])
-      }
-    })
+    case 'bookmark-count-all':
+      bookmarksService.count()
       break;
     default:
       break;
@@ -200,4 +198,3 @@ function initializeService() {
 
 command = 'bookmark-count-all'
 initializeService()
-utilJs.sayHello()

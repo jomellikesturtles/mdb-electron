@@ -3,6 +3,9 @@ const fs = require('fs')
 const path = require('path')
 let args = process.argv.slice(2);
 let tmdbIdArg = args[0];
+var http = require('http')
+
+isPortOpen = false
 // let tmdbIdArg = args[1];
 // let imdbIdArg = args[2];
 const app = express()
@@ -12,26 +15,33 @@ process.on('uncaughtException', function (error) {
   console.log('ERROR!!!!!!!!!!!!!!!!!!!!!!!!!', error);
   process.send(['operation-failed', 'general']);
 });
-// process.send = process.send || function () {};
-console.log('IN VIDEO SERVICE');
+process.send = process.send || function (...args) { DEBUG.log('SIMULATING process.send', ...args) };
+
+let DEBUG = (() => {
+  let timestamp = () => { }
+  timestamp.toString = () => {
+    return '[DEBUG ' + (new Date).toLocaleString() + ']'
+  }
+  return {
+    log: console.log.bind(console, '%s', timestamp)
+  }
+})()
+
+DEBUG.log('IN VIDEO SERVICE');
 
 var libraryFilesDb = new DataStore({
-  filename: path.join(process.cwd(), 'src', 'assets', 'db', 'libraryFiles.db'),
+  filename: '../db/libraryFiles2.db',
+  // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'libraryFiles2.db'),
   autoload: true
 })
 
-function openStream(filePath) {
-
-  app.get('/stream', function (req, res) {
-    // res.json('welcomess!')
-
-    // const filePath = path.join(process.cwd(), 'src', 'assets', 'scripts', 'videoplayback.mp4')
+function openStream(libraryData) {
+  DEBUG.log(`set streaming from: localhost:3000/stream/${libraryData._id}`)
+  process.send(['video-success', `localhost:3000/stream/${libraryData._id}`])
+  app.get(`/stream/${libraryData._id}`, function (req, res) {
     // const filePath = path.join(process.cwd(), '..', '..', '..', '..', 'A.Streetcar.Named.Desire.1951.1080p.BluRay.x264-[YTS.AM].mp4')
-
-    // const filePath = path.join(process.cwd(), 'src', 'assets', 'scripts', 'A.Streetcar.Named.Desire.1951.1080p.BluRay.x264-[YTS.AM].mp4')
-    console.log('filepath: ', filePath);
-
-    const stat = fs.statSync(filePath)
+    // console.log('filepath: ', libraryData.fullFilePath);
+    const stat = fs.statSync(libraryData.fullFilePath)
     const fileSize = stat.size
     const range = req.headers.range
     if (range) {
@@ -39,7 +49,7 @@ function openStream(filePath) {
       const start = parseInt(parts[0], 10)
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1
       const chunkSize = (end - start) + 1
-      const file = fs.createReadStream(filePath, { start, end })
+      const file = fs.createReadStream(libraryData.fullFilePath, { start, end })
       const head = {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Accept-Ranges': 'bytes',
@@ -48,41 +58,48 @@ function openStream(filePath) {
       }
       res.writeHead(206, head)
       file.pipe(res)
-      // process.send(['video-success'])
+      // process.send(['video-success', `localhost:3000/stream/${libraryData._id}`])
     } else {
       const head = {
         'Content-Length': fileSize,
         'Content-Type': 'video/mp4'
       }
       res.writeHead(206, head)
-      fs.createReadStream(filePath).pipe(res)
-      // process.send(['video-success'])
+      fs.createReadStream(libraryData.fullFilePath).pipe(res)
     }
   })
+}
+
+function openPort() {
 
   app.listen(3000, function () {
-    console.log('listening from 3000...');
+    DEBUG.log('listening from 3000...')
   })
 }
 
 function initialize() {
-  console.log(args)
-  libraryDbService.getLibraryFilesByTmdbId(parseInt(tmdbIdArg)).then(theFiles => {
-    console.log(theFiles)
-    openStream(theFiles[0].fullFilePath)
+  libraryDbService.getLibraryFilesByTmdbId(parseInt(tmdbIdArg)).then(libraryData => {
+    DEBUG.log('FOUND ONE DATA: ', libraryData);
+    openStream(libraryData[0])
   })
 }
 
-function getFromLibrary() {
-  libraryFilesDb.findOne({
-    tmdbId: parseInt(tmdbIdArg)
-  }, function (err, data) {
-    const firstDirectory = data.directoryList[0]
-    openStream(firstDirectory)
-  })
+if (isPortOpen == false) {
+  openPort()
 }
-// getFromLibrary()
-// console.log('thefile:', libraryDbService.getLibraryFilesByTmdbId(505948))
+
 initialize()
+// setTimeout(() => {
+//   testConnection()
+// }, 3000);
+// // testConnection()
 
-// getFromLibrary()
+function testConnection() {
+  console.log('testConnection');
+
+    options = { method: 'GET', host: 'localhost', port: 3000, path: '/stream/Y9LaiH30sFSmjGfV', },
+    req = http.request(options, function (r) {
+      console.log('R: ', r.statusCode);
+    });
+  req.end();
+}

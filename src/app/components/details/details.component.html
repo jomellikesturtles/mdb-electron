@@ -1,24 +1,23 @@
-<div id='videoPlayer' *ngIf='showVideo' id='target'
+<div id='isVideoAvailable' *ngIf='showVideo' id='target'
   style='background-color: black;width: 100%;height: calc(100vh - 50px);'>
   <!-- <video *ngIf="showVideo" src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4 -->
   <!-- " id="videoPlayer" controls style="width: 100%;height:100%;"> -->
-  <video *ngIf="showVideo" style="width:100%;height:100%;" poster="" controls preload="none">
+  <video *ngIf="showVideo" style="width:100%; height:100%;" poster="" controls preload="none">
     <!-- <video *ngIf="showVideo" controlsList="nodownload" style="width:100%;height:100%;" poster="" controls preload="none"> -->
-    <source src="https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4" type="video/mp4">
-    <track label="English subtitles" kind="subtitles" srclang="en" src="assets/sample-subtitles.vtt" default>
-    <!-- <track label="English subtitles" kind="subtitles" srclang="en" src="/assets/sample-subtitles.srt" default> -->
+    <source [src]='"http://"+streamLink' type="video/mp4">
+    <!-- <source src="http://localhost:3000/stream" type="video/mp4"> -->
+    <!-- <source src="https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4" type="video/mp4"> -->
+    <!-- <track label="English subtitles" kind="subtitles" srclang="en" src="assets/sample-subtitles.vtt" default> -->
   </video>
   <!-- </video> -->
 </div>
 
-  <!-- 'url(https://image.tmdb.org/t/p/w342'+movie.posterPath+')' -->
 <div
   [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(https://image.tmdb.org/t/p/original' + movieDetails._backgroundPath + ')'}"
   style='background-size: cover;background-repeat: no-repeat;background-position: center;
   background-attachment: fixed;'>
   <div style='padding-top: 70px; padding-bottom: 100px'>
     <div style="color:white; text-shadow: 3px 3px 5px black;">
-<!-- 3px 3px 5px black; -->
       <div class="container">
 
         <div class="row">
@@ -66,9 +65,26 @@
                 ({{movieDetails.releaseDate|releaseYear}})
               </h2>
               <h2 (click)='goToDiscover("certification",movieCertification)'>{{movieCertification}}</h2>
-              <button (click)='playVideo()' class='btn btn-primary'>Play</button>
+              <!-- <button (click)='playVideo()' class='btn btn-primary'>Play</button> -->
+
+              <button class="btn btn-primary" type="button" (click)='playVideo()'
+                [disabled]='procVideo||!isVideoAvailable'>
+                <div *ngIf="procVideo">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  Loading...
+                </div>
+                <div *ngIf="!procVideo">
+                  <div *ngIf="isVideoAvailable">
+                    Play
+                  </div>
+                  <div *ngIf="!isVideoAvailable">
+                    Not available
+                  </div>
+                </div>
+              </button>
             </div>
 
+            <!-- isVideoAvailable  -->
             <p id="movie-plot" style='overflow-wrap: break-word !important;
             word-wrap: break-word !important;
             white-space: pre-line;'>{{movieDetails.plot}}</p>
@@ -140,24 +156,11 @@
 
         </div>
         <h1>video 1</h1>
-        <div *ngIf="isVideoAvailable">
-          <!-- <video src="/stream" id="videoPlayer" style='height:100%;width:100%' controls> -->
-            <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls>
-              </video>
-            <!-- <source type="video/mp4"> -->
-          <!-- </video> -->
-        </div>
-        <!-- <video src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4
-        " id="videoPlayer" controls>
-          <source  type="video/mp4">
-        </video> -->
-
-        <div *ngIf="myVideoPath.length > 1" style='height:600px; width:800px;background-color: black;margin:auto'>
-          <video [src]="myVideoPath" width="100%" height="100%" controls>
-            <source type="video/mp4">
-            Your browser does not support the video tag.
+        <!-- <div *ngIf="isVideoAvailable">
+          <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls>
           </video>
-        </div>
+        </div> -->
+
         <div class="table-responsive-lg container">
           <table class="table">
             <thead>

@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
 import { TEST_LIBRARY_MOVIES, TMDB_SEARCH_RESULTS } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
-import { REGEX_IMAGE_SIZE } from '../../constants';
+import { STRING_REGEX_IMAGE_SIZE } from '../../constants';
 import { DataService } from '../../services/data.service';
 import { IpcService, IpcCommand } from '../../services/ipc.service';
 import { MovieService } from '../../services/movie.service';
@@ -55,6 +55,7 @@ export class LibraryComponent implements OnInit {
    * @returns newPoster new Poster
    */
   minimizeMoviePoster(poster) {
+    const REGEX_IMAGE_SIZE = new RegExp(STRING_REGEX_IMAGE_SIZE, `gi`)
     const newPoster = poster.replace(REGEX_IMAGE_SIZE, 'SX150.jpg')
     return newPoster
   }

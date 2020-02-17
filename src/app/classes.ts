@@ -1,5 +1,5 @@
 import { IMdbMovieDetails, IRating, ILibraryInfo, IGenre, ISpokenLanguage } from './interfaces'
-import { MONTHS, REGEX_OMDB_BOX_OFFICE, STRING_REGEX_OMDB_RELEASE_DATE } from './constants'
+import { MONTHS, STRING_REGEX_OMDB_RELEASE_DATE, STRING_REGEX_OMDB_BOX_OFFICE } from './constants'
 import { UtilsService } from './services/utils.service';
 
 /**
@@ -165,6 +165,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
    */
   set boxOffice(v: string | number) {
     // just in case to be used in the future
+    const REGEX_OMDB_BOX_OFFICE = new RegExp(STRING_REGEX_OMDB_BOX_OFFICE, `gi`);
     const omdbBoxOfficeRegex = REGEX_OMDB_BOX_OFFICE
     if (typeof v === 'string') {
       if (v === 'N/A') {

@@ -10,7 +10,7 @@ import { forEach } from '@angular/router/src/utils/collection';
 import { IpcService, IpcCommand } from '../services/ipc.service'
 import { DomSanitizer } from '@angular/platform-browser'
 import { Pipe, PipeTransform } from '@angular/core';
-import { REGEX_IMDB_ID } from '../constants';
+import { STRING_REGEX_IMDB_ID } from '../constants';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -69,6 +69,7 @@ export class TorrentService {
 
   getTorrents(val): Observable<any> {
     let result
+    const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`);
     if (typeof val === 'string' && val.trim().match(REGEX_IMDB_ID)) {
       result = this.getTorrentsOnline(val);
     } else {

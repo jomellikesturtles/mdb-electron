@@ -45,6 +45,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   watchedSingleSubscription = null
   videoFileSubscription = null
   myVideoPath = ''
+  streamLink = ''
   troubleQuote
   movieDetailsDirectors
   movieDetailsWriters
@@ -72,7 +73,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.getTroubleQuote()
+    // this.getTroubleQuote()
     // commented for test values
     this.activatedRoute.params.subscribe(params => {
       console.log('activatedRoute.params', params);
@@ -115,12 +116,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Loads minor video data.
    */
   loadVideoData() {
-    this.movieDetailsDirectors = this.getDirectors()
-    this.movieDetailsWriters = this.getWriters()
-    this.movieDetailsProducers = this.getProducers()
-    this.movieCertification = this.getMovieCertification()
-    this.getBookmark()
-    this.getWatched()
+    // this.movieDetailsDirectors = this.getDirectors()
+    // this.movieDetailsWriters = this.getWriters()
+    // this.movieDetailsProducers = this.getProducers()
+    // this.movieCertification = this.getMovieCertification()
+    // this.getBookmark()
+    // this.getWatched()
     this.getVideo()
   }
 
@@ -146,6 +147,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
       if (data === null || data === 0) {
         this.isVideoAvailable = false
       } else {
+        this.streamLink = data
         this.isVideoAvailable = true
       }
       this.procVideo = false
@@ -289,8 +291,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
    */
   getMovieCertification() {
     const myLoc = this.movieDetails.release_dates.results.find((e) => { return e.iso_3166_1 === this.userLocation })
-    let toReturn = myLoc.release_dates.find((e) => { return e.type === 3 })
-    toReturn = toReturn.certification
+    const toReturn = myLoc.release_dates[0].certification
+    // let toReturn = myLoc.release_dates.find((e) => { return e.type === 3 })
+    // toReturn = toReturn.certification
+
     return toReturn
   }
 

@@ -86,7 +86,7 @@ app.get('/stream', function (req, res) {
     }
     res.writeHead(206, head)
     file.pipe(res)
-    // process.send(['video-success'])
+    process.send(['video-success'])
   } else {
     const head = {
       'Content-Length': fileSize,
@@ -94,7 +94,7 @@ app.get('/stream', function (req, res) {
     }
     res.writeHead(206, head)
     fs.createReadStream(filePath).pipe(res)
-    // process.send(['video-success'])
+    process.send(['video-success'])
   }
 })
 

@@ -2,8 +2,8 @@
 
 var DataStore = require("nedb");
 var bookmarksDb = new DataStore({
-  filename: "../db/bookmarks.db", // each file will now have their own row/id // nodeJS mode
-  // filename: path.join(process.cwd(), "src", "assets", "db", "bookmarks.db"), // electron mode
+  // filename: "../db/bookmarks.db", // each file will now have their own row/id // nodeJS mode
+  filename: path.join(process.cwd(), "src", "assets", "db", "bookmarks.db"), // electron mode
   autoload: true
 });
 
@@ -50,6 +50,23 @@ function insertTmdbId(id, libraryId) {
       console.log(data);
     }
   });
+}
+
+function findBookmark(val) {
+  return new Promise(function (resolve, reject) {
+    bookmarksDb.findOne({ tmdbId: parseInt(tmdbIdArg, 10) }, function (err, data) {
+      if (!err) {
+        console.log(data);
+        if (data) {
+          resolve(data)
+        } else {
+          resolve([])
+        }
+      } else {
+        console.log(err);
+      }
+    })
+  })
 }
 
 function removeBookmark(val) {
@@ -146,7 +163,6 @@ function findNewBookmarks(timestamp, index, step) {
 // updateFields('RdmTLWXNNlkVY5JX', { tmdbId: 10681, title: 'WALL·E', year: '2008' })
 
 bookmarksDb.ensureIndex({ fieldName: 'tmdbId', unique: true }, function (err) {
-  removeBookmark('tt0128434')
   // insertBookmark({ tmdbId: 232222, imdbId: 'tt0128434' })
   // count()
   // findNewBookmarks(1581590374259, 0 , 5)
@@ -154,14 +170,15 @@ bookmarksDb.ensureIndex({ fieldName: 'tmdbId', unique: true }, function (err) {
 
 
 module.exports = {
-  // count: count,
-  // insertBookmark: insertBookmark,
-  // insertTmdbId: insertTmdbId,
-  // getLibraryFilesMulti: getLibraryFilesMulti,
-  // removeLibraryFile: removeLibraryFile,
-  // getLibraryFilesByStep: getLibraryFilesByStep,
-  // updateFields,
-  // getLibraryFilesByTmdbId
+  count,
+  insertBookmark,
+  insertTmdbId,
+  removeBookmark,
+  getBookmarks,
+  updateFields,
+  getLibraryFilesByTmdbId,
+  findNewBookmarks,
+  findBookmark
 };
 
 /**

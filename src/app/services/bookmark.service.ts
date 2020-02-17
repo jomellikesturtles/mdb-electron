@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService, FirebaseOperator, CollectionName } from './firebase.service'
-import { IpcService } from './ipc.service'
+import { IpcService, IpcCommand } from './ipc.service'
 import { Observable, from } from 'rxjs';
 @Injectable({
   providedIn: 'root'
@@ -8,17 +8,23 @@ import { Observable, from } from 'rxjs';
 export class BookmarkService {
 
   bookmarkObservable = new Observable<any>()
-
-  constructor(private firebaseService: FirebaseService) { }
+  isFirebaseMode = false
+  constructor(
+    private firebaseService: FirebaseService,
+    private ipcService: IpcService) { }
 
   getBookmark(id) {
-    return new Promise(resolve => {
-      this.firebaseService.getFromFirestore(CollectionName.Bookmark, 'tmdbId', FirebaseOperator.Equal, id).then(e => {
-        console.log('BOOKMARK: ', e)
-        // bookmarkObservable=
-        resolve(e)
+    if (this.isFirebaseMode === true) {
+      return new Promise(resolve => {
+        this.firebaseService.getFromFirestore(CollectionName.Bookmark, 'tmdbId', FirebaseOperator.Equal, id).then(e => {
+          console.log('BOOKMARK: ', e)
+          // bookmarkObservable=
+          resolve(e)
+        })
       })
-    })
+    } else {
+      this.ipcService.call(IpcCommand.)
+    }
   }
 
   saveBookmark(data) {

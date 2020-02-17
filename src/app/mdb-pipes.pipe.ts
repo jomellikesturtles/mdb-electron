@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { REGEX_TMDB_RUNTIME } from './constants';
+import { STRING_REGEX_TMDB_RUNTIME } from './constants';
 import { UtilsService } from './services/utils.service';
 
 @Pipe({
@@ -64,6 +64,7 @@ export class RuntimeDisplayPipe implements PipeTransform {
         }
       }
     } else if (typeof value === 'string') {
+      const REGEX_TMDB_RUNTIME = new RegExp(STRING_REGEX_TMDB_RUNTIME, `gi`)
       const regexResults = REGEX_TMDB_RUNTIME.exec(value)
       if (value !== 'N/A') {
         if (regexResults != null) {

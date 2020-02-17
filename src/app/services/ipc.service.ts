@@ -24,6 +24,7 @@ export enum Channel {
   MovieMetadata = 'movie-metadata',
   PreferencesConfig = 'preferences-config',
   ScannedSuccess = 'scanned-success',
+  SearchList = 'search-list',
   VideoSuccess = 'video-success',
   WatchedSuccess = 'watched-success',
   MovieIdentified = 'movie-identified-success', // emits when movie from library is identified
@@ -46,6 +47,7 @@ export class IpcService {
   videoFile = new BehaviorSubject<any>([])
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
   movieIdentified = new BehaviorSubject<any>({ id: 0 })
+  searchList = new BehaviorSubject<any>([])
   private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone,
@@ -55,15 +57,19 @@ export class IpcService {
     // UNCOMMENT IF IN ELECTRON MODE
     this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
-    // function enumKeys<E>(e: E): (keyof E)[] {
-    //   return Object.keys(e) as (keyof E)[];
-    // }
+    function enumKeys<E>(e: E): (keyof E)[] {
+      return Object.keys(e) as (keyof E)[];
+    }
+    for (const key of enumKeys(Channel)) {
+      const locale: Channel = Channel[key];
+      console.log(locale);
+      this.listen(locale)
+    }
 
-    // for (const key of enumKeys(Channel)) {
-    //   const locale: Channel = Channel[key];
-    //   console.log(locale);
-    //   this.listen(locale)
-    // }
+    this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
+      console.log('searchList:', data)
+      this.searchList.next(data)
+    })
   }
 
   async getFiles() {
@@ -111,7 +117,7 @@ export class IpcService {
           break;
         case Channel.WatchedSuccess: this.watchedSingle.next(data)
           break;
-        case Channel.VideoSuccess: this.videoFile.next(1)
+        case Channel.VideoSuccess: this.videoFile.next(data)
           break;
         default:
           console.log(`channel ${channel} uncaught`)
@@ -231,6 +237,7 @@ export enum IpcCommand {
   ModalFileExplorer = 'modal-file-explorer',
   GetTorrentsTitle = 'get-torrents-title',
   GetImage = 'get-image',
+  GetSearchList = 'get-search-list'
 }
 
 export interface IBookmarkChanges {

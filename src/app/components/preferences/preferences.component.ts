@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { IpcService, IpcCommand } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
-import { REGEX_PREFIX } from '../../constants';
+import { STRING_REGEX_PREFIX } from '../../constants';
 declare var $: any;
 @Component({
   selector: 'app-preferences',
@@ -169,6 +169,7 @@ export class PreferencesComponent implements OnInit {
    */
   onOpenFolder(folder: string) {
     let folderToOpen = ''
+    const REGEX_PREFIX = new RegExp(STRING_REGEX_PREFIX, `gi`)
     if (folder.match(REGEX_PREFIX) == null) { // not match
       folderToOpen = this.currentFolder + folder;
     } else {

@@ -8,7 +8,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
 import { ITorrent, IOmdbMovieDetail, IRating, TmdbParameters, OmdbParameters } from '../interfaces'
 import { forEach } from '@angular/router/src/utils/collection';
-import { REGEX_IMDB_ID, OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID, YOUTUBE_API_KEY } from '../constants';
+import { OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID, YOUTUBE_API_KEY } from '../constants';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
 
@@ -40,6 +40,7 @@ export class MovieService {
    */
   getMovieInfo(val: string): Observable<any> {
     let result
+    const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`);
     if (val.trim().match(REGEX_IMDB_ID)) {
       result = this.getMovieByImdbId(val);
     } else {
@@ -268,7 +269,7 @@ export class MovieService {
     };
 
     return this.http.get<any>(baseUrl).pipe(tap(_ => this.log('')),
-    catchError(this.handleError<any>('getBookmark')))
+      catchError(this.handleError<any>('getBookmark')))
   }
 
   /**
