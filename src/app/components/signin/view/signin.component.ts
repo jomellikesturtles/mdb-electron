@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { NG_ASYNC_VALIDATORS, FormGroup, FormControl, Validators } from '@angular/forms'
-import { repeatPasswordValidator } from '../../directives/repeat-password.directive';
-import { CredentialsValidator } from '../../directives/credentials.directive';
+import { repeatPasswordValidator } from '../../../directives/repeat-password.directive';
+import { CredentialsValidator } from '../../../directives/credentials.directive';
 import * as firebase from 'firebase/app';
 import { AngularFirestore } from '@angular/fire/firestore'
 import { AngularFireAuth, AngularFireAuthModule } from '@angular/fire/auth'
 // import {  } from '@angular/fire/angularfire2'
-import { IpcService } from '../../services/ipc.service';
-import { FirebaseService } from '../../services/firebase.service';
-import { UtilsService } from '../../services/utils.service';
+import { IpcService } from '../../../services/ipc.service';
+import { FirebaseService } from '../../../services/firebase.service';
+import { UtilsService } from '../../../services/utils.service';
 
 @Component({
   selector: 'app-signin',

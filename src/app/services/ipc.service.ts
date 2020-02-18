@@ -55,21 +55,21 @@ export class IpcService {
   ) ////
   {
     // UNCOMMENT IF IN ELECTRON MODE
-    this.ipcRenderer = (window as any).require('electron').ipcRenderer
+    // this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
-    function enumKeys<E>(e: E): (keyof E)[] {
-      return Object.keys(e) as (keyof E)[];
-    }
-    for (const key of enumKeys(Channel)) {
-      const locale: Channel = Channel[key];
-      console.log(locale);
-      this.listen(locale)
-    }
+    // function enumKeys<E>(e: E): (keyof E)[] {
+    //   return Object.keys(e) as (keyof E)[];
+    // }
+    // for (const key of enumKeys(Channel)) {
+    //   const locale: Channel = Channel[key];
+    //   console.log(locale);
+    //   this.listen(locale)
+    // }
 
-    this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
-      console.log('searchList:', data)
-      this.searchList.next(data)
-    })
+    // this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
+    //   console.log('searchList:', data)
+    //   this.searchList.next(data)
+    // })
   }
 
   async getFiles() {
@@ -83,7 +83,7 @@ export class IpcService {
 
   call(message: IpcCommand, args?: any) {
     console.log(`IPC Command: ${message}, args: ${args}`)
-    this.ipcRenderer.send(message, args)
+    // this.ipcRenderer.send(message, args)
   }
 
   /**

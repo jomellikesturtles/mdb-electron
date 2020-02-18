@@ -59,7 +59,8 @@
 
             <h6>{{movieDetails.voteAverage}}</h6>
             <div style='display: flex;'>
-              <h2 id="movie-title">{{movieDetails.title}}</h2>&nbsp;
+              <h2 id="movie-title">{{movieDetails.original_title}}</h2>&nbsp;
+              <h2 id="movie-title">TEST</h2>&nbsp;
               <h2 *ngIf="movieDetails.releaseDate" class='text-hyperlink'
                 (click)='goToDiscover("year",getYear(movieDetails.releaseDate))'>
                 ({{movieDetails.releaseDate|releaseYear}})
@@ -216,9 +217,13 @@
               </div>
               <div>
                 <h6 (click)='goToMovie(recommendedMovie.id)' class='text-hyperlink'>{{recommendedMovie.title}}</h6>
-                <p class='text-hyperlink' style='margin-left: 5px;'
-                  (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>
-                  {{recommendedMovie.release_date|releaseYear}}</p>
+                <label class='text-hyperlink' style='float: left'
+                  (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>{{getYear(recommendedMovie.release_date)}}</label>
+                <label *ngIf='recommendedMovie.vote_average>0' style='float: right' data-toggle='tooltip'
+                  title='{{recommendedMovie.vote_count}} votes'>
+                  <img style='height:10px;
+                filter: invert(1);margin-bottom: 4px;
+                margin-right: 2px;' src='./assets/icons/star.svg' />{{recommendedMovie.vote_average}}</label>
               </div>
             </div>
           </div>

@@ -28,7 +28,7 @@
 
 * {
   -webkit-user-select: none;
-  color: whitesmoke
+  // color: whitesmoke
 }
 
 p,
@@ -39,7 +39,8 @@ h3,
 h4,
 h5,
 h6 {
-  cursor: context-menu
+  cursor: context-menu;
+  color:white
 }
 
 // snackbar
@@ -62,7 +63,7 @@ h6 {
   /* Padding */
   position: fixed;
   /* Sit on top of the screen */
-  z-index: 1;
+  z-index: 5000;
   /* Add a z-index if needed */
   left: 50%;
   /* Center the snackbar */

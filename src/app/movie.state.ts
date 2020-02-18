@@ -1,7 +1,7 @@
 import { Action, StateContext, Select, State, Selector } from '@ngxs/store'
 import { AddMovie, RemoveMovie, ClearList, AddWatched, AddBookmark } from './movie.actions'
 import { BookmarkService } from './services/bookmark.service'
-import { IBookmark } from './components/bookmarks/bookmarks.component'
+import { IBookmark } from './components/bookmarks/view/bookmarks.component'
 
 export interface MovieList {
   id: number,

@@ -23,7 +23,7 @@ export class BookmarkService {
         })
       })
     } else {
-      this.ipcService.call(IpcCommand.)
+      // this.ipcService.call(IpcCommand.)
     }
   }
 

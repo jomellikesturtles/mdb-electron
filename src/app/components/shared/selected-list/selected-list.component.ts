@@ -1,17 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../../interfaces';
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../../services/data.service'
-import { FirebaseService } from '../../../services/firebase.service';
 import { IpcService, IpcCommand } from '../../../services/ipc.service'
-import { MovieService } from '../../../services/movie.service'
-import { NavigationService } from '../../../services/navigation.service'
 import { UtilsService } from '../../../services/utils.service'
-import { ISearchQuery } from '../../top-navigation/top-navigation.component';
 import { Select, Store } from '@ngxs/store';
 import { ClearList, AddWatched, AddBookmark } from '../../../movie.actions'
 import { RemoveMovie } from '../../../movie.actions';
-import { Observable, Subscriber, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { MovieList } from '../../../movie.state';
 import { BookmarkService } from '../../../services/bookmark.service';
 import { WatchedService } from '../../../services/watched.service';

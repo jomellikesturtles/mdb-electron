@@ -1,18 +1,18 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { IOmdbMovieDetail, IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail, TmdbParameters } from '../../interfaces';
-import { MdbMovieDetails } from '../../classes';
-import { TEST_MOVIE_DETAIL, TEST_TMDB_MOVIE_DETAILS } from '../../mock-data';
+import { IOmdbMovieDetail, IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail, TmdbParameters } from '../../../interfaces';
+import { MdbMovieDetails } from '../../../classes';
+import { TEST_MOVIE_DETAIL, TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
-import { BookmarkService } from '../../services/bookmark.service'
-import { DataService } from '../../services/data.service';
-import { MovieService } from '../../services/movie.service';
-import { TorrentService } from '../../services/torrent.service';
-import { UtilsService } from '../../services/utils.service';
-import { IpcService, IpcCommand } from '../../services/ipc.service';
+import { BookmarkService } from '../../../services/bookmark.service'
+import { DataService } from '../../../services/data.service';
+import { MovieService } from '../../../services/movie.service';
+import { TorrentService } from '../../../services/torrent.service';
+import { UtilsService } from '../../../services/utils.service';
+import { IpcService, IpcCommand } from '../../../services/ipc.service';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { Observable } from 'rxjs';
-import { TROUBLE_QUOTES } from '../../constants';
-import { TMDB_FULL_MOVIE_DETAILS } from '../../mock-data-movie-details';
+import { TROUBLE_QUOTES } from '../../../constants';
+import { TMDB_FULL_MOVIE_DETAILS } from '../../../mock-data-movie-details';
 import { from } from 'rxjs';
 declare var $: any
 
@@ -75,20 +75,20 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // this.getTroubleQuote()
     // commented for test values
-    this.activatedRoute.params.subscribe(params => {
-      console.log('activatedRoute.params', params);
-      if (params.id) {
-        this.getMovieOnline(params.id)
-      } else {
-        this.hasData = false
-      }
-    });
+    // this.activatedRoute.params.subscribe(params => {
+    //   console.log('activatedRoute.params', params);
+    //   if (params.id) {
+    //     this.getMovieOnline(params.id)
+    //   } else {
+    //     this.hasData = false
+    //   }
+    // });
     // end of commented for test values
     // console.time('convertTime');
 
     // test values
-    // this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
-    // this.loadVideoData()
+    this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
+    this.loadVideoData()
     // end of test values
     // console.timeEnd('convertTime');
 
@@ -278,7 +278,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
       this.selectedMovie = data;
       const myObject = this.selectedMovie
       this.movieDetails.convertToMdbObject(myObject)
-      // this
       this.loadVideoData()
       this.hasData = true
       // COMMENTED UNTIL 'error spawn ENAMETOOLONG' is fixed.

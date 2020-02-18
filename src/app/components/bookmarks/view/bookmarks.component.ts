@@ -6,12 +6,12 @@ import { catchError, map } from 'rxjs/operators'
 import { pipe } from 'rxjs'
 import { AngularFirestore } from '@angular/fire/firestore'
 import * as firebase from 'firebase';
-import { IpcService, BookmarkChanges } from '../../services/ipc.service';
-import { FirebaseService } from '../../services/firebase.service';
-import { MovieService } from '../../services/movie.service';
-import { UtilsService } from '../../services/utils.service';
-import { BookmarkService } from '../../services/bookmark.service';
-import { TMDB_SEARCH_RESULTS } from '../../mock-data';
+import { IpcService, BookmarkChanges } from '../../../services/ipc.service';
+import { FirebaseService } from '../../../services/firebase.service';
+import { MovieService } from '../../../services/movie.service';
+import { UtilsService } from '../../../services/utils.service';
+import { BookmarkService } from '../../../services/bookmark.service';
+import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { Select } from '@ngxs/store';
 
 @Component({

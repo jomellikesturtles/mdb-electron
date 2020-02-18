@@ -2,17 +2,17 @@ import {
   AfterViewInit, Component, OnInit, ChangeDetectorRef, ElementRef, Input, ChangeDetectionStrategy, ViewChild, OnDestroy
 } from '@angular/core'
 import { Observable } from 'rxjs'
-import { MovieService } from '../../services/movie.service'
-import { DataService } from '../../services/data.service'
-import { IpcService } from '../../services/ipc.service'
-import { UtilsService } from '../../services/utils.service'
+import { MovieService } from '../../../services/movie.service'
+import { DataService } from '../../../services/data.service'
+import { IpcService } from '../../../services/ipc.service'
+import { UtilsService } from '../../../services/utils.service'
 import { Router, ActivatedRoute } from '@angular/router'
-import { ITmdbResult, ILibraryInfo, TmdbParameters, GenreCodes } from '../../interfaces'
-import { TMDB_SEARCH_RESULTS } from '../../mock-data'
-import { GENRES } from '../../constants'
+import { ITmdbResult, ILibraryInfo, TmdbParameters, GenreCodes } from '../../../interfaces'
+import { TMDB_SEARCH_RESULTS } from '../../../mock-data'
+import { GENRES } from '../../../constants'
 import { Select, Store } from '@ngxs/store'
 import { DomSanitizer } from '@angular/platform-browser'
-import { BookmarkService } from '../../services/bookmark.service'
+import { BookmarkService } from '../../../services/bookmark.service'
 
 declare var $: any
 

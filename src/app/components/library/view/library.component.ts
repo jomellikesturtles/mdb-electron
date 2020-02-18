@@ -1,12 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
-import { TEST_LIBRARY_MOVIES, TMDB_SEARCH_RESULTS } from '../../mock-data'
+import { TEST_LIBRARY_MOVIES, TMDB_SEARCH_RESULTS } from '../../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
-import { STRING_REGEX_IMAGE_SIZE } from '../../constants';
-import { DataService } from '../../services/data.service';
-import { IpcService, IpcCommand } from '../../services/ipc.service';
-import { MovieService } from '../../services/movie.service';
+import { STRING_REGEX_IMAGE_SIZE } from '../../../constants';
+import { DataService } from '../../../services/data.service';
+import { IpcService, IpcCommand } from '../../../services/ipc.service';
+import { MovieService } from '../../../services/movie.service';
 import { Observable } from 'rxjs'
-import { UtilsService } from '../../services/utils.service';
+import { UtilsService } from '../../../services/utils.service';
 import { Select, Store } from '@ngxs/store'
 
 @Component({

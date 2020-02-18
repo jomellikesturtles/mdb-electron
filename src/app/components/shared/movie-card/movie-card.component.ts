@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
-import { AddMovie, RemoveMovie } from '../../movie.actions';
-import { ITmdbResult } from '../../interfaces';
-import { BookmarkService } from '../../services/bookmark.service';
-import { DataService } from '../../services/data.service';
-import { UtilsService } from '../../services/utils.service';
-import { MovieService } from '../../services/movie.service';
-import { IpcCommand, IpcService } from '../../services/ipc.service';
-import { WatchedService, IWatched } from '../../services/watched.service';
+import { AddMovie, RemoveMovie } from '../../../movie.actions';
+import { ITmdbResult } from '../../../interfaces';
+import { BookmarkService } from '../../../services/bookmark.service';
+import { DataService } from '../../../services/data.service';
+import { UtilsService } from '../../../services/utils.service';
+import { MovieService } from '../../../services/movie.service';
+import { IpcCommand, IpcService } from '../../../services/ipc.service';
+import { WatchedService, IWatched } from '../../../services/watched.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -92,6 +92,7 @@ export class MovieCardComponent implements OnInit {
     const highlightedId = this.movie.id;
     this.dataService.updateHighlightedMovie(highlightedId);
     // this.navigationService.goToPage()
+    // this.router.navigate([`/details`], { relativeTo: this.activatedRoute });
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
 
     // below is for imdb id, but we will settle for tmdb id for now
@@ -103,8 +104,8 @@ export class MovieCardComponent implements OnInit {
     // })
   }
 
-  onPreview(movie): void {
-    this.previewMovieId.emit(movie)
+  onPreview(): void {
+    this.previewMovieId.emit(this.movie)
   }
 
   async onToggleBookmark(): Promise<any> {

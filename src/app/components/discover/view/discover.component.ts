@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { DataService } from '../../services/data.service'
-import { MovieService } from '../../services/movie.service'
-import { TmdbParameters, GenreCodes } from '../../interfaces';
-import { UtilsService } from '../../services/utils.service';
-import { TMDB_SEARCH_RESULTS } from '../../mock-data';
+import { DataService } from '../../../services/data.service'
+import { MovieService } from '../../../services/movie.service'
+import { TmdbParameters, GenreCodes } from '../../../interfaces';
+import { UtilsService } from '../../../services/utils.service';
+import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 
 @Component({
   selector: 'app-discover',

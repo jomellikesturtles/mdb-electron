@@ -1,15 +1,16 @@
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { TMDB_SEARCH_RESULTS } from '../../mock-data';
-import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../interfaces';
+import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core'
+import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
+import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../../interfaces'
 import { Router, ActivatedRoute } from '@angular/router'
-import { DataService } from '../../services/data.service'
-import { IpcService, IpcCommand } from '../../services/ipc.service'
-import { MovieService } from '../../services/movie.service'
-import { NavigationService } from '../../services/navigation.service'
-import { UtilsService } from '../../services/utils.service'
-import { ISearchQuery } from '../top-navigation/top-navigation.component';
+import { DataService } from '../../../services/data.service'
+import { IpcService } from '../../../services/ipc.service'
+import { MovieService } from '../../../services/movie.service'
+import { NavigationService } from '../../../services/navigation.service'
+import { UtilsService } from '../../../services/utils.service'
+import { ISearchQuery } from '../../top-navigation/top-navigation.component'
 import { Select, Store } from '@ngxs/store'
-import { AddMovie, RemoveMovie } from '../../movie.actions'
+import { AddMovie, RemoveMovie } from '../../../movie.actions'
+
 declare var $: any
 
 @Component({
@@ -46,6 +47,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     private store: Store) { }
 
   ngOnInit(): void {
+    console.log('inResutlts')
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
     this.getData()
@@ -58,10 +60,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
    * Subscribes to list of highlighted movies.
    */
   getData() {
-
-    this.movieService.getOne().subscribe(data => {
-      console.log('LOCALHOST: ', data)
-    })
 
     this.moviesList$.subscribe(moviesResult => {
       console.log('moviesresult: ', moviesResult)
@@ -107,19 +105,19 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   getSearchResults() {
     // commented for actual
-    // this.searchResults = TMDB_SEARCH_RESULTS.results
+    this.searchResults = TMDB_SEARCH_RESULTS.results
     // end of commented for actual
-    const params = [
-      [TmdbSearchMovieParameters.Query, this.searchQuery.query]
-    ]
-    this.movieService.searchTmdbMovie(params).subscribe(data => {
-      this.searchResults.push(...data.results)
-      if (data.total_pages > this.currentPage) {
-        this.hasMoreResults = true
-      }
-      this.setHighlights()
-      this.cdr.detectChanges()
-    })
+    // const params = [
+    //   [TmdbSearchMovieParameters.Query, this.searchQuery.query]
+    // ]
+    // this.movieService.searchTmdbMovie(params).subscribe(data => {
+    //   this.searchResults.push(...data.results)
+    //   if (data.total_pages > this.currentPage) {
+    //     this.hasMoreResults = true
+    //   }
+    //   this.setHighlights()
+    //   this.cdr.detectChanges()
+    // })
   }
 
   /**
