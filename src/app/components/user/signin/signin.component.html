@@ -8,6 +8,7 @@ register -->
 <div class='container-fluid' style='height:100%'>
   <div class='row' style='height:100%'>
     <div class='col col-6' style='height:100%' *ngIf="!isSignIn">
+
       <form [formGroup]="signUpForm" #formDir='ngForm'>
         <div class="cross-validation"
           [class.cross-validation-error]='signUpForm.errors?.isRepeatPassword && (signUpForm.touched || signUpForm.dirty)'>
@@ -16,12 +17,19 @@ register -->
             <input class='form-control' id='username' formControlName='username' placeholder="Username" required>
             <div *ngIf="username.invalid && (username.dirty || username.touched)" class="alert alert-danger">
               <div *ngIf="username.errors.required">
-                UserName is required.
+                Username is required.
               </div>
               <div *ngIf="username.errors.minlength">
-                UserName must be at least 4 characters long.
+                Username must be at least 4 characters long.
+              </div>
+              <div *ngIf="username.errors?.usernameUnavailable">
+                Username already exists.
               </div>
             </div>
+            <div *ngIf="username.pending">Validating...</div>
+          </div>
+          <div *ngIf="username.errors?.usernameUnavailable">
+            Username already exists.
           </div>
         </div>
         <div class='form-group'>
@@ -63,16 +71,23 @@ register -->
               Password is required.
             </div>
             <div *ngIf="repeatPassword.errors.minlength">
-              Password must be at least 4 characters long.
-            </div>
-            <div *ngIf="signUpForm.errors?.isRepeatPassword && (signUpForm.touched || signUpForm.dirty)">
-              Password must be same.
+              Password must be at least 6 characters long.
             </div>
           </div>
         </div>
-        <button class='btn btn-success' type='submit' (click)='onSignUp()' [disabled]='signUpForm.invalid'>Sign
+        <div *ngIf="(signUpForm.touched || signUpForm.dirty)" class="alert alert-danger">
+          <div *ngIf="signUpForm.errors?.isRepeatPassword && (repeatPassword.dirty || repeatPassword.touched)">
+            Password must be same.
+          </div>
+          <div *ngIf="signUpForm.errors?.generalError && (signUpForm.touched || signUpForm.dirty)">
+            {{generalError}}
+          </div>
+        </div>
+        <button class='btn btn-success' type='submit' (click)='onSignUp()' [disabled]='!signUpForm.valid'>Sign
           up</button>
       </form>
+
+
       <a>Already have an account? <b class='text-hyperlink' (click)='isSignIn=true'>Click here</b> to Sign in</a>
     </div>
     <!-- sign in -->

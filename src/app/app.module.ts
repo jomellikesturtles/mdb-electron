@@ -1,3 +1,6 @@
+import { CommaSpacePipe, MdbPipesPipe } from './mdb-pipes.pipe';
+import { SimplifySizePipe, MagnetPipe } from './services/torrent.service';
+import { SearchComponent } from './components/search/search.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
@@ -11,7 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TopNavigationComponent } from './components/top-navigation/top-navigation.component';
 import { BrowseComponent } from './components/browse/browse.component';
 import { PersonDetailsComponent } from './components/person-details/person-details.component';
-import { ProfileComponent } from './components/profile/profile.component';
+// import { ProfileComponent } from './components/user/profile/profile.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
 import { AngularFireAuthModule } from '@angular/fire/auth';
@@ -21,7 +24,7 @@ import { CountState } from './app.state';
 import { AppRunState } from './states/app-run.state';
 import { SelectedMoviesState } from './movie.state';
 import { NotificationComponent } from './components/notification/notification.component';
-
+// import { UsernameExistValidatorDirective } from './directives/username-exist.directive'
 @NgModule({
   declarations: [
     AppComponent,
@@ -31,8 +34,13 @@ import { NotificationComponent } from './components/notification/notification.co
     TopNavigationComponent,
     BrowseComponent,
     PersonDetailsComponent,
-    ProfileComponent,
-    NotificationComponent
+    SearchComponent,
+    NotificationComponent,
+    SimplifySizePipe,
+    MagnetPipe,
+    CommaSpacePipe,
+    MdbPipesPipe
+    // UsernameExistValidatorDirective
   ],
   imports: [
     BrowserModule,

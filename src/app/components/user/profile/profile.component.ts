@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserState } from '../../app.state';
+// import { UserState } from '../../../app.state';
 import { Select } from '@ngxs/store';
-import { FirebaseService } from '../../services/firebase.service'
+import { FirebaseService } from 'src/app/services/firebase.service';
 
 @Component({
   selector: 'app-profile',
@@ -10,7 +10,7 @@ import { FirebaseService } from '../../services/firebase.service'
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-  @Select(UserState) user$: Observable<any>
+  // @Select(UserState) user$: Observable<any>
 
   userProfile: IProfile = {
     username: 'peterparker123',
@@ -20,7 +20,10 @@ export class ProfileComponent implements OnInit {
   }
   defaultUserProfile = this.userProfile
   firebaseUser$
-  constructor(private firebaseService: FirebaseService) { }
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private firebaseService: FirebaseService
+  ) { }
 
   ngOnInit() {
 
@@ -28,9 +31,12 @@ export class ProfileComponent implements OnInit {
   }
 
   getUser() {
+    // this.firebaseUser$
     this.firebaseService.getUser().then(e => {
       console.log('fbuser', this.firebaseUser$);
       this.firebaseUser$ = e
+      // e.
+      this.cdr.detectChanges()
     })
   }
   changePassword() {

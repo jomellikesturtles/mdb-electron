@@ -12,7 +12,9 @@ import { TMDB_SEARCH_RESULTS } from '../../../mock-data'
 import { GENRES } from '../../../constants'
 import { Select, Store } from '@ngxs/store'
 import { DomSanitizer } from '@angular/platform-browser'
-import { BookmarkService } from '../../../services/bookmark.service'
+import { BookmarkService, IBookmark } from '../../../services/bookmark.service'
+import { map } from 'lodash'
+import * as _ from 'lodash'
 
 declare var $: any
 
@@ -304,11 +306,69 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const data = await this.movieService.getMoviesDiscover(params).toPromise()
     console.log('subss results', data)
 
-    const innerList = data.results
-    innerList[this.nameString] = title
+    // innerList[this.nameString] = title
+    // innerList['data'] = data.results
+    const innerList = {
+      name: title,
+      data: data.results
+    }
     this.dashboardLists.push(innerList)
-    this.dataService.addDashboardData(innerList)
+    this.dataService.addDashboardData(innerList.data)
+    this.getBookmarksMultiple(innerList.data, innerList.name)
     this.cdr.detectChanges()
+  }
+
+  /**
+   * Gets bulk bookmarks.
+   */
+  getBookmarksMultiple(innerList: any[], title) {
+    const idList = []
+    innerList.forEach(e => {
+      idList.push(e.id)
+    }); // lodash is not faster than this.
+
+    const listLength = idList.length
+    let temparray
+    const chunk = 10;
+    let arr2 = []
+    let a = 0
+    for (let i = 0; i < listLength; i += chunk) {
+      temparray = idList.slice(i, i + chunk);
+      arr2[a] = temparray
+      a++
+    }
+    console.log(arr2)
+    // tslint:disable-next-line:prefer-for-of
+    for (let index = 0; index < arr2.length; index++) {
+      const queryList = arr2[index];
+      this.bookmarkService.getBookmarksMultiple(queryList).then(docs => {
+        let bookmarkList = []
+        docs.forEach(doc => {
+          console.log(doc)
+          const docData = doc.data()
+          const bm: IBookmark = {
+            bookmarkDocId: doc.id,
+            tmdbId: docData.tmdbId ? docData.tmdbId : 0,
+            title: docData.title ? docData.title : '',
+            year: docData.year ? docData.year : 0
+          }
+          bookmarkList.push(bm)
+        });
+        this.dashboardLists.forEach(list => {
+          if (list.name === title) {
+            list.data.forEach(e => {
+              bookmarkList.forEach(bookmark => {
+                if (bookmark.tmdbId === e.id) {
+                  e.bookmark = bookmark
+                  // e.isBookmarked = true
+                }
+              });
+            })
+          }
+        })
+        this.cdr.detectChanges()
+      })
+    }
   }
 
   /**

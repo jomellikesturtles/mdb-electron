@@ -1,11 +1,11 @@
 <div class='movie-card' [ngStyle]="{'width': cardWidth}" [ngClass]="{'movie-card-selected': movie.isHighlighted}">
   <div
-    [ngStyle]="{'height': 'calc(1.45 *'+cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
+    [ngStyle]="{'height': 'calc(1.45 *'+cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w154'+movie.poster_path+')'}"
     class='movie-card-image-container'>
     <!-- <div
     [ngStyle]="{'height': 'calc(1.45 *'+cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
     class='movie-card-image-container' (click)='onHighlight(movie)'> -->
-
+    <!-- 'w154', 'w185' -->
     <div class='movie-bookmark'>
       <div *ngIf="!procBookmark" (click)='onToggleBookmark()'>
         <img *ngIf="!isBookmarked" style='height:20px; margin-bottom: 4px; margin-right: 2px;'

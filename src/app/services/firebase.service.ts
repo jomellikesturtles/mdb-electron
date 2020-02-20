@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { catchError, map } from 'rxjs/operators'
 import { pipe, Observable } from 'rxjs'
 import { AngularFireAuth } from '@angular/fire/auth'
+import { AngularFireModule } from '@angular/fire/'
 import { AngularFirestore, } from '@angular/fire/firestore'
 import * as firebase from 'firebase';
 import { IpcService, BookmarkChanges, IpcCommand } from './ipc.service';
@@ -27,7 +28,8 @@ export class FirebaseService {
     private angularFirestore: AngularFirestore,
     private ipcService: IpcService,
     private auth: AngularFireAuth,
-    private store: Store
+    private store: Store,
+    private afm: AngularFireModule
   ) { this.db = this.angularFirestore.firestore }
 
   onSync() {
@@ -78,11 +80,34 @@ export class FirebaseService {
     })
   }
 
-  getFromFirestoreMultiple(collectionName: CollectionName, order: string, limit: number) {
+
+  getFromFirestoreMultiple(collectionName: CollectionName, fieldName: string, list: any[]) {
+    return new Promise((resolve, reject) => {
+      this.db.collection(collectionName).where(fieldName, FirebaseOperator.In, list).get().then(snapshot => {
+        // console.log('multiple results:', snapshot)
+        console.log('multiple results:', snapshot.docs)
+        snapshot.docs.forEach(doc => {
+          console.log('DOC: ', doc.data())
+        })
+        resolve(snapshot.docs)
+      }).catch(err => {
+        reject(err)
+      })
+    })
+  }
+
+  /**
+   * IN PROGRESS.
+   * @param collectionName
+   * @param order
+   * @param limit
+   */
+  getFromFirestoreMultiplePaginated(collectionName: CollectionName, order: string, limit: number) {
     const resultList = []
     return new Promise(resolve => {
       this.db.collection(collectionName).orderBy(order).limit(limit).get().then(snapshot => {
         snapshot.docs.forEach(element => {
+          // element.
           console.log('getFromFirestoreMultiple single:', element.data())
           resultList.push(element.data())
         })
@@ -187,20 +212,26 @@ export class FirebaseService {
   }
 
   signUp(emailUsername, password) {
-    const myAuth = this.auth.auth.createUserWithEmailAndPassword(emailUsername, password).then((e) => {
-    }).catch((e) => {
-
+    return new Promise((resolve, reject) => {
+      this.auth.auth.createUserWithEmailAndPassword(emailUsername, password).then((e) => {
+        resolve(e)
+      }).catch((e) => {
+        reject(e.message)
+      })
     })
   }
 
   signOut() {
     // return new Promise(resolve => {
+    // this.angularFirestore.
+    // this.afm().
     this.auth.auth.signOut().then(e => {
-      console.log(e);
+      console.log('SIGNOUT SUCCESS ', e);
+      localStorage.removeItem('user')
       this.store.dispatch(new RemoveUser(e))
       // resolve(e)
     }).catch(e => {
-      console.log(e);
+      console.log('SIGNOUT CATCH ', e);
     })
     // })
   }
@@ -227,16 +258,24 @@ export enum FirebaseOperator {
   ArrayContainsAny = 'array-contains-any'
   // <, <=, ==, >, >=, array - contains, in, or array - contains - any
 }
+
+export const FirebaseListMax = 10
+
 export enum CollectionName {
   Bookmark = 'bookmark',
   UserName = '',
   Watched = 'watched',
+  User = 'user',
+  Config = 'config',
 }
 
-export enum ColumnName {
+export enum FieldName {
   Bookmark = 'bookmark',
-  UserName = ''
+  Username = 'username',
+  EmailAddress = 'emailAddress',
+  TmdbId = 'tmdbId'
 }
+
 export interface IBookmark {
   tmdbId: number,
   imdbId: string,

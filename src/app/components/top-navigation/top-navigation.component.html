@@ -55,7 +55,7 @@
     <img style='cursor: pointer;height:80%;width: 80%;' id='dropdownMenuButton' class='icon-img'
       src='./assets/icons/human.svg' data-toggle='dropdown' aria-haspopup="true" aria-expanded="false" href='#'> -->
     <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
-      <a class='dropdown-item' routerLink='./profile' href='#'>Profile</a>
+      <a class='dropdown-item' routerLink='./user/profile' href='#'>Profile</a>
       <a class='dropdown-item' routerLink='./profile' href='#'>Account Settings</a>
       <a class='dropdown-item' routerLink='./bookmarks' href='#'>Bookmarks</a>
       <a class='dropdown-item' routerLink='./watched' href='#'>Watched</a>
@@ -65,7 +65,10 @@
       <!-- <a class='dropdown-item' (click)='signOut()'>Sign out</a>
       <a class='dropdown-item' routerLink='/signin' href='#'>Sign in</a> -->
       <a *ngIf="isSignedIn" class='dropdown-item' style='cursor: pointer;' (click)='signOut()'>Sign out</a>
-      <a *ngIf="!isSignedIn" class='dropdown-item' style='cursor: pointer;' routerLink='./signin' href='#'>Sign in</a>
+      <a *ngIf="!isSignedIn" class='dropdown-item' style='cursor: pointer;' routerLink='./user' href='#'>Sign in</a>
+      <a class='dropdown-item' style='cursor: pointer;' routerLink='/user' href='#'>Sign in</a>
+      <a class='dropdown-item' style='cursor: pointer;' routerLink='/user/profile' href='#'>Porilfe1</a>
+      <a class='dropdown-item' style='cursor: pointer;' routerLink='./user/profile' href='#'>profile2</a>
     </div>
   </div>
 

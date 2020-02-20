@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService, FirebaseOperator, CollectionName } from './firebase.service'
+import { FirebaseService, FirebaseOperator, CollectionName, FieldName } from './firebase.service'
 import { IpcService, IpcCommand } from './ipc.service'
 import { Observable, from } from 'rxjs';
 @Injectable({
@@ -55,15 +55,24 @@ export class BookmarkService {
   /**
    * Gets multiple bookmarks.
    */
-  getBookmarksMultiple() {
-    console.log('getting multiplebookmarks...');
-    return new Promise(resolve => {
-      this.firebaseService.getFromFirestoreMultiple(CollectionName.Bookmark, 'tmdbId', 20).then(value => {
-        console.log('getBookmarksMultiple', value);
+  getBookmarksMultiple(idList: number[]): Promise<any> {
+    console.log('getting multiplebookmarks...', idList);
+    return new Promise((resolve, reject) => {
+      this.firebaseService.getFromFirestoreMultiple(CollectionName.Bookmark, FieldName.TmdbId, idList).then(value => {
         resolve(value)
+      }).catch(err => {
+        reject(err)
       })
     })
   }
+}
+
+export interface IBookmark {
+  bookmarkDocId: string,
+  tmdbId: number,
+  title: string,
+  year: number,
+  cr8Ts?: number,
 }
 
   // /**

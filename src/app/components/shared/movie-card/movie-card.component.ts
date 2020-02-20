@@ -1,37 +1,38 @@
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { AddMovie, RemoveMovie } from '../../../movie.actions';
-import { ITmdbResult } from '../../../interfaces';
-import { BookmarkService } from '../../../services/bookmark.service';
+import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { DataService } from '../../../services/data.service';
 import { UtilsService } from '../../../services/utils.service';
 import { MovieService } from '../../../services/movie.service';
 import { IpcCommand, IpcService } from '../../../services/ipc.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-movie-card',
   templateUrl: './movie-card.component.html',
   styleUrls: ['./movie-card.component.scss']
 })
-export class MovieCardComponent implements OnInit {
+export class MovieCardComponent implements OnInit, OnChanges {
 
   @Input() movie // TODO: add an interface.
   @Input() cardWidth
+  @Input() bookmark
+  @Input() watched
+  // @Input() isBookmarked
   // @Input() isWatched
   @Output() previewMovieId = new EventEmitter<any>();
 
   isBookmarked = false
   isWatched = false
   isAvailable = false
-  bookmarkDocId = ''
+  // bookmarkDocId = ''
   watchedDocId = ''
   procBookmark = false
   procWatched = false
   watchedProgress = '0%'
-  watched: IWatched = null
+  // watched: IWatched = null
 
   constructor(
     private bookmarkService: BookmarkService,
@@ -49,12 +50,17 @@ export class MovieCardComponent implements OnInit {
   ngOnInit(): void {
     // this.getData()
   }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.bookmark.firstChange === false) {
+      this.isBookmarked = this.bookmark.bookmarkDocId ? true : false
+    }
+  }
 
   getData(): void {
     this.bookmarkService.getBookmark(this.movie.id).then(e => {
       if (e) {
         this.isBookmarked = true
-        this.bookmarkDocId = e.toString()
+        this.bookmark.bookmarkDocId = e.toString()
       }
     })
     this.watchedService.getWatched(this.movie.id).then(e => {
@@ -110,33 +116,39 @@ export class MovieCardComponent implements OnInit {
 
   async onToggleBookmark(): Promise<any> {
     console.log('togglingBookmark')
-    this.procBookmark = true
-    const root = this
-    setTimeout(() => {
-      root.isBookmarked = !root.isBookmarked
-      root.procBookmark = false
-    }, 2000);
-    // -----------
     // this.procBookmark = true
-    // const releaseYear = parseInt(this.getYear(this.movie.release_date), 10)
-    // const movieObject = {
-    //   tmdbId: this.movie.id,
-    //   title: this.movie.title,
-    //   year: releaseYear ? releaseYear : 0,
-    // }
-    // console.log('object to toggle :', movieObject);
-    // let bookmark
-    // if (this.isBookmarked) {
-    //   bookmark = await this.bookmarkService.removeBookmark(this.bookmarkDocId)
-    //   this.bookmarkDocId = ''
-    // } else {
-    //   bookmark = await this.bookmarkService.saveBookmark(movieObject)
-    //   this.bookmarkDocId = bookmark
-    // }
-    // this.isBookmarked = (this.bookmarkDocId) ? true : false
-    // console.log("BOOKMARKADD/remove:", bookmark)
-    // this.procBookmark = false
-    // this.cdr.detectChanges()
+    // const root = this
+    // setTimeout(() => {
+    //   root.isBookmarked = !root.isBookmarked
+    //   root.procBookmark = false
+    // }, 2000);
+    // -----------
+    this.procBookmark = true
+    const releaseYear = parseInt(this.getYear(this.movie.release_date), 10)
+    const movieObject = {
+      tmdbId: this.movie.id,
+      title: this.movie.title,
+      year: releaseYear ? releaseYear : 0,
+    }
+    console.log('object to toggle :', movieObject);
+    let bmDocId
+    if (this.isBookmarked) {
+      bmDocId = await this.bookmarkService.removeBookmark(this.bookmark.bookmarkDocId)
+      this.bookmark.bookmarkDocId = ''
+    } else {
+      bmDocId = await this.bookmarkService.saveBookmark(movieObject)
+      this.bookmark = {
+        tmdbId: this.movie.id,
+        title: this.movie.title,
+        year: releaseYear ? releaseYear : 0,
+        bookmarkDocId: bmDocId
+      }
+      // this.bookmark.bookmarkDocId = bmDocId
+    }
+    this.isBookmarked = (this.bookmark.bookmarkDocId) ? true : false
+    console.log('BOOKMARKADD/remove:', bmDocId)
+    this.procBookmark = false
+    this.cdr.detectChanges()
   }
 
   onToggleWatched(): void {

@@ -75,20 +75,20 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // this.getTroubleQuote()
     // commented for test values
-    // this.activatedRoute.params.subscribe(params => {
-    //   console.log('activatedRoute.params', params);
-    //   if (params.id) {
-    //     this.getMovieOnline(params.id)
-    //   } else {
-    //     this.hasData = false
-    //   }
-    // });
+    this.activatedRoute.params.subscribe(params => {
+      console.log('activatedRoute.params', params);
+      if (params.id) {
+        this.getMovieOnline(params.id)
+      } else {
+        this.hasData = false
+      }
+    });
     // end of commented for test values
     // console.time('convertTime');
 
     // test values
-    this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
-    this.loadVideoData()
+    // this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
+    // this.loadVideoData()
     // end of test values
     // console.timeEnd('convertTime');
 
@@ -116,12 +116,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Loads minor video data.
    */
   loadVideoData() {
-    // this.movieDetailsDirectors = this.getDirectors()
-    // this.movieDetailsWriters = this.getWriters()
-    // this.movieDetailsProducers = this.getProducers()
+    this.movieDetailsDirectors = this.getDirectors()
+    this.movieDetailsWriters = this.getWriters()
+    this.movieDetailsProducers = this.getProducers()
     // this.movieCertification = this.getMovieCertification()
-    // this.getBookmark()
-    // this.getWatched()
+    this.getBookmark()
+    this.getWatched()
     this.getVideo()
   }
 

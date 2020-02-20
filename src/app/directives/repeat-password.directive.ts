@@ -3,22 +3,14 @@ import { AbstractControl, FormGroup, ValidationErrors, NG_VALIDATORS, Validator,
 // import { Observable } from 'rxjs';
 
 
-// @Injectable({ providedIn: 'root' })
-// export class RepeatPasswordValidator implements AsyncValidator {
-//   constructor() {
-
-//   }
-//   validate(ctrl: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> {
-//     return
-//   }
-// }
-
-
-
+/**
+ * Validator for repeat password. It sets false if password and repeat password are not equal.
+ */
 export const repeatPasswordValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
   const password = control.get('password')
   const repeatPassword = control.get('repeatPassword')
-  return password && repeatPassword && password.value !== repeatPassword.value ? { 'isRepeatPassword': true } : null
+  const toReturn = password.value && repeatPassword.value && password.value !== repeatPassword.value ? { isRepeatPassword: true } : null
+  return toReturn
 }
 
 @Directive({
@@ -32,17 +24,7 @@ export class RepeatPasswordValidatorDirective implements Validator {
     return repeatPasswordValidator(control)
   }
 
-
-
-
-
-  // validate(control: AbstractControl): { [key: string]: any } | null {
-  //   return this.forbiddenName ? repeatPasswordValidator(new RegExp(this.forbiddenName, 'i'))(control)
-  //     : null;
-  // }
 }
-
-
 
 /*
 Copyright Google LLC. All Rights Reserved.
