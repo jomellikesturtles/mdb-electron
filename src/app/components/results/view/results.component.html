@@ -1,4 +1,3 @@
-
 <div [hidden]='true' style='background-color: black;width: 100%;height:100vh;'>
 
 </div>
@@ -18,10 +17,9 @@
   </div>
 
   <h1 *ngIf="currentSearchQuery">Search results for "{{currentSearchQuery}}"</h1>
-  <div *ngIf='hasSearchResults' class='movie-cards-display-grid'>
-    <div id="results-panel" *ngFor="let movie of searchResults">
-      <app-movie-card [movie]='movie' [cardWidth]='cardWidth' ></app-movie-card>
-    </div>
+  <div *ngIf='hasSearchResults'>
+    <!-- <div class='movie-cards-display-grid'> -->
+    <app-card-list [movieList]='searchResults' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'></app-card-list>
     <div *ngIf='currentSearchQuery' style='width: 100%; text-align: center; height: 80px;'>
       <h5 class='text-hyperlink' *ngIf="hasMoreResults" (click)='getMoreResults()'>Load more results...</h5>
     </div>

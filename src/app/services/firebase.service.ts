@@ -267,6 +267,7 @@ export enum CollectionName {
   Watched = 'watched',
   User = 'user',
   Config = 'config',
+  Video = 'video',
 }
 
 export enum FieldName {

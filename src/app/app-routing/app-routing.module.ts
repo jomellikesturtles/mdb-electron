@@ -8,9 +8,9 @@ import { PreferencesComponent } from '../components/preferences/preferences.comp
 // import { ProfileComponent } from '../components/user/profile/profile.component';
 
 const routes: Routes = [
-  // { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // homepage
   { path: '', redirectTo: '/results', pathMatch: 'full' },
+  // { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'browse', component: BrowseComponent },
   // { path: 'navigation', component: NavigationComponent },
   {

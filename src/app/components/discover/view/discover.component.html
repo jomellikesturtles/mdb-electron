@@ -12,10 +12,9 @@
     <h1 class='jumbo-message'>No movies found</h1>
   </div>
   <h1>{{discoverTitle}}</h1>
-  <div *ngIf='hasResults' class='movie-cards-display-grid'>
-    <div id="results-panel" *ngFor="let movie of discoverResults">
-      <app-movie-card [movie]='movie' [cardWidth]='cardWidth'></app-movie-card>
-    </div>
+  <div *ngIf='hasResults'>
+    <app-card-list [movieList]='discoverResults' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'>
+    </app-card-list>
     <div style='width: 100%; text-align: center; height: 80px;'>
       <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
     </div>

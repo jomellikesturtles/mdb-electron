@@ -36,20 +36,23 @@
   <div *ngIf="dashboardLists">
     <div *ngFor="let list of dashboardLists">
       <h3>{{list.name}}</h3>
-      <div class='container-fluid' id='list' style='overflow-y:hidden;overflow-x:scroll;'>
-        <div class='d-inline-flex'>
-          <div *ngFor="let movie of list.data" [ngStyle]="{width: cardWidth}">
+      <div class='container-fluid' style='overflow-y:hidden;overflow-x:scroll;'>
+        <!-- <div class='d-inline-flex'> -->
 
-            <div class='flex-fill movie-card' [ngClass]="{'movie-card-selected': movie.isHighlighted}"
-              style="margin:3px; cursor: pointer">
+        <app-card-list [movieList]='list.data' [cardWidth]='cardWidth' [displayMode]='"d-inline-flex"'></app-card-list>
 
-              <app-movie-card [movie]='movie' [cardWidth]='"130px"'
-                [bookmark]='movie.bookmark' (previewMovieId)='onSelect($event)'>
-              </app-movie-card>
+        <!-- <div *ngFor="let movie of list.data" [ngStyle]="{width: cardWidth}"> -->
 
-            </div>
-          </div>
-        </div>
+        <!-- <div class='flex-fill movie-card' [ngClass]="{'movie-card-selected': movie.isHighlighted}"
+              style="margin:3px; cursor: pointer"> -->
+
+        <!-- <app-movie-card [movie]='movie' [cardWidth]='"130px"' [bookmark]='movie.bookmark'
+              (previewMovieId)='onSelect($event)'>
+            </app-movie-card> -->
+
+        <!-- </div> -->
+        <!-- </div> -->
+        <!-- </div> -->
       </div>
     </div>
   </div>

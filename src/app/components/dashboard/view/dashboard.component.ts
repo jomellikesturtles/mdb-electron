@@ -13,8 +13,6 @@ import { GENRES } from '../../../constants'
 import { Select, Store } from '@ngxs/store'
 import { DomSanitizer } from '@angular/platform-browser'
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service'
-import { map } from 'lodash'
-import * as _ from 'lodash'
 
 declare var $: any
 
@@ -25,6 +23,7 @@ declare var $: any
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+  [x: string]: any
 
   constructor(
     private bookmarkService: BookmarkService,
@@ -40,14 +39,16 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   isYTReady: boolean
   hasAlreadySelected: any
-  @Input() data: Observable<any>
+
+  // @Input() data: Observable<any>
   @Select(state => state.moviesList) moviesList$
-  @Select(state => state) appRun$
+  @Select(state => state.appRun) appRun$
   @ViewChild('player') thePlayer: ElementRef;
 
   browserConnection = navigator.onLine
   theLink = ''
   nameString = 'name'
+  dataString = 'data'
   selectedMovies = []
   sampleListMovies: ITmdbResult[] = []
   topMoviesFromYear = []
@@ -80,74 +81,19 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   globalPlayerApiScript
 
   ngOnInit() {
-    this.sampleListMovies = TMDB_SEARCH_RESULTS.results
+    this.sampleListMovies[this.dataString] = TMDB_SEARCH_RESULTS.results
     this.sampleListMovies[this.nameString] = `Sample Data`
-    // this.dashboardLists.push(this.sampleListMovies)
-    this.getNowShowingMovies()
-    this.getTopMoviesFromYear()
-    this.getTopGenreMovie()
+    this.dashboardLists.push(this.sampleListMovies)
+    // this.cdr.detectChanges()
+    // this.getNowShowingMovies()
+    // this.getTopMoviesFromYear()
+    // this.getTopGenreMovie()
     this.getAvailability()
 
-    // COMMENTED FOR TEST DATA ONLY
-    // this.ipcService.libraryMovie.subscribe(value => {
-    //   console.log('libraryMovie value', value)
-    //   const data = value[0]
-    //   // if (this.nowShowingMovies.length) {
-    //   //   const findResult = this.nowShowingMovies.find(
-    //   //     element =>
-    //   //       element.title === data.title
-    //   //     // (((element.title === data.title) ||
-    //   //     //   (element.original_title === data.title)) &&
-    //   //     //   parseInt(element.release_date) === data.year)
-    //   //   )
-    //   console.log('setting availability')
-    //   this.nowShowingMovies[0].isAvailable = true
-    //   console.log('setting availability')
-    //   // }
-    //   this.cdr.detectChanges()
-    // })
-
-    // if (this.dataService.hasDashboardData()) {
-    //   this.dashboardLists = this.dataService.getDashboardData()
-    //   console.log(this.dashboardLists)
-    // } else {
-    //   // commented for test values only
-    //   // this.getNowShowingMovies();
-    //   // this.getTopMoviesFromYear();
-    //   // commented for test values only
 
     this.ipcService.libraryFolders.subscribe(value => {
       console.log('dashboard libraryFolders', value)
       this.cdr.detectChanges()
-    })
-
-    /**
-     * TODO: move/add code to dashboard list update (when another list is added or lazy loading).
-     */
-    this.moviesList$.subscribe(e => {
-      if (e.change === 'add') {
-        this.dashboardLists.forEach(list => {
-          list.forEach(element => {
-            if (e.idChanged === element.id) {
-              element.isHighlighted = true
-            }
-          })
-        })
-      } else if (e.change === 'remove') {
-        this.dashboardLists.forEach(list => {
-          list.forEach(element => {
-            if (e.idChanged === element.id) {
-              element.isHighlighted = false
-            }
-          })
-        })
-      } else if (e.change === 'clear') {
-        this.dashboardLists.forEach(list => {
-          list.forEach(element => {
-            element.isHighlighted = false
-          })
-        })
-      }
     })
 
     $('[data-toggle="popover"]').popover()
@@ -314,61 +260,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.dashboardLists.push(innerList)
     this.dataService.addDashboardData(innerList.data)
-    this.getBookmarksMultiple(innerList.data, innerList.name)
     this.cdr.detectChanges()
-  }
-
-  /**
-   * Gets bulk bookmarks.
-   */
-  getBookmarksMultiple(innerList: any[], title) {
-    const idList = []
-    innerList.forEach(e => {
-      idList.push(e.id)
-    }); // lodash is not faster than this.
-
-    const listLength = idList.length
-    let temparray
-    const chunk = 10;
-    let arr2 = []
-    let a = 0
-    for (let i = 0; i < listLength; i += chunk) {
-      temparray = idList.slice(i, i + chunk);
-      arr2[a] = temparray
-      a++
-    }
-    console.log(arr2)
-    // tslint:disable-next-line:prefer-for-of
-    for (let index = 0; index < arr2.length; index++) {
-      const queryList = arr2[index];
-      this.bookmarkService.getBookmarksMultiple(queryList).then(docs => {
-        let bookmarkList = []
-        docs.forEach(doc => {
-          console.log(doc)
-          const docData = doc.data()
-          const bm: IBookmark = {
-            bookmarkDocId: doc.id,
-            tmdbId: docData.tmdbId ? docData.tmdbId : 0,
-            title: docData.title ? docData.title : '',
-            year: docData.year ? docData.year : 0
-          }
-          bookmarkList.push(bm)
-        });
-        this.dashboardLists.forEach(list => {
-          if (list.name === title) {
-            list.data.forEach(e => {
-              bookmarkList.forEach(bookmark => {
-                if (bookmark.tmdbId === e.id) {
-                  e.bookmark = bookmark
-                  // e.isBookmarked = true
-                }
-              });
-            })
-          }
-        })
-        this.cdr.detectChanges()
-      })
-    }
   }
 
   /**

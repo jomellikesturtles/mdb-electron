@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService, CollectionName, FirebaseOperator } from './firebase.service';
+import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './firebase.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,21 @@ export class WatchedService {
       this.firebaseService.getFromFirestore(CollectionName.Watched, 'tmdbId', FirebaseOperator.Equal, id).then(e => {
         console.log('WATCHED: ', e)
         resolve(e)
+      })
+    })
+  }
+
+
+  /**
+   * Gets multiple watched movies.
+   */
+  getWatchedMultiple(idList: number[]): Promise<any> {
+    console.log('getting multiplewatched...', idList);
+    return new Promise((resolve, reject) => {
+      this.firebaseService.getFromFirestoreMultiple(CollectionName.Watched, FieldName.TmdbId, idList).then(value => {
+        resolve(value)
+      }).catch(err => {
+        reject(err)
       })
     })
   }
@@ -35,10 +50,13 @@ export class WatchedService {
 }
 
 export interface IWatched {
-  tmdbId: number,
-  imdbId: string,
-  id: string,
-  cre8Ts: number, // create timestamp
+  tmdbId?: number,
+  watchedDocId?: string,
+  imdbId?: string,
+  title?: string,
+  year?: number,
+  id?: string,
+  cre8Ts?: number, // create timestamp
   timestamp?: number,
   percentage?: string,
 

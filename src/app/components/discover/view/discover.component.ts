@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../../services/data.service'
 import { MovieService } from '../../../services/movie.service'
 import { TmdbParameters, GenreCodes } from '../../../interfaces';
-import { UtilsService } from '../../../services/utils.service';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 
 @Component({
@@ -26,7 +25,6 @@ export class DiscoverComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private dataService: DataService,
     private movieService: MovieService,
-    private utilsService: UtilsService
   ) { }
 
   ngOnInit(): void {
@@ -79,7 +77,4 @@ export class DiscoverComponent implements OnInit {
 
   }
 
-  getYear(date) {
-    return this.utilsService.getYear(date)
-  }
 }

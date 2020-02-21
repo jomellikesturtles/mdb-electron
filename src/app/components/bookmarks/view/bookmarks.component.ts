@@ -9,7 +9,6 @@ import * as firebase from 'firebase';
 import { IpcService, BookmarkChanges } from '../../../services/ipc.service';
 import { FirebaseService } from '../../../services/firebase.service';
 import { MovieService } from '../../../services/movie.service';
-import { UtilsService } from '../../../services/utils.service';
 import { BookmarkService } from '../../../services/bookmark.service';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { Select } from '@ngxs/store';
@@ -31,23 +30,8 @@ export class BookmarksComponent implements OnInit {
   //   { tmdbId: 0, imdbId: 'tt2096673', userId: '', },
   //   { tmdbId: 0, imdbId: 'tt0198781', userId: '', },
   //   { tmdbId: 0, imdbId: 'tt0068646', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0468569', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0050083', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0108052', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0167260', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0110912', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0060196', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0137523', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0120737', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0109830', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt1375666', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0080684', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0167261', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0133093', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0073486', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0099685', userId: '', },
-  //   { tmdbId: 0, imdbId: 'tt0047478', userId: '', },
-  // ]
+  //   { tmdbId: 0, imdbId: 'tt0468569', userId: '', }, ]
+
   bookmarksList
   moviesDisplayList = []
   hasBookmarks = true
@@ -59,7 +43,7 @@ export class BookmarksComponent implements OnInit {
     private bookmarkService: BookmarkService,
     private ipcService: IpcService,
     private movieService: MovieService,
-    private utilsService: UtilsService) { }
+  ) { }
 
   ngOnInit() {
     // this.bookmarksList.forEach(element => {
@@ -87,26 +71,7 @@ export class BookmarksComponent implements OnInit {
    * Subscribes to list of highlighted movies.
    */
   getData() {
-    this.moviesList$.subscribe(moviesResult => {
-      console.log('moviesresult: ', moviesResult)
-      if (moviesResult.change === 'add') {
-        this.moviesDisplayList.forEach(element => {
-          if (moviesResult.idChanged === element.id) {
-            element.isHighlighted = true
-          }
-        })
-      } else if (moviesResult.change === 'remove') {
-        this.moviesDisplayList.forEach(element => {
-          if (moviesResult.idChanged === element.id) {
-            element.isHighlighted = false
-          }
-        })
-      } else if (moviesResult.change === 'clear') {
-        this.moviesDisplayList.forEach(element => {
-          element.isHighlighted = false
-        })
-      }
-    });
+
   }
 
   getMoreResults() {

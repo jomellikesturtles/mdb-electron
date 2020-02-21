@@ -8,9 +8,8 @@
     <h1 class='jumbo-message'>No bookmarked movies found</h1>
   </div>
   <div *ngIf='hasBookmarks' class='movie-cards-display-grid'>
-    <div id="results-panel" *ngFor="let movie of moviesDisplayList">
-      <app-movie-card [movie]='movie' [cardWidth]='cardWidth'></app-movie-card>
-    </div>
+    <app-card-list [movieList]='moviesDisplayList' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'>
+    </app-card-list>
     <div style='width: 100%; text-align: center; height: 80px;'>
       <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
     </div>

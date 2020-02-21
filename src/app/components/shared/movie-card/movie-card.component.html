@@ -37,7 +37,7 @@
         </div>-->
     <!-- end of alt image -->
 
-    <div class='movie-available' data-toggle='tooltip' title='Available offline'></div>
+    <div *ngIf="isAvailable" class='movie-available' data-toggle='tooltip' title='Available offline'></div>
 
     <div class='movie-mark-as-watched' *ngIf='!movie.isWatched'>
       <div (click)='onToggleWatched()' *ngIf='!procWatched'>

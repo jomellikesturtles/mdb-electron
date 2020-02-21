@@ -20,6 +20,7 @@ export class MovieCardComponent implements OnInit, OnChanges {
   @Input() cardWidth
   @Input() bookmark
   @Input() watched
+  @Input() video
   // @Input() isBookmarked
   // @Input() isWatched
   @Output() previewMovieId = new EventEmitter<any>();
@@ -50,13 +51,24 @@ export class MovieCardComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     // this.getData()
   }
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.bookmark.firstChange === false) {
+    if (changes.bookmark && changes.bookmark.firstChange === false) {
       this.isBookmarked = this.bookmark.bookmarkDocId ? true : false
+    }
+    if (changes.video && changes.video.firstChange === false) {
+      this.isAvailable = this.video.videoDocId ? true : false
+    }
+    if (changes.watched && changes.watched.firstChange === false) {
+      this.isWatched = this.watched.watchedDocId ? true : false
     }
   }
 
+  /**
+   * Gets bookmark and watched status individually...To be removed, since bulk fetch will be used.
+   */
   getData(): void {
+
     this.bookmarkService.getBookmark(this.movie.id).then(e => {
       if (e) {
         this.isBookmarked = true
@@ -185,7 +197,7 @@ export class MovieCardComponent implements OnInit, OnChanges {
   /**
    * Gets poster. CURRENTLY UNUSED
    * @param poster poster url
-   * todo: Fetch from offline or generate canvass.
+   * TODO: Fetch from offline or generate canvass.
    */
   getPoster(poster: string): string {
     console.log(this.movieService.getMoviePoster(poster))
