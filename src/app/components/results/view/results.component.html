@@ -12,12 +12,12 @@
 
 <div class="container-fluid">
 
-  <div *ngIf='!hasSearchResults'>
+  <div *ngIf='searchResults.length===0'>
     <h1 class='jumbo-message'>No results found for '{{currentSearchQuery}}' :(</h1>
   </div>
 
-  <h1 *ngIf="currentSearchQuery">Search results for "{{currentSearchQuery}}"</h1>
-  <div *ngIf='hasSearchResults'>
+  <h1 *ngIf="searchResults.length>0">Search results for "{{currentSearchQuery}}"</h1>
+  <div *ngIf='searchResults.length>0'>
     <!-- <div class='movie-cards-display-grid'> -->
     <app-card-list [movieList]='searchResults' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'></app-card-list>
     <div *ngIf='currentSearchQuery' style='width: 100%; text-align: center; height: 80px;'>

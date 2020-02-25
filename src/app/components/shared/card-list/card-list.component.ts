@@ -1,3 +1,4 @@
+import { UserDataService } from './../../../services/user-data.service';
 import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
@@ -12,14 +13,16 @@ import { VideoService, IVideo } from '../../../services/video.service';
 export class CardListComponent implements OnInit {
   @Select(state => state.moviesList) moviesList$
 
-  @Input() movieList
-  @Input() cardWidth
-  @Input() displayMode
+  @Input() movieList: any[]
+  @Input() cardWidth: string
+  @Input() displayMode: string
+  @Input() listType: string
 
   constructor(
     private bookmarkService: BookmarkService,
     private watchedService: WatchedService,
     private videoService: VideoService,
+    private userService: UserDataService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -35,18 +38,24 @@ export class CardListComponent implements OnInit {
     // tslint:disable-next-line:prefer-for-of
     for (let index = 0; index < arr2.length; index++) {
       const queryList = arr2[index];
-      this.bookmarkService.getBookmarksMultiple(queryList).then(docs => {
-        const dataType = 'bookmark'
-        this.curateUserData(dataType, docs)
-      })
-      this.watchedService.getWatchedMultiple(queryList).then(docs => {
-        const dataType = 'watched'
-        this.curateUserData(dataType, docs)
-      })
-      this.videoService.getVideosMultiple(queryList).then(docs => {
-        const dataType = 'video'
-        this.curateUserData(dataType, docs)
-      })
+      if (this.listType !== 'bookmark') {
+        this.bookmarkService.getBookmarksMultiple(queryList).then(docs => {
+          const dataType = 'bookmark'
+          this.curateUserData(dataType, docs)
+        })
+      }
+      if (this.listType !== 'watched') {
+        this.watchedService.getWatchedMultiple(queryList).then(docs => {
+          const dataType = 'watched'
+          this.curateUserData(dataType, docs)
+        })
+      }
+      if (this.listType !== 'video') {
+        this.videoService.getVideosMultiple(queryList).then(docs => {
+          const dataType = 'video'
+          this.curateUserData(dataType, docs)
+        })
+      }
     }
   }
 
@@ -57,13 +66,13 @@ export class CardListComponent implements OnInit {
     const dataList = []
 
     docs.forEach(doc => {
-      console.log(doc)
+      // console.log(doc)
       const docData = doc.data()
       let myData
       switch (dataType) {
         case 'bookmark':
           const bm: IBookmark = {
-            bookmarkDocId: doc.id ? doc.id : '',
+            id: doc.id ? doc.id : '',
             tmdbId: docData.tmdbId ? docData.tmdbId : 0,
             title: docData.title ? docData.title : '',
             year: docData.year ? docData.year : 0
@@ -72,7 +81,7 @@ export class CardListComponent implements OnInit {
           break;
         case 'watched':
           const wtchd: IWatched = {
-            watchedDocId: doc.id ? doc.id : '',
+            id: doc.id ? doc.id : '',
             tmdbId: docData.tmdbId ? docData.tmdbId : 0,
             title: docData.title ? docData.title : '',
             year: docData.year ? parseInt(docData.year, 10) : 0
@@ -81,7 +90,7 @@ export class CardListComponent implements OnInit {
           break;
         case 'video':
           const vid: IVideo = {
-            videoDocId: doc.id ? doc.id : '',
+            id: doc.id ? doc.id : '',
             tmdbId: docData.tmdbId ? docData.tmdbId : 0,
             title: docData.title ? docData.title : '',
             year: docData.year ? docData.year : 0,
@@ -92,7 +101,6 @@ export class CardListComponent implements OnInit {
         default:
           break;
       }
-
       dataList.push(myData)
     })
     this.movieList.forEach(movie => {

@@ -1,7 +1,7 @@
 import { Action, StateContext, Select, State, Selector } from '@ngxs/store'
 import { AddMovie, RemoveMovie, ClearList, AddWatched, AddBookmark } from './movie.actions'
-import { BookmarkService } from './services/bookmark.service'
-import { IBookmark } from './components/bookmarks/view/bookmarks.component'
+import { BookmarkService, IBookmark } from './services/bookmark.service'
+// import { IBookmark } from './components/bookmarks/view/bookmarks.component'
 
 export interface MovieList {
   id: number,
@@ -103,9 +103,12 @@ export class SelectedMoviesState {
     const createTimestamp = new Date().getDate()
     current.movies.forEach(e => {
       const bookmark: IBookmark = {
+        id: e.bookmarkDocId,
         tmdbId: e.id ? e.id : 0,
         imdbId: e.imdbId ? e.imdbId : '',
-        createTs: createTimestamp
+        title: e.title ? e.title : '',
+        year: e.year ? e.year : '',
+        // createTs: createTimestamp
       }
       bookmarksList.push(bookmark)
       // e.bookmark = bookmark

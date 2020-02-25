@@ -1,19 +1,20 @@
-import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
-import { TEST_LIBRARY_MOVIES, TMDB_SEARCH_RESULTS } from '../../../mock-data'
-import { Router, ActivatedRoute } from '@angular/router'
+/**
+ * Gets available movies.
+ */
+import { UserDataService } from './../../../services/user-data.service';
+import { environment } from './../../../../environments/environment';
+import { Component, OnInit, Input } from '@angular/core';
+import { TMDB_SEARCH_RESULTS } from '../../../mock-data'
 import { STRING_REGEX_IMAGE_SIZE } from '../../../constants';
-import { DataService } from '../../../services/data.service';
 import { IpcService, IpcCommand } from '../../../services/ipc.service';
-import { MovieService } from '../../../services/movie.service';
 import { Observable } from 'rxjs'
-import { UtilsService } from '../../../services/utils.service';
-import { Select, Store } from '@ngxs/store'
+import { Select } from '@ngxs/store'
 
 @Component({
   selector: 'app-library',
   templateUrl: './library.component.html',
   styleUrls: ['./library.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LibraryComponent implements OnInit {
 
@@ -21,32 +22,23 @@ export class LibraryComponent implements OnInit {
   @Select(state => state.moviesList) moviesList$
 
   constructor(
-    private dataService: DataService,
     private ipcService: IpcService,
-    private movieService: MovieService,
-    private utilsService: UtilsService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private userDataService: UserDataService,
   ) { }
 
-  libraryMovies = []
-  movies = []
-  testLibraryMovies = TEST_LIBRARY_MOVIES
-  isLibraryMoviesEmpty = false
-  numberOfPages = 1
-  numberOfResults = 0
-  currentPage = 1
+  moviesDisplayList = []
   hasSearchResults = false
   cardWidth = '130px'
   isFetchingData = false
+  orderBy = 'tmdbId'
+  listType = 'video'
+  lastVal = 0
+  hasResults = false
+  hasMoreResults = false
 
   ngOnInit() {
     console.log('ngOnInit');
-    // this.libraryMovies = this.testLibraryMovies
-
     this.getMoviesFromLibrary()
-    // this.getMoviesFromLibrary2()
   }
 
   /**
@@ -63,50 +55,38 @@ export class LibraryComponent implements OnInit {
   /**
    * Gets movies from library db
    */
-  getMoviesFromLibrary() {
-    this.libraryMovies = TMDB_SEARCH_RESULTS.results
-    // commented for TEST
-    // this.ipcService.getMoviesFromLibrary()
-    // this.isFetchingData = true
-    // this.ipcService.libraryMovies.subscribe((value) => {
-    //   if (value.length !== 0) {
-    //     this.libraryMovies = value
-    //     this.libraryMovies.forEach(libraryMovie => {
-    //       console.log('ibraryMovies.forEach', libraryMovie);
-    //       this.movies.push(libraryMovie)
-    //     });
-    //   }
-    //   this.isFetchingData = false
-    //   this.cdr.detectChanges()
-    // })
-    // end of commented for TEST
+  async getMoviesFromLibrary() {
+    if (environment.runConfig.useTestData === true) {
+      this.moviesDisplayList = TMDB_SEARCH_RESULTS.results
+    } else {
+      const res = await this.userDataService.getUserDataFirstPage(this.listType)
+      console.log(res)
+      if (res.length) {
+        this.moviesDisplayList = res
+        this.lastVal = res[res.length - 1][this.listType][this.orderBy]
+        this.hasResults = true
+        if (res.length === 20) {
+          this.hasMoreResults = true
+        }
+      }
+    }
   }
 
-  async getMoviesFromLibrary2() {
-    // const result = await this.ipcService.getMoviesFromLibraryByPage(1)
-    // console.log('getMoviesFromLibrary2 ', result);
-    // // result.forEach(libraryMovie => {
-    // //   console.log('ibraryMovies.forEach', libraryMovie);
-    // //   this.movies.push(libraryMovie)
-    // // });
-
-    // this.movies.push(...result)
-    // this.cdr.detectChanges()
+  async getMoreResults() {
+    if (environment.runConfig.useTestData) {
+      this.moviesDisplayList = TMDB_SEARCH_RESULTS.results
+    } else {
+      const res = await this.userDataService.getUserDataPagination(this.listType, this.lastVal)
+      console.log(res)
+      if (res.length) {
+        this.moviesDisplayList.push.apply(this.moviesDisplayList, res)
+        this.lastVal = res[res.length - 1][this.listType][this.orderBy]
+        if (res.length < 20) {
+          this.hasMoreResults = false
+        }
+      }
+    }
   }
-
-  getMoreResults() {
-    this.currentPage++
-    this.ipcService.getMoviesFromLibraryByPage(this.currentPage)
-    this.isFetchingData = true
-  }
-
-  // async getMoreResults() {
-  //   this.currentPage++
-  //   const result = await this.ipcService.getMoviesFromLibraryByPage(this.currentPage)
-  //   console.log('getMoreResults ', result);
-  //   this.movies.push(...result)
-  //   this.cdr.detectChanges()
-  // }
 
   onScanLibrary() {
     this.ipcService.call(IpcCommand.ScanLibrary)

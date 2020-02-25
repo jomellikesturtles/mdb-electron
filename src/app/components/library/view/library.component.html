@@ -1,13 +1,14 @@
 <app-selected-list></app-selected-list>
 <div class="container-fluid">
   <button class='btn btn-info' (click)='onScanLibrary()'>Scan library</button>
-  <div *ngIf='libraryMovies.length==0'>
+  <div *ngIf='!hasResults'>
     <h1 class='jumbo-message'>No offline movies found.</h1>
   </div>
-  <div *ngIf='libraryMovies.length>0' class='movie-cards-display-grid'>
-    <app-card-list [movieList]='libraryMovies' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'>
+  <div *ngIf='hasResults' class='movie-cards-display-grid'>
+    <app-card-list [movieList]='moviesDisplayList' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'
+      [listType]='listType'>
     </app-card-list>
-    <div *ngIf="!isFetchingData" style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
+    <div *ngIf="hasMoreResults" style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
       <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
     </div>
   </div>
@@ -24,7 +25,7 @@
   </div>
 </div> -->
 
-  <div *ngIf="!libraryMovies">
+  <div *ngIf="!moviesDisplayList">
     <label>No movies found, go to Preferences.</label>
     <h1>No movie libraries found :(</h1>
     <h3>Houston, we have a problem.</h3>

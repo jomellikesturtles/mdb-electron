@@ -70,7 +70,7 @@
   </div>
 
   <!-- </div> -->
-  <div class='window-controls-container'>
+  <div *ngIf="isElectron" class='window-controls-container'>
     <div class='window-icon-bg' (click)="onMinimize()">
       <img class='icon-img' src='./assets/icons/minimize.svg'>
     </div>

@@ -1,3 +1,4 @@
+import { environment } from './../../../../environments/environment';
 import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core'
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../../interfaces'
@@ -22,7 +23,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   @Select(state => state.moviesList) moviesList$
   searchResults = []
   searchQuery: ISearchQuery
-  hasSearchResults = true
+  hasSearchResults = false
   hasMoreResults = false
   currentSearchQuery
   selectedMovie = null
@@ -47,7 +48,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
     console.log('inResutlts')
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
-    this.getData()
+    if (environment.runConfig.useTestData === true) {
+      this.searchResults = TMDB_SEARCH_RESULTS.results
+    } else {
+      this.getData()
+    }
   }
 
   ngOnDestroy(): void {
@@ -57,7 +62,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
    * Subscribes to list of highlighted movies.
    */
   getData() {
-
     this.dataService.searchQuery.subscribe(data => {
       console.log('fromdataservice searchQuery: ', data);
       this.searchResults = [] // clear for new search
@@ -70,19 +74,19 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   getSearchResults() {
     // commented for actual
-    this.searchResults = TMDB_SEARCH_RESULTS.results
+    // this.searchResults = TMDB_SEARCH_RESULTS.results
     // end of commented for actual
-    // const params = [
-    //   [TmdbSearchMovieParameters.Query, this.searchQuery.query]
-    // ]
-    // this.movieService.searchTmdbMovie(params).subscribe(data => {
-    //   this.searchResults.push(...data.results)
-    //   if (data.total_pages > this.currentPage) {
-    //     this.hasMoreResults = true
-    //   }
-    //   this.setHighlights()
-    //   this.cdr.detectChanges()
-    // })
+    const params = [
+      [TmdbSearchMovieParameters.Query, this.searchQuery.query]
+    ]
+    this.movieService.searchTmdbMovie(params).subscribe(data => {
+      this.searchResults.push(...data.results)
+      if (data.total_pages > this.currentPage) {
+        this.hasMoreResults = true
+      }
+      // this.setHighlights()
+      this.cdr.detectChanges()
+    })
   }
 
   /**

@@ -583,6 +583,13 @@ export interface ICrew {
   release_date: string;
 }
 
+export interface IUserSavedData {
+  id: string,
+  title: string,
+  year: number,
+  tmdbId: number,
+}
+
 export enum GenreCodes {
   Action = 28,
   Adventure = 12,
@@ -615,6 +622,7 @@ export enum GenreCodes {
   Short = 20005,
   Sport = 20006,
 }
+
 
 
 /**
@@ -711,3 +719,4 @@ export interface VideosResult {
     type:       string;
 }
  */
+

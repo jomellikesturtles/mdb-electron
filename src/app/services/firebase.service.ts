@@ -84,11 +84,7 @@ export class FirebaseService {
   getFromFirestoreMultiple(collectionName: CollectionName, fieldName: string, list: any[]) {
     return new Promise((resolve, reject) => {
       this.db.collection(collectionName).where(fieldName, FirebaseOperator.In, list).get().then(snapshot => {
-        // console.log('multiple results:', snapshot)
         console.log('multiple results:', snapshot.docs)
-        snapshot.docs.forEach(doc => {
-          console.log('DOC: ', doc.data())
-        })
         resolve(snapshot.docs)
       }).catch(err => {
         reject(err)
@@ -98,20 +94,42 @@ export class FirebaseService {
 
   /**
    * IN PROGRESS.
-   * @param collectionName
-   * @param order
-   * @param limit
+   * @param collectionName name of the collection
+   * @param order order
+   * @param limit the limit
    */
-  getFromFirestoreMultiplePaginated(collectionName: CollectionName, order: string, limit: number) {
+  getFromFirestoreMultiplePaginated(collectionName: CollectionName, order: string, limit?: number, lastVal?: string | number) {
     const resultList = []
+    const defaultLimit = 20
+
     return new Promise(resolve => {
-      this.db.collection(collectionName).orderBy(order).limit(limit).get().then(snapshot => {
-        snapshot.docs.forEach(element => {
-          // element.
-          console.log('getFromFirestoreMultiple single:', element.data())
-          resultList.push(element.data())
-        })
-        resolve(resultList)
+      lastVal = lastVal ? lastVal : 0
+      // this.db.collection(collectionName).startAfter(lastDocId).orderBy(order, 'asc').limit(defaultLimit).get().then(snapshot => {
+      this.db.collection(collectionName).orderBy(order).startAfter(lastVal).limit(defaultLimit).get().then(snapshot => {
+        // this.db.collection(collectionName).orderBy(order).limit(defaultLimit).startAfter(lastDocId).get().then(snapshot => {
+        // snapshot.docs.forEach(element => {
+        //   // element.
+        //   console.log('getFromFirestoreMultiple Paginated:', element.data())
+        //   console.log('getFromFirestoreMultiple Paginated:', element.id)
+        //   resultList.push(element.data())
+        // })
+        resolve(snapshot.docs)
+      })
+    })
+  }
+
+  /**
+   * IN PROGRESS.
+   * @param collectionName name of the collection
+   * @param order order
+   * @param limit the limit
+   */
+  getFromFirestoreMultiplePaginatedFirst(collectionName: CollectionName, order: string, limit?: number) {
+    const resultList = []
+    const defaultLimit = 20
+    return new Promise(resolve => {
+      this.db.collection(collectionName).orderBy(order, 'asc').limit(defaultLimit).get().then(snapshot => {
+        resolve(snapshot.docs)
       })
     })
   }
@@ -124,7 +142,7 @@ export class FirebaseService {
   insertIntoFirestore(collection: CollectionName, data: object) {
     return new Promise(resolve => {
       this.db.collection(collection).add(data).then(e => {
-        console.log(e);
+        // console.log(e);
         if (e.id) {
           resolve(e.id)
         } else {
@@ -136,12 +154,12 @@ export class FirebaseService {
 
   deleteFromFirestore(collectionName: CollectionName, docId: string) {
     return new Promise(resolve => {
-      this.db.collection(collectionName).doc(docId).delete().then(function (e) {
-        console.log("Document successfully deleted!");
-        console.log(e)
+      this.db.collection(collectionName).doc(docId).delete().then((e) => {
+        // console.log('Document successfully deleted!');
+        // console.log(e)
         resolve('success')
-      }).catch(function (error) {
-        console.error("Error removing document: ", error);
+      }).catch((error) => {
+        console.error('Error removing document: ', error);
       });
     })
   }
@@ -204,7 +222,7 @@ export class FirebaseService {
     this.auth.auth.signInWithPopup(provider).then((e) => {
       console.log(e)
       localStorage.setItem('user', JSON.stringify(e.user))
-    }).catch(function (e) {
+    }).catch((e) => {
       {
         console.log('in catch', e);
       }

@@ -202,7 +202,6 @@ ipcMain.on('open-link-external', function (event, url) {
   // })
 })
 
-
 /**
  * Initializes scan-library.js
  */
@@ -228,6 +227,14 @@ ipcMain.on('scan-library', function (event) {
       DEBUG.log('scan-library in IPCMAIN', m)
       mainWindow.webContents.send(m[0], m[1]);
     });
+  }
+})
+
+ipcMain.on('stop-scan-library', function (event) {
+  console.log('stop scan-librarye');
+  if (procScanLibrary) { // if process search is not yet running
+    console.log('killing....')
+    procScanLibrary.kill()
   }
 })
 

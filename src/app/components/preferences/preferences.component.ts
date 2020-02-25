@@ -112,6 +112,15 @@ export class PreferencesComponent implements OnInit {
     console.log('onScanLibrary');
     this.ipcService.call(IpcCommand.ScanLibrary)
   }
+
+  /**
+   * Scans library folders for new movies
+   */
+  onStopScanLibrary() {
+    console.log('onStopScanLibrary');
+    this.ipcService.call(IpcCommand.StopScanLibrary)
+  }
+
   /**
    * Updates thepiratebay torrent dump
    */

@@ -8,9 +8,9 @@
     <!-- 'w154', 'w185' -->
     <div class='movie-bookmark'>
       <div *ngIf="!procBookmark" (click)='onToggleBookmark()'>
-        <img *ngIf="!isBookmarked" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
+        <img *ngIf="!movie.bookmark" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
           src='./assets/icons/bookmark-add.svg' data-toggle='tooltip' title='Add Bookmark' />
-        <img *ngIf="isBookmarked" style='height:20px; margin-bottom: 4px;
+        <img *ngIf="movie.bookmark && movie.bookmark.id" style='height:20px; margin-bottom: 4px;
     margin-right: 2px;' src='./assets/icons/bookmark-minus.png' data-toggle='tooltip' title='Remove Bookmark' />
       </div>
       <div *ngIf="procBookmark" class="spinner-border spinner-border-sm" role="status">
@@ -37,9 +37,9 @@
         </div>-->
     <!-- end of alt image -->
 
-    <div *ngIf="isAvailable" class='movie-available' data-toggle='tooltip' title='Available offline'></div>
+    <div *ngIf="movie.video && movie.video.id" class='movie-available' data-toggle='tooltip' title='Available offline'></div>
 
-    <div class='movie-mark-as-watched' *ngIf='!movie.isWatched'>
+    <div class='movie-mark-as-watched' *ngIf='!movie.watched'>
       <div (click)='onToggleWatched()' *ngIf='!procWatched'>
         <img style='height:20px; margin-bottom: 4px;
       margin-right: 2px;' src='./assets/icons/check.svg' data-toggle='tooltip' title='Mark as watched' />
@@ -49,8 +49,8 @@
       </div>
     </div>
 
-    <div *ngIf="movie.isWatched" [ngStyle]="{'width':movie.watchedProgress}" id='watchedProgressBar'
-      class='movie-progress-bar'>
+    <div *ngIf="movie.watched && movie.watched.id" [ngStyle]="{'width':movie.watched.percentage}"
+      id='watchedProgressBar' class='movie-progress-bar'>
     </div>
     <div class="overlay overlay-add" (click)='onHighlight()'></div>
     <!-- <div class="overlay overlay-add" (click)='onPreview()'></div> -->

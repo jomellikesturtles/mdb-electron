@@ -1,3 +1,5 @@
+import { TmdbAppendToResponseParameters } from './../../../interfaces';
+import { VideoService } from './../../../services/video.service';
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { IOmdbMovieDetail, IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail, TmdbParameters } from '../../../interfaces';
 import { MdbMovieDetails } from '../../../classes';
@@ -68,6 +70,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private ipcService: IpcService,
     private torrentService: TorrentService,
     private utilsService: UtilsService,
+    private videoService: VideoService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) { }
@@ -132,7 +135,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getMovieCredits() {
     // TmdbParameters.
     const tmdbId = this.movieDetails.tmdbId
-    this.movieService.getTmdbMovieDetails(tmdbId).subscribe(data => {
+    this.movieService.getTmdbMovieDetails(tmdbId, [], 'credits').subscribe(data => {
       console.log('got from getMovieCredits ', data)
       // this.selectedMovie = data;
       // this.saveMovieDataOffline(data)
@@ -141,18 +144,31 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   getVideo() {
     // throw new Error("Method not implemented.");
-    this.ipcService.call(IpcCommand.OpenVideo, this.movieDetails.tmdbId)
+    // this.ipcService.call(IpcCommand.OpenVideo, this.movieDetails.tmdbId)
     this.procVideo = true
-    this.videoFileSubscription = this.ipcService.videoFile.subscribe(data => {
-      if (data === null || data === 0) {
-        this.isVideoAvailable = false
-      } else {
-        this.streamLink = data
+    // this.videoFileSubscription = this.ipcService.videoFile.subscribe(data => {
+    //   if (data === null || data === 0) {
+    //     this.isVideoAvailable = false
+    //   } else {
+    //     this.streamLink = data
+    //     this.isVideoAvailable = true
+    //   }
+    //   this.procVideo = false
+    //   this.cdr.detectChanges()
+    // })
+    this.videoService.getVideo(this.movieDetails.tmdbId).then(e => {
+      console.log('FROM VEIDEOSERVICE: ', e)
+      if (e) {
+        this.streamLink = e.videoUrl
         this.isVideoAvailable = true
       }
+    }).catch(e => {
+
+    }).finally(() => {
       this.procVideo = false
       this.cdr.detectChanges()
-    })
+    }
+    )
   }
 
   /**
@@ -196,22 +212,22 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // }
     this.procBookmark = true
     const releaseYear = parseInt(this.getYear(this.movieDetails.releaseDate), 10)
-    const movieObject = {
+    const dataObject = {
       tmdbId: this.movieDetails.tmdbId,
       title: this.movieDetails.title,
       year: releaseYear ? releaseYear : 0,
     }
-    console.log('object to toggle :', movieObject);
+    console.log('object to toggle :', dataObject);
     let bookmark
     if (this.isBookmarked) {
       bookmark = await this.bookmarkService.removeBookmark(this.bookmarkDocId)
       this.bookmarkDocId = ''
     } else {
-      bookmark = await this.bookmarkService.saveBookmark(movieObject)
+      bookmark = await this.bookmarkService.saveBookmark(dataObject)
       this.bookmarkDocId = bookmark
     }
     this.isBookmarked = (this.bookmarkDocId) ? true : false
-    console.log("BOOKMARKADD:", bookmark)
+    console.log('BOOKMARKADD: ', bookmark)
     this.procBookmark = false
     this.cdr.detectChanges()
   }
@@ -273,7 +289,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     //   this.selectedMovie = data;
     //   this.saveMovieDataOffline(data)
     // });
-    this.movieService.getTmdbMovieDetails(val).subscribe(data => {
+    this.movieService.getTmdbMovieDetails(val, [], 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
       console.log('got from getMovieOnline ', data)
       this.selectedMovie = data;
       const myObject = this.selectedMovie
@@ -289,7 +305,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets the movie's certification based on user' location.
    */
   getMovieCertification() {
-    const myLoc = this.movieDetails.release_dates.results.find((e) => { return e.iso_3166_1 === this.userLocation })
+    const myLoc = this.movieDetails.release_dates.results.find((e) => e.iso_3166_1 === this.userLocation)
     const toReturn = myLoc.release_dates[0].certification
     // let toReturn = myLoc.release_dates.find((e) => { return e.type === 3 })
     // toReturn = toReturn.certification

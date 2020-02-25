@@ -1,57 +1,54 @@
-/**
- * Bookmarked by user
- */
 import { UserDataService } from './../../../services/user-data.service';
-import { IBookmark } from './../../../services/bookmark.service';
-import { environment } from './../../../../environments/environment';
+/**
+ * Displays movies Watched by user
+ */
+import { IWatched } from './../../../services/watched.service';
+import { WatchedService } from './../../../services/watched.service';
 import { Component, OnInit } from '@angular/core';
+import { environment } from './../../../../environments/environment';
+import { Subscription } from 'rxjs'
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { Select } from '@ngxs/store';
+import { MovieService } from 'src/app/services/movie.service';
 
 @Component({
-  selector: 'app-bookmarks',
-  templateUrl: './bookmarks.component.html',
-  styleUrls: ['./bookmarks.component.scss']
+  selector: 'app-watched',
+  templateUrl: './watched.component.html',
+  styleUrls: ['./watched.component.scss']
 })
-export class BookmarksComponent implements OnInit {
+export class WatchedComponent implements OnInit {
 
   @Select(state => state.moviesList) moviesList$
-  procSync = false
 
-  bookmarksList
+  procSync = false
+  listType = 'watched'
   moviesDisplayList = []
+  watchedList
   hasResults = false
-  cardWidth = '130px'
-  bookmarksSubscription
-  lastVal = 0
   hasMoreResults = false
+  lastVal = 0 // last value in the
+  cardWidth = '130px'
   orderBy = 'tmdbId'
-  private listType = 'bookmark'
 
   constructor(
+    private watchedService: WatchedService,
+    private movieService: MovieService,
     private userDataService: UserDataService,
   ) { }
 
   ngOnInit() {
-    console.log('LASTVALBOOKMARK: ', this.lastVal)
-    this.getBookmarkedMovies()
-  }
-
-  onSync() {
-    // this.firebaseService.synchronizeBookmarks()
-    // this.bookmarksList.forEach(element => {
-    //   this.movieService.getFindMovie(element.imdbId)
-    // });
+    this.getWatchedMovies()
   }
 
   /**
-   * Gets all bookmarked movies by user.
+   * Gets all watched movies by user.
    */
-  async getBookmarkedMovies() {
+  async getWatchedMovies() {
     if (environment.runConfig.useTestData) {
       this.moviesDisplayList = TMDB_SEARCH_RESULTS.results
     } else {
       // commented for TEST
+
       const res = await this.userDataService.getUserDataFirstPage(this.listType)
       console.log(res)
       if (res.length) {
@@ -62,6 +59,7 @@ export class BookmarksComponent implements OnInit {
           this.hasMoreResults = true
         }
       }
+
     }
   }
 
@@ -70,7 +68,6 @@ export class BookmarksComponent implements OnInit {
       this.moviesDisplayList = TMDB_SEARCH_RESULTS.results
     } else {
       // commented for TEST
-
       const res = await this.userDataService.getUserDataPagination(this.listType, this.lastVal)
       console.log(res)
       if (res.length) {
@@ -80,8 +77,6 @@ export class BookmarksComponent implements OnInit {
           this.hasMoreResults = false
         }
       }
-
     }
   }
-
 }

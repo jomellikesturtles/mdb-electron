@@ -1,3 +1,4 @@
+import { UserDataService } from './../../../services/user-data.service';
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
@@ -8,6 +9,7 @@ import { UtilsService } from '../../../services/utils.service';
 import { MovieService } from '../../../services/movie.service';
 import { IpcCommand, IpcService } from '../../../services/ipc.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
+declare var $: any
 
 @Component({
   selector: 'app-movie-card',
@@ -21,19 +23,14 @@ export class MovieCardComponent implements OnInit, OnChanges {
   @Input() bookmark
   @Input() watched
   @Input() video
-  // @Input() isBookmarked
-  // @Input() isWatched
   @Output() previewMovieId = new EventEmitter<any>();
 
   isBookmarked = false
   isWatched = false
   isAvailable = false
-  // bookmarkDocId = ''
-  watchedDocId = ''
   procBookmark = false
   procWatched = false
   watchedProgress = '0%'
-  // watched: IWatched = null
 
   constructor(
     private bookmarkService: BookmarkService,
@@ -42,6 +39,7 @@ export class MovieCardComponent implements OnInit, OnChanges {
     private movieService: MovieService,
     private utilsService: UtilsService,
     private watchedService: WatchedService,
+    private userDataService: UserDataService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private store: Store,
@@ -49,18 +47,21 @@ export class MovieCardComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
+    $('[data-toggle="popover"]').popover()
+    $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
     // this.getData()
+    // console.log('MOVIECARD:', this.movie)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.bookmark && changes.bookmark.firstChange === false) {
-      this.isBookmarked = this.bookmark.bookmarkDocId ? true : false
+      this.isBookmarked = this.bookmark.id ? true : false
     }
     if (changes.video && changes.video.firstChange === false) {
-      this.isAvailable = this.video.videoDocId ? true : false
+      this.isAvailable = this.video.id ? true : false
     }
     if (changes.watched && changes.watched.firstChange === false) {
-      this.isWatched = this.watched.watchedDocId ? true : false
+      this.isWatched = this.watched.id ? true : false
     }
   }
 
@@ -72,19 +73,18 @@ export class MovieCardComponent implements OnInit, OnChanges {
     this.bookmarkService.getBookmark(this.movie.id).then(e => {
       if (e) {
         this.isBookmarked = true
-        this.bookmark.bookmarkDocId = e.toString()
+        this.bookmark.id = e.toString()
       }
     })
     this.watchedService.getWatched(this.movie.id).then(e => {
-      if (e) {
-        this.isWatched = true
-        this.watchedDocId = e.toString()
-        this.watched.percentage = '100%'
-        this.watched.tmdbId = this.movie.id
-        this.watched.id = e.toString()
-      }
+      // if (e) {
+      //   this.isWatched = true
+      //   this.watchedDocId = e.toString()
+      //   this.watched.percentage = '100%'
+      //   this.watched.tmdbId = this.movie.id
+      //   this.watched.id = e.toString()
+      // }
     })
-    // this.ipcService.call(IpcCommand.)
     // this.watched.id
     // get availability
     // get watched
@@ -110,7 +110,6 @@ export class MovieCardComponent implements OnInit, OnChanges {
     const highlightedId = this.movie.id;
     this.dataService.updateHighlightedMovie(highlightedId);
     // this.navigationService.goToPage()
-    // this.router.navigate([`/details`], { relativeTo: this.activatedRoute });
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
 
     // below is for imdb id, but we will settle for tmdb id for now
@@ -127,6 +126,7 @@ export class MovieCardComponent implements OnInit, OnChanges {
   }
 
   async onToggleBookmark(): Promise<any> {
+
     console.log('togglingBookmark')
     // this.procBookmark = true
     // const root = this
@@ -137,33 +137,31 @@ export class MovieCardComponent implements OnInit, OnChanges {
     // -----------
     this.procBookmark = true
     const releaseYear = parseInt(this.getYear(this.movie.release_date), 10)
-    const movieObject = {
+    const dataObject = {
       tmdbId: this.movie.id,
       title: this.movie.title,
       year: releaseYear ? releaseYear : 0,
     }
-    console.log('object to toggle :', movieObject);
+    console.log('object to toggle :', dataObject);
     let bmDocId
-    if (this.isBookmarked) {
-      bmDocId = await this.bookmarkService.removeBookmark(this.bookmark.bookmarkDocId)
-      this.bookmark.bookmarkDocId = ''
+    if (this.movie.bookmark && this.movie.bookmark.id) {
+      bmDocId = await this.bookmarkService.removeBookmark(this.bookmark.id)
+      this.bookmark.id = ''
     } else {
-      bmDocId = await this.bookmarkService.saveBookmark(movieObject)
+      bmDocId = await this.bookmarkService.saveBookmark(dataObject)
       this.bookmark = {
         tmdbId: this.movie.id,
         title: this.movie.title,
         year: releaseYear ? releaseYear : 0,
         bookmarkDocId: bmDocId
       }
-      // this.bookmark.bookmarkDocId = bmDocId
     }
-    this.isBookmarked = (this.bookmark.bookmarkDocId) ? true : false
     console.log('BOOKMARKADD/remove:', bmDocId)
     this.procBookmark = false
     this.cdr.detectChanges()
   }
 
-  onToggleWatched(): void {
+  async onToggleWatched() {
     // this.watched = {
     //   percentage: '100%',
     //   tmdbId: this.movie.id,
@@ -176,14 +174,45 @@ export class MovieCardComponent implements OnInit, OnChanges {
     // this.watchedProgress = '100%'
     // this.movie.isWatched = true
 
+
     this.procWatched = true
-    const root = this
-    setTimeout(() => {
-      root.isWatched = !root.isWatched
-      root.procWatched = false
-      root.watchedProgress = '100%'
-      root.movie.isWatched = true
-    }, 2000);
+    const releaseYear = parseInt(this.getYear(this.movie.release_date), 10)
+    const userObject = {
+      tmdbId: this.movie.id,
+      title: this.movie.title,
+      year: releaseYear ? releaseYear : 0,
+    }
+    console.log('object to toggle :', userObject);
+    let wDocId
+    if (this.movie.watched && this.movie.watched.id) { // delete
+      // if (this.isBookmarked) {
+      wDocId = await this.watchedService.removeWatched(this.movie.watched.id)
+      this.movie.watched.id = ''
+    } else { // save
+      wDocId = await this.watchedService.saveWatched(userObject)
+      const result: IWatched = {
+        tmdbId: this.movie.id,
+        title: this.movie.title,
+        year: releaseYear ? releaseYear : 0,
+        id: wDocId
+      }
+      this.movie.watched = result
+    }
+    console.log('BOOKMARKADD/remove:', wDocId)
+    this.procWatched = false
+    this.cdr.detectChanges()
+
+
+
+
+    // this.procWatched = true
+    // const root = this
+    // setTimeout(() => {
+    //   root.isWatched = !root.isWatched
+    //   root.procWatched = false
+    //   root.watchedProgress = '100%'
+    //   root.movie.isWatched = true
+    // }, 2000);
   }
 
   /**

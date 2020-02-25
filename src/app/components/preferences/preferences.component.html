@@ -13,6 +13,7 @@
   <button class="btn btn-success" data-toggle="modal" data-target="#addLibraryModal"
     (click)='onOpenModal()'>Add(opensmodal)</button>
   <button class="btn btn-primary" (click)="onScanLibrary()">Scan Library</button>
+  <button class="btn btn-danger" (click)="onStopScanLibrary()">Stop scan Library</button>
   <div class="form-group">
     <label for="scanFrequencyText"></label>
     <input [(ngModel)]="preferencesObject.frequencyValue" type="text" class="form-control" name=""

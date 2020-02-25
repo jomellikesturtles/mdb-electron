@@ -1,4 +1,9 @@
 /**
+ * IPC renderer comm to the main.
+ * TODO: change behaviorsubjects to something else.
+ */
+import { environment } from './../../environments/environment';
+/**
  * Service to communicate to ipc main
  */
 import {
@@ -55,21 +60,23 @@ export class IpcService {
   ) ////
   {
     // UNCOMMENT IF IN ELECTRON MODE
-    // this.ipcRenderer = (window as any).require('electron').ipcRenderer
+    if (environment.runConfig.electron) {
+      this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
-    // function enumKeys<E>(e: E): (keyof E)[] {
-    //   return Object.keys(e) as (keyof E)[];
-    // }
-    // for (const key of enumKeys(Channel)) {
-    //   const locale: Channel = Channel[key];
-    //   console.log(locale);
-    //   this.listen(locale)
-    // }
+      function enumKeys<E>(e: E): (keyof E)[] {
+        return Object.keys(e) as (keyof E)[];
+      }
+      for (const key of enumKeys(Channel)) {
+        const locale: Channel = Channel[key];
+        console.log(locale);
+        this.listen(locale)
+      }
 
-    // this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
-    //   console.log('searchList:', data)
-    //   this.searchList.next(data)
-    // })
+      this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
+        console.log('searchList:', data)
+        this.searchList.next(data)
+      })
+    }
   }
 
   async getFiles() {
@@ -82,8 +89,11 @@ export class IpcService {
   }
 
   call(message: IpcCommand, args?: any) {
-    console.log(`IPC Command: ${message}, args: ${args}`)
-    // this.ipcRenderer.send(message, args)
+
+    if (environment.runConfig.electron) {
+      console.log(`IPC Command: ${message}, args: ${args}`)
+      this.ipcRenderer.send(message, args)
+    }
   }
 
   /**
@@ -91,39 +101,54 @@ export class IpcService {
    * @param channel name of the channel
    */
   listen(channel: Channel): void | Promise<any> {
-    console.log('LISTENING...');
-    this.ipcRenderer.on(channel, (event, data: any) => {
-      console.log(`ipcRenderer channel: ${channel} data: ${data}`)
-      switch (channel) {
-        case Channel.BookmarkAddSuccess: this.bookmarkSingle.next(data)
-          break;
-        case Channel.BookmarkGetSuccess: this.bookmarkSingle.next(data)
-          break;
-        case Channel.BookmarkRemoveSuccess: this.bookmarkSingle.next(data)
-          break;
-        case Channel.BookmarkChanges: this.bookmarkChanges.next(data)
-          break;
-        case Channel.LibraryFolders: this.libraryFolders.next(data)
-          break;
-        case Channel.LibraryMovies: this.libraryMovies.next(data)
-          break;
-        case Channel.LibraryMovie: this.libraryMovie.next(data)
-          break;
-        case Channel.PreferencesConfig: this.preferencesConfig.next(data)
-          break;
-        case Channel.MovieMetadata: this.movieMetadata.next(data)
-          break;
-        case Channel.ScannedSuccess: this.scannedMovieSingle.next(data)
-          break;
-        case Channel.WatchedSuccess: this.watchedSingle.next(data)
-          break;
-        case Channel.VideoSuccess: this.videoFile.next(data)
-          break;
-        default:
-          console.log(`channel ${channel} uncaught`)
-          break;
-      }
-    })
+    // this.ipcRenderer.removeListener().
+    if (environment.runConfig.electron) {
+      console.log('LISTENING...');
+      this.ipcRenderer.on(channel, (event, data: any) => {
+        console.log(`ipcRenderer channel: ${channel} data: ${data}`)
+        switch (channel) {
+          case Channel.BookmarkAddSuccess:
+            this.bookmarkSingle.next(data)
+            break;
+          case Channel.BookmarkGetSuccess:
+            this.bookmarkSingle.next(data)
+            break;
+          case Channel.BookmarkRemoveSuccess:
+            this.bookmarkSingle.next(data)
+            break;
+          case Channel.BookmarkChanges:
+            this.bookmarkChanges.next(data)
+            break;
+          case Channel.LibraryFolders:
+            this.libraryFolders.next(data)
+            break;
+          case Channel.LibraryMovies:
+            this.libraryMovies.next(data)
+            break;
+          case Channel.LibraryMovie:
+            this.libraryMovie.next(data)
+            break;
+          case Channel.PreferencesConfig:
+            this.preferencesConfig.next(data)
+            break;
+          case Channel.MovieMetadata:
+            this.movieMetadata.next(data)
+            break;
+          case Channel.ScannedSuccess:
+            this.scannedMovieSingle.next(data)
+            break;
+          case Channel.WatchedSuccess:
+            this.watchedSingle.next(data)
+            break;
+          case Channel.VideoSuccess:
+            this.videoFile.next(data)
+            break;
+          default:
+            console.log(`channel ${channel} uncaught`)
+            break;
+        }
+      })
+    }
   }
 
   /**
@@ -214,6 +239,7 @@ export enum IpcCommand {
   ExitApp = 'exit-program',
   FirebaseProvider = 'firebase-provider',
   ScanLibrary = 'scan-library',
+  StopScanLibrary = 'stop-scan-library',
   OpenLinkExternal = 'open-link-external',
   OpenInFileExplorer = 'open-file-explorer',
   OpenVideo = 'open-video',

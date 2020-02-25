@@ -16,6 +16,7 @@ import { SetUser } from '../../app.actions';
 import { delay } from 'rxjs/operators';
 declare var jquery: any
 declare var $: any
+import { environment } from '../../../environments/environment';
 
 enum STATUS {
   login = 'LOGIN',
@@ -41,6 +42,7 @@ export class TopNavigationComponent implements OnInit {
     private location: Location,
     private store: Store) { }
 
+  isElectron = environment.runConfig.electron
   status = 'LOGIN'
   browserConnection = navigator.onLine;
   selectedMovie: IOmdbMovieDetail
@@ -114,7 +116,9 @@ export class TopNavigationComponent implements OnInit {
    */
   onSearch(val: any) {
     val = val.trim()
-    if (this.lastQuery === val) {
+    // ifcurrent router === results
+
+    if (this.lastQuery === val && this.router.url === '/results') {
       return
     }
     this.lastQuery = val

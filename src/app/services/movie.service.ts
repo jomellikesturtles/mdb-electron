@@ -24,15 +24,14 @@ export class MovieService {
   imdbId = 'tt0499549'
   plot = 'full' // short
   results = ''
-  testBaseUrl = 'https://jsonplaceholder.typicode.com/todos/1'
 
   // test only
-  getTestApi(id: number): Observable<any> {
-    return this.http.get<any>(this.testBaseUrl).pipe(
-      tap(_ => this.log(`get id ${id}`)),
-      catchError(this.handleError<any>('getTEst'))
-    );
-  }
+  // getTestApi(id: number): Observable<any> {
+  //   return this.http.get<any>(this.testBaseUrl).pipe(
+  //     tap(_ => this.log(`get id ${id}`)),
+  //     catchError(this.handleError<any>('getTEst'))
+  //   );
+  // }
 
   /**
    * Gets movie info. First it gets from offline source,
@@ -132,7 +131,7 @@ export class MovieService {
    */
   getOmdbMovieDetails(imdbId: number): Observable<any> {
     const url = `${OMDB_URL}/`
-    let httpParam = new HttpParams().append(OmdbParameters.ApiKey, OMDB_API_KEY)
+    const httpParam = new HttpParams().append(OmdbParameters.ApiKey, OMDB_API_KEY)
 
     const myOmdbHttpOptions = {
       headers: JSON_CONTENT_TYPE_HEADER,
@@ -166,6 +165,32 @@ export class MovieService {
    * @param appendToResponse optional append to response
    */
   getTmdbMovieDetails(tmdbId: number, val?: any[], appendToResponse?: string): Observable<any> {
+    const url = `${TMDB_URL}/movie/${tmdbId}`
+    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
+    // videos, images, credits, translations, similar, external_ids, alternative_titles,recommendations
+    //   keywords, reviews
+    if (appendToResponse) {
+      myHttpParam = myHttpParam.append(TmdbParameters.AppendToResponse, appendToResponse)
+    }
+
+    if (val && val.length > 0) {
+      myHttpParam = this.appendParameters(val, myHttpParam)
+    }
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getTmdbMovieDetails')))
+  }
+
+  /**
+   * Gets movie details.
+   * @param tmdbId the tmdb id.
+   * @param val list of key object pair.`[key,object]`
+   * @param appendToResponse optional append to response
+   */
+  getTmdbMovieSmallDetails(tmdbId: number, val?: any[], appendToResponse?: string): Observable<any> {
     const url = `${TMDB_URL}/movie/${tmdbId}`
     let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
     // videos, images, credits, translations, similar, external_ids, alternative_titles,recommendations
@@ -261,8 +286,8 @@ export class MovieService {
 
   /**
    * Error handler.
-   * @param operation
-   * @param result
+   * @param operation the operation
+   * @param result result
    */
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {

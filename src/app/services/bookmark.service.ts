@@ -1,3 +1,5 @@
+import { IUserSavedData } from './../interfaces';
+import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { FirebaseService, FirebaseOperator, CollectionName, FieldName } from './firebase.service'
 import { IpcService, IpcCommand } from './ipc.service'
@@ -8,13 +10,13 @@ import { Observable, from } from 'rxjs';
 export class BookmarkService {
 
   bookmarkObservable = new Observable<any>()
-  isFirebaseMode = false
+
   constructor(
     private firebaseService: FirebaseService,
     private ipcService: IpcService) { }
 
   getBookmark(id) {
-    if (this.isFirebaseMode === true) {
+    if (environment.runConfig.firebaseMode) {
       return new Promise(resolve => {
         this.firebaseService.getFromFirestore(CollectionName.Bookmark, 'tmdbId', FirebaseOperator.Equal, id).then(e => {
           console.log('BOOKMARK: ', e)
@@ -36,6 +38,10 @@ export class BookmarkService {
     })
   }
 
+  /**
+   * Removes bookmark.
+   * @param docId bookmark id to remove.
+   */
   removeBookmark(docId: string) {
     return new Promise(resolve => {
       this.firebaseService.deleteFromFirestore(CollectionName.Bookmark, docId).then(e => {
@@ -53,7 +59,8 @@ export class BookmarkService {
   }
 
   /**
-   * Gets multiple bookmarks.
+   * Gets multiple bookmarks by list of ids.
+   * @param idList list of ids to fetch.
    */
   getBookmarksMultiple(idList: number[]): Promise<any> {
     console.log('getting multiplebookmarks...', idList);
@@ -65,11 +72,39 @@ export class BookmarkService {
       })
     })
   }
+
+  /**
+   * Gets multiple bookmarks.
+   */
+  getBookmarksPaginated(lastVal: string | number): Promise<any> {
+    console.log('getting multiplebookmarks...', lastVal);
+    return new Promise((resolve, reject) => {
+      this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Bookmark, FieldName.TmdbId, 20, lastVal).then(value => {
+        resolve(value)
+      }).catch(err => {
+        reject(err)
+      })
+    })
+  }
+
+  getBookmarksPaginatedFirstPage(): Promise<any> {
+    console.log('getting multiplebookmarks FirstPage(...');
+    return new Promise((resolve, reject) => {
+      this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20).then(value => {
+        resolve(value)
+      }).catch(err => {
+        reject(err)
+      })
+    })
+  }
 }
 
-export interface IBookmark {
-  bookmarkDocId: string,
+
+
+export interface IBookmark extends IUserSavedData {
+  id: string,
   tmdbId: number,
+  imdbId?: string,
   title: string,
   year: number,
   cr8Ts?: number,

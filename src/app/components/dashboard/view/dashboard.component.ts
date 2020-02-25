@@ -1,3 +1,4 @@
+import { environment } from './../../../../environments/environment';
 import {
   AfterViewInit, Component, OnInit, ChangeDetectorRef, ElementRef, Input, ChangeDetectionStrategy, ViewChild, OnDestroy
 } from '@angular/core'
@@ -40,9 +41,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   isYTReady: boolean
   hasAlreadySelected: any
 
-  // @Input() data: Observable<any>
   @Select(state => state.moviesList) moviesList$
-  @Select(state => state.appRun) appRun$
   @ViewChild('player') thePlayer: ElementRef;
 
   browserConnection = navigator.onLine
@@ -81,26 +80,22 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   globalPlayerApiScript
 
   ngOnInit() {
-    this.sampleListMovies[this.dataString] = TMDB_SEARCH_RESULTS.results
-    this.sampleListMovies[this.nameString] = `Sample Data`
-    this.dashboardLists.push(this.sampleListMovies)
-    // this.cdr.detectChanges()
-    // this.getNowShowingMovies()
-    // this.getTopMoviesFromYear()
-    // this.getTopGenreMovie()
-    this.getAvailability()
-
-
+    if (environment.runConfig.useTestData === true) {
+      this.sampleListMovies[this.dataString] = TMDB_SEARCH_RESULTS.results
+      this.sampleListMovies[this.nameString] = `Sample Data`
+      this.dashboardLists.push(this.sampleListMovies)
+    } else {
+      this.getNowShowingMovies()
+      this.getTopMoviesFromYear()
+      this.getTopGenreMovie()
+    }
     this.ipcService.libraryFolders.subscribe(value => {
       console.log('dashboard libraryFolders', value)
       this.cdr.detectChanges()
     })
 
-    $('[data-toggle="popover"]').popover()
-    $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
-    this.appRun$.subscribe(e => {
-      console.log('ISMOCKDATA', e)
-    })
+    // $('[data-toggle="popover"]').popover()
+    // $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
     this.frameready()
   }
 

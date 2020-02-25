@@ -1,7 +1,8 @@
+import { environment } from './../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../../services/data.service'
 import { MovieService } from '../../../services/movie.service'
-import { TmdbParameters, GenreCodes } from '../../../interfaces';
+import { TmdbParameters, GenreCodes, TmdbSearchMovieParameters } from '../../../interfaces';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 
 @Component({
@@ -20,6 +21,8 @@ export class DiscoverComponent implements OnInit {
   hasResults = false
   cardWidth = '130px'
   discoverTitle = ''
+  hasMoreResults = false
+  currentParams = []
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -28,12 +31,15 @@ export class DiscoverComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.discoverResults = TMDB_SEARCH_RESULTS.results
-    this.hasResults = true
-    // this.dataService.discoverQuery.subscribe(data => {
-    //   console.log('fromdataservice: ', data);
-    //   this.discoverQuery(data[0], data[1])
-    // });
+    if (environment.runConfig.useTestData === true) {
+      this.discoverResults = TMDB_SEARCH_RESULTS.results
+      this.hasResults = true
+    } else {
+      this.dataService.discoverQuery.subscribe(data => {
+        console.log('fromdataservice: ', data);
+        this.discoverQuery(data[0], data[1])
+      });
+    }
   }
 
   /**
@@ -62,11 +68,15 @@ export class DiscoverComponent implements OnInit {
       default:
         break;
     }
+    this.currentParams = params
     this.movieService.getMoviesDiscover(params).subscribe(data => {
       if (data.results.length > 0) {
         this.discoverResults.push(...data.results)
         this.hasResults = true
         this.discoverTitle = tempTitle
+        if (data.total_pages > this.currentPage) {
+          this.hasMoreResults = true
+        }
       }
       this.cdr.detectChanges()
     });
@@ -74,7 +84,21 @@ export class DiscoverComponent implements OnInit {
   }
 
   getMoreResults() {
+    console.log('this.currentParams: ', this.currentParams)
+    const params = this.currentParams
 
+    // [TmdbSearchMovieParameters.Query, this.searchQuery.query],
+    params.push([TmdbParameters.Page, ++this.currentPage])
+    // ]
+    // this.currentParams.push([TmdbParameters.Page, ++this.currentPage])
+    console.log('PARAMS: ', params)
+    this.movieService.getMoviesDiscover(params).subscribe(data => {
+      this.discoverResults.push(...data.results)
+      if (data.total_pages <= this.currentPage) {
+        this.hasMoreResults = false
+      }
+      // this.setHighlights()
+    })
   }
 
 }
