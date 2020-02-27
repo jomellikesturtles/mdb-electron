@@ -23,8 +23,6 @@
         <p *ngIf="!selectedMovieBookmarkStatus">Bookmark</p>
         <p *ngIf="selectedMovieBookmarkStatus">UnBookmark</p>
       </button>
-      <!-- <button *ngIf="selectedMovieBookmarkStatus" class='btn btn-outline-info' (click)='toggleBookmark(selectedMovie.id)'>
-        Bookmark</button> -->
       <button class='btn btn-outline-info'>Watched</button>
       <button class='btn btn-outline-secondary' (click)="goToMovie(selectedMovie.id)">More Info</button>
     </div>
@@ -37,22 +35,7 @@
     <div *ngFor="let list of dashboardLists">
       <h3>{{list.name}}</h3>
       <div class='container-fluid' style='overflow-y:hidden;overflow-x:scroll;'>
-        <!-- <div class='d-inline-flex'> -->
-
         <app-card-list [movieList]='list.data' [cardWidth]='cardWidth' [displayMode]='"d-inline-flex"'></app-card-list>
-
-        <!-- <div *ngFor="let movie of list.data" [ngStyle]="{width: cardWidth}"> -->
-
-        <!-- <div class='flex-fill movie-card' [ngClass]="{'movie-card-selected': movie.isHighlighted}"
-              style="margin:3px; cursor: pointer"> -->
-
-        <!-- <app-movie-card [movie]='movie' [cardWidth]='"130px"' [bookmark]='movie.bookmark'
-              (previewMovieId)='onSelect($event)'>
-            </app-movie-card> -->
-
-        <!-- </div> -->
-        <!-- </div> -->
-        <!-- </div> -->
       </div>
     </div>
   </div>

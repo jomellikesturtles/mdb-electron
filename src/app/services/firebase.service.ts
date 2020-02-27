@@ -7,13 +7,11 @@ import { AngularFirestore, } from '@angular/fire/firestore'
 import * as firebase from 'firebase';
 import { IpcService, BookmarkChanges, IpcCommand } from './ipc.service';
 import { Select, Store } from '@ngxs/store';
-import { UserState } from '../app.state';
 import { RemoveUser } from '../app.actions';
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
-  // @Select(UserState) user$: Observable<any>
 
   BOOKMARK = 'BOOKMARK'
   bookmarkDeleteList = []
@@ -44,9 +42,9 @@ export class FirebaseService {
     // this.batch = this.db.firestore.batch()
     this.batch = this.db.batch()
     this.ipcService.bookmarkChanges.subscribe(e => {
-      this.bookmarkInsertList = e.filter((v) => { v.change === BookmarkChanges.INSERT })
-      this.bookmarkDeleteList = e.filter((v) => { v.change === BookmarkChanges.DELETE })
-      this.bookmarkUpdateList = e.filter((v) => { v.change === BookmarkChanges.UPDATE })
+      this.bookmarkInsertList = e.filter((v) => v.change === BookmarkChanges.INSERT)
+      this.bookmarkDeleteList = e.filter((v) => v.change === BookmarkChanges.DELETE)
+      this.bookmarkUpdateList = e.filter((v) => v.change === BookmarkChanges.UPDATE)
       this.batch = this.db.batch()
       this.insertItemsToFirestore()
       this.deleteItemsFromFirestore()
@@ -69,7 +67,7 @@ export class FirebaseService {
           // const user = snapshot.docs[0]
           // console.log('snapshot.docs[0]', user);
           const objectToReturn = snapshot.docs[0].data()
-          objectToReturn['documentId'] = snapshot.docs[0].id
+          objectToReturn['id'] = snapshot.docs[0].id
           resolve(objectToReturn)
         } else {
           resolve(null)
@@ -106,13 +104,6 @@ export class FirebaseService {
       lastVal = lastVal ? lastVal : 0
       // this.db.collection(collectionName).startAfter(lastDocId).orderBy(order, 'asc').limit(defaultLimit).get().then(snapshot => {
       this.db.collection(collectionName).orderBy(order).startAfter(lastVal).limit(defaultLimit).get().then(snapshot => {
-        // this.db.collection(collectionName).orderBy(order).limit(defaultLimit).startAfter(lastDocId).get().then(snapshot => {
-        // snapshot.docs.forEach(element => {
-        //   // element.
-        //   console.log('getFromFirestoreMultiple Paginated:', element.data())
-        //   console.log('getFromFirestoreMultiple Paginated:', element.id)
-        //   resultList.push(element.data())
-        // })
         resolve(snapshot.docs)
       })
     })
@@ -125,7 +116,6 @@ export class FirebaseService {
    * @param limit the limit
    */
   getFromFirestoreMultiplePaginatedFirst(collectionName: CollectionName, order: string, limit?: number) {
-    const resultList = []
     const defaultLimit = 20
     return new Promise(resolve => {
       this.db.collection(collectionName).orderBy(order, 'asc').limit(defaultLimit).get().then(snapshot => {
@@ -142,7 +132,6 @@ export class FirebaseService {
   insertIntoFirestore(collection: CollectionName, data: object) {
     return new Promise(resolve => {
       this.db.collection(collection).add(data).then(e => {
-        // console.log(e);
         if (e.id) {
           resolve(e.id)
         } else {
@@ -155,8 +144,6 @@ export class FirebaseService {
   deleteFromFirestore(collectionName: CollectionName, docId: string) {
     return new Promise(resolve => {
       this.db.collection(collectionName).doc(docId).delete().then((e) => {
-        // console.log('Document successfully deleted!');
-        // console.log(e)
         resolve('success')
       }).catch((error) => {
         console.error('Error removing document: ', error);

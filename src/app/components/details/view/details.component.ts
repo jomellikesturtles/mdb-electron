@@ -1,9 +1,9 @@
 import { TmdbAppendToResponseParameters } from './../../../interfaces';
 import { VideoService } from './../../../services/video.service';
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { IOmdbMovieDetail, IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail, TmdbParameters } from '../../../interfaces';
+import { IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail, TmdbParameters } from '../../../interfaces';
 import { MdbMovieDetails } from '../../../classes';
-import { TEST_MOVIE_DETAIL, TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
+import { TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
 import { BookmarkService } from '../../../services/bookmark.service'
 import { DataService } from '../../../services/data.service';
@@ -11,11 +11,12 @@ import { MovieService } from '../../../services/movie.service';
 import { TorrentService } from '../../../services/torrent.service';
 import { UtilsService } from '../../../services/utils.service';
 import { IpcService, IpcCommand } from '../../../services/ipc.service';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TROUBLE_QUOTES } from '../../../constants';
 import { TMDB_FULL_MOVIE_DETAILS } from '../../../mock-data-movie-details';
-import { from } from 'rxjs';
+import { UserDataService } from 'src/app/services/user-data.service';
+import { environment } from 'src/environments/environment';
+import { WatchedService, IWatched } from 'src/app/services/watched.service';
 declare var $: any
 
 @Component({
@@ -30,8 +31,6 @@ declare var $: any
  */
 export class DetailsComponent implements OnInit, OnDestroy {
 
-  isWatched = false
-  isBookmarked = false
   selectedMovie;
   currentMovie: MdbMovieDetails;
   movieBackdrop;
@@ -58,7 +57,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
   procBookmark = false
   procWatched = false
   procVideo = false
-  bookmarkDocId = ''
   showVideo = false
 
   constructor(
@@ -70,36 +68,30 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private ipcService: IpcService,
     private torrentService: TorrentService,
     private utilsService: UtilsService,
+    private userDataService: UserDataService,
     private videoService: VideoService,
+    private watchedService: WatchedService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
     // this.getTroubleQuote()
-    // commented for test values
-    this.activatedRoute.params.subscribe(params => {
-      console.log('activatedRoute.params', params);
-      if (params.id) {
-        this.getMovieOnline(params.id)
-      } else {
-        this.hasData = false
-      }
-    });
-    // end of commented for test values
-    // console.time('convertTime');
-
-    // test values
-    // this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
-    // this.loadVideoData()
-    // end of test values
-    // console.timeEnd('convertTime');
-
-    // get availability of movie
-    // this.libraryMovieSubscription = this.ipcService.libraryMovie.subscribe(value => {
-    //   this.selectedMovie.isAvailable = value;
-    //   this.cdr.detectChanges()
-    // })
+    if (!environment.runConfig.useTestData) {
+      this.activatedRoute.params.subscribe(params => {
+        console.log('activatedRoute.params', params);
+        if (params.id) {
+          this.getMovieOnline(params.id)
+        } else {
+          this.hasData = false
+        }
+      });
+    } else {
+      console.time('convertTime');
+      this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
+      this.loadVideoData()
+      console.timeEnd('convertTime');
+    }
 
     // // commented for test
     // const imdbId = this.activatedRoute.snapshot.paramMap;
@@ -190,10 +182,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
     const bookmark = await this.bookmarkService.getBookmark(this.movieDetails.tmdbId)
 
     if (bookmark) {
-      this.isBookmarked = true;
-      this.bookmarkDocId = bookmark['documentId']
+      this.movieDetails.bookmark = {
+        id: bookmark['id']
+      }
     } else {
-      this.isBookmarked = false;
     }
     console.log('BOOKMARK: ', bookmark)
     this.procBookmark = false
@@ -204,58 +196,64 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Toggles movie from user's watchlist or bookmarks
    */
   async toggleBookmark() {
-    // this.procBookmark = true
-    // if (this.isBookmarked === true) {
-    //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-remove', this.movieDetails.tmdbId])
-    // } else {
-    //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-add', this.movieDetails.tmdbId])
-    // }
+
     this.procBookmark = true
-    const releaseYear = parseInt(this.getYear(this.movieDetails.releaseDate), 10)
-    const dataObject = {
-      tmdbId: this.movieDetails.tmdbId,
-      title: this.movieDetails.title,
-      year: releaseYear ? releaseYear : 0,
-    }
-    console.log('object to toggle :', dataObject);
-    let bookmark
-    if (this.isBookmarked) {
-      bookmark = await this.bookmarkService.removeBookmark(this.bookmarkDocId)
-      this.bookmarkDocId = ''
+
+    let bmDoc
+    if (!this.movieDetails.bookmark || !this.movieDetails.bookmark.id) {
+      const movie = {
+        id: this.movieDetails.tmdbId,
+        title: this.movieDetails.title,
+        release_date: this.movieDetails.releaseDate ? this.movieDetails.releaseDate : 0,
+      }
+      bmDoc = await this.userDataService.saveUserData('bookmark', movie)
+      this.movieDetails.bookmark = bmDoc
     } else {
-      bookmark = await this.bookmarkService.saveBookmark(dataObject)
-      this.bookmarkDocId = bookmark
+      bmDoc = await this.bookmarkService.removeBookmark(this.movieDetails.bookmark.id)
+      this.movieDetails.bookmark = null
     }
-    this.isBookmarked = (this.bookmarkDocId) ? true : false
-    console.log('BOOKMARKADD: ', bookmark)
+
+    console.log('BOOKMARKADD: ', bmDoc)
     this.procBookmark = false
     this.cdr.detectChanges()
+
+    //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-remove', this.movieDetails.tmdbId])
+    //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-add', this.movieDetails.tmdbId])
   }
 
   /**
    * Gets the mark as watched status of the movie
    */
-  getWatched() {
-    this.ipcService.call(IpcCommand.Watched, [IpcCommand.Get, this.movieDetails.tmdbId])
+  async getWatched() {
+    // this.ipcService.call(IpcCommand.Watched, [IpcCommand.Get, this.movieDetails.tmdbId])
+    // this.watchedSingleSubscription = this.ipcService.watchedSingle.subscribe(data => { })
     this.procWatched = true
-    this.watchedSingleSubscription = this.ipcService.watchedSingle.subscribe(data => {
-      if (data === null || data.id === '') {
-        this.isWatched = false
-      } else {
-        this.isWatched = true
-      }
-      this.procWatched = false
-      this.cdr.detectChanges()
-    })
+    const res = await this.watchedService.getWatched(this.movieDetails.imdbId)
+    if (res) {
+      this.movieDetails.watched.id = res.id
+    }
+    this.procWatched = false
+    this.cdr.detectChanges()
   }
 
-  toggleWatched() {
+  async toggleWatched(percentage: string) {
     this.procWatched = true
-    if (this.isWatched === true) {
-      this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieDetails.tmdbId])
+    let wDocId
+
+    // userData['percentage'] = '100%'
+    if (!this.movieDetails.watched || !this.movieDetails.watched.id) {
+      wDocId = await this.userDataService.saveUserData('watched', this.movieDetails)
+      this.movieDetails.watched = wDocId
     } else {
-      this.ipcService.call(IpcCommand.Watched, [IpcCommand.Remove, this.movieDetails.tmdbId])
+      wDocId = await this.watchedService.removeWatched(this.movieDetails.watched.id)
+      this.movieDetails.watched = null
     }
+    console.log('WATCHEDADD/remove:', wDocId)
+    this.procWatched = false
+    this.cdr.detectChanges()
+
+    //   this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieDetails.tmdbId])
+    //   this.ipcService.call(IpcCommand.Watched, [IpcCommand.Remove, this.movieDetails.tmdbId])
   }
 
   /**
@@ -284,11 +282,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getMovieOnline(val: any) {
     // tt2015381 is Guardians of the galaxy 2014; for testing only
     console.log('getMovie initializing with value...', val);
-    // this.movieService.getMovieInfo(val.trim()).subscribe(data => {
-    //   console.log('got from getMovieOnline ', data)
-    //   this.selectedMovie = data;
-    //   this.saveMovieDataOffline(data)
-    // });
     this.movieService.getTmdbMovieDetails(val, [], 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
       console.log('got from getMovieOnline ', data)
       this.selectedMovie = data;
@@ -309,7 +302,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     const toReturn = myLoc.release_dates[0].certification
     // let toReturn = myLoc.release_dates.find((e) => { return e.type === 3 })
     // toReturn = toReturn.certification
-
     return toReturn
   }
 
@@ -406,10 +398,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-    const environment = this.utilsService.getEnvironment()
-    if (environment === 'desktop') {
+    const env = this.utilsService.getEnvironment()
+    if (env === 'desktop') {
       this.ipcService.call(IpcCommand.OpenLinkExternal, url)
-    } else if (environment === 'web') {
+    } else if (env === 'web') {
       window.open(url)
     }
   }

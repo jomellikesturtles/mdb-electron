@@ -32,25 +32,22 @@
               [ngStyle]="{'background-image':'url('+movieDetails.posterPath+')','height':'calc(1.481*300px)'}"
               style='background-size: cover; background-position: center; width: 100%; background-color: white;'>
             </div> -->
-            <h3>{{isBookmarked}}</h3>
             <div class='uk-button-group'>
-              <div *ngIf="isBookmarked">
-                <button [disabled]='procBookmark' class='btn btn-danger btn-small' (click)='toggleBookmark()'>
-                  Remove bookmark
-                </button>
-              </div>
-              <div *ngIf="!isBookmarked">
-                <button [disabled]='procBookmark' class='btn btn-success btn-small' (click)='toggleBookmark()'>
-                  Add bookmark
-                </button>
-              </div>
-              <div *ngIf="isWatched">
+
+              <button [disabled]='procBookmark' class='btn btn-small'
+                [ngClass]="{'btn-success': !movieDetails.bookmark,'btn-danger':movieDetails.bookmark}"
+                (click)='toggleBookmark()'>
+                <span *ngIf="movieDetails.bookmark">Remove bookmark</span>
+                <span *ngIf="!movieDetails.bookmark">Add bookmark</span>
+              </button>
+
+              <div *ngIf="movieDetails.watched">
                 <button [disabled]='procWatched' class='btn btn-danger btn-small' (click)='toggleWatched()'>
                   Unmark as watched
                 </button>
               </div>
-              <div *ngIf="!isWatched">
-                <button [disabled]='procWatched' class='btn btn-success btn-small' (click)='toggleWatched()'>
+              <div *ngIf="!movieDetails.watched">
+                <button [disabled]='procWatched' class='btn btn-success btn-small' (click)='toggleWatched("100%")'>
                   Mark as watched
                 </button>
               </div>

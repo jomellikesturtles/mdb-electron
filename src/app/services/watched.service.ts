@@ -9,7 +9,7 @@ export class WatchedService {
 
   constructor(private firebaseService: FirebaseService) { }
 
-  getWatched(id) {
+  getWatched(id): Promise<any> {
     return new Promise(resolve => {
       this.firebaseService.getFromFirestore(CollectionName.Watched, 'tmdbId', FirebaseOperator.Equal, id).then(e => {
         console.log('WATCHED: ', e)
@@ -17,7 +17,6 @@ export class WatchedService {
       })
     })
   }
-
 
   /**
    * Gets multiple watched movies.
@@ -33,7 +32,7 @@ export class WatchedService {
     })
   }
 
-  saveWatched(data) {
+  saveWatched(data): Promise<any> {
     return new Promise(resolve => {
       this.firebaseService.insertIntoFirestore(CollectionName.Watched, data).then(e => {
         resolve(e)
@@ -101,17 +100,6 @@ export interface IWatched extends IUserSavedData {
   cre8Ts?: number, // create timestamp
   timestamp?: number,
   percentage?: string,
-
-  // getTmdbId(): number,
-  // setTmdbId(): void,
-  // getImdbId(): string,
-  // setImdbId(): void
-  // getId(): string,
-  // setId(): void,
-  // getTimestamp(): number,
-  // setTimestamp(): void,
-  // getPercentage(): string,
-  // setPercentage(): void,
 }
 
 // export class Watched implements IWatched {

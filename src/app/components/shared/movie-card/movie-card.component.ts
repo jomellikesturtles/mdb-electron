@@ -54,15 +54,15 @@ export class MovieCardComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.bookmark && changes.bookmark.firstChange === false) {
-      this.isBookmarked = this.bookmark.id ? true : false
-    }
-    if (changes.video && changes.video.firstChange === false) {
-      this.isAvailable = this.video.id ? true : false
-    }
-    if (changes.watched && changes.watched.firstChange === false) {
-      this.isWatched = this.watched.id ? true : false
-    }
+    // if (changes.bookmark && changes.bookmark.firstChange === false) {
+    //   this.isBookmarked = this.bookmark.id ? true : false
+    // }
+    // if (changes.video && changes.video.firstChange === false) {
+    //   this.isAvailable = this.video.id ? true : false
+    // }
+    // if (changes.watched && changes.watched.firstChange === false) {
+    //   this.isWatched = this.watched.id ? true : false
+    // }
   }
 
   /**
@@ -126,9 +126,7 @@ export class MovieCardComponent implements OnInit, OnChanges {
   }
 
   async onToggleBookmark(): Promise<any> {
-
     console.log('togglingBookmark')
-    // this.procBookmark = true
     // const root = this
     // setTimeout(() => {
     //   root.isBookmarked = !root.isBookmarked
@@ -136,76 +134,33 @@ export class MovieCardComponent implements OnInit, OnChanges {
     // }, 2000);
     // -----------
     this.procBookmark = true
-    const releaseYear = parseInt(this.getYear(this.movie.release_date), 10)
-    const dataObject = {
-      tmdbId: this.movie.id,
-      title: this.movie.title,
-      year: releaseYear ? releaseYear : 0,
-    }
-    console.log('object to toggle :', dataObject);
-    let bmDocId
-    if (this.movie.bookmark && this.movie.bookmark.id) {
-      bmDocId = await this.bookmarkService.removeBookmark(this.bookmark.id)
-      this.bookmark.id = ''
+    let bmDoc
+    if (!this.movie.bookmark || !this.movie.bookmark.id) {
+      bmDoc = await this.userDataService.saveUserData('bookmark', this.movie)
+      this.movie.bookmark = bmDoc
     } else {
-      bmDocId = await this.bookmarkService.saveBookmark(dataObject)
-      this.bookmark = {
-        tmdbId: this.movie.id,
-        title: this.movie.title,
-        year: releaseYear ? releaseYear : 0,
-        bookmarkDocId: bmDocId
-      }
+      bmDoc = await this.bookmarkService.removeBookmark(this.movie.bookmark.id)
+      this.movie.bookmark.id = ''
     }
-    console.log('BOOKMARKADD/remove:', bmDocId)
+    console.log('BOOKMARKADD/remove:', bmDoc)
     this.procBookmark = false
     this.cdr.detectChanges()
   }
 
   async onToggleWatched() {
-    // this.watched = {
-    //   percentage: '100%',
-    //   tmdbId: this.movie.id,
-    //   cre8Ts: new Date().getTime(),
-    //   id: '',
-    //   imdbId: '',
-    //   timestamp: 0
-    // }
-    // this.isWatched = true
-    // this.watchedProgress = '100%'
-    // this.movie.isWatched = true
-
-
     this.procWatched = true
-    const releaseYear = parseInt(this.getYear(this.movie.release_date), 10)
-    const userObject = {
-      tmdbId: this.movie.id,
-      title: this.movie.title,
-      year: releaseYear ? releaseYear : 0,
-    }
-    console.log('object to toggle :', userObject);
     let wDocId
-    if (this.movie.watched && this.movie.watched.id) { // delete
-      // if (this.isBookmarked) {
+    if (!this.movie.watched || !this.movie.watched.id) {
+      wDocId = await this.userDataService.saveUserData('watched', this.movie)
+      this.movie.watched = wDocId
+    } else {
       wDocId = await this.watchedService.removeWatched(this.movie.watched.id)
       this.movie.watched.id = ''
-    } else { // save
-      wDocId = await this.watchedService.saveWatched(userObject)
-      const result: IWatched = {
-        tmdbId: this.movie.id,
-        title: this.movie.title,
-        year: releaseYear ? releaseYear : 0,
-        id: wDocId
-      }
-      this.movie.watched = result
     }
-    console.log('BOOKMARKADD/remove:', wDocId)
+    console.log('WATCHEDADD/remove:', wDocId)
     this.procWatched = false
     this.cdr.detectChanges()
 
-
-
-
-    // this.procWatched = true
     // const root = this
     // setTimeout(() => {
     //   root.isWatched = !root.isWatched

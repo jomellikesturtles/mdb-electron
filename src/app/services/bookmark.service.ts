@@ -29,7 +29,7 @@ export class BookmarkService {
     }
   }
 
-  saveBookmark(data) {
+  saveBookmark(data): Promise<any> {
     return new Promise(resolve => {
       this.firebaseService.insertIntoFirestore(CollectionName.Bookmark, data).then(e => {
         // this.firebaseService.insertIntoFirestore(CollectionName.Bookmark, { tmdbId: data }).then(e => {

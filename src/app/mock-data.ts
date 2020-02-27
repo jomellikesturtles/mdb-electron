@@ -29,7 +29,7 @@ export const TEST_LIBRARY_MOVIES: ILibraryMovie[] = [
   }
 ]
 
-export const TEST_MOVIE_DETAIL = {
+export const TEST_OMDB_MOVIE_DETAIL = {
   Title: 'WALL·E',
   Year: '2008',
   Rated: 'G',

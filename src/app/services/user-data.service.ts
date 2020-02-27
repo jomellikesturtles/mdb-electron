@@ -1,10 +1,10 @@
 import { IVideo, VideoService } from './video.service';
 import { Injectable } from '@angular/core';
-import { Subscription, forkJoin, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { IBookmark, BookmarkService } from './bookmark.service';
 import { MovieService } from './movie.service';
 import { WatchedService, IWatched } from './watched.service';
-import { map, mapTo, mergeMap } from 'rxjs/operators';
+import { UtilsService } from './utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +15,47 @@ export class UserDataService {
     private bookmarkService: BookmarkService,
     private movieService: MovieService,
     private watchedService: WatchedService,
-    private videoService: VideoService
+    private videoService: VideoService,
+    private utilsService: UtilsService
   ) { }
 
-  addUserData(dataType: string, data: object) {
+  async saveUserData(dataType: string, movie: any): Promise<any> {
+    const releaseYear = parseInt(this.utilsService.getYear(movie.release_date), 10)
+    const tmdbId = movie.id
+    const title = movie.title
+    const year = releaseYear ? releaseYear : 0
+    const userData = {
+      tmdbId,
+      title,
+      year
+    }
+    let docId = ''
+    console.log('object to toggle :', userData);
+    switch (dataType) {
+      case 'bookmark':
+        docId = await this.bookmarkService.saveBookmark(userData)
+        break;
+      case 'watched':
+        userData['percentage'] = userData['percentage'] ? userData['percentage'] : '100%'
+        docId = await this.watchedService.saveWatched(userData)
+        break;
+      case 'video':
+        // ! video may only be saved from the backend.(for now)
+        break;
+      default:
+        break;
+    }
+    return new Promise((resolve, reject) => {
+      userData['id'] = docId
+      resolve(userData)
+    })
+  }
+
+  removeUserData(dataType: string, id: string) {
+
+  }
+
+  getUserData() {
 
   }
 

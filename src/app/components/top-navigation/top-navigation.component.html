@@ -1,7 +1,4 @@
 <div style='-webkit-user-select: none; -webkit-app-region: drag;height: 50px; background-color:black;'>
-  <!-- <a class="row" routerLink="./dashboard">Home</a>
-  <a class="row" (click)='navigateBack()'>Back</a> -->
-  <!-- </div> -->
   <div id='title-drag-region'
     style='z-index: -1;-webkit-app-region: drag;top: 0;left: 0;display: block;position: absolute;width: 100%;height: 100%;'>
   </div>
@@ -46,30 +43,17 @@
       id='dropdownMenuButton' class='icon-img' src='./assets/icons/human.svg' data-toggle='dropdown'
       aria-haspopup="true" aria-expanded="false" href='#'>
 
-    <!-- <div class='dropdown' data-toggle='tooltip' title='Profile options' style='z-index: 3000;
-  margin-left: auto;
-  position: absolute;
-  right: 138px;
-  height: 50px;
-  width: 50px; -webkit-app-region: no-drag;'>
-    <img style='cursor: pointer;height:80%;width: 80%;' id='dropdownMenuButton' class='icon-img'
-      src='./assets/icons/human.svg' data-toggle='dropdown' aria-haspopup="true" aria-expanded="false" href='#'> -->
     <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
       <a class='dropdown-item' routerLink='./user/profile' href='#'>Profile</a>
       <a class='dropdown-item' routerLink='./profile' href='#'>Account Settings</a>
       <a class='dropdown-item' routerLink='./bookmarks' href='#'>Bookmarks</a>
       <a class='dropdown-item' routerLink='./watched' href='#'>Watched</a>
-      <!-- <a class='dropdown-item' routerLink='/signin' href='#'>About</a> -->
-      <!-- <a class='dropdown-item'>Keyboard Shortcuts</a> -->
       <div class='dropdown-divider'></div>
-      <!-- <a class='dropdown-item' (click)='signOut()'>Sign out</a>
-      <a class='dropdown-item' routerLink='/signin' href='#'>Sign in</a> -->
       <a *ngIf="isSignedIn" class='dropdown-item' style='cursor: pointer;' (click)='signOut()'>Sign out</a>
       <a *ngIf="!isSignedIn" class='dropdown-item' style='cursor: pointer;' routerLink='./user' href='#'>Sign in</a>
     </div>
   </div>
 
-  <!-- </div> -->
   <div *ngIf="isElectron" class='window-controls-container'>
     <div class='window-icon-bg' (click)="onMinimize()">
       <img class='icon-img' src='./assets/icons/minimize.svg'>
@@ -81,11 +65,6 @@
       <img class='icon-img' src='./assets/icons/close.svg'>
     </div>
   </div>
-  <!-- <div class="col-sm-3"> -->
-  <!-- <button class="btn btn-outline-light input-group-btn" style='margin-right: 10px' id="advanced-search-button"
-            data-toggle="collapse" data-target="#demo">Advanced Search</button> -->
-  <!-- </div> -->
-  <!-- </div> -->
 </div>
 
 <!-- advaned find -->

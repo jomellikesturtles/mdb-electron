@@ -10,6 +10,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   awards?: string
   private _backgroundPath: string;
   private _boxOffice?: string | number // tmdb:revenue(number)
+  bookmark: any
   belongsToCollection?: []
   budget?: number
   country?: string
@@ -45,6 +46,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   video?: boolean; // unknown
   voteAverage: number; // tmdb votes
   voteCount: number; // tmdb votes
+  watched: any
   website?: string
   writer?: string // omdb
   [propName: string]: any;
