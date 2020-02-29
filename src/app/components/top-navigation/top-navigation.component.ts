@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs'
 import { IOmdbMovieDetail, MovieGenre, IGenre } from '../../interfaces';
 import { MOVIES, MOVIEGENRES } from '../../mock-data';
-import { DECADES, GENRES, REGEX_IMDB_ID } from '../../constants';
+import { DECADES, GENRES, STRING_REGEX_IMDB_ID } from '../../constants';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
 import { IpcService, IpcCommand } from '../../services/ipc.service'
@@ -16,6 +16,7 @@ import { SetUser } from '../../app.actions';
 import { delay } from 'rxjs/operators';
 declare var jquery: any
 declare var $: any
+import { environment } from '../../../environments/environment';
 
 enum STATUS {
   login = 'LOGIN',
@@ -41,6 +42,7 @@ export class TopNavigationComponent implements OnInit {
     private location: Location,
     private store: Store) { }
 
+  isElectron = environment.runConfig.electron
   status = 'LOGIN'
   browserConnection = navigator.onLine;
   selectedMovie: IOmdbMovieDetail
@@ -67,10 +69,11 @@ export class TopNavigationComponent implements OnInit {
   hasSearchResults = false
   isSearchDirty = false
   searchHistoryList = []
-  searchHistoryMaxLength = 4
+  searchHistoryMaxLength = 8
   decadesList = DECADES
   genresList = GENRES
   isSignedIn = false
+  lastQuery = ''
 
   ngOnInit() {
     this.init()
@@ -87,7 +90,13 @@ export class TopNavigationComponent implements OnInit {
       this.status = ''
     }
     // })
+    this.ipcService.call(IpcCommand.GetSearchList)
+    this.ipcService.searchList.subscribe(data => {
+      this.searchHistoryList = data
+      console.log('DATA:', data)
+    })
   }
+
   /**
    * Go to previous location
    */
@@ -101,10 +110,18 @@ export class TopNavigationComponent implements OnInit {
   onAdvancedSearch() {
 
   }
+
   /**
    * Initialize search
    */
   onSearch(val: any) {
+    val = val.trim()
+    // ifcurrent router === results
+
+    if (this.lastQuery === val && this.router.url === '/results') {
+      return
+    }
+    this.lastQuery = val
     this.searchHistoryList.unshift(val)
     console.log(this.searchHistoryList);
     if (this.searchHistoryList.length >= this.searchHistoryMaxLength) {
@@ -118,6 +135,8 @@ export class TopNavigationComponent implements OnInit {
     // this.numberOfResults = 0
     // this.currentSearchQuery = enteredQuery
     // // tt0092099 example
+
+    const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`)
     if (enteredQuery.match(REGEX_IMDB_ID)) {
       console.log('searchByImdbId');
       // this.searchByImdbId(enteredQuery)

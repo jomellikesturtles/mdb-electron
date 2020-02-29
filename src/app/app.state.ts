@@ -20,34 +20,6 @@ export class CountState {
   }
 }
 
-
-export interface IAppStateModel {
-  database: string,
-  environment: 'web' | 'desktop' | string,
-  isOnline: boolean
-}
-
-export class AppStateModel implements IAppStateModel {
-  private _database: string
-  private _environment: 'web' | 'desktop' | string
-  private _isOnline: boolean
-
-  get database() {
-    return 'nedb'
-  }
-
-  get environment() {
-    let toReturn = 'desktop'
-    if (window.location.protocol === 'https:') {
-      toReturn = 'web'
-    }
-    return toReturn
-  }
-  get isOnline() {
-    return window.navigator.onLine
-  }
-}
-
 export enum LoginType {
   Anonymous = 'anonymous',
   Email = 'email',

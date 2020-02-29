@@ -2,17 +2,16 @@ import { Injectable } from '@angular/core';
 import { catchError, map } from 'rxjs/operators'
 import { pipe, Observable } from 'rxjs'
 import { AngularFireAuth } from '@angular/fire/auth'
+import { AngularFireModule } from '@angular/fire/'
 import { AngularFirestore, } from '@angular/fire/firestore'
 import * as firebase from 'firebase';
-import { IpcService, BookmarkChanges } from './ipc.service';
+import { IpcService, BookmarkChanges, IpcCommand } from './ipc.service';
 import { Select, Store } from '@ngxs/store';
-import { UserState } from '../app.state';
 import { RemoveUser } from '../app.actions';
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
-  // @Select(UserState) user$: Observable<any>
 
   BOOKMARK = 'BOOKMARK'
   bookmarkDeleteList = []
@@ -27,7 +26,8 @@ export class FirebaseService {
     private angularFirestore: AngularFirestore,
     private ipcService: IpcService,
     private auth: AngularFireAuth,
-    private store: Store
+    private store: Store,
+    private afm: AngularFireModule
   ) { this.db = this.angularFirestore.firestore }
 
   onSync() {
@@ -38,13 +38,13 @@ export class FirebaseService {
    * Syncs bookmarks to and from cloud then executing batch commit.
    */
   synchronizeBookmarks() {
-    this.ipcService.getBookmarkChanges()
+    this.ipcService.call(IpcCommand.GetBookmarkChanges)
     // this.batch = this.db.firestore.batch()
     this.batch = this.db.batch()
     this.ipcService.bookmarkChanges.subscribe(e => {
-      this.bookmarkInsertList = e.filter((v) => { v.change === BookmarkChanges.INSERT })
-      this.bookmarkDeleteList = e.filter((v) => { v.change === BookmarkChanges.DELETE })
-      this.bookmarkUpdateList = e.filter((v) => { v.change === BookmarkChanges.UPDATE })
+      this.bookmarkInsertList = e.filter((v) => v.change === BookmarkChanges.INSERT)
+      this.bookmarkDeleteList = e.filter((v) => v.change === BookmarkChanges.DELETE)
+      this.bookmarkUpdateList = e.filter((v) => v.change === BookmarkChanges.UPDATE)
       this.batch = this.db.batch()
       this.insertItemsToFirestore()
       this.deleteItemsFromFirestore()
@@ -59,31 +59,67 @@ export class FirebaseService {
    * @param operator firebase operator
    * @param value value to compare
    */
-  getFromFirestore(collection: string, columnName: string, operator: FirebaseOperator, value: any) {
+  getFromFirestore(collectionName: string, columnName: string, operator: FirebaseOperator, value: any) {
     return new Promise(resolve => {
-      this.db.collection(collection).where(columnName, operator, value).get().then((snapshot) => {
+      this.db.collection(collectionName).where(columnName, operator, value).get().then((snapshot) => {
         console.log('SNAPSHOT: ', snapshot);
         if (!snapshot.empty) {
-          const user = snapshot.docs[0]
-          console.log('snapshot.docs[0]', user);
+          // const user = snapshot.docs[0]
+          // console.log('snapshot.docs[0]', user);
+          const objectToReturn = snapshot.docs[0].data()
+          objectToReturn['id'] = snapshot.docs[0].id
+          resolve(objectToReturn)
+        } else {
+          resolve(null)
         }
-        console.log('snapshot.docs[0].data', snapshot.docs[0].data());
-        resolve(snapshot.docs[0].data())
       }).catch(err => {
         console.log('Error getting document', err);
       });
     })
   }
 
-  getFromFirestoreMultiple(collectionName: CollectionName, order: string, limit: number) {
+
+  getFromFirestoreMultiple(collectionName: CollectionName, fieldName: string, list: any[]) {
+    return new Promise((resolve, reject) => {
+      this.db.collection(collectionName).where(fieldName, FirebaseOperator.In, list).get().then(snapshot => {
+        console.log('multiple results:', snapshot.docs)
+        resolve(snapshot.docs)
+      }).catch(err => {
+        reject(err)
+      })
+    })
+  }
+
+  /**
+   * IN PROGRESS.
+   * @param collectionName name of the collection
+   * @param order order
+   * @param limit the limit
+   */
+  getFromFirestoreMultiplePaginated(collectionName: CollectionName, order: string, limit?: number, lastVal?: string | number) {
     const resultList = []
+    const defaultLimit = 20
+
     return new Promise(resolve => {
-      this.db.collection(collectionName).orderBy(order).limit(limit).get().then(snapshot => {
-        snapshot.docs.forEach(element => {
-          console.log('getFromFirestoreMultiple single:', element.data())
-          resultList.push(element.data())
-        })
-        resolve(resultList)
+      lastVal = lastVal ? lastVal : 0
+      // this.db.collection(collectionName).startAfter(lastDocId).orderBy(order, 'asc').limit(defaultLimit).get().then(snapshot => {
+      this.db.collection(collectionName).orderBy(order).startAfter(lastVal).limit(defaultLimit).get().then(snapshot => {
+        resolve(snapshot.docs)
+      })
+    })
+  }
+
+  /**
+   * IN PROGRESS.
+   * @param collectionName name of the collection
+   * @param order order
+   * @param limit the limit
+   */
+  getFromFirestoreMultiplePaginatedFirst(collectionName: CollectionName, order: string, limit?: number) {
+    const defaultLimit = 20
+    return new Promise(resolve => {
+      this.db.collection(collectionName).orderBy(order, 'asc').limit(defaultLimit).get().then(snapshot => {
+        resolve(snapshot.docs)
       })
     })
   }
@@ -94,11 +130,26 @@ export class FirebaseService {
    * @param data data to insert/add
    */
   insertIntoFirestore(collection: CollectionName, data: object) {
-    this.db.collection(collection).add(data).then(e => {
-      console.log(e);
+    return new Promise(resolve => {
+      this.db.collection(collection).add(data).then(e => {
+        if (e.id) {
+          resolve(e.id)
+        } else {
+          resolve(null)
+        }
+      })
     })
   }
 
+  deleteFromFirestore(collectionName: CollectionName, docId: string) {
+    return new Promise(resolve => {
+      this.db.collection(collectionName).doc(docId).delete().then((e) => {
+        resolve('success')
+      }).catch((error) => {
+        console.error('Error removing document: ', error);
+      });
+    })
+  }
   /**
    * Inserts data into firestore.
    * @param collectionName name of the collection
@@ -158,7 +209,7 @@ export class FirebaseService {
     this.auth.auth.signInWithPopup(provider).then((e) => {
       console.log(e)
       localStorage.setItem('user', JSON.stringify(e.user))
-    }).catch(function (e) {
+    }).catch((e) => {
       {
         console.log('in catch', e);
       }
@@ -166,20 +217,26 @@ export class FirebaseService {
   }
 
   signUp(emailUsername, password) {
-    const myAuth = this.auth.auth.createUserWithEmailAndPassword(emailUsername, password).then((e) => {
-    }).catch((e) => {
-
+    return new Promise((resolve, reject) => {
+      this.auth.auth.createUserWithEmailAndPassword(emailUsername, password).then((e) => {
+        resolve(e)
+      }).catch((e) => {
+        reject(e.message)
+      })
     })
   }
 
   signOut() {
     // return new Promise(resolve => {
+    // this.angularFirestore.
+    // this.afm().
     this.auth.auth.signOut().then(e => {
-      console.log(e);
+      console.log('SIGNOUT SUCCESS ', e);
+      localStorage.removeItem('user')
       this.store.dispatch(new RemoveUser(e))
       // resolve(e)
     }).catch(e => {
-      console.log(e);
+      console.log('SIGNOUT CATCH ', e);
     })
     // })
   }
@@ -203,19 +260,28 @@ export enum FirebaseOperator {
   GreaterThanEqual = '>=',
   ArrayContains = 'array-contains',
   In = 'in',
-  ArrayContinsAny = 'array-contains-any'
+  ArrayContainsAny = 'array-contains-any'
   // <, <=, ==, >, >=, array - contains, in, or array - contains - any
 }
+
+export const FirebaseListMax = 10
+
 export enum CollectionName {
   Bookmark = 'bookmark',
   UserName = '',
   Watched = 'watched',
+  User = 'user',
+  Config = 'config',
+  Video = 'video',
 }
 
-export enum ColumnName {
+export enum FieldName {
   Bookmark = 'bookmark',
-  UserName = ''
+  Username = 'username',
+  EmailAddress = 'emailAddress',
+  TmdbId = 'tmdbId'
 }
+
 export interface IBookmark {
   tmdbId: number,
   imdbId: string,

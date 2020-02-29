@@ -1,49 +1,38 @@
 /**
  * scans library folders for potential video files
  */
-const promise = require('promise')
+// const promise = require('promise')
+// const cp = require('child_process');
 const searchMovie = require('./search-movie')
 const fs = require('fs');
 const path = require('path');
-var DataStore = require('nedb')
 const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const ffmpeg = require('fluent-ffmpeg')
 var libraryDbService = require('./library-db-service-2.js')
-var config = new DataStore(
-  {
-    filename: '../config/config.db',
-    // filename: path.join(__dirname, '..', 'config', 'config.db'), // for node only
-    // filename: '../config/config.db',
-    autoload: true
-  })
-
+var identifyMovie = require('./identify-movie')
+var DataStore = require('nedb')
+var config = new DataStore({
+  filename: '../config/config.db',
+  // filename: path.join(__dirname, '..', 'config', 'config.db'), // for node only
+  // filename: '../config/config.db',
+  autoload: true
+})
+// process.argv
 process.on('uncaughtException', function (error) {
-  console.log(error);
-  // process.send(['scrape-failed', 'general']); //mainWindow.webContents.send('scrape-failed', 'general');
+  console.log('ERROR: ', error);
 });
 
+process.on('unhandledRejection', function (error) {
+  console.log('unhandledRejection ERROR: ', error);
+});
+process.send = process.send || function (...args) { DEBUG.log('SIMULATING process.send', ...args) };
 
-/**
- * Gets the info of the movie from tmdb or omdb
- */
-function getMovieInfo() {
-  // http://www.omdbapi.com/?t=wall-e&apikey=3a2fe8bf
-}
-
+// Toy.Story.4
 /**
  * Insert into libraryFiles.db
  * @param {*} params
  */
 function saveToLibraryDb(params) {
-
-  // libraryFilesDb.insert(params, function (err, numpReplaced) {
-  //   console.log('adding');
-  //   if (!err || (numpReplaced < 1)) {
-  //     console.log("replaced---->" + numReplaced);
-  //   } else {
-  //     console.log(err);
-  //   }
-  // })
   libraryDbService.insertLibraryFiles(params)
 }
 
@@ -69,24 +58,19 @@ function addToList(folderPath, fileName) {
 
   const fileInfo = {
     fullFilePath: fullFilePath,
-    dir: dir,
-    parentFolder: parentFolder,
-    byteSize: byteSize,
-    extension: extension,
-    fullFileName: fullFileName,
-    hasSiblings: hasSiblings,
+    // dir: dir,
+    // parentFolder: parentFolder,
+    // byteSize: byteSize,
+    // extension: extension,
+    // fullFileName: fullFileName,
+    // hasSiblings: hasSiblings,
     title: title,
-    year: year
+    year: parseInt(year, 10),
+    tmdbId: 0
   }
-  // durationMins: 123,
-  // hasDuplicateTitle: false,
-  // console.log(fileInfo);
-  // libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) {
-  // if (!err) {
   saveToLibraryDb(fileInfo);
-  // }
-  // })
 }
+
 /**
  * Gets the movie title based on regex
  * @param {string} parentFolder
@@ -99,7 +83,7 @@ function getTitleAndYear(parentFolder, fullFileName) {
   var titleRegex = new RegExp(fileTitleRegexStr, 'gmi')
   var result = null
   result = titleRegex.exec(fullFileName)
-  if (result[1]) {//if not blank or undefined
+  if (result[1]) { //if not blank or undefined
     return result
   } else {
     titleRegex = new RegExp(folderTitleRegexStr, 'gmi')
@@ -165,21 +149,14 @@ function readDirectory(startPath) {
 
     if (stat.isDirectory()) {
       readDirectory(filename); //recurse
-    }
-    else {
+    } else {
       if (isVideoFile(filename)) {
         console.log(filename);
         addToList(startPath, files[i])
+        process.send(['found-video-library', filename])
       }
     }
   }
-  // fs.readdir(folderpath, (err, files) => {
-  //     console.log(files)
-  //     files.forEach(element => {
-  //         console.log(element)
-  //         console.log(getExtension(element))
-  //     });
-  // })
 }
 
 /**
@@ -189,7 +166,9 @@ function readDirectory(startPath) {
 function getLibraryFolders() {
   return new Promise(function (resolve, reject) {
     var foldersList = null
-    config.findOne({ type: 'libraryFolders' }, function (err, dbPref) {
+    config.findOne({
+      type: 'libraryFolders'
+    }, function (err, dbPref) {
       if (!err) {
         if (dbPref) {
           foldersList = dbPref.foldersList
@@ -213,7 +192,6 @@ async function scanExistingLibraryMovies() {
   libraryDbService.count().then(async count => {
     totalCount = count
     console.log('count:', count);
-
     while (page < totalCount) {
       promises[page] = new Promise((resolve, reject) => {
 
@@ -235,26 +213,57 @@ async function scanExistingLibraryMovies() {
   })
 }
 
+async function identifyMovies() {
+  const totalCount = await libraryDbService.count()
+  let index = 0
+  while (index < totalCount) {
+    const libraryFile = await libraryDbService.getLibraryFilesByStep(index, 1)
+    if (!libraryFile.tmdbId) {
+      const identityResult = await identifyMovie.identifyMovie(libraryFile.title)
+      if (identityResult.tmdbId != 0) { // if query has returned a movie
+        const replacementObj = { tmdbId: identityResult.tmdbId, title: identityResult.title, year: parseInt(identityResult.year, 10) }
+        const updateLibDb = await libraryDbService.updateFields(libraryFile._id, replacementObj)
+        console.log(updateLibDb)
+      }
+    }
+    index++;
+  }
+}
+
 /**
  * Starts scan. First checks for the folders in the database.
  */
 async function initializeScan() {
 
+  console.log('process not object')
+  if (typeof window === 'undefined') {
+    console.log('window undefined')
+  } else {
+    console.log('window not undefined')
+  }
+  if (typeof process === 'object') {
+    console.log('process object')
+  } else {
+    console.log('process not object')
+  }
   let result = await scanExistingLibraryMovies()
-  console.log('inresults');
-  console.log(result);
+  // console.log('inresults');
+  console.log('result:', result);
 
   getLibraryFolders().then(function (libraryFolders) {
     libraryFolders.forEach(folder => {
       readDirectory(folder);
     });
+    identifyMovies().then({
+      // process.send('scan-library-success', '')
+    })
   })
 }
-
+console.log('initializing scan')
 initializeScan();
 
 // var regexList =
-// Tested: `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`
+// Tested: `^ (.+?)[.(\\t]* (?: (?: (19\\d{ 2} | 20(?: 0\\d | 1[0 - 9]))).*| (?: (?= bluray |\\d + p | brrip | WEBRip)..*)?[.](mkv | avi | mpe ? g | mp4)$)`
 // tested : ^((.*[^ (_.])[ (_.]+((\d{4})([ (_.]+S(\d{1,2})E(\d{1,2}))?(?<!\d{4}[ (_.])S(\d{1,2})E(\d{1,2})|(\d{3}))|(.+))
 
 
@@ -267,5 +276,7 @@ initializeScan();
 
 /**
  * Scan process
- * check contents of libraryFiles.db if existing, if not, delete
+ * 1. check contents of libraryFiles.db if movie file is existing, if not, delete
+ * 2. scan the folders
+ * 3.
  */

@@ -1,0 +1,18 @@
+<app-selected-list></app-selected-list>
+<button class='btn btn-success' (click)='onSync()' data-toggle='tooltip' title='Synchronze your bookmarks.'>Sync
+  bookmarks</button>
+
+<div class="container-fluid">
+
+  <div *ngIf='!hasResults'>
+    <h1 class='jumbo-message'>No bookmarked movies found</h1>
+  </div>
+  <div *ngIf='hasResults' class='movie-cards-display-grid'>
+    <app-card-list [movieList]='moviesDisplayList' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'
+      [listType]='listType'>
+    </app-card-list>
+    <div *ngIf="hasMoreResults" style='width: 100%; text-align: center; height: 80px;'>
+      <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 import { IMdbMovieDetails, IRating, ILibraryInfo, IGenre, ISpokenLanguage } from './interfaces'
-import { MONTHS, REGEX_TMDB_RELEASE_DATE, REGEX_OMDB_BOX_OFFICE } from './constants'
+import { MONTHS, STRING_REGEX_OMDB_RELEASE_DATE, STRING_REGEX_OMDB_BOX_OFFICE } from './constants'
+import { UtilsService } from './services/utils.service';
 
 /**
  * The main class.
@@ -9,6 +10,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   awards?: string
   private _backgroundPath: string;
   private _boxOffice?: string | number // tmdb:revenue(number)
+  bookmark: any
   belongsToCollection?: []
   budget?: number
   country?: string
@@ -44,6 +46,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   video?: boolean; // unknown
   voteAverage: number; // tmdb votes
   voteCount: number; // tmdb votes
+  watched: any
   website?: string
   writer?: string // omdb
   [propName: string]: any;
@@ -51,7 +54,100 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   constructor() {
     this.isAvailable = false
   }
-  // constructor(val: string)
+
+  /**
+   * Converts omdb or tmdb object into Mdb object
+   * @param value omdb or tmdb object.
+   */
+  convertToMdbObject(value) {
+
+    Object.keys(value).forEach(key => {
+      console.log('key: ', key, ' value: ', value[key], ' ')
+      switch (key) {
+        case 'Actors':
+          this._releaseDate = value[key]
+          break;
+        case 'adult':
+          this.isAdult = value[key]
+          break;
+        case 'Awards':
+          this.awards = value[key]
+          break;
+        case 'backdrop_path':
+          this._backgroundPath = value[key]
+          break;
+        case 'belongs_to_collection':
+          this.belongsToCollection = value[key]
+          break;
+        case 'BoxOffice':
+        case 'revenue':
+          this._boxOffice = value[key]
+          break;
+        case 'Director':
+          this.director = value[key]
+          break;
+        case 'Genre':
+          this._genres = value[key]
+          break;
+        case 'homepage':
+          this.website = value[key]
+          break;
+        case 'id':
+          this.tmdbId = value[key]
+          break;
+        case 'imdb_id':
+        case 'imdbID':
+          this.imdbId = value[key]
+          break;
+        case 'Language':
+        case 'spoken_languages':
+          this._languages = value[key]
+          break;
+        case 'original_language':
+          this.originalLanguage = value[key]
+          break;
+        case 'original_title':
+          this.originalTitle = value[key]
+          break;
+        case 'Poster':
+        case 'poster_path':
+          this._posterPath = value[key]
+          break;
+        case 'Plot':
+        case 'overview':
+          this.plot = value[key]
+          break;
+        case 'Title':
+          this.title = value[key]
+          break;
+        case 'TmdbID':
+          this.tmdbId = value[key]
+          break;
+        case 'release_date':
+        case 'Released':
+          this._releaseDate = value[key]
+          break;
+        case 'vote_average':
+          this.voteAverage = value[key]
+          break;
+        case 'vote_count':
+          this.voteCount = value[key]
+          break;
+        case 'Writer':
+          this.writer = value[key]
+          break;
+        case 'Year':
+          this._releaseYear = value[key]
+          break;
+        default:
+          this[key] = value[key]
+          break;
+      }
+    });
+    // Object.keys(this.movieDetails).forEach(key => {
+    //   console.log(`movieDetails key ${key} with value `, key);
+    // })
+  }
 
   set backgroundPath(v: string) {
     if (v && v.indexOf('/') == 0) {
@@ -71,6 +167,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
    */
   set boxOffice(v: string | number) {
     // just in case to be used in the future
+    const REGEX_OMDB_BOX_OFFICE = new RegExp(STRING_REGEX_OMDB_BOX_OFFICE, `gi`);
     const omdbBoxOfficeRegex = REGEX_OMDB_BOX_OFFICE
     if (typeof v === 'string') {
       if (v === 'N/A') {
@@ -150,7 +247,9 @@ export class MdbMovieDetails implements IMdbMovieDetails {
    * @param v date to set
    */
   set releaseDate(v: string) {
-    const regexResults = REGEX_TMDB_RELEASE_DATE.exec(v)
+
+    const REGEX_OMDB_RELEASE_DATE = new RegExp(STRING_REGEX_OMDB_RELEASE_DATE, `gi`);
+    const regexResults = REGEX_OMDB_RELEASE_DATE.exec(v)
     if (regexResults != null) {
       const date = new Date()
       date.setFullYear(parseInt(regexResults[1], 10))

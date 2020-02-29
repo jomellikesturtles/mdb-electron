@@ -111,7 +111,7 @@ function getTitleAndYear(parentFolder, fullFileName) {
   var titleRegex = new RegExp(fileTitleRegexStr, 'gmi')
   var result = null
   result = titleRegex.exec(fullFileName)
-  if (result[1]) {//if not blank or undefined
+  if (result[1]) { //if not blank or undefined
     return result
   } else {
     titleRegex = new RegExp(folderTitleRegexStr, 'gmi')
@@ -218,6 +218,7 @@ function getLibraryFolders() {
 function initializeIdentify() {
   getLibraryFolders().then(function (libraryFolders) {
     libraryFolders.forEach(folder => {
+      console.log(folder)
       readDirectory(folder);
     });
   })

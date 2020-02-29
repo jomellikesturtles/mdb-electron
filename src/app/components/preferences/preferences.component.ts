@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { IpcService, IpcCommand } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
-import { REGEX_PREFIX } from '../../constants';
+import { STRING_REGEX_PREFIX } from '../../constants';
 declare var $: any;
 @Component({
   selector: 'app-preferences',
@@ -51,10 +51,10 @@ export class PreferencesComponent implements OnInit {
     })
     console.log(typeof libraryFoldersSubscription);
 
-    // this.ipcService.libraryMovies.subscribe((value) => {
-    //   this.libraryMovies = value
-    //   this.cdr.detectChanges()
-    // })
+    this.ipcService.libraryMovies.subscribe((value) => {
+      this.libraryMovies = value
+      this.cdr.detectChanges()
+    })
     $('[data-toggle="popover"]').popover();
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
     this.ipcService.getFiles().then(value => {
@@ -112,19 +112,26 @@ export class PreferencesComponent implements OnInit {
     console.log('onScanLibrary');
     this.ipcService.call(IpcCommand.ScanLibrary)
   }
+
+  /**
+   * Scans library folders for new movies
+   */
+  onStopScanLibrary() {
+    console.log('onStopScanLibrary');
+    this.ipcService.call(IpcCommand.StopScanLibrary)
+  }
+
   /**
    * Updates thepiratebay torrent dump
    */
   onUpdateTorrentDump() {
-    console.log('onUpdateTorrentDump');
-    this.ipcService.sendMessage('update-torrent-dump')
+    this.ipcService.call(IpcCommand.UpdateTorrentDump)
   }
   /**
    * Updates imdb files
    */
   onUpdateOfflineMetadata() {
-    this.ipcService.sendMessage('update-torrent-dump')
-    console.log('onUpdateOfflineMetadata');
+    this.ipcService.call(IpcCommand.UpdateTorrentDump)
   }
 
   /**
@@ -171,6 +178,7 @@ export class PreferencesComponent implements OnInit {
    */
   onOpenFolder(folder: string) {
     let folderToOpen = ''
+    const REGEX_PREFIX = new RegExp(STRING_REGEX_PREFIX, `gi`)
     if (folder.match(REGEX_PREFIX) == null) { // not match
       folderToOpen = this.currentFolder + folder;
     } else {

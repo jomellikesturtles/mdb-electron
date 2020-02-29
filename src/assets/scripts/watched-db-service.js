@@ -31,7 +31,7 @@ process.on('uncaughtException', function (error) {
 // --------- FUNCTIONS
 // ----------WATCHED
 function getWatched() {
-  watchedDb.findOne({ tmdbId: parseInt(tmdbIdArg) }, function (err, data) {
+  watchedDb.findOne({ tmdbId: parseInt(tmdbIdArg, 10) }, function (err, data) {
     if (!err) {
       console.log(data);
       if (data) {

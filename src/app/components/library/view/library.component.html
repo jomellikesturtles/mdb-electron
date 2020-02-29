@@ -1,0 +1,33 @@
+<app-selected-list></app-selected-list>
+<div class="container-fluid">
+  <button class='btn btn-info' (click)='onScanLibrary()'>Scan library</button>
+  <div *ngIf='!hasResults'>
+    <h1 class='jumbo-message'>No offline movies found.</h1>
+  </div>
+  <div *ngIf='hasResults' class='movie-cards-display-grid'>
+    <app-card-list [movieList]='moviesDisplayList' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'
+      [listType]='listType'>
+    </app-card-list>
+    <div *ngIf="hasMoreResults" style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
+      <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
+    </div>
+  </div>
+</div>
+<div>
+
+  <!-- <div class="container">
+  <div *ngIf='hasSearchResults'>
+    <label>{{currentPage}} of {{numberOfPages}}</label>
+    <button class='btn btn-primary' id='prevButton' (click)='toPreviousPage()'
+      [disabled]='currentPage <= 1'>Previous</button>
+    <button class='btn btn-primary' id='nextButton' (click)='toNextPage()'
+      [disabled]='currentPage >= numberOfPages'>Next</button>
+  </div>
+</div> -->
+
+  <div *ngIf="!moviesDisplayList">
+    <label>No movies found, go to Preferences.</label>
+    <h1>No movie libraries found :(</h1>
+    <h3>Houston, we have a problem.</h3>
+    <h4>Apollo 13</h4>
+  </div>

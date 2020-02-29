@@ -1,0 +1,45 @@
+<div [hidden]='true' style='background-color: black;width: 100%;height:100vh;'>
+
+</div>
+<app-selected-list></app-selected-list>
+
+<select class="form-control" [(ngModel)]="cardWidth" style='width: 200px; float:right'>
+  <option value='100px'>small</option>
+  <option value='130px'>medium</option>
+  <option value='180px'>large</option>
+  <option value='250px'>xtra large</option>
+</select>
+
+<div class="container-fluid">
+
+  <div *ngIf='searchResults.length===0'>
+    <h1 class='jumbo-message'>No results found for '{{currentSearchQuery}}' :(</h1>
+  </div>
+
+  <h1 *ngIf="searchResults.length>0">Search results for "{{currentSearchQuery}}"</h1>
+  <div *ngIf='searchResults.length>0'>
+    <!-- <div class='movie-cards-display-grid'> -->
+    <app-card-list [movieList]='searchResults' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'></app-card-list>
+    <div *ngIf='currentSearchQuery' style='width: 100%; text-align: center; height: 80px;'>
+      <h5 class='text-hyperlink' *ngIf="hasMoreResults" (click)='getMoreResults()'>Load more results...</h5>
+    </div>
+  </div>
+</div>
+<div>
+  <h1 *ngIf="!currentSearchQuery">No results found for "{{currentSearchQuery}} :("</h1>
+</div>
+<!-- <div class="snackbar" [hidden]="displayMessage.length == 0">{{displayMessage}}</div> -->
+<!-- <div class="snackbar" [ngClass]="{'show': displayMessage.length >= 0}">
+  <p>{{displayMessage}}</p>
+</div> -->
+<div id='snackbar' [ngClass]="{'show ': displaySnackbar}">
+  <p>{{displayMessage}}</p>
+</div>
+<!-- <h1>You are offline</h1> -->
+<!-- max-width: calc(320px * var(--ytd-rich-grid-items-per-row) + 16px * var(--ytd-rich-grid-items-per-row));
+
+FONT-WEIGHT: 500;
+margin-left: calc(16px / 2);
+margin-right: calc(16px / 2);
+margin-bottom: 40px;
+width: calc(100% / (5) - 16px - 0.01px); -->

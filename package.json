@@ -17,6 +17,7 @@
     "electron-build-d": "ng build --dev && npm run electron",
     "electron-build": "ng build --prod && electron .",
     "start:electron": "ng build --base-href ./ && electron .",
+    "start:electron2": "ng build --prod --aot && electron .",
     "start:server": "node src/assets/scripts/server/main",
     "start:angular-server": " start ng serve & start npm run start:server",
     "start:angular-server2": "start npm start && npm run start:server"
@@ -44,6 +45,7 @@
     "fast-levenshtein": "^2.0.6",
     "firebase": "^7.5.2",
     "fluent-ffmpeg": "^2.1.2",
+    "http-server": "^0.12.1",
     "jquery": "^3.4.1",
     "nedb": "^1.8.0",
     "ngx-cacheable": "^1.3.2",
@@ -54,6 +56,7 @@
     "rxjs": "~6.3.3",
     "tsc": "^1.20150623.0",
     "tslib": "^1.10.0",
+    "webtorrent": "^0.107.17",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
@@ -65,8 +68,9 @@
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^8.9.5",
+    "@types/webtorrent": "^0.107.1",
     "codelyzer": "~4.5.0",
-    "electron": "^5.0.10",
+    "electron": "^5.0.13",
     "electron-packager": "^14.1.1",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
@@ -78,7 +82,7 @@
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
-    "typescript": "^3.2.4"
+    "typescript": "^3.1.6"
   },
   "files": [
     "*.js",

@@ -16,7 +16,6 @@
 *::-webkit-scrollbar-thumb {
   // background-color: darkgrey;
   // outline: 1px solid slategrey;
-
   border-radius: 3px;
   -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, .3);
   box-shadow: inset 0 0 3px rgba(0, 0, 0, .3);
@@ -29,7 +28,7 @@
 
 * {
   -webkit-user-select: none;
-  color: whitesmoke
+  // color: whitesmoke
 }
 
 p,
@@ -40,7 +39,8 @@ h3,
 h4,
 h5,
 h6 {
-  cursor: context-menu
+  cursor: context-menu;
+  color:white
 }
 
 // snackbar
@@ -63,7 +63,7 @@ h6 {
   /* Padding */
   position: fixed;
   /* Sit on top of the screen */
-  z-index: 1;
+  z-index: 5000;
   /* Add a z-index if needed */
   left: 50%;
   /* Center the snackbar */
@@ -162,14 +162,11 @@ body {
   width: 100%;
   opacity: 0;
   transition: .5s ease;
-  // z-index: -1;
 }
-
 
 .overlay-add {
   background-color: #38ec14;
 }
-
 
 .overlay-remove {
   background-color: #fc0000;
@@ -183,13 +180,11 @@ body {
   padding: 5px 0px 0px 0px !important;
 }
 
-
 .movie-card-selected .overlay-add {
   opacity: .5;
 }
 
 .movie-card-image-container {
-  // background-color: rgb(32, 32, 32);
   background-color: white;
   box-shadow: 0 0 10px black;
   position: relative;
@@ -202,7 +197,7 @@ body {
   opacity: .5;
 }
 
-.movie-card-image-container:hover .overlay {
+.overlay:hover {
   opacity: .5;
 }
 
@@ -235,9 +230,39 @@ body {
   left: 5%;
   height: 15px;
   width: 15px;
-  background-color: rgb(151, 151, 151);
-  border-radius: 50%;
-  box-shadow: 0 0 10px #969696;
+  // background-color: rgb(151, 151, 151);
+  // border-radius: 50%;
+  // box-shadow: 0 0 10px #969696;
+  z-index: 3;
+}
+
+.movie-bookmark:hover {
+  cursor: pointer;
+  filter: invert(1)
+}
+
+.movie-mark-as-watched {
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  // height: 15px;
+  // width: 15px;
+  z-index: 3;
+}
+
+.movie-mark-as-watched:hover {
+  filter: invert(1)
+}
+
+.movie-progress-bar {
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  height: 3px;
+  width: 100%;
+  background-color: rgb(255, 62, 4);
+  // border-radius: 50%;
+  // box-shadow: 0 0 10px #969696;
   z-index: 3;
 }
 
@@ -267,9 +292,4 @@ body {
   background-size: cover;
   background-position: center;
   background-color: white;
-}
-
-.cover-full {
-  background-size: cover;
-  background-position: center;
 }

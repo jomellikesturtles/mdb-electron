@@ -1,14 +1,8 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { IOmdbMovieDetail, IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail } from '../../interfaces';
-import { MdbMovieDetails } from '../../classes';
-import { TEST_MOVIE_DETAIL, TEST_TMDB_MOVIE_DETAILS } from '../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DataService } from '../../services/data.service';
-import { MovieService } from '../../services/movie.service';
 import { PersonService } from '../../services/person.service';
-import { TorrentService } from '../../services/torrent.service';
 import { UtilsService } from '../../services/utils.service';
-import { IpcService } from '../../services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { PERSON_DETAILS, PERSON_DETAILS_FULL, PERSON_COMBINED_CREDITS } from '../../mock-data-person-details';
@@ -24,14 +18,12 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   person: any;
   creditsCast
   creditsCrew
+
   constructor(
     private sanitizer: DomSanitizer,
     private activatedRoute: ActivatedRoute,
     private dataService: DataService,
-    private ipcService: IpcService,
-    private movieService: MovieService,
     private personService: PersonService,
-    private torrentService: TorrentService,
     private utilsService: UtilsService,
     private router: Router) { }
 

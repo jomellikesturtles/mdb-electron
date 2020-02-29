@@ -1,0 +1,22 @@
+<!-- TMDB discover -->
+<app-selected-list></app-selected-list>
+<select class="form-control" [(ngModel)]='sortBy' style='width: 200px; float:right'>
+  <option value='popularity.desc'>Popularity</option>
+  <option value='release_date.asc'>Oldest</option>
+  <option value='release_date.desc'>Newest</option>
+  <option value='original_title.asc'>Name</option>
+  <option value='vote_count.desc'>Vote Average</option>
+</select>
+<div class="container-fluid">
+  <div *ngIf='!hasResults'>
+    <h1 class='jumbo-message'>No movies found</h1>
+  </div>
+  <h1>{{discoverTitle}}</h1>
+  <div *ngIf='hasResults'>
+    <app-card-list [movieList]='discoverResults' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'>
+    </app-card-list>
+    <div style='width: 100%; text-align: center; height: 80px;'>
+      <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
+    </div>
+  </div>
+</div>

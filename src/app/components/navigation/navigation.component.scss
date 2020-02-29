@@ -132,3 +132,9 @@
 //   .sidenav {padding-top: 15px;}
 //   .sidenav a {font-size: 18px;}
 // }
+
+.router-active {
+  font-weight: bold;
+  color: orangered !important;
+  transition: .1s
+}

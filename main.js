@@ -4,7 +4,7 @@
 const cp = require('child_process');
 const electron = require('electron')
 const Datastore = require('nedb')
-const datastore = new Datastore({
+const configDb = new Datastore({
   filename: 'src/assets/config/config.db',
   autoload: true
 });
@@ -20,9 +20,21 @@ let procTorrentSearch;
 let procVideoService
 let offlineMovieDataService;
 let procmovieImageService;
+let procScanLibrary;
 let mainWindow
 let mdbTray
 const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`
+
+let DEBUG = (() => {
+  let timestamp = () => { }
+  timestamp.toString = () => {
+    return '[DEBUG ' + (new Date).toLocaleString() + ']'
+  }
+  return {
+    log: console.log.bind(console, '%s', timestamp)
+  }
+})()
+
 /**
  * Creates the browser window
  */
@@ -40,7 +52,6 @@ function createWindow() {
       webSecurity: false
     },
     icon: appIcon,
-    // maxHeight:
     title: 'MDB'
   });
   mainWindow.webContents.openDevTools()
@@ -191,33 +202,39 @@ ipcMain.on('open-link-external', function (event, url) {
   // })
 })
 
-
 /**
  * Initializes scan-library.js
  */
-ipcMain.on('scan-library', function (data) {
+ipcMain.on('scan-library', function (event) {
+  console.log('scan-librarye');
   if (!procScanLibrary) { // if process search is not yet running
     console.log('procSearch true');
     procScanLibrary = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'scan-library.js'), {
       cwd: __dirname,
       silent: true
     });
-    procScanLibrary.stdout.on('data', function (data) {
-      console.log('printing data..');
-      console.log(data.toString());
-    });
+    // procScanLibrary.stdout.on('data', function (data) {
+    //   console.log('scan-library printing data..');
+    //   console.log(data.toString());
+    // });
     procScanLibrary.on('exit', function () {
-      console.log('ScanLibrary process ended');
+      // console.log('ScanLibrary process ended');
+      DEBUG.log('ScanLibrary process ended')
       procScanLibrary = null;
-      if (awaitingQuit) {
-        process.emit('cont-quit');
-      }
     });
     procScanLibrary.on('message', function (m) {
+      // console.log('scan-library in IPCMAIN', m);
+      DEBUG.log('scan-library in IPCMAIN', m)
       mainWindow.webContents.send(m[0], m[1]);
     });
-  } else {
-    console.log('scan library is already running');
+  }
+})
+
+ipcMain.on('stop-scan-library', function (event) {
+  console.log('stop scan-librarye');
+  if (procScanLibrary) { // if process search is not yet running
+    console.log('killing....')
+    procScanLibrary.kill()
   }
 })
 
@@ -241,13 +258,30 @@ ipcMain.on('search-query', function (event, data) {
  * Gets list of library folders
  */
 ipcMain.on('retrieve-library-folders', function (event, data) {
-  var config = datastore
+  var config = configDb
   config.findOne({
     type: 'libraryFolders'
   }, function (err, dbPref) {
     if (!err) {
       foldersList = dbPref.foldersList
       mainWindow.webContents.send('library-folders', foldersList)
+    } else {
+      reject()
+    }
+  })
+})
+
+/**
+ * Gets list of library folders
+ */
+ipcMain.on('get-search-list', function (event, data) {
+  var config = configDb
+  config.findOne({
+    type: 'searchList'
+  }, function (err, dbPref) {
+    if (!err) {
+      searchList = dbPref.list
+      mainWindow.webContents.send('search-list', searchList)
     } else {
       reject()
     }
@@ -316,16 +350,19 @@ ipcMain.on('get-torrents-title', function (event, data) {
 
 /**
  * Gets all movies from movieData.db
+ * TODO: minify the param2 to just the basic movie metadata. Otherwise, it will an error: 'error spawn ENAMETOOLONG'
  */
 ipcMain.on('movie-metadata', function (event, data) {
   // console.log('movies into movie-metadata-service..', data[0], data[1])
   let param2 = ''
-  if (data[0] == 'set') {
-    param2 = JSON.stringify(data[1])
-  } else {
-    param2 = data[1]
-  }
-  offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'offline-movie-data-service.js'), [data[0], param2], {
+  // if (data[0] == 'set') {
+  //   param2 = JSON.stringify(data[1])
+  // } else {
+  //   param2 = data[1]
+  // }
+  // console.log(data[0])
+  // console.log(param2)
+  offlineMovieDataService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'offlineMetadataService.js'), [data[0], param2], {
     cwd: __dirname,
     silent: true
   });
@@ -425,32 +462,35 @@ ipcMain.on('watched', function (event, data) {
   }
 })
 
+/**
+ * Gets the video by id and streams to localhost.
+ */
 ipcMain.on('open-video', function (event, data) {
-  if (!procVideoService) {
-    console.log('procVideoService ', data);
-    procVideoService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'video-service.js'), [data], {
-      cwd: __dirname,
-      silent: true
-    });
-    procVideoService.stdout.on('data', function (data) {
-      console.log('printing data..');
-      console.log(data.toString());
-    });
-    procVideoService.on('exit', function () {
-      console.log('video service process ended');
-      procVideoService = null
-    });
-    procVideoService.on('message', function (m) {
-      console.log('video service in IPCMAIN', m);
-      mainWindow.webContents.send(m[0], m[1]); // reply
-    });
-  }
+  // if (!procVideoService) {
+  DEBUG.log('procVideoService', data)
+  procVideoService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'video-service.js'), [data], {
+    cwd: __dirname,
+    silent: true
+  });
+  procVideoService.stdout.on('data', function (data) {
+    DEBUG.log('printing data', data.toString())
+  });
+  procVideoService.on('exit', function () {
+    // console.log('video service process ended');
+    DEBUG.log('video service process ended')
+    procVideoService = null
+  });
+  procVideoService.on('message', function (m) {
+    // console.log('video service in IPCMAIN', m);
+    DEBUG.log('video service in IPCMAIN', m)
+    mainWindow.webContents.send(m[0], m[1]); // reply
+  });
+  // }
 })
 
 ipcMain.on('firebase-provider', function (event, data) {
   if (!procVideoService) {
     console.log('firebase ', data);
-    // cp.
     procVideoService = cp.fork(path.join(__dirname, 'firebase-service.js'), [data], {
       // procVideoService = cp.fork(path.join(__dirname, 'src', 'assets', 'scripts', 'firebase-service.js'), [data], {
       cwd: __dirname,

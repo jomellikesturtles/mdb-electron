@@ -1,5 +1,9 @@
 /**
- * new ipc service (9/4)
+ * IPC renderer comm to the main.
+ * TODO: change behaviorsubjects to something else.
+ */
+import { environment } from './../../environments/environment';
+/**
  * Service to communicate to ipc main
  */
 import {
@@ -7,10 +11,29 @@ import {
   //// , ChangeDetectionStrategy, ChangeDetectorRef,
 } from '@angular/core'
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
-// declare var electron: any
-// import { ipcRenderer } from 'electron'
+declare var electron: any
+import { ipcRenderer } from 'electron'
 // // const { ipcRenderer } = electron
 import { ILibraryInfo } from '../interfaces'
+
+export enum Channel {
+  BookmarkAddSuccess = 'bookmark-add-success',
+  BookmarkGetSuccess = 'bookmark-get-success',
+  BookmarkRemoveSuccess = 'bookmark-remove-success',
+  BookmarkChanges = 'bookmark-changes',
+  LibraryFolders = 'library-folders',
+  LibraryMovie = 'library-movie',
+  LibraryMovies = 'library-movies',
+  AppMinimizing = 'app-minimizing',
+  AppRestoring = 'app-restoring',
+  MovieMetadata = 'movie-metadata',
+  PreferencesConfig = 'preferences-config',
+  ScannedSuccess = 'scanned-success',
+  SearchList = 'search-list',
+  VideoSuccess = 'video-success',
+  WatchedSuccess = 'watched-success',
+  MovieIdentified = 'movie-identified-success', // emits when movie from library is identified
+}
 
 @Injectable({
   providedIn: 'root'
@@ -28,81 +51,32 @@ export class IpcService {
   scannedMovieMulti = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   videoFile = new BehaviorSubject<any>([])
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
-  // private ipcRenderer: typeof ipcRenderer
+  movieIdentified = new BehaviorSubject<any>({ id: 0 })
+  searchList = new BehaviorSubject<any>([])
+  private ipcRenderer: typeof ipcRenderer
 
-  constructor(private ngZone: NgZone) //// private ref: ChangeDetectorRef
+  constructor(private ngZone: NgZone,
+    // private cdr: ChangeDetectorRef
+  ) ////
   {
-    // this.ipcRenderer = (<any>window).require('electron').ipcRenderer
+    // UNCOMMENT IF IN ELECTRON MODE
+    if (environment.runConfig.electron) {
+      this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
-    // this.ipcRenderer.on('library-folders', (event, data) => {
-    //   console.log('library-folders:', data)
-    //   this.libraryFolders.next(data)
-    // })
+      function enumKeys<E>(e: E): (keyof E)[] {
+        return Object.keys(e) as (keyof E)[];
+      }
+      for (const key of enumKeys(Channel)) {
+        const locale: Channel = Channel[key];
+        console.log(locale);
+        this.listen(locale)
+      }
 
-    // this.ipcRenderer.on('library-movies', (event, data) => {
-    //   this.libraryMovies.next(data)
-    // })
-
-    // this.ipcRenderer.on('library-movie', (event, data) => {
-    //   console.log('library-movie data:', data)
-    //   this.libraryMovie.next(data)
-    // })
-    // this.ipcRenderer.on('preferences-config', (event, data) => {
-    //   console.log('preferences-config:', data)
-    //   this.preferencesConfig.next(data)
-    // })
-    // this.ipcRenderer.on('movie-metadata', (event, data) => {
-    //   console.log('movie-metadata:', data)
-    //   this.movieMetadata.next(data)
-    // })
-    // this.ipcRenderer.on('shortcut-search', () => {
-    //   console.log('shortcut-search')
-    // })
-    // this.ipcRenderer.on('shortcut-preferences', () => {
-    //   console.log('shortcut-preferences')
-    // })
-
-    // ----------------------------
-
-    // this.ipcRenderer.on('bookmark-get-success' || 'bookmark-add-success' || 'bookmark-remove-success', (event, data) => {
-    //   this.bookmarkSingle.next(data)
-    //   console.log('ipcRenderer bookmark-get', data)
-    // })
-
-    // BOOKMARKS
-    // this.ipcRenderer.on('bookmark-get-success', (event, data) => {
-    //   this.bookmarkSingle.next(data)
-    // })
-    // this.ipcRenderer.on('bookmark-add-success', (event, data) => {
-    //   this.bookmarkSingle.next(data)
-    // })
-    // this.ipcRenderer.on('bookmark-remove-success', (event, data) => {
-    //   this.bookmarkSingle.next(data)
-    // })
-    // this.ipcRenderer.on('bookmark-changes', (event, data) => {
-    //   this.bookmarkChanges.next(data)
-    // })
-    // // WATCHED
-    // this.ipcRenderer.on('watched-success', (event, data) => {
-    //   console.log('watched-success', data);
-    //   this.watchedSingle.next(data)
-    // })
-    // // SCANNED MOVIE
-    // this.ipcRenderer.on('scanned-success', (event, data) => {
-    //   console.log('scanned-success', data);
-    //   this.scannedMovieSingle.next(data)
-    // })
-    // this.ipcRenderer.on('video-success', (event, data) => {
-    //   console.log('video-success', data);
-    //   this.videoFile.next(1)
-    // })
-    // console.log = function (data) {
-    //   ipcRenderer.send('logger', data)
-    // }
-  }
-
-  sendProvider(provider) {
-    // this.ipcRenderer.send('firebase-provider', [provider])
+      this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
+        console.log('searchList:', data)
+        this.searchList.next(data)
+      })
+    }
   }
 
   async getFiles() {
@@ -113,28 +87,68 @@ export class IpcService {
     //   this.ipcRenderer.send('retrieve-library-folders');
     // });
   }
-  /**
-   * All messages in logger
-   */
-  sendMessage(data) {
-    console.log('sendMessage')
-    console.log(data)
-    // this.ipcRenderer.send('logger', data)
-  }
 
   call(message: IpcCommand, args?: any) {
-    // this.ipcRenderer.send(message, args)
-  }
 
-  listen() {
-
+    if (environment.runConfig.electron) {
+      console.log(`IPC Command: ${message}, args: ${args}`)
+      this.ipcRenderer.send(message, args)
+    }
   }
 
   /**
-   * Opens files and folders
+   * Listens to ipc renderer.
+   * @param channel name of the channel
    */
-  modalFileExplorer() {
-    // this.ipcRenderer.send('modal-file-explorer')
+  listen(channel: Channel): void | Promise<any> {
+    // this.ipcRenderer.removeListener().
+    if (environment.runConfig.electron) {
+      console.log('LISTENING...');
+      this.ipcRenderer.on(channel, (event, data: any) => {
+        console.log(`ipcRenderer channel: ${channel} data: ${data}`)
+        switch (channel) {
+          case Channel.BookmarkAddSuccess:
+            this.bookmarkSingle.next(data)
+            break;
+          case Channel.BookmarkGetSuccess:
+            this.bookmarkSingle.next(data)
+            break;
+          case Channel.BookmarkRemoveSuccess:
+            this.bookmarkSingle.next(data)
+            break;
+          case Channel.BookmarkChanges:
+            this.bookmarkChanges.next(data)
+            break;
+          case Channel.LibraryFolders:
+            this.libraryFolders.next(data)
+            break;
+          case Channel.LibraryMovies:
+            this.libraryMovies.next(data)
+            break;
+          case Channel.LibraryMovie:
+            this.libraryMovie.next(data)
+            break;
+          case Channel.PreferencesConfig:
+            this.preferencesConfig.next(data)
+            break;
+          case Channel.MovieMetadata:
+            this.movieMetadata.next(data)
+            break;
+          case Channel.ScannedSuccess:
+            this.scannedMovieSingle.next(data)
+            break;
+          case Channel.WatchedSuccess:
+            this.watchedSingle.next(data)
+            break;
+          case Channel.VideoSuccess:
+            this.videoFile.next(data)
+            break;
+          default:
+            console.log(`channel ${channel} uncaught`)
+            break;
+        }
+      })
+    }
   }
 
   /**
@@ -160,28 +174,12 @@ export class IpcService {
   }
 
   /**
-   * Get torrents from offline dump of movie by title
-   * @param value movie title or imdb id
-   */
-  getTorrentsByTitle(value) {
-    // this.ipcRenderer.send('get-torrents-title', value)
-  }
-  /**
    * Search movie
    * @param data query to search
    */
   searchQuery(data) {
     console.log('Searching ', data)
     // this.ipcRenderer.send('search-query', data)
-  }
-
-  /**
-   * Searches for torrent in offline dump
-   * @param data search query
-   */
-  searchTorrent(data) {
-    console.log('searchTorrent ', data)
-    // this.ipcRenderer.send('torrent-search', data)
   }
 
   // library movies db
@@ -227,30 +225,21 @@ export class IpcService {
     // return null
   }
 
-  getImage(url: string, imdbId: string, type: string) {
-    const param = [url, imdbId, type]
-    // this.ipcRenderer.send('get-image', param)
-  }
-
   // // User services
   // // user services; watchlist/bookmarks, watched
   getBookmark(val) {
     // this.ipcRenderer.send('bookmark', ['bookmark-get', val])
   }
 
-  /**
-   * Gets bookmark db all changes.
-   */
-  getBookmarkChanges() {
-
-  }
 }
 
 export enum IpcCommand {
   MinimizeApp = 'app-min',
   RestoreApp = 'app-restore',
   ExitApp = 'exit-program',
+  FirebaseProvider = 'firebase-provider',
   ScanLibrary = 'scan-library',
+  StopScanLibrary = 'stop-scan-library',
   OpenLinkExternal = 'open-link-external',
   OpenInFileExplorer = 'open-file-explorer',
   OpenVideo = 'open-video',
@@ -267,8 +256,14 @@ export enum IpcCommand {
   GetPreferences = 'get-preferences',
   SavePreferences = 'save-preferences',
   GoToFolder = 'go-to-folder',
-  Up = 'up'
-
+  Up = 'up',
+  UpdateTorrentDump = 'update-torrent-dump',
+  GetBookmarkChanges = 'get-bookmark-changes',
+  SearchTorrent = 'torrent-search',
+  ModalFileExplorer = 'modal-file-explorer',
+  GetTorrentsTitle = 'get-torrents-title',
+  GetImage = 'get-image',
+  GetSearchList = 'get-search-list'
 }
 
 export interface IBookmarkChanges {
