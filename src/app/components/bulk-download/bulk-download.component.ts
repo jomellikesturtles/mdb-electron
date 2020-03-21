@@ -249,19 +249,15 @@ export class BulkDownloadComponent implements OnInit {
    * @param movie movie to remove
    */
   removeMovie(movie) {
-    console.log('movie', movie);
     const newDisplayedMovies = this.displayedMovies.filter(obj => {
       console.log(obj.id != movie.id)
       return obj.id != movie.id
     })
     console.log('newDisplayedMovies', newDisplayedMovies);
     this.displayedMovies = newDisplayedMovies
-    // console.log('movie', movie);
     // const newDisplayedMovies = this.displayedMovies.filter(obj => {
-    //   console.log(obj.imdbId != movie.imdbId)
     //   return obj.imdbId != movie.imdbId
     // })
-    // console.log('newDisplayedMovies', newDisplayedMovies);
     // this.displayedMovies = newDisplayedMovies
   }
 

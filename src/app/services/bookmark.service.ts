@@ -63,7 +63,7 @@ export class BookmarkService {
    * @param idList list of ids to fetch.
    */
   getBookmarksMultiple(idList: number[]): Promise<any> {
-    console.log('getting multiplebookmarks...', idList);
+    console.log('getting multiplebookmarks multiple...', idList);
     return new Promise((resolve, reject) => {
       this.firebaseService.getFromFirestoreMultiple(CollectionName.Bookmark, FieldName.TmdbId, idList).then(value => {
         resolve(value)
@@ -77,7 +77,7 @@ export class BookmarkService {
    * Gets multiple bookmarks.
    */
   getBookmarksPaginated(lastVal: string | number): Promise<any> {
-    console.log('getting multiplebookmarks...', lastVal);
+    console.log('getting multiplebookmarks paginated...', lastVal);
     return new Promise((resolve, reject) => {
       this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Bookmark, FieldName.TmdbId, 20, lastVal).then(value => {
         resolve(value)

@@ -30,6 +30,7 @@ export class MovieCardComponent implements OnInit, OnChanges {
   isAvailable = false
   procBookmark = false
   procWatched = false
+  procHighlight = false
   watchedProgress = '0%'
 
   constructor(
@@ -95,12 +96,14 @@ export class MovieCardComponent implements OnInit, OnChanges {
    * @param movie current selected movie
    */
   onHighlight(): void {
+    this.procHighlight = true
     this.movie.isHighlighted = !this.movie.isHighlighted
     if (this.movie.isHighlighted) {
       this.store.dispatch(new AddMovie(this.movie))
     } else {
       this.store.dispatch(new RemoveMovie(this.movie))
     }
+    this.procHighlight = false
   }
 
   /**
@@ -126,7 +129,6 @@ export class MovieCardComponent implements OnInit, OnChanges {
   }
 
   async onToggleBookmark(): Promise<any> {
-    console.log('togglingBookmark')
     // const root = this
     // setTimeout(() => {
     //   root.isBookmarked = !root.isBookmarked
@@ -184,13 +186,11 @@ export class MovieCardComponent implements OnInit, OnChanges {
    * TODO: Fetch from offline or generate canvass.
    */
   getPoster(poster: string): string {
-    console.log(this.movieService.getMoviePoster(poster))
     // return poster;
     return ''
   }
 
   goToYear(year: string): void {
-    console.log('year', year)
     this.dataService.updateDiscoverQuery(['year', year])
     this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
   }

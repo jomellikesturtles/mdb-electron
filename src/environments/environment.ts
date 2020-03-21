@@ -16,7 +16,7 @@ export const environment = {
   runConfig: {
     firebaseMode: true,
     electron: false,
-    useTestData: true,
+    useTestData: false,
     environment: location.protocol
   },
 };

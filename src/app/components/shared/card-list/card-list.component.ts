@@ -1,9 +1,10 @@
 import { UserDataService } from './../../../services/user-data.service';
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
 import { VideoService, IVideo } from '../../../services/video.service';
+import { DataService } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-card-list',
@@ -17,12 +18,14 @@ export class CardListComponent implements OnInit {
   @Input() cardWidth: string
   @Input() displayMode: string
   @Input() listType: string
+  @Output() previewMovieId = new EventEmitter<any>();
 
   constructor(
     private bookmarkService: BookmarkService,
     private watchedService: WatchedService,
     private videoService: VideoService,
     private userService: UserDataService,
+    private dataService: DataService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -166,5 +169,10 @@ export class CardListComponent implements OnInit {
       a++
     }
     return toReturn
+  }
+
+  onPreviewSelected(event) {
+    // this.previewMovieId.emit(event)
+    this.dataService.updatePreviewMovie(event)
   }
 }

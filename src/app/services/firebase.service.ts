@@ -82,7 +82,6 @@ export class FirebaseService {
   getFromFirestoreMultiple(collectionName: CollectionName, fieldName: string, list: any[]) {
     return new Promise((resolve, reject) => {
       this.db.collection(collectionName).where(fieldName, FirebaseOperator.In, list).get().then(snapshot => {
-        console.log('multiple results:', snapshot.docs)
         resolve(snapshot.docs)
       }).catch(err => {
         reject(err)

@@ -79,7 +79,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // this.getTroubleQuote()
     if (!environment.runConfig.useTestData) {
       this.activatedRoute.params.subscribe(params => {
-        console.log('activatedRoute.params', params);
         if (params.id) {
           this.getMovieOnline(params.id)
         } else {
@@ -411,8 +410,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param type type of discovery. (year, certification, genre)
    * @param id value to discover
    */
-  goToDiscover(type: string, id: string) {
-    this.dataService.updateDiscoverQuery([type, id])
+  goToDiscover(type: string, id: string, name?: string) {
+    this.dataService.updateDiscoverQuery([type, id, name])
     this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
   }
 
@@ -424,6 +423,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   goToPerson(val) {
     this.router.navigate([`/person-details/${val}`], { relativeTo: this.activatedRoute });
+    // d
   }
 
   goToFullCredits() {
@@ -457,6 +457,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
       if (crew.job === 'Producer') { toReturn.push(crew) }
     });
     return toReturn
+  }
+
+  playTrailer() {
+    // this.dataService.updatePreviewMovie()
   }
 
   getTroubleQuote() {

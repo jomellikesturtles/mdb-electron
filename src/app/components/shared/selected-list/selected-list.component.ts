@@ -74,7 +74,6 @@ export class SelectedListComponent implements OnInit, OnDestroy {
         relativeTo: this.activatedRoute
       })
     })
-    console.log(this.moviesListSubscription);
 
     // d.unsubscribe()
   }

@@ -370,7 +370,7 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       title: 'The Lion King',
       vote_average: 8.2,
       overview:
-        "A young lion cub named Simba can't wait to be king. But his uncle craves the title for himself and will stop at nothing to get it.",
+        'A young lion cub named Simba can\'t wait to be king. But his uncle craves the title for himself and will stop at nothing to get it.',
       release_date: '1994-06-23'
     },
     {
@@ -422,7 +422,7 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       title: 'The Mask',
       vote_average: 6.8,
       overview:
-        "When timid bank clerk Stanley Ipkiss discovers a magical mask containing the spirit of the Norse god Loki, his entire life changes. While wearing the mask, Ipkiss becomes a supernatural playboy exuding charm and confidence which allows him to catch the eye of local nightclub singer Tina Carlyle. Unfortunately, under the mask's influence, Ipkiss also robs a bank, which angers junior crime lord Dorian Tyrell, whose goons get blamed for the heist.",
+        'When timid bank clerk Stanley Ipkiss discovers a magical mask containing the spirit of the Norse god Loki, his entire life changes. While wearing the mask, Ipkiss becomes a supernatural playboy exuding charm and confidence which allows him to catch the eye of local nightclub singer Tina Carlyle. Unfortunately, under the mask\'s influence, Ipkiss also robs a bank, which angers junior crime lord Dorian Tyrell, whose goons get blamed for the heist.',
       release_date: '1994-07-29'
     },
     {
@@ -451,9 +451,9 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       adult: false,
       backdrop_path: '/cTNYRUTXkBgPH3wP3kmPUB5U6dA.jpg',
       original_language: 'en',
-      original_title: "Schindler's List",
+      original_title: 'Schindler\'s List',
       genre_ids: [18, 36, 10752],
-      title: "Schindler's List",
+      title: 'Schindler\'s List',
       vote_average: 8.6,
       overview:
         'The true story of how businessman Oskar Schindler saved over a thousand Jewish lives from the Nazis while they worked as slaves in his factory during World War II.',
@@ -604,9 +604,9 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       adult: false,
       backdrop_path: '/1MaJH9m8TfmwLgS98kcjU4faiMg.jpg',
       original_language: 'en',
-      original_title: "Beethoven's 2nd",
+      original_title: 'Beethoven\'s 2nd',
       genre_ids: [35, 10751],
-      title: "Beethoven's 2nd",
+      title: 'Beethoven\'s 2nd',
       vote_average: 5.2,
       overview:
         `Beethoven is back -- and this time, he has a whole brood with him now that he's met his canine match, Missy, and fathered a family. The only problem is that Missy's owner, Regina, wants to sell the puppies and tear the clan apart. It's up to Beethoven and the Newton kids to save the day and keep everyone together.`,
@@ -665,7 +665,10 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
     }
   ]
 }
-
+export const TEST_TMDB_SINGLE_RESULT =
+{
+  popularity: 28.872, vote_count: 13772, video: false, poster_path: '\/nk11pvocdb5zbFhX5oq5YiLPYMo.jpg', id: 14160, adult: false, backdrop_path: '\/6fX7NF6IUJCTVssei7Shgl9J6LL.jpg', original_language: 'en', original_title: 'Up', genre_ids: [12, 16, 35, 10751], title: 'Up', vote_average: 7.9, overview: 'Carl Fredricksen spent his entire life dreaming of exploring the globe and experiencing life to its fullest. But at age 78, life seems to have passed him by, until a twist of fate (and a persistent 8-year old Wilderness Explorer named Russell) gives him a new lease on life.', release_date: '2009-05-28'
+}
 export const TEST_TMDB_MOVIE_DETAILS = {
   adult: false,
   backdrop_path: '/wMgbnUVS9wbRGAdki8fqxKU1O0N.jpg',

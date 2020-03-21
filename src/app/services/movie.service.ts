@@ -161,6 +161,21 @@ export class MovieService {
   /**
    * Gets movie details.
    * @param tmdbId the tmdb id.
+   */
+  getTmdbVideos(tmdbId: number): Observable<any> {
+    const url = `${TMDB_URL}/movie/${tmdbId}/videos`
+    const myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getTmdbMovieDetails')))
+  }
+
+  /**
+   * Gets movie details.
+   * @param tmdbId the tmdb id.
    * @param val list of key object pair.`[key,object]`
    * @param appendToResponse optional append to response
    */
@@ -281,6 +296,7 @@ export class MovieService {
       headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
     };
+    // https://www.googleapis.com/youtube/v3/search?part=snippet&key=AIzaSyAC1kcZu_DoO7mbrMxMuCpO57iaDByGKV0&q=Toy%20Story%204%202019&maxResults=50&order=relevance&type=video
     return this.http.get<any>(baseUrl, httpOptions).pipe(map((e) => e.items))
   }
 

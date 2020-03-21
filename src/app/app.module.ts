@@ -1,4 +1,4 @@
-import { CommaSpacePipe, MdbPipesPipe } from './mdb-pipes.pipe';
+import { CommaSpacePipe, MdbPipesPipe, ReleaseYearPipe } from './mdb-pipes.pipe';
 import { SimplifySizePipe, MagnetPipe } from './services/torrent.service';
 import { SearchComponent } from './components/search/search.component';
 import { BrowserModule } from '@angular/platform-browser';
@@ -24,6 +24,7 @@ import { CountState } from './app.state';
 import { AppRunState } from './states/app-run.state';
 import { SelectedMoviesState } from './movie.state';
 import { NotificationComponent } from './components/notification/notification.component';
+import { PreviewComponent } from './components/preview/preview/preview.component';
 // import { UsernameExistValidatorDirective } from './directives/username-exist.directive'
 @NgModule({
   declarations: [
@@ -39,7 +40,9 @@ import { NotificationComponent } from './components/notification/notification.co
     SimplifySizePipe,
     MagnetPipe,
     CommaSpacePipe,
-    MdbPipesPipe
+    MdbPipesPipe,
+    PreviewComponent,
+    // ReleaseYearPipe
     // UsernameExistValidatorDirective
   ],
   imports: [

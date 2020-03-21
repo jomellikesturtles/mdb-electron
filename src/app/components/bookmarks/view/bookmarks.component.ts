@@ -33,7 +33,6 @@ export class BookmarksComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log('LASTVALBOOKMARK: ', this.lastVal)
     this.getBookmarkedMovies()
   }
 
@@ -53,7 +52,6 @@ export class BookmarksComponent implements OnInit {
     } else {
       // commented for TEST
       const res = await this.userDataService.getUserDataFirstPage(this.listType)
-      console.log(res)
       if (res.length) {
         this.moviesDisplayList = res
         this.lastVal = res[res.length - 1][this.listType][this.orderBy]
@@ -72,7 +70,6 @@ export class BookmarksComponent implements OnInit {
       // commented for TEST
 
       const res = await this.userDataService.getUserDataPagination(this.listType, this.lastVal)
-      console.log(res)
       if (res.length) {
         this.moviesDisplayList.push.apply(this.moviesDisplayList, res)
         this.lastVal = res[res.length - 1][this.listType][this.orderBy]

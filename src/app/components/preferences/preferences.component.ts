@@ -92,7 +92,6 @@ export class PreferencesComponent implements OnInit {
    * Opens file explorer modal
    */
   onOpenModal() {
-    console.log('onOpenModal');
     this.onGoToFolder(this.initialFolder)
     this.ipcService.getSystemDrives()
   }
@@ -101,7 +100,6 @@ export class PreferencesComponent implements OnInit {
    * Closes file explorer modal
    */
   onCloseModal() {
-    console.log('onClose');
     this.previousFolder = ''
   }
 
@@ -109,7 +107,6 @@ export class PreferencesComponent implements OnInit {
    * Scans library folders for new movies
    */
   onScanLibrary() {
-    console.log('onScanLibrary');
     this.ipcService.call(IpcCommand.ScanLibrary)
   }
 
@@ -140,26 +137,21 @@ export class PreferencesComponent implements OnInit {
   onSave() {
     this.preferencesObject.libraryFolders = this.libraryFolders
     this.ipcService.call(IpcCommand.SavePreferences, this.preferencesObject)
-    console.log('onSave');
   }
 
   /**
    * Resets preferences.
    */
   onReset() {
-    console.log('onReset');
     this.preferencesObject = DEFAULT_PREFERENCES
   }
 
   onAddFolder(folderName: string) {
-    console.log('onAddFolder');
     this.ipcService.openFolder('');
-    // console.log(__dirname);
     // this.ipcService.openFolder(__dirname)
     // this.unsavedPreferences.libraryFolders.push(folderName)
   }
   onEditFolder(folder) {
-    console.log('onEditFolder');
   }
 
   /**
@@ -167,7 +159,6 @@ export class PreferencesComponent implements OnInit {
    * @param folder folder directory to delete
    */
   onDeleteFolder(folder) {
-    console.log('onDeleteFolder', folder);
     this.libraryFolders = this.libraryFolders.filter(h => h !== folder)
     this.cdr.detectChanges()
   }
@@ -200,7 +191,6 @@ export class PreferencesComponent implements OnInit {
   onGoToParentFolder() {
 
     if ((this.currentFolder.lastIndexOf('\\')) <= 2) {
-      console.log('isparent');
     } else {
       this.previousFolder = this.currentFolder
     }

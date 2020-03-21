@@ -38,9 +38,10 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+span {
   cursor: context-menu;
-  color:white
+  color: white
 }
 
 // snackbar
@@ -223,6 +224,17 @@ body {
   z-index: 3;
 }
 
+
+// bookmark
+.movie-highlight {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  height: 15px;
+  width: 15px;
+  z-index: 3;
+}
+
 // bookmark
 .movie-bookmark {
   position: absolute;
@@ -230,9 +242,6 @@ body {
   left: 5%;
   height: 15px;
   width: 15px;
-  // background-color: rgb(151, 151, 151);
-  // border-radius: 50%;
-  // box-shadow: 0 0 10px #969696;
   z-index: 3;
 }
 

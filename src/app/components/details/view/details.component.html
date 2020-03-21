@@ -64,7 +64,6 @@
                 ({{movieDetails.releaseDate|releaseYear}})
               </h2>
               <h2 (click)='goToDiscover("certification",movieCertification)'>{{movieCertification}}</h2>
-              <!-- <button (click)='playVideo()' class='btn btn-primary'>Play</button> -->
 
               <button class="btn btn-primary" type="button" (click)='playVideo()'
                 [disabled]='procVideo||!isVideoAvailable'>
@@ -81,6 +80,9 @@
                   </div>
                 </div>
               </button>
+              <button class='btn btn-primary' (click)='playTrailer()'>
+                Play Trailer
+              </button>
             </div>
 
             <!-- isVideoAvailable  -->
@@ -95,30 +97,27 @@
 
             <p id="movie-runtime" class="">{{movieDetails.runtime|runtimeDisplay}}</p>
             <p *ngIf="movieDetailsDirectors">Directed by
-              <span class='text-hyperlink' (click)='goToPerson(director.id)'
+
+              <span class='text-hyperlink' (click)='goToDiscover("person",director.id,director.name)'
                 *ngFor="let director of movieDetailsDirectors; let isLast=last">
                 {{director.name}}{{isLast ? '' : ', '}}
               </span>
             </p>
 
             <p *ngIf="movieDetailsWriters">Written by
-              <span class='text-hyperlink' (click)='goToPerson(writer.id)'
+              <span class='text-hyperlink' (click)='goToDiscover(writer.id)'
                 *ngFor="let writer of movieDetailsWriters; let isLast=last">
                 {{writer.name}}{{isLast ? '' : ', '}}
               </span>
             </p>
             <p *ngIf="movieDetailsProducers">Produced by
-              <span class='text-hyperlink' (click)='goToPerson(producer.id)'
+              <span class='text-hyperlink' (click)='goToDiscover(producer.id)'
                 *ngFor="let producer of movieDetailsProducers; let isLast=last">
                 {{producer.name}}{{isLast ? '' : ', '}}
               </span>
             </p>
 
             <div *ngIf="movieDetails.isAvailable">
-              <button class="btn btn-success">Play</button>
-            </div>
-            <div *ngIf="movieDetails.isAvailable==false">
-              <p>Movie is not available</p>
             </div>
             <div>
               <!-- external links -->
@@ -156,11 +155,6 @@
         <div *ngIf="movieDetails.isAvailable">
 
         </div>
-        <h1>video 1</h1>
-        <!-- <div *ngIf="isVideoAvailable">
-          <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls>
-          </video>
-        </div> -->
 
         <div class="table-responsive-lg container">
           <table class="table">

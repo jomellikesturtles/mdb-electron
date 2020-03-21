@@ -1,7 +1,7 @@
 <div style='width:100%;height:100%;position:absolute'>
 
   <!-- TOP -->
-  <app-top-navigation style='position: fixed;top:0;height:50px;width:100%;z-index: 5;'></app-top-navigation>
+  <app-top-navigation style='top:0;height:50px;width:100%;z-index: 5;'></app-top-navigation>
 
   <div style='position:fixed;top:50px;height:100%;width:100%;display: flex;'>
 
@@ -46,16 +46,10 @@
     <!-- MAIN -->
     <div id="main" style='height:100%;width:100%;overflow-y:auto; padding-bottom: 50px;'
       [ngStyle]="{'width':'calc(100% - '+sideNavWidth+')'}">
-      <!-- <div class='row'> -->
-      <!-- <div class='col col-6'> -->
       <router-outlet></router-outlet>
       <!-- <app-notification></app-notification>
       <app-notification></app-notification> -->
-      <!-- </div> -->
-      <!-- <div class='col col-6'> -->
-      <!-- <app-discover></app-discover> -->
-      <!-- </div> -->
-      <!-- </div> -->
     </div>
   </div>
 </div>
+<app-preview></app-preview>

@@ -62,8 +62,6 @@ export class UserState {
   }
   @Action(SetUser)
   setUser(context: StateContext<UserStateModel>, action: SetUser) {
-    // this.firebaseService.signIn()
-    console.log('actionpayload:', action.payload);
     localStorage.setItem('user', JSON.stringify(action.payload))
     context.patchState(action.payload)
   }

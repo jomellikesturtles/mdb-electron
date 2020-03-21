@@ -1,3 +1,4 @@
+import { Observable, Subject } from 'rxjs';
 /**
  * Data sharing service.
  */
@@ -12,6 +13,10 @@ export class DataService {
 
   // private isDesktop = new BehaviorSubject<any>('')
   // currentMovie = this.isDesktop.asObservable()
+
+  private previewMovieSource = new Subject()
+  // previewMovie = null
+  previewMovie = this.previewMovieSource.asObservable()
 
   private selectedMovieSource = new BehaviorSubject<any>('')
   currentMovie = this.selectedMovieSource.asObservable()
@@ -28,14 +33,17 @@ export class DataService {
   private discoverMoviesSource = new BehaviorSubject<any>('')
   discoverQuery = this.discoverMoviesSource.asObservable()
 
-  // private isTestRunSource = new BehaviorSubject<any>('')
-  // isTestRun = this.getIsTestRun.asObservable()
-
   constructor() { }
 
-  getIsTestRun() {
-    return true
+
+  updatePreviewMovie(val: any) {
+    console.log('updatedHighlightedMovie ', val)
+    // this.previewMovieSource..next(val)
+    // this.previewMovieSource.
+    // this.selectedMovieSource.value
+    this.previewMovieSource.next(val)
   }
+
 
   setDashboardData(data: any[]) {
     this.dashboardData = data
@@ -57,43 +65,35 @@ export class DataService {
   }
 
   setSearchQuery(val) {
-    console.log(val);
     this.searchQuery = val;
   }
 
   getSearchQuery() {
-    console.log(this.searchQuery);
     return this.searchQuery;
   }
 
   updateHighlightedMovie(val: any) {
-    console.log('updatedHighlightedMovie ', val)
     this.selectedMovieSource.next(val)
   }
 
   updateSearchQuery(val: any) {
-    console.log('updatesearchquery ', val)
     this.searchQuerySource.next(val)
   }
 
   updateSearchResults(val: any) {
-    console.log('updateSearchResults ', val)
     this.searchResultsSource.next(val)
   }
   updateSelectedMovies(val: any) {
-    console.log('selectedMovies ', val)
     this.selectedMoviesSource.next(val)
   }
 
   // updateDiscoverQuery(type: string, val: string | null | number) {
   updateDiscoverQuery(val: string[]) {
-    console.log(val);
     // this.discoverQuery = val;
     this.discoverMoviesSource.next(val)
   }
 
   getDiscoverQuery() {
-    console.log(this.discoverQuery);
     return this.discoverQuery;
   }
 }

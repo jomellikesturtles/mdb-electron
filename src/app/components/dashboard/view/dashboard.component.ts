@@ -96,7 +96,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // $('[data-toggle="popover"]').popover()
     // $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
-    this.frameready()
+    // this.frameready()
   }
 
   setVideo(videoId: string) {
@@ -245,8 +245,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   async sendToMovieService(params: any, title: string) {
     const data = await this.movieService.getMoviesDiscover(params).toPromise()
-    console.log('subss results', data)
-
     // innerList[this.nameString] = title
     // innerList['data'] = data.results
     const innerList = {
@@ -271,7 +269,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    * Performs actions for selected movie.
    * @param movie the selected movie
    */
-  onSelect(movie: any) {
+  onPreviewSelected(movie: any) {
     if (this.selectedMovie.id === movie.id) {
       return
     }

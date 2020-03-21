@@ -37,7 +37,7 @@ export class DiscoverComponent implements OnInit {
     } else {
       this.dataService.discoverQuery.subscribe(data => {
         console.log('fromdataservice: ', data);
-        this.discoverQuery(data[0], data[1])
+        this.discoverQuery(data[0], data[1], data[2])
       });
     }
   }
@@ -46,12 +46,13 @@ export class DiscoverComponent implements OnInit {
    * Creates query for discover movies by movie type filter (cert,genre,year).
    * @param type the filter
    * @param val type value
+   * @param val1 (optional) additional context
    */
-  discoverQuery(type: string, val: string | number): void {
+  discoverQuery(type: string, val: string | number, val2?: string): void {
     // commented for TESTING
     const params = []
     let tempTitle = ''
-    // cert,year,genre
+    // cert,year,genre,person
     switch (type) {
       case 'certification':
         params.push([TmdbParameters.Certification, val])
@@ -60,6 +61,10 @@ export class DiscoverComponent implements OnInit {
       case 'genre':
         params.push([TmdbParameters.WithGenres, GenreCodes[val]])
         tempTitle = `Top ${val} movies`
+        break;
+      case 'person':
+        params.push([TmdbParameters.WithPeople, val])
+        tempTitle = `Top movies with ${val2}`
         break;
       case 'year':
         params.push([TmdbParameters.PrimaryReleaseYear, val])
@@ -84,14 +89,12 @@ export class DiscoverComponent implements OnInit {
   }
 
   getMoreResults() {
-    console.log('this.currentParams: ', this.currentParams)
     const params = this.currentParams
 
     // [TmdbSearchMovieParameters.Query, this.searchQuery.query],
     params.push([TmdbParameters.Page, ++this.currentPage])
     // ]
     // this.currentParams.push([TmdbParameters.Page, ++this.currentPage])
-    console.log('PARAMS: ', params)
     this.movieService.getMoviesDiscover(params).subscribe(data => {
       this.discoverResults.push(...data.results)
       if (data.total_pages <= this.currentPage) {

@@ -18,6 +18,18 @@
       </div>
     </div>
 
+    <div class='movie-highlight'>
+      <div *ngIf="!procHighlight" (click)='onHighlight(movie)'>
+        <img *ngIf="!movie.isHighlighted" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
+          src='./assets/icons/check.svg' data-toggle='tooltip' title='Highlight' />
+        <img *ngIf="movie.isHighlighted" style='height:20px; margin-bottom: 4px;
+    margin-right: 2px;' src='./assets/icons/minus.svg' data-toggle='tooltip' title='Remove Highlight' />
+      </div>
+      <div *ngIf="procHighlight" class="spinner-border spinner-border-sm" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+
     <!-- <div
     [ngStyle]="{'height': 'calc(('+cardWidth+' - 10px)*1.48)','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
     class='movie-card-image-container' (click)='onPreview(movie)'> -->
@@ -37,7 +49,8 @@
         </div>-->
     <!-- end of alt image -->
 
-    <div *ngIf="movie.video && movie.video.id" class='movie-available' data-toggle='tooltip' title='Available offline'></div>
+    <div *ngIf="movie.video && movie.video.id" class='movie-available' data-toggle='tooltip' title='Available offline'>
+    </div>
 
     <div class='movie-mark-as-watched' *ngIf='!movie.watched'>
       <div (click)='onToggleWatched()' *ngIf='!procWatched'>
@@ -52,8 +65,8 @@
     <div *ngIf="movie.watched && movie.watched.id" [ngStyle]="{'width':movie.watched.percentage}"
       id='watchedProgressBar' class='movie-progress-bar'>
     </div>
-    <div class="overlay overlay-add" (click)='onHighlight()'></div>
-    <!-- <div class="overlay overlay-add" (click)='onPreview()'></div> -->
+    <!-- <div class="overlay overlay-add" (click)='onHighlight()'></div> -->
+    <div class="overlay overlay-add" (click)='onPreview()'></div>
   </div>
   <div class="card-body movie-card-body">
     <div class="movie-card-text">

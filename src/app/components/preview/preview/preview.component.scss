@@ -1,0 +1,23 @@
+// #previewOverlayContext {
+//   // opacity: 0
+//   transition: .3s
+// }
+
+#previewOverlayContext:hover {
+  opacity: 1
+}
+
+.overlayInvisible {
+  opacity: 0;
+  transition: .3s
+}
+
+.overlayInvisible :hover {
+  opacity: 1
+}
+
+#closeIcon :hover {
+  filter: invert(1);
+}
+
+// #previewOverlayContext:hover {}

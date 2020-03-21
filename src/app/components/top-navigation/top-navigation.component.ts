@@ -138,10 +138,8 @@ export class TopNavigationComponent implements OnInit {
 
     const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`)
     if (enteredQuery.match(REGEX_IMDB_ID)) {
-      console.log('searchByImdbId');
       // this.searchByImdbId(enteredQuery)
     } else {
-      console.log('searchByTitle');
       this.searchByTitle(enteredQuery)
     }
   }

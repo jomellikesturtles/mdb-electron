@@ -1,0 +1,289 @@
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { TEST_TMDB_MOVIE_DETAILS, TEST_TMDB_SINGLE_RESULT } from 'src/app/mock-data';
+import { Router, ActivatedRoute } from '@angular/router';
+import { DataService } from 'src/app/services/data.service';
+import { BookmarkService } from 'src/app/services/bookmark.service';
+import { UtilsService } from 'src/app/services/utils.service';
+import { GenreCodes, ITmdbResult } from 'src/app/interfaces';
+import { DomSanitizer } from '@angular/platform-browser';
+import { MovieService } from 'src/app/services/movie.service';
+declare var $: any
+
+@Component({
+  selector: 'app-preview',
+  templateUrl: './preview.component.html',
+  styleUrls: ['./preview.component.scss']
+})
+export class PreviewComponent implements OnInit, OnDestroy {
+
+
+  constructor(
+    private dataService: DataService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private bookmarkService: BookmarkService,
+    private cdr: ChangeDetectorRef,
+    private movieService: MovieService,
+    private utilsService: UtilsService,
+    private domSanitizer: DomSanitizer,
+  ) { }
+
+  previewMovie: { [key: string]: any } = {
+    id: 0,
+    title: null,
+  }
+  clipSrc = null
+  youtubeUrl = ''
+  tag
+  player;
+  done = false;
+  globalPlayerApiScript
+  selectedMovieBookmarkStatus = false
+  hasAlreadySelected
+  selectedMovie
+  isYTReady = false
+  hasInitialSelected = false
+  isHide = true
+  playedTmdbId = 0
+  hasQuotaExceeded = false
+  isMute = false
+  isYTPlaying = false
+  hasTrailerClip = false
+
+  ngOnInit() {
+    this.frameReady()
+    this.dataService.previewMovie.subscribe(e => {
+      console.log('PREVIEWMOVIE:', e)
+      this.getVideoClip(e)
+    })
+    // this.getVideoClip(TEST_TMDB_SINGLE_RESULT)
+  }
+
+  ngOnDestroy() {
+    this.removeYoutube()
+  }
+
+  frameReady() {
+    (window as any).onYouTubeIframeAPIReady = () => {
+      this.player = new (window as any).YT.Player('player', {
+        height: '100%',
+        width: '100%',
+        events: {
+          onReady: (event: any) => this.onPlayerReady(event),
+          onStateChange: (event: any) => this.onPlayerStateChange(event)
+        },
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          modestbranding: 1,
+          rel: 1,
+          showInfo: 0,
+          disablekb: 1
+        }
+      });
+    }
+  }
+
+  onPlayerReady(event) {
+    event.target.cueVideoById({
+      videoId: this.youtubeUrl
+    });
+    event.target.playVideo();
+  }
+
+  onPlayerStateChange(event) {
+    /**
+     * -1 (unstarted)
+     * 0 (ended)
+     * 1 (playing)
+     * 2 (paused)
+     * 3 (buffering)
+     * 5 (video cued).
+     * YT.PlayerState.ENDED
+     * YT.PlayerState.PLAYING
+     * YT.PlayerState.PAUSED
+     * YT.PlayerState.BUFFERING
+     * YT.PlayerState.CUED
+     */
+    console.log('onPlayerStateChange: ', event.data);
+    if (event.data === 1) {
+      this.isYTReady = true
+      this.isYTPlaying = true
+    }
+    if (event.data === -1 || event.data === 0) {
+      this.isYTReady = false
+      this.isYTPlaying = false
+    }
+    if (event.data === 2) {
+      const root = this
+      console.log('paused')
+      setTimeout(() => {
+        root.player.playVideo()
+        console.log('settoplay')
+      }, 5000);
+    }
+    this.cdr.detectChanges()
+
+  }
+
+  async getVideoClip(movie) {
+    this.previewMovie = movie
+    this.isHide = false
+
+    if (movie.id === this.playedTmdbId) {
+      return
+    }
+    this.playedTmdbId = this.previewMovie.id
+    this.hasInitialSelected = true
+    let videoId = ''
+    const results = []
+    // this.selectedMovie = this.previe1wMovie
+    let title = this.previewMovie.title.toLowerCase()
+    const query = `${this.previewMovie.title} ${this.getYear(this.previewMovie.release_date)}`
+    title = title.replace(/[.…]+/g, '')
+
+    let theRes = await this.movieService.getTmdbVideos(this.previewMovie.id).toPromise()
+
+    if (theRes.results.length > 0) {
+      theRes = theRes.results.find(e => e.type === 'Trailer')
+      this.hasTrailerClip = true
+      if (theRes) {
+        theRes = theRes.key
+      } else {
+        return
+      }
+      // const index = Math.round(Math.random() * (theRes.results.length - 1))
+      // theRes = theRes.results[index].key
+    } else {
+      return
+    }
+
+
+    // this.movieService.getRandomVideoClip(query).subscribe(data => {
+    // data.forEach(element => {
+    //   const snipTitle = $.parseHTML(element.snippet.title.toLowerCase())[0].textContent
+    //   if ((snipTitle.indexOf(title) >= 0) && ((snipTitle.indexOf('scene') >= 0) || (snipTitle.indexOf('trailer') >= 0) || (snipTitle.indexOf('movie clip') >= 0)) && (snipTitle.indexOf('behind the scene') === -1)) {
+    //     results.push({ title: snipTitle, videoId: element.id.videoId })
+    //   }
+    // })
+    // // HiN6Ag5-DrU?VQ=HD720
+    // const index = Math.round(Math.random() * (results.length - 1))
+    // console.log('clips list length: ', results.length, ' clip index: ', index, results[index]);
+
+    videoId = 'BdJKm16Co6M'
+    videoId = theRes
+    // videoId = results[index].videoId
+    this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`)
+    this.clipSrc = `https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`
+    this.youtubeUrl = videoId
+    console.log('CLIPSRC', this.clipSrc)
+    // if results[index].snippet.channelTitle  === 'Movieclips' ---- cut the video by 30seconds
+    if (!this.hasAlreadySelected) {
+      this.generateYoutube()
+      this.hasAlreadySelected = true
+    }
+    const root = this
+    // setTimeout(() => {
+    root.setVideo(videoId)
+    // }, 5000
+    // )
+    // })
+  }
+
+  setVideo(videoId: string) {
+    // this.player.loadVideoByIds(videoId);
+    this.player.cueVideoByUrl(videoId);
+  }
+
+  generateYoutube(): void {
+    const doc = (window as any).document;
+    const playerApiScript = doc.createElement('script');
+    playerApiScript.type = 'text/javascript';
+    playerApiScript.src = 'https://www.youtube.com/iframe_api';
+    this.globalPlayerApiScript = playerApiScript
+    doc.body.appendChild(this.globalPlayerApiScript);
+  }
+
+  removeYoutube() {
+    const doc = (window as any).document;
+    if (this.globalPlayerApiScript) {
+      doc.body.removeChild(this.globalPlayerApiScript)
+      this.globalPlayerApiScript = null
+    }
+  }
+
+  toggleBookmark(id: number) {
+    // if (this.selectedMovieBookmarkStatus === false) {
+    this.bookmarkService.saveBookmark(id)
+    // } else {
+    //   this.bookmarkService.removeBookmark(id)
+    // }
+  }
+
+  toggleMute() {
+    if (this.isMute) {
+      this.player.setVolume(100)
+      this.isMute = false
+    } else {
+      this.player.setVolume(0)
+      this.isMute = true
+    }
+  }
+  /**
+   * Goes to detail of the selected movie.
+   * @param movie the movie selected
+   */
+  goToMovie(id: any) {
+    const highlightedId = id;
+    this.dataService.updateHighlightedMovie(highlightedId);
+    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+    this.isHide = true
+    this.onHidePlayer()
+  }
+
+  /**
+   * Gets the year.
+   * @param releaseDate release date with format YYYY-MM-DD
+   */
+  getYear(releaseDate: string) {
+    return this.utilsService.getYear(releaseDate)
+  }
+
+  /**
+   * Converts genre code into its genre name equivalent.
+   * @param genreCode genre code origin
+   * @returns genre name
+   */
+  getGenre(genreCode: number) {
+    return GenreCodes[genreCode]
+  }
+
+  /**
+   * Discovers movies based from criteria.
+   * @param type type of discovery. (year, certification, genre)
+   * @param id value to discover
+   */
+  goToDiscover(type: string, id: string, name?: string) {
+    this.dataService.updateDiscoverQuery([type, id, name])
+    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
+    this.isHide = true
+    this.onHidePlayer()
+  }
+
+  playTrailer() {
+    this.player.playVideo()
+  }
+
+  stopVideo() {
+    if (this.player) {
+      this.player.stopVideo()
+    }
+  }
+
+  onHidePlayer() {
+    console.log(this.player)
+    this.isHide = true
+    this.stopVideo()
+  }
+
+}

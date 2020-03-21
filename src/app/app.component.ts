@@ -19,7 +19,6 @@ export class AppComponent implements OnInit {
   getCurrentUser() {
     this.firebaseService.getUser().then(e => {
       this.store.dispatch(new SetUser(e))
-      console.log('hey');
     })
   }
 }

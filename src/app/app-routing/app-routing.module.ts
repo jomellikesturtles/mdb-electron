@@ -1,14 +1,17 @@
+// import { PreviewComponent } from './../components/preview/preview/preview.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { BulkDownloadComponent } from '../components/bulk-download/bulk-download.component';
 import { BrowseComponent } from '../components/browse/browse.component';
 import { PersonDetailsComponent } from '../components/person-details/person-details.component';
 import { PreferencesComponent } from '../components/preferences/preferences.component';
+import { PreviewComponent } from '../components/preview/preview/preview.component';
 
 const routes: Routes = [
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // homepage
   // { path: '', redirectTo: '/results', pathMatch: 'full' },
   { path: '', redirectTo: '/preferences', pathMatch: 'full' }, // for fast boot?
+  // { path: '', redirectTo: '/preview', pathMatch: 'full' }, // for fast boot?
   { path: 'browse', component: BrowseComponent },
   {
     path: 'preferences', component: PreferencesComponent,
@@ -17,6 +20,7 @@ const routes: Routes = [
 
   { path: 'person-details/:id', component: PersonDetailsComponent },
   { path: 'person-details', component: PersonDetailsComponent },
+  { path: 'preview', component: PreviewComponent },
 
   { path: 'bookmarks', loadChildren: '../components/bookmarks/bookmarks.module#BookmarksModule' },
   { path: 'watched', loadChildren: '../components/watched/watched.module#WatchedModule' },

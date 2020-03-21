@@ -37,7 +37,6 @@ export class SelectedMoviesState {
   @Action(AddMovie)
   addMovie(context: StateContext<MovieListStateModel>, action: AddMovie) {
     console.log('ACTION: ', action)
-    console.log('ACTION PAYLOAD: ', action.payload)
     const current = context.getState()
     const movies = [...current.movies, action.payload]
     context.patchState({
