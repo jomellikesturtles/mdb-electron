@@ -59,8 +59,8 @@ export class DiscoverComponent implements OnInit {
         tempTitle = `Top ${val} movies`
         break;
       case 'genre':
-        params.push([TmdbParameters.WithGenres, GenreCodes[val]])
-        tempTitle = `Top ${val} movies`
+        params.push([TmdbParameters.WithGenres, val])
+        tempTitle = `Top ${GenreCodes[val]} movies`
         break;
       case 'person':
         params.push([TmdbParameters.WithPeople, val])
@@ -85,7 +85,6 @@ export class DiscoverComponent implements OnInit {
       }
       this.cdr.detectChanges()
     });
-    // commented for TESTING
   }
 
   getMoreResults() {

@@ -1,4 +1,4 @@
-import { TmdbAppendToResponseParameters } from './../../../interfaces';
+import { TmdbAppendToResponseParameters, GenreCodes } from './../../../interfaces';
 import { VideoService } from './../../../services/video.service';
 import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail, TmdbParameters } from '../../../interfaces';
@@ -58,6 +58,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
   procWatched = false
   procVideo = false
   showVideo = false
+  isBookmarked = false
+  isWatched = false
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -181,10 +183,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
     const bookmark = await this.bookmarkService.getBookmark(this.movieDetails.tmdbId)
 
     if (bookmark) {
-      this.movieDetails.bookmark = {
-        id: bookmark['id']
-      }
-    } else {
+      this.movieDetails.bookmark = bookmark
+      this.isBookmarked = true
+      // {
+      //   id: bookmark['id']
+      // }
     }
     console.log('BOOKMARK: ', bookmark)
     this.procBookmark = false
@@ -197,22 +200,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
   async toggleBookmark() {
 
     this.procBookmark = true
-
     let bmDoc
-    if (!this.movieDetails.bookmark || !this.movieDetails.bookmark.id) {
-      const movie = {
-        id: this.movieDetails.tmdbId,
-        title: this.movieDetails.title,
-        release_date: this.movieDetails.releaseDate ? this.movieDetails.releaseDate : 0,
-      }
-      bmDoc = await this.userDataService.saveUserData('bookmark', movie)
-      this.movieDetails.bookmark = bmDoc
-    } else {
-      bmDoc = await this.bookmarkService.removeBookmark(this.movieDetails.bookmark.id)
-      this.movieDetails.bookmark = null
-    }
-
-    console.log('BOOKMARKADD: ', bmDoc)
+    bmDoc = await this.userDataService.toggleBookmark(this.movieDetails)
+    this.isBookmarked = !this.isBookmarked
+    console.log('BOOKMARKADD/remove:', bmDoc)
     this.procBookmark = false
     this.cdr.detectChanges()
 
@@ -227,9 +218,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // this.ipcService.call(IpcCommand.Watched, [IpcCommand.Get, this.movieDetails.tmdbId])
     // this.watchedSingleSubscription = this.ipcService.watchedSingle.subscribe(data => { })
     this.procWatched = true
-    const res = await this.watchedService.getWatched(this.movieDetails.imdbId)
+    const res = await this.watchedService.getWatched(this.movieDetails.tmdbId)
     if (res) {
-      this.movieDetails.watched.id = res.id
+      this.movieDetails.watched = res
+      this.isWatched = true
     }
     this.procWatched = false
     this.cdr.detectChanges()
@@ -237,19 +229,25 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   async toggleWatched(percentage: string) {
     this.procWatched = true
-    let wDocId
+    let wDoc
 
     // userData['percentage'] = '100%'
-    if (!this.movieDetails.watched || !this.movieDetails.watched.id) {
-      wDocId = await this.userDataService.saveUserData('watched', this.movieDetails)
-      this.movieDetails.watched = wDocId
-    } else {
-      wDocId = await this.watchedService.removeWatched(this.movieDetails.watched.id)
-      this.movieDetails.watched = null
-    }
-    console.log('WATCHEDADD/remove:', wDocId)
+    wDoc = await this.userDataService.toggleWatched(this.movieDetails)
+    this.isWatched = !this.isWatched
+    console.log('WATCHEDADD/remove:', wDoc)
     this.procWatched = false
     this.cdr.detectChanges()
+
+    // if (!this.movieDetails.watched || !this.movieDetails.watched.id) {
+    //   wDocId = await this.userDataService.saveUserData('watched', this.movieDetails)
+    //   this.movieDetails.watched = wDocId
+    // } else {
+    //   wDocId = await this.watchedService.removeWatched(this.movieDetails.watched.id)
+    //   this.movieDetails.watched = null
+    // }
+    // console.log('WATCHEDADD/remove:', wDocId)
+    // this.procWatched = false
+    // this.cdr.detectChanges()
 
     //   this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieDetails.tmdbId])
     //   this.ipcService.call(IpcCommand.Watched, [IpcCommand.Remove, this.movieDetails.tmdbId])
@@ -466,6 +464,15 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getTroubleQuote() {
     const length = TROUBLE_QUOTES.length
     this.troubleQuote = TROUBLE_QUOTES[Math.floor(Math.random() * (-1 - length + 1)) + length]
+  }
+
+  /**
+   * Converts genre code into its genre name equivalent.
+   * @param genreCode genre code origin
+   * @returns genre name
+   */
+  getGenre(genreCode: number) {
+    return GenreCodes[genreCode]
   }
 
   sanitize(torrent: ITorrent) {

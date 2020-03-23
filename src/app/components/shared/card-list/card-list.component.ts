@@ -18,7 +18,6 @@ export class CardListComponent implements OnInit {
   @Input() cardWidth: string
   @Input() displayMode: string
   @Input() listType: string
-  @Output() previewMovieId = new EventEmitter<any>();
 
   constructor(
     private bookmarkService: BookmarkService,
@@ -34,6 +33,9 @@ export class CardListComponent implements OnInit {
     this.getMoviesUserData()
   }
 
+  /**
+   * Gets the user data like: bookmark, watched, video.
+   */
   getMoviesUserData() {
     const idList = this.collectIds()
     const listLength = idList.length
@@ -87,7 +89,8 @@ export class CardListComponent implements OnInit {
             id: doc.id ? doc.id : '',
             tmdbId: docData.tmdbId ? docData.tmdbId : 0,
             title: docData.title ? docData.title : '',
-            year: docData.year ? parseInt(docData.year, 10) : 0
+            year: docData.year ? parseInt(docData.year, 10) : 0,
+            percentage: docData.percentage ? docData.percentage : '100%'
           }
           myData = wtchd
           break;
@@ -171,8 +174,4 @@ export class CardListComponent implements OnInit {
     return toReturn
   }
 
-  onPreviewSelected(event) {
-    // this.previewMovieId.emit(event)
-    this.dataService.updatePreviewMovie(event)
-  }
 }

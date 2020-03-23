@@ -1,7 +1,6 @@
 <div [hidden]='isHide' style='width:100%;height:100%;position: fixed;
 z-index: 3000;
     background-color: rgba(4,4,4,0.8);cursor:pointer' (click)='onHidePlayer()'>
-  <button (click)='onHidePlayer()'>Close button</button>
   <div id='closeIcon' (click)="onHidePlayer()" data-toggle='tooltip' title='Close Preview' style='
 background-image: url("./assets/icons/close.svg");position: absolute;
     filter: invert(1) contrast(0);
@@ -50,12 +49,20 @@ background-image: url("./assets/icons/close.svg");position: absolute;
             <span *ngIf="!isMute">Mute</span>
             <span *ngIf="isMute">UnMute</span>
           </button>
-          <p>{{ previewMovie.overview }}</p>
-          <button class='btn btn-outline-info' (click)='toggleBookmark(previewMovie.id)'>
-            <p *ngIf="!selectedMovieBookmarkStatus">Bookmark</p>
-            <p *ngIf="selectedMovieBookmarkStatus">UnBookmark</p>
+          <button class=' btn btn-primary' (click)='playMovie()' *ngIf="previewMovie.video">
+            <span>Play</span>
           </button>
-          <button class='btn btn-outline-info'>Watched</button>
+          <p>{{ previewMovie.overview }}</p>
+          <button class='btn btn-outline-info' (click)='toggleBookmark()'>
+            <span *ngIf="!(previewMovie.bookmark && previewMovie.bookmark.id)">Bookmark</span>
+            <span *ngIf="previewMovie.bookmark && previewMovie.bookmark.id">UnBookmark</span>
+          </button>
+
+          <button class='btn btn-outline-info' (click)='toggleWatched()'>
+            <span *ngIf="!(previewMovie.watched && previewMovie.watched.id)">Mark as Watched</span>
+            <span *ngIf="previewMovie.watched && previewMovie.watched.id">
+              Remove Watched</span>
+          </button>
           <button class='btn btn-outline-secondary' (click)="goToMovie(previewMovie.id)">More Info</button>
         </div>
       </div>

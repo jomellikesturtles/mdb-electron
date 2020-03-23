@@ -6,6 +6,7 @@ import { UtilsService } from '../../services/utils.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { PERSON_DETAILS, PERSON_DETAILS_FULL, PERSON_COMBINED_CREDITS } from '../../mock-data-person-details';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-person-details',
@@ -28,19 +29,21 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
     private router: Router) { }
 
   ngOnInit(): void {
-    // this.activatedRoute.params.subscribe(params => {
-    //   console.log('activatedRoute.params', params);
-    //   if (params.id) {
-    //     this.getPersonDetails(params.id)
-    //   } else {
-    //     this.hasData = false
-    //   }
-    // });
-
-    this.person = PERSON_DETAILS
-    this.creditsCast = PERSON_COMBINED_CREDITS.cast
-    this.creditsCrew = PERSON_COMBINED_CREDITS.crew
-    this.hasData = true
+    if (environment.runConfig.useTestData === true) {
+      this.person = PERSON_DETAILS
+      this.creditsCast = PERSON_COMBINED_CREDITS.cast
+      this.creditsCrew = PERSON_COMBINED_CREDITS.crew
+      this.hasData = true
+    } else {
+      this.activatedRoute.params.subscribe(params => {
+        console.log('activatedRoute.params', params);
+        if (params.id) {
+          this.getPersonDetails(params.id)
+        } else {
+          this.hasData = false
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {

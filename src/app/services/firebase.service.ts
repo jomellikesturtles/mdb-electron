@@ -4,6 +4,7 @@ import { pipe, Observable } from 'rxjs'
 import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFireModule } from '@angular/fire/'
 import { AngularFirestore, } from '@angular/fire/firestore'
+// import { AngularFireStorage, AngularFireStorageModule, } from '@angular/fire/storage'
 import * as firebase from 'firebase';
 import { IpcService, BookmarkChanges, IpcCommand } from './ipc.service';
 import { Select, Store } from '@ngxs/store';
@@ -27,7 +28,9 @@ export class FirebaseService {
     private ipcService: IpcService,
     private auth: AngularFireAuth,
     private store: Store,
-    private afm: AngularFireModule
+    private afm: AngularFireModule,
+    // private angularFireStorage: AngularFireStorage,
+    // private angularFireStorageModule: AngularFireStorageModule
   ) { this.db = this.angularFirestore.firestore }
 
   onSync() {
@@ -121,6 +124,7 @@ export class FirebaseService {
         resolve(snapshot.docs)
       })
     })
+
   }
 
   /**
@@ -140,15 +144,22 @@ export class FirebaseService {
     })
   }
 
+  /**
+   * Deletes a value from firestore
+   * @param collectionName name of collection/column
+   * @param docId doc id to remote
+   */
   deleteFromFirestore(collectionName: CollectionName, docId: string) {
     return new Promise(resolve => {
       this.db.collection(collectionName).doc(docId).delete().then((e) => {
-        resolve('success')
+        console.error('DELETE DOC: ', e);
+        resolve(null)
       }).catch((error) => {
         console.error('Error removing document: ', error);
       });
     })
   }
+
   /**
    * Inserts data into firestore.
    * @param collectionName name of the collection
@@ -208,6 +219,9 @@ export class FirebaseService {
     this.auth.auth.signInWithPopup(provider).then((e) => {
       console.log(e)
       localStorage.setItem('user', JSON.stringify(e.user))
+      localStorage.setItem('uid', e.user.uid)
+      localStorage.setItem('displayName', e.user.displayName)
+      localStorage.setItem('email', e.user.email)
     }).catch((e) => {
       {
         console.log('in catch', e);
@@ -232,6 +246,9 @@ export class FirebaseService {
     this.auth.auth.signOut().then(e => {
       console.log('SIGNOUT SUCCESS ', e);
       localStorage.removeItem('user')
+      localStorage.removeItem('uid')
+      localStorage.removeItem('displayName')
+      localStorage.removeItem('email')
       this.store.dispatch(new RemoveUser(e))
       // resolve(e)
     }).catch(e => {
@@ -240,15 +257,56 @@ export class FirebaseService {
     // })
   }
 
+  getEmpty() {
+    this.db.collection('watched').get().then(snapshot => {
+      console.log(' getEmpty():', snapshot.docs);
+      const myBatch = this.db.batch()
+      snapshot.docs.forEach(element => {
+        const bookmarkRef = element.ref
+        const myData = element.data()
+        myData.percentage = '50%'
+        myBatch.set(bookmarkRef, myData)
+      })
+      myBatch.commit()
+    })
+  }
+
+  countAll(collectionName) {
+    // this.auth.
+    // this.db.collection(collectionName).
+
+    // this.db.collection(collectionName).where(columnName, operator, value).get().then((snapshot) => {
+    //   console.log('SNAPSHOT: ', snapshot);
+    return new Promise((resolve, reject) => {
+      this.db.collection(collectionName).where('tmdbId', FirebaseOperator.GreaterThanEqual, 0).get().then(snapshot => {
+        // this.db.collection(collectionName).where('tmdbId', FirebaseOperator.GreaterThanEqual, 0).get().then(snapshot => {
+        resolve(snapshot.size)
+      })
+    })
+  }
+
   getUser() {
     return new Promise(resolve => {
       this.auth.user.subscribe(e => {
         console.log('the user', e);
+        console.log(e.toJSON())
         resolve(e)
       })
     })
   }
 
+  uploadToStorage(data) {
+    // this.angularFireStorage.storage.setMaxUploadRetryTime(1000)
+    // this.angularFireStorage.upload()
+    // this.angularFireStorageModule
+    console.log(data)
+    const storageRef = firebase.storage().ref()
+    storageRef.put(data).then(e => {
+      console.log(e)
+    }).catch(err => {
+      console.log('error', err)
+    })
+  }
 }
 
 export enum FirebaseOperator {

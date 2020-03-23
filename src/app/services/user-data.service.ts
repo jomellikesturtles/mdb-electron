@@ -19,15 +19,49 @@ export class UserDataService {
     private utilsService: UtilsService
   ) { }
 
+  async toggleBookmark(movie) {
+    let bmDoc
+    if (!movie.bookmark || !movie.bookmark.id) {
+      bmDoc = await this.saveUserData('bookmark', movie)
+      movie.bookmark = bmDoc
+    } else {
+      bmDoc = await this.bookmarkService.removeBookmark(movie.bookmark.id)
+      movie.bookmark.id = ''
+    }
+    return bmDoc
+  }
+
+  async toggleWatched(movie) {
+    let wDocId
+    if (!movie.watched || !movie.watched.id) {
+      wDocId = await this.saveUserData('watched', movie)
+      movie.watched = wDocId
+    } else {
+      wDocId = await this.watchedService.removeWatched(movie.watched.id)
+      movie.watched.id = ''
+    }
+    console.log('WATCHEDADD/remove:', wDocId)
+    // const root = this
+    // setTimeout(() => {
+    //   root.isWatched = !root.isWatched
+    //   root.procWatched = false
+    //   root.watchedProgress = '100%'
+    //   root.movie.isWatched = true
+    // }, 2000);
+  }
+
   async saveUserData(dataType: string, movie: any): Promise<any> {
-    const releaseYear = parseInt(this.utilsService.getYear(movie.release_date), 10)
-    const tmdbId = movie.id
+    const rDate = movie.release_date ? movie.release_date : movie.releaseDate
+    const releaseYear = parseInt(this.utilsService.getYear(rDate), 10)
+    const tmdbId = movie.id ? movie.id : movie.tmdbId
     const title = movie.title
     const year = releaseYear ? releaseYear : 0
+    const uid = localStorage.getItem('uid')
     const userData = {
       tmdbId,
       title,
-      year
+      year,
+      user: uid
     }
     let docId = ''
     console.log('object to toggle :', userData);
@@ -123,7 +157,7 @@ export class UserDataService {
     })
   }
 
-  getMovieListDetails(dataType: string, dataDocList: any[]): Observable<any> | any {
+  private getMovieListDetails(dataType: string, dataDocList: any[]): Observable<any> | any {
     // ----------------------------
     // const fj = forkJoin(obsList)
     // fj.pipe().subscribe(
@@ -155,7 +189,12 @@ export class UserDataService {
     })
   }
 
-  setDataObject(dataType: string, dataDoc) {
+  /**
+   * Sets the user data object to the
+   * @param dataType the data types: bookmark, watched, video, etc.
+   * @param dataDoc
+   */
+  private setDataObject(dataType: string, dataDoc) {
     let userData = null
     const docData = dataDoc.data()
     switch (dataType) {

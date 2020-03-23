@@ -35,13 +35,18 @@
             <div class='uk-button-group'>
 
               <button [disabled]='procBookmark' class='btn btn-small'
-                [ngClass]="{'btn-success': !movieDetails.bookmark,'btn-danger':movieDetails.bookmark}"
-                (click)='toggleBookmark()'>
-                <span *ngIf="movieDetails.bookmark">Remove bookmark</span>
-                <span *ngIf="!movieDetails.bookmark">Add bookmark</span>
+                [ngClass]="{'btn-success': !isBookmarked,'btn-danger':isBookmarked}" (click)='toggleBookmark()'>
+                <span *ngIf="isBookmarked">Remove bookmark</span>
+                <span *ngIf="!isBookmarked">Add bookmark</span>
               </button>
 
-              <div *ngIf="movieDetails.watched">
+              <button [disabled]='procWatched' class='btn btn-small'
+                [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}" (click)='toggleWatched()'>
+                <span *ngIf="isWatched">Unmark as watched</span>
+                <span *ngIf="!isWatched">Mark as watched</span>
+              </button>
+
+              <!-- <div *ngIf="movieDetails.watched">
                 <button [disabled]='procWatched' class='btn btn-danger btn-small' (click)='toggleWatched()'>
                   Unmark as watched
                 </button>
@@ -50,7 +55,7 @@
                 <button [disabled]='procWatched' class='btn btn-success btn-small' (click)='toggleWatched("100%")'>
                   Mark as watched
                 </button>
-              </div>
+              </div> -->
             </div>
           </div>
           <div class="col-sm-8">
@@ -65,8 +70,8 @@
               </h2>
               <h2 (click)='goToDiscover("certification",movieCertification)'>{{movieCertification}}</h2>
 
-              <button class="btn btn-primary" type="button" (click)='playVideo()'
-                [disabled]='procVideo||!isVideoAvailable'>
+              <button *ngIf="isVideoAvailable" class="btn btn-primary" type="button" (click)='playVideo()'
+                [disabled]='procVideo || !isVideoAvailable'>
                 <div *ngIf="procVideo">
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                   Loading...
@@ -90,9 +95,9 @@
             word-wrap: break-word !important;
             white-space: pre-line;'>{{movieDetails.plot}}</p>
 
-            <span class='text-hyperlink' (click)='goToDiscover("genre",item)'
+            <span class='text-hyperlink' (click)='goToDiscover("genre",item.id)'
               *ngFor="let item of movieDetails.genres; let isLast=last">
-              {{item}}{{isLast ? '' : ', '}}
+              {{item.name}}{{isLast ? '' : ', '}}
             </span>
 
             <p id="movie-runtime" class="">{{movieDetails.runtime|runtimeDisplay}}</p>

@@ -1,3 +1,6 @@
+/**
+ * TODO: Compatibility for details component.
+ */
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { TEST_TMDB_MOVIE_DETAILS, TEST_TMDB_SINGLE_RESULT } from 'src/app/mock-data';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -7,6 +10,8 @@ import { UtilsService } from 'src/app/services/utils.service';
 import { GenreCodes, ITmdbResult } from 'src/app/interfaces';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MovieService } from 'src/app/services/movie.service';
+import { UserDataService } from 'src/app/services/user-data.service';
+import { WatchedService } from 'src/app/services/watched.service';
 declare var $: any
 
 @Component({
@@ -21,7 +26,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     private dataService: DataService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private bookmarkService: BookmarkService,
+    private userDataService: UserDataService,
     private cdr: ChangeDetectorRef,
     private movieService: MovieService,
     private utilsService: UtilsService,
@@ -49,6 +54,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
   isMute = false
   isYTPlaying = false
   hasTrailerClip = false
+  isAvailable = false
+  procBookmark = false
+  procWatched = false
+  procHighlight = false
 
   ngOnInit() {
     this.frameReady()
@@ -126,13 +135,18 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   }
 
+  /**
+   * TODO: Simplify component code. Transfer codes to the service.
+   * Performs actions for selected movie.
+   * @param movie the selected movie
+   */
   async getVideoClip(movie) {
     this.previewMovie = movie
     this.isHide = false
-
     if (movie.id === this.playedTmdbId) {
       return
     }
+    console.log('PREVIEW MOVIE: ', movie)
     this.playedTmdbId = this.previewMovie.id
     this.hasInitialSelected = true
     let videoId = ''
@@ -157,8 +171,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
     } else {
       return
     }
-
-
     // this.movieService.getRandomVideoClip(query).subscribe(data => {
     // data.forEach(element => {
     //   const snipTitle = $.parseHTML(element.snippet.title.toLowerCase())[0].textContent
@@ -170,7 +182,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
     // const index = Math.round(Math.random() * (results.length - 1))
     // console.log('clips list length: ', results.length, ' clip index: ', index, results[index]);
 
-    videoId = 'BdJKm16Co6M'
     videoId = theRes
     // videoId = results[index].videoId
     this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`)
@@ -191,10 +202,13 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   setVideo(videoId: string) {
-    // this.player.loadVideoByIds(videoId);
-    this.player.cueVideoByUrl(videoId);
+    this.player.loadVideoById(videoId);
+    // this.player.cueVideoByUrl(videoId);
   }
 
+  /**
+   * Creates youtube html script.
+   */
   generateYoutube(): void {
     const doc = (window as any).document;
     const playerApiScript = doc.createElement('script');
@@ -212,12 +226,32 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleBookmark(id: number) {
-    // if (this.selectedMovieBookmarkStatus === false) {
-    this.bookmarkService.saveBookmark(id)
+  async toggleBookmark(): Promise<any> {
+    this.procBookmark = true
+    // let bmDoc
+    // if (!this.previewMovie.bookmark || !this.previewMovie.bookmark.id) {
+    //   bmDoc = await this.userDataService.saveUserData('bookmark', this.previewMovie)
+    //   this.previewMovie.bookmark = bmDoc
     // } else {
-    //   this.bookmarkService.removeBookmark(id)
+    //   bmDoc = await this.bookmarkService.removeBookmark(this.previewMovie.bookmark.id)
+    //   this.previewMovie.bookmark.id = ''
     // }
+
+    this.procBookmark = true
+    let bmDoc
+    bmDoc = await this.userDataService.toggleBookmark(this.previewMovie)
+    console.log('BOOKMARKADD/remove:', bmDoc)
+    this.procBookmark = false
+    this.cdr.detectChanges()
+  }
+
+  async toggleWatched() {
+    this.procWatched = true
+    let wDocId
+    wDocId = await this.userDataService.toggleWatched(this.previewMovie)
+    console.log('WATCHEDADD/remove:', wDocId)
+    this.procBookmark = false
+    this.cdr.detectChanges()
   }
 
   toggleMute() {
@@ -284,6 +318,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
     console.log(this.player)
     this.isHide = true
     this.stopVideo()
+  }
+
+  playMovie() {
+
   }
 
 }

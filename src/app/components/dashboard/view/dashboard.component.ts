@@ -75,7 +75,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   clipSrc = null
   youtubeUrl = ''
   tag
-  player;
   done = false;
   globalPlayerApiScript
 
@@ -96,91 +95,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // $('[data-toggle="popover"]').popover()
     // $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
-    // this.frameready()
-  }
-
-  setVideo(videoId: string) {
-    this.player.loadVideoById(videoId);
-  }
-
-  frameready() {
-    (window as any).onYouTubeIframeAPIReady = () => {
-      console.log('INFRAMEREADY')
-      this.player = new (window as any).YT.Player('player', {
-        height: '100%',
-        width: '100%',
-        events: {
-          onReady: (event) => this.onPlayerReady(event),
-          onStateChange: (event) => this.onPlayerStateChange(event)
-        },
-        playerVars: {
-          autoplay: 1,
-          controls: 0,
-          modestbranding: 1,
-          rel: 1,
-          showInfo: 0,
-          disablekb: 1
-        }
-      });
-    }
   }
 
   ngAfterViewInit(): void {
   }
 
   ngOnDestroy(): void {
-    this.removeYoutube()
-  }
-
-  generateYoutube(): void {
-    const doc = (window as any).document;
-    const playerApiScript = doc.createElement('script');
-    playerApiScript.type = 'text/javascript';
-    playerApiScript.src = 'https://www.youtube.com/iframe_api';
-    this.globalPlayerApiScript = playerApiScript
-    doc.body.appendChild(this.globalPlayerApiScript);
-  }
-
-  removeYoutube() {
-    const doc = (window as any).document;
-    if (this.globalPlayerApiScript) {
-      doc.body.removeChild(this.globalPlayerApiScript)
-      this.globalPlayerApiScript = null
-    }
-  }
-
-  // The API calls this function when the player's state changes.
-  onPlayerStateChange(event) {
-    /**
-     * -1 (unstarted)
-     * 0 (ended)
-     * 1 (playing)
-     * 2 (paused)
-     * 3 (buffering)
-     * 5 (video cued).
-     * YT.PlayerState.ENDED
-     * YT.PlayerState.PLAYING
-     * YT.PlayerState.PAUSED
-     * YT.PlayerState.BUFFERING
-     * YT.PlayerState.CUED
-     */
-    console.log('onPlayerStateChange: ', event.data);
-    if (event.data === 1) {
-      this.isYTReady = true
-    }
-    if (event.data === -1 || event.data === 0) {
-      this.isYTReady = false
-    }
-    this.cdr.detectChanges()
-  }
-
-  // The API will call this function when the video player is ready
-  onPlayerReady(event) {
-    console.log('ONPLAYERREADY');
-    event.target.cueVideoById({
-      videoId: this.youtubeUrl
-    });
-    event.target.playVideo();
   }
 
   /**
@@ -241,14 +161,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Sends parameter to the API.
    * @param params parameters to pass to the API
-   * @param title the title of the list
+   * @param listName the name of the list
    */
-  async sendToMovieService(params: any, title: string) {
+  async sendToMovieService(params: any, listName: string) {
     const data = await this.movieService.getMoviesDiscover(params).toPromise()
-    // innerList[this.nameString] = title
-    // innerList['data'] = data.results
     const innerList = {
-      name: title,
+      name: listName,
       data: data.results
     }
     this.dashboardLists.push(innerList)
@@ -262,45 +180,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   getMoviesFromLibrary() {
     console.log('getMoviesFromLibrary dashboard.component')
     this.ipcService.getMoviesFromLibrary()
-  }
-
-  /**
-   * TODO: Simplify component code. Transfer codes to the service.
-   * Performs actions for selected movie.
-   * @param movie the selected movie
-   */
-  onPreviewSelected(movie: any) {
-    if (this.selectedMovie.id === movie.id) {
-      return
-    }
-    let videoId = ''
-    const results = []
-    this.selectedMovie = movie
-    let title = movie.title.toLowerCase()
-    const query = `${movie.title} ${this.getYear(movie.release_date)}`
-    title = title.replace(/[.…]+/g, '')
-    this.movieService.getRandomVideoClip(query).subscribe(data => {
-      data.forEach(element => {
-        const snipTitle = $.parseHTML(element.snippet.title.toLowerCase())[0].textContent
-        if ((snipTitle.indexOf(title) >= 0) && ((snipTitle.indexOf('scene') >= 0) || (snipTitle.indexOf('trailer') >= 0) || (snipTitle.indexOf('movie clip') >= 0)) && (snipTitle.indexOf('behind the scene') === -1)) {
-          results.push({ title: snipTitle, videoId: element.id.videoId })
-        }
-      })
-      // HiN6Ag5-DrU?VQ=HD720
-      const index = Math.round(Math.random() * (results.length - 1))
-      console.log('clips list length: ', results.length, ' clip index: ', index, results[index]);
-
-      videoId = results[index].videoId
-      this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`)
-      this.youtubeUrl = videoId
-      // if results[index].snippet.channelTitle  === 'Movieclips' ---- cut the video by 30seconds
-      if (!this.hasAlreadySelected) {
-        this.generateYoutube()
-        this.hasAlreadySelected = true
-      }
-      this.setVideo(videoId)
-    })
-    this.getBookmarkStatus(movie.id)
   }
 
   /**

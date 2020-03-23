@@ -1,6 +1,7 @@
 import { Action, StateContext, Select, State, Selector } from '@ngxs/store'
 import { AddMovie, RemoveMovie, ClearList, AddWatched, AddBookmark } from './movie.actions'
 import { BookmarkService, IBookmark } from './services/bookmark.service'
+import { UserDataService } from './services/user-data.service'
 // import { IBookmark } from './components/bookmarks/view/bookmarks.component'
 
 export interface MovieList {
@@ -30,6 +31,9 @@ const defaults: MovieListStateModel = {
 })
 
 export class SelectedMoviesState {
+
+  constructor(private userDataService: UserDataService) { }
+
   @Selector()
   static getList(state: MovieListStateModel) {
     return state
@@ -72,7 +76,6 @@ export class SelectedMoviesState {
     console.log('BEFORE:', current.movies)
     const numberList = []
     current.movies.forEach(e => {
-
       e.isWatched = true; e.watchedProgress = '100%'; numberList.push(e.id)
     })
 

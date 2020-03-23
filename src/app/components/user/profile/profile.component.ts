@@ -18,16 +18,23 @@ export class ProfileComponent implements OnInit {
     watchedCount: 90,
     bookmarkedCount: 9
   }
-  defaultUserProfile = this.userProfile
+  defaultUserProfile
+  // defaultUserProfile = this.userProfile
   firebaseUser$
+
   constructor(
     private cdr: ChangeDetectorRef,
     private firebaseService: FirebaseService
   ) { }
 
   ngOnInit() {
-
+    // this.countBookmarks()
     this.getUser()
+    this.treatAll()
+  }
+
+  treatAll() {
+    this.firebaseService.getEmpty()
   }
 
   getUser() {
@@ -35,13 +42,18 @@ export class ProfileComponent implements OnInit {
     this.firebaseService.getUser().then(e => {
       console.log('fbuser', this.firebaseUser$);
       this.firebaseUser$ = e
+      this.defaultUserProfile = e
       // e.
+      // e.
+      // firebaseUser$.
       this.cdr.detectChanges()
     })
   }
+
   changePassword() {
 
   }
+
   changeEmailAddress() {
 
   }
@@ -49,13 +61,24 @@ export class ProfileComponent implements OnInit {
   onSave() {
 
   }
+
   onReset() {
     this.userProfile = this.defaultUserProfile
   }
+
   onSignOut() {
 
   }
 
+  async countBookmarks() {
+    const count = await this.firebaseService.countAll('bookmark')
+    console.log('count: ', count)
+  }
+
+  uploadFile(data) {
+    console.log(data)
+    this.firebaseService.uploadToStorage(data.item(0))
+  }
 }
 
 export interface IProfile {
