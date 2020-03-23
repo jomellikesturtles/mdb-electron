@@ -6,21 +6,11 @@
   [ngStyle]="{'background-image':'url('+firebaseUser$.photoURL+')'}"> </div>
 <p>{{firebaseUser$.displayName}}</p>
 
-<!-- <form action="/action_page.php">
-  <label for="myfile"></label>
-  <input type="file" id="myfile" name="myfile"><br><br>
-  <input type="submit">
-</form> -->
 <input type="file" id="myfile" placeholder="Upload file" accept=".jpg,.jpeg,.png" name="myfile"
   (change)='uploadFile($event.target.files)'>
-
-firebaseUser$.
 <button class='btn btn-primary'>Change
   profile image</button>
 <p>{{firebaseUser$.email}}</p>
-<!-- [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth +
-  ')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}" -->
-<!-- <button class='btn btn-primary'>Change profile image</button> -->
 
 <div class='container'>
   <div class='row'>

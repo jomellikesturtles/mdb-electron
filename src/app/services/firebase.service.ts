@@ -4,7 +4,6 @@ import { pipe, Observable } from 'rxjs'
 import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFireModule } from '@angular/fire/'
 import { AngularFirestore, } from '@angular/fire/firestore'
-// import { AngularFireStorage, AngularFireStorageModule, } from '@angular/fire/storage'
 import * as firebase from 'firebase';
 import { IpcService, BookmarkChanges, IpcCommand } from './ipc.service';
 import { Select, Store } from '@ngxs/store';
@@ -29,8 +28,6 @@ export class FirebaseService {
     private auth: AngularFireAuth,
     private store: Store,
     private afm: AngularFireModule,
-    // private angularFireStorage: AngularFireStorage,
-    // private angularFireStorageModule: AngularFireStorageModule
   ) { this.db = this.angularFirestore.firestore }
 
   onSync() {
@@ -42,7 +39,6 @@ export class FirebaseService {
    */
   synchronizeBookmarks() {
     this.ipcService.call(IpcCommand.GetBookmarkChanges)
-    // this.batch = this.db.firestore.batch()
     this.batch = this.db.batch()
     this.ipcService.bookmarkChanges.subscribe(e => {
       this.bookmarkInsertList = e.filter((v) => v.change === BookmarkChanges.INSERT)
@@ -67,8 +63,6 @@ export class FirebaseService {
       this.db.collection(collectionName).where(columnName, operator, value).get().then((snapshot) => {
         console.log('SNAPSHOT: ', snapshot);
         if (!snapshot.empty) {
-          // const user = snapshot.docs[0]
-          // console.log('snapshot.docs[0]', user);
           const objectToReturn = snapshot.docs[0].data()
           objectToReturn['id'] = snapshot.docs[0].id
           resolve(objectToReturn)
@@ -181,8 +175,6 @@ export class FirebaseService {
   }
 
   deleteItemsFromFirestore() {
-    // let batch = this.db.firestore.batch()
-    // this.db.collection('bookmark').
     const val = this.bookmarkDeleteList
     val.forEach(element => {
       const removeBookmarkRef = this.db.collection('bookmark').where('tmdbId', '==', element.tmdbId).get().then(snapshot => {
@@ -272,14 +264,8 @@ export class FirebaseService {
   }
 
   countAll(collectionName) {
-    // this.auth.
-    // this.db.collection(collectionName).
-
-    // this.db.collection(collectionName).where(columnName, operator, value).get().then((snapshot) => {
-    //   console.log('SNAPSHOT: ', snapshot);
     return new Promise((resolve, reject) => {
       this.db.collection(collectionName).where('tmdbId', FirebaseOperator.GreaterThanEqual, 0).get().then(snapshot => {
-        // this.db.collection(collectionName).where('tmdbId', FirebaseOperator.GreaterThanEqual, 0).get().then(snapshot => {
         resolve(snapshot.size)
       })
     })
@@ -296,9 +282,6 @@ export class FirebaseService {
   }
 
   uploadToStorage(data) {
-    // this.angularFireStorage.storage.setMaxUploadRetryTime(1000)
-    // this.angularFireStorage.upload()
-    // this.angularFireStorageModule
     console.log(data)
     const storageRef = firebase.storage().ref()
     storageRef.put(data).then(e => {

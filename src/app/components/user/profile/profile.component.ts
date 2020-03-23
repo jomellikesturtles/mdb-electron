@@ -19,7 +19,6 @@ export class ProfileComponent implements OnInit {
     bookmarkedCount: 9
   }
   defaultUserProfile
-  // defaultUserProfile = this.userProfile
   firebaseUser$
 
   constructor(
@@ -38,14 +37,10 @@ export class ProfileComponent implements OnInit {
   }
 
   getUser() {
-    // this.firebaseUser$
     this.firebaseService.getUser().then(e => {
       console.log('fbuser', this.firebaseUser$);
       this.firebaseUser$ = e
       this.defaultUserProfile = e
-      // e.
-      // e.
-      // firebaseUser$.
       this.cdr.detectChanges()
     })
   }

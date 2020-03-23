@@ -228,16 +228,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   async toggleBookmark(): Promise<any> {
     this.procBookmark = true
-    // let bmDoc
-    // if (!this.previewMovie.bookmark || !this.previewMovie.bookmark.id) {
-    //   bmDoc = await this.userDataService.saveUserData('bookmark', this.previewMovie)
-    //   this.previewMovie.bookmark = bmDoc
-    // } else {
-    //   bmDoc = await this.bookmarkService.removeBookmark(this.previewMovie.bookmark.id)
-    //   this.previewMovie.bookmark.id = ''
-    // }
-
-    this.procBookmark = true
     let bmDoc
     bmDoc = await this.userDataService.toggleBookmark(this.previewMovie)
     console.log('BOOKMARKADD/remove:', bmDoc)
