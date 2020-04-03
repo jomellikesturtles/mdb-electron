@@ -23,3 +23,10 @@ export class BrowseComponent implements OnInit {
 
   }
 }
+
+export enum BROWSE_TITLES {
+  COMPLETED_WATCHED,
+  INCOMPLETE_WATCHED,
+  BOOKMARKED,
+  FAVORITES,
+}

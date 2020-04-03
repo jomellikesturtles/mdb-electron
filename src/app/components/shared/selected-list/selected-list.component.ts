@@ -27,10 +27,6 @@ export class SelectedListComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dataService: DataService,
-    private bookmarkService: BookmarkService,
-    private ipcService: IpcService,
-    private utilsService: UtilsService,
-    private watchedService: WatchedService,
     private store: Store) { }
 
   ngOnInit() {
@@ -66,7 +62,7 @@ export class SelectedListComponent implements OnInit, OnDestroy {
     //   })
     // })
     // this.moviesListSubscription
-    console.log(this.movieIdList)
+    // console.log(this.movieIdList)
     this.moviesListSubscription = this.movies$.subscribe(moviesList => {
       console.log('moviesList: ', moviesList.movies);
       this.dataService.updateSelectedMovies(moviesList.movies)
@@ -82,13 +78,6 @@ export class SelectedListComponent implements OnInit, OnDestroy {
    * Adds bookmarks to all items in the list.
    */
   addBookmark() {
-    // this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.BookmarkAdd, this.movieIdList])
-    // const root = this
-    // this.displayMessage = 'Added to watchlist'
-    // this.displaySnackbar = true
-    // this.bookmarkService.saveBookmarkMulti(this.movieIdList)
-    // this.utilsService.hideSnackbar(root)
-
     this.store.dispatch(new AddBookmark())
   }
 

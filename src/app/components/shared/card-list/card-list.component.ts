@@ -25,7 +25,6 @@ export class CardListComponent implements OnInit {
     private videoService: VideoService,
     private userService: UserDataService,
     private dataService: DataService,
-    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -116,7 +115,6 @@ export class CardListComponent implements OnInit {
         }
       });
     })
-    this.cdr.detectChanges()
   }
 
   getData() {

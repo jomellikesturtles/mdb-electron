@@ -13,9 +13,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/preferences', pathMatch: 'full' }, // for fast boot?
   // { path: '', redirectTo: '/preview', pathMatch: 'full' }, // for fast boot?
   { path: 'browse', component: BrowseComponent },
-  {
-    path: 'preferences', component: PreferencesComponent,
-  },
+  { path: 'preferences', loadChildren: '../components/preferences/preferences.module#PreferencesModule' },
   { path: 'preferences/bulk-download', component: BulkDownloadComponent },
 
   { path: 'person-details/:id', component: PersonDetailsComponent },

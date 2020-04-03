@@ -163,9 +163,9 @@ export class FirebaseService {
     const myBatch = this.db.batch()
     data.forEach(element => {
       const bookmarkRef = this.db.collection(collectionName).doc();
-      myBatch.set(bookmarkRef, element)
+      // myBatch.set(bookmarkRef, element)
     })
-    myBatch.commit()
+    // myBatch.commit()
   }
 
   insertItemsToFirestore() {

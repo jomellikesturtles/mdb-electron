@@ -72,7 +72,7 @@
       <h6 (click)="onOpenMovie()" class='text-primary movie-card-title card-title text-hyperlink' data-toggle="tooltip"
         title="{{movie.title}}">{{movie.title}}</h6>
       <label class='text-hyperlink' style='float: left'
-        (click)='goToYear(getYear(movie.release_date))'>{{getYear(movie.release_date)}}</label>
+        (click)='goToYear(getYear(movie.release_date))'>{{movie.release_date|releaseYear}}</label>
       <label *ngIf='movie.vote_average>0' style='float: right' data-toggle='tooltip' title='{{movie.vote_count}} votes'>
         <img style='height:10px;
       filter: invert(1);margin-bottom: 4px;

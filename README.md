@@ -340,6 +340,7 @@ UI and functionalities are influenced by follows: (in descending order)
 - tmdb criteria: year,region, language, vote count, vote average.
 - snackbar/toast doesnt work
 - omdb and Imdb has same genre in movies
+- use releaseyear pipe in mdb moviecard
 
 https://api.themoviedb.org/3/movie/157336?api_key=a636ce7bd0c125045f4170644b4d3d25&append_to_response=videos,images,credits,changes,translations,similar,external_ids,ss
 

@@ -34,7 +34,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     private utilsService: UtilsService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private cdr: ChangeDetectorRef,
     private domSanitizer: DomSanitizer,
   ) { }
 
@@ -90,7 +89,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.ipcService.libraryFolders.subscribe(value => {
       console.log('dashboard libraryFolders', value)
-      this.cdr.detectChanges()
     })
 
     // $('[data-toggle="popover"]').popover()
@@ -113,7 +111,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         element.isAvailable = true
       }
     }
-    this.cdr.detectChanges()
   }
 
   /**
@@ -171,7 +168,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.dashboardLists.push(innerList)
     this.dataService.addDashboardData(innerList.data)
-    this.cdr.detectChanges()
   }
 
   /**
@@ -193,7 +189,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       } else {
         this.selectedMovieBookmarkStatus = false
       }
-      this.cdr.detectChanges();
     })
   }
 

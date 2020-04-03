@@ -1,4 +1,6 @@
-import { CommaSpacePipe, MdbPipesPipe, ReleaseYearPipe } from './mdb-pipes.pipe';
+import { CommaSpacePipe, MdbPipesPipe,
+  ReleaseYearPipe
+ } from './mdb-pipes.pipe';
 import { SimplifySizePipe, MagnetPipe } from './services/torrent.service';
 import { SearchComponent } from './components/search/search.component';
 import { BrowserModule } from '@angular/platform-browser';
@@ -30,7 +32,7 @@ import { PreviewComponent } from './components/preview/preview/preview.component
   declarations: [
     AppComponent,
     BulkDownloadComponent,
-    PreferencesComponent,
+    // PreferencesComponent,
     NavigationComponent,
     TopNavigationComponent,
     BrowseComponent,
@@ -42,7 +44,7 @@ import { PreviewComponent } from './components/preview/preview/preview.component
     CommaSpacePipe,
     MdbPipesPipe,
     PreviewComponent,
-    // ReleaseYearPipe
+    // ReleaseYearPipe/
     // UsernameExistValidatorDirective
   ],
   imports: [

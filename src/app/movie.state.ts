@@ -32,7 +32,8 @@ const defaults: MovieListStateModel = {
 
 export class SelectedMoviesState {
 
-  constructor(private userDataService: UserDataService) { }
+  constructor(private userDataService: UserDataService,
+    private bookmarkService: BookmarkService) { }
 
   @Selector()
   static getList(state: MovieListStateModel) {
@@ -98,7 +99,7 @@ export class SelectedMoviesState {
   }
 
   @Action(AddBookmark)
-  addBookmark(context: StateContext<MovieListStateModel>, bookmarkService: BookmarkService) {
+  addBookmark(context: StateContext<MovieListStateModel>) {
     const current = context.getState()
     console.log('BEFORE:', current.movies)
     const bookmarksList = []
@@ -116,7 +117,7 @@ export class SelectedMoviesState {
       // e.bookmark = bookmark
     })
 
-    bookmarkService.saveBookmarkMulti(bookmarksList)
+    this.bookmarkService.saveBookmarkMulti(bookmarksList)
 
     // current.movies.forEach(e => {
     //   const bookmark: IBookmark = {

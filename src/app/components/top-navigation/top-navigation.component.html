@@ -31,9 +31,10 @@
     <button class="btn btn-outline-light input-group-btn" style='width: 300px;' id="advanced-search-button"
       data-toggle="collapse" title='Opens advanced search' data-target="#demo" (click)='onAdvancedSearch()'>Advanced
       Search</button>
-
   </div>
-  <div class='dropdown' data-toggle='tooltip' style='z-index: 3000;
+
+  <div *ngIf="!isSignedIn">Sign in</div>
+  <div *ngIf="isSignedIn" class='dropdown' data-toggle='tooltip' style='z-index: 3000;
   margin-left: auto;
   position: absolute;
   right: 138px;

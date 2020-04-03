@@ -25,7 +25,6 @@ export class DiscoverComponent implements OnInit {
   currentParams = []
 
   constructor(
-    private cdr: ChangeDetectorRef,
     private dataService: DataService,
     private movieService: MovieService,
   ) { }
@@ -83,7 +82,6 @@ export class DiscoverComponent implements OnInit {
           this.hasMoreResults = true
         }
       }
-      this.cdr.detectChanges()
     });
   }
 

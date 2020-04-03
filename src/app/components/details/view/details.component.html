@@ -41,21 +41,11 @@
               </button>
 
               <button [disabled]='procWatched' class='btn btn-small'
-                [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}" (click)='toggleWatched()'>
+                [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}" (click)='toggleWatched("100%")'>
                 <span *ngIf="isWatched">Unmark as watched</span>
                 <span *ngIf="!isWatched">Mark as watched</span>
               </button>
 
-              <!-- <div *ngIf="movieDetails.watched">
-                <button [disabled]='procWatched' class='btn btn-danger btn-small' (click)='toggleWatched()'>
-                  Unmark as watched
-                </button>
-              </div>
-              <div *ngIf="!movieDetails.watched">
-                <button [disabled]='procWatched' class='btn btn-success btn-small' (click)='toggleWatched("100%")'>
-                  Mark as watched
-                </button>
-              </div> -->
             </div>
           </div>
           <div class="col-sm-8">
@@ -216,8 +206,12 @@
               </div>
               <div>
                 <h6 (click)='goToMovie(recommendedMovie.id)' class='text-hyperlink'>{{recommendedMovie.title}}</h6>
+                <!-- <label class='text-hyperlink' style='float: left'
+                  (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>
+                  {{recommendedMovie.release_date|releaseYear}}</label> -->
                 <label class='text-hyperlink' style='float: left'
-                  (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>{{getYear(recommendedMovie.release_date)}}</label>
+                  (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>
+                  {{recommendedMovie.release_date|releaseYear}}</label>
                 <label *ngIf='recommendedMovie.vote_average>0' style='float: right' data-toggle='tooltip'
                   title='{{recommendedMovie.vote_count}} votes'>
                   <img style='height:10px;

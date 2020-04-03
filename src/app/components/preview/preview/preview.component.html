@@ -12,8 +12,7 @@ background-image: url("./assets/icons/close.svg");position: absolute;
     width: 20px;
     right: 8vw;
     margin: auto;
-    transform: translateY(50%);z-indez=5000
-    '></div>
+    transform: translateY(50%);z-index:5000;'></div>
   <!-- <div [hidden]="clipSrc!=null" style='width:100%;height:75vh;position: relative;'> -->
   <!-- <div *ngIf="clipSrc" style='width:100%;height:500px;position: relative;'> -->
   <div (click)='$event.stopPropagation()' style='cursor:default'>
@@ -29,8 +28,6 @@ background-image: url("./assets/icons/close.svg");position: absolute;
         background-position: center;'></div> -->
         <div id='previewOverlayContext' [ngClass]="{'overlayInvisible':isYTReady==true}"
           style='position:absolute; height: 100%;width: 50%;top: 50%;transform: translateY(-100px);padding-left: 5vw;text-shadow: 3px 3px 5px #333333;'>
-          <!-- <h3>{{previewMovie.title}}
-        ({{getYear(previewMovie.release_date)}})</h3> -->
           <div class='d-inline-flex'>
             <h3>{{previewMovie.title}}</h3>&nbsp;
             <h3 class='text-hyperlink' (click)='goToDiscover("year",getYear(previewMovie.release_date))'>

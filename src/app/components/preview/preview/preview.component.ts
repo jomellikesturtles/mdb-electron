@@ -27,7 +27,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private userDataService: UserDataService,
-    private cdr: ChangeDetectorRef,
+    // private cdr: ChangeDetectorRef,
     private movieService: MovieService,
     private utilsService: UtilsService,
     private domSanitizer: DomSanitizer,
@@ -126,12 +126,12 @@ export class PreviewComponent implements OnInit, OnDestroy {
     if (event.data === 2) {
       const root = this
       console.log('paused')
-      setTimeout(() => {
-        root.player.playVideo()
-        console.log('settoplay')
-      }, 5000);
+      // setTimeout(() => {
+      //   root.player.playVideo()
+      //   console.log('settoplay')
+      // }, 5000);
     }
-    this.cdr.detectChanges()
+    // this.cdr.detectChanges()
 
   }
 
@@ -232,7 +232,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     bmDoc = await this.userDataService.toggleBookmark(this.previewMovie)
     console.log('BOOKMARKADD/remove:', bmDoc)
     this.procBookmark = false
-    this.cdr.detectChanges()
+    // this.cdr.detectChanges()
   }
 
   async toggleWatched() {
@@ -241,7 +241,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     wDocId = await this.userDataService.toggleWatched(this.previewMovie)
     console.log('WATCHEDADD/remove:', wDocId)
     this.procBookmark = false
-    this.cdr.detectChanges()
+    // this.cdr.detectChanges()
   }
 
   toggleMute() {
