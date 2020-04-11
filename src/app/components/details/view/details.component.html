@@ -54,6 +54,9 @@
             <div style='display: flex;'>
               <h2 id="movie-title">{{movieDetails.original_title}}</h2>&nbsp;
               <h2 id="movie-title">{{movieDetails.title}}</h2>&nbsp;
+              {{progress}}
+              <button (click)='processOutsideOfAngularZone()'>Outside</button>
+              <button (click)='processWithinAngularZone()'>Within</button>
               <h2 *ngIf="movieDetails.releaseDate" class='text-hyperlink'
                 (click)='goToDiscover("year",getYear(movieDetails.releaseDate))'>
                 ({{movieDetails.releaseDate|releaseYear}})
@@ -206,9 +209,6 @@
               </div>
               <div>
                 <h6 (click)='goToMovie(recommendedMovie.id)' class='text-hyperlink'>{{recommendedMovie.title}}</h6>
-                <!-- <label class='text-hyperlink' style='float: left'
-                  (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>
-                  {{recommendedMovie.release_date|releaseYear}}</label> -->
                 <label class='text-hyperlink' style='float: left'
                   (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>
                   {{recommendedMovie.release_date|releaseYear}}</label>

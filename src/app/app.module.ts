@@ -27,6 +27,7 @@ import { AppRunState } from './states/app-run.state';
 import { SelectedMoviesState } from './movie.state';
 import { NotificationComponent } from './components/notification/notification.component';
 import { PreviewComponent } from './components/preview/preview/preview.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 // import { UsernameExistValidatorDirective } from './directives/username-exist.directive'
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { PreviewComponent } from './components/preview/preview/preview.component
     AngularFireAuthModule,
     AngularFirestoreModule,
     NgxsModule.forRoot([CountState, SelectedMoviesState, AppRunState]),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [],
   bootstrap: [AppComponent]

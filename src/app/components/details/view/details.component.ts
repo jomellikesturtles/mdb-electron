@@ -1,6 +1,6 @@
 import { TmdbAppendToResponseParameters, GenreCodes } from './../../../interfaces';
 import { VideoService } from './../../../services/video.service';
-import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, OnDestroy, NgZone } from '@angular/core';
 import { IRating, ITorrent, ILibraryInfo, ITmdbMovieDetail, TmdbParameters } from '../../../interfaces';
 import { MdbMovieDetails } from '../../../classes';
 import { TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
@@ -74,19 +74,24 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private videoService: VideoService,
     private watchedService: WatchedService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) { }
 
   ngOnInit() {
     // this.getTroubleQuote()
     if (!environment.runConfig.useTestData) {
-      this.activatedRoute.params.subscribe(params => {
-        if (params.id) {
-          this.getMovieOnline(params.id)
-        } else {
-          this.hasData = false
-        }
-      });
+      this.ngZone.runOutsideAngular(() => {
+        console.time('convertTime');
+        this.activatedRoute.params.subscribe(params => {
+          if (params.id) {
+            this.getMovieOnline(params.id)
+          } else {
+            this.hasData = false
+          }
+        });
+        console.timeEnd('convertTime');
+      })
     } else {
       console.time('convertTime');
       this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
@@ -99,6 +104,38 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // // end of commented for test
     $('[data-toggle="popover"]').popover()
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
+    // this.processOutsideOfAngularZone()
+  }
+
+  label = ''
+  processOutsideOfAngularZone() {
+    this.label = 'outside';
+    this.progress = 0;
+    this.ngZone.runOutsideAngular(() => {
+      this._increaseProgress(() => {
+        // reenter the Angular zone and display done
+        this.ngZone.run(() => { console.log('Outside Done!'); });
+      });
+    });
+  }
+
+  progress = 0
+
+  processWithinAngularZone() {
+    this.label = 'inside';
+    this.progress = 0;
+    this._increaseProgress(() => console.log('Inside Done!'));
+  }
+
+  _increaseProgress(doneCallback: () => void) {
+    this.progress += 1;
+    console.log(`Current progress: ${this.progress}%`);
+
+    if (this.progress < 100) {
+      window.setTimeout(() => this._increaseProgress(doneCallback), 10);
+    } else {
+      doneCallback();
+    }
   }
 
   ngOnDestroy(): void {

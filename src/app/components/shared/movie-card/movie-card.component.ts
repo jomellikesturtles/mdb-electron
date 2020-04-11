@@ -14,17 +14,53 @@ declare var $: any
   templateUrl: './movie-card.component.html',
   styleUrls: ['./movie-card.component.scss']
 })
-export class MovieCardComponent implements OnInit, OnChanges {
+export class MovieCardComponent implements OnInit {
 
-  @Input() movie // TODO: add an interface.
-  @Input() cardWidth
-  @Input() bookmark
-  @Input() watched
-  @Input() video
+  _movie
+  @Input()  // TODO: add an interface.
+  set movie(inputMessage: any) {
+    this._movie = inputMessage
+  }
+  get movie(): any {
+    return this._movie;
+  }
 
-  isBookmarked = false
-  isWatched = false
-  isAvailable = false
+  _cardWidth
+  @Input()
+  set cardWidth(inputMessage: any) {
+    this._cardWidth = inputMessage
+  }
+  get cardWidth(): any {
+    return this._cardWidth;
+  }
+
+  _bookmark
+  @Input()
+  set bookmark(inputBookmark: any) {
+    this._bookmark = inputBookmark
+  }
+  get bookmark(): any {
+    return this._cardWidth;
+  }
+
+  _watched
+  @Input()
+  set watched(inputWatched: any) {
+    this._watched = inputWatched
+  }
+  get watched(): any {
+    return this._watched;
+  }
+
+  _video
+  @Input()
+  set video(inputVideo: any) {
+    this._video = inputVideo
+  }
+  get video(): any {
+    return this._video;
+  }
+
   procBookmark = false
   procWatched = false
   procHighlight = false
@@ -44,29 +80,17 @@ export class MovieCardComponent implements OnInit, OnChanges {
     // console.log('MOVIECARD:', this.movie)
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.bookmark && changes.bookmark.firstChange === false) {
-      this.isBookmarked = this.bookmark.id ? true : false
-    }
-    if (changes.video && changes.video.firstChange === false) {
-      this.isAvailable = this.video.id ? true : false
-    }
-    if (changes.watched && changes.watched.firstChange === false) {
-      this.isWatched = this.watched.id ? true : false
-    }
-  }
-
   /**
    * Adds movie object to the selected movies list
    * @param movie current selected movie
    */
   onHighlight(): void {
     this.procHighlight = true
-    this.movie.isHighlighted = !this.movie.isHighlighted
-    if (this.movie.isHighlighted) {
-      this.store.dispatch(new AddMovie(this.movie))
+    this._movie.isHighlighted = !this._movie.isHighlighted
+    if (this._movie.isHighlighted) {
+      this.store.dispatch(new AddMovie(this._movie))
     } else {
-      this.store.dispatch(new RemoveMovie(this.movie))
+      this.store.dispatch(new RemoveMovie(this._movie))
     }
     this.procHighlight = false
   }
@@ -75,7 +99,7 @@ export class MovieCardComponent implements OnInit, OnChanges {
    * Opens the movie's details page.
    */
   onOpenMovie(): void {
-    const highlightedId = this.movie.id;
+    const highlightedId = this._movie.id;
     this.dataService.updateHighlightedMovie(highlightedId);
     // this.navigationService.goToPage()
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
@@ -90,13 +114,13 @@ export class MovieCardComponent implements OnInit, OnChanges {
   }
 
   onPreview(): void {
-    this.dataService.updatePreviewMovie(this.movie)
+    this.dataService.updatePreviewMovie(this._movie)
   }
 
   async onToggleBookmark(): Promise<any> {
     this.procBookmark = true
     let bmDoc
-    bmDoc = await this.userDataService.toggleBookmark(this.movie)
+    bmDoc = await this.userDataService.toggleBookmark(this._movie)
     console.log('BOOKMARKADD/remove:', bmDoc)
     this.procBookmark = false
   }
@@ -104,7 +128,7 @@ export class MovieCardComponent implements OnInit, OnChanges {
   async onToggleWatched() {
     this.procWatched = true
     let wDocId
-    wDocId = await this.userDataService.toggleWatched(this.movie)
+    wDocId = await this.userDataService.toggleWatched(this._movie)
     console.log('WATCHEDADD/remove:', wDocId)
     this.procBookmark = false
   }

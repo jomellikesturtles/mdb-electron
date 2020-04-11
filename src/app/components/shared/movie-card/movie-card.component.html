@@ -1,16 +1,16 @@
-<div class='movie-card' [ngStyle]="{'width': cardWidth}" [ngClass]="{'movie-card-selected': movie.isHighlighted}">
+<div class='movie-card' [ngStyle]="{'width': _cardWidth}" [ngClass]="{'movie-card-selected': _movie.isHighlighted}">
   <div
-    [ngStyle]="{'height': 'calc(1.45 *'+cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w154'+movie.poster_path+')'}"
+    [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w154'+_movie.poster_path+')'}"
     class='movie-card-image-container'>
     <!-- <div
-    [ngStyle]="{'height': 'calc(1.45 *'+cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
+    [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w342'+_movie.poster_path+')'}"
     class='movie-card-image-container' (click)='onHighlight(movie)'> -->
     <!-- 'w154', 'w185' -->
     <div class='movie-bookmark'>
       <div *ngIf="!procBookmark" (click)='onToggleBookmark()'>
-        <img *ngIf="!(movie.bookmark && movie.bookmark.id)" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
+        <img *ngIf="!(_movie.bookmark && _movie.bookmark.id)" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
           src='./assets/icons/bookmark-add.svg' data-toggle='tooltip' title='Add Bookmark' />
-        <img *ngIf="movie.bookmark && movie.bookmark.id" style='height:20px; margin-bottom: 4px;
+        <img *ngIf="_movie.bookmark && _movie.bookmark.id" style='height:20px; margin-bottom: 4px;
     margin-right: 2px;' src='./assets/icons/bookmark-minus.png' data-toggle='tooltip' title='Remove Bookmark' />
       </div>
       <div *ngIf="procBookmark" class="spinner-border spinner-border-sm" role="status">
@@ -20,9 +20,9 @@
 
     <div class='movie-highlight'>
       <div *ngIf="!procHighlight" (click)='onHighlight(movie)'>
-        <img *ngIf="!movie.isHighlighted" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
+        <img *ngIf="!_movie.isHighlighted" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
           src='./assets/icons/check.svg' data-toggle='tooltip' title='Highlight' />
-        <img *ngIf="movie.isHighlighted" style='height:20px; margin-bottom: 4px;
+        <img *ngIf="_movie.isHighlighted" style='height:20px; margin-bottom: 4px;
     margin-right: 2px;' src='./assets/icons/minus.svg' data-toggle='tooltip' title='Remove Highlight' />
       </div>
       <div *ngIf="procHighlight" class="spinner-border spinner-border-sm" role="status">
@@ -31,28 +31,28 @@
     </div>
 
     <!-- <div
-    [ngStyle]="{'height': 'calc(('+cardWidth+' - 10px)*1.48)','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}"
+    [ngStyle]="{'height': 'calc(('+_cardWidth+' - 10px)*1.48)','background-image':'url(https://image.tmdb.org/t/p/w342'+_movie.poster_path+')'}"
     class='movie-card-image-container' (click)='onPreview(movie)'> -->
     <!-- <div
-    [ngStyle]="{'height': 'calc(('+cardWidth+' - 10px)*1.48)','background-image':'url(./assets/test-assets/wall-e_poster.jpg)'}"
+    [ngStyle]="{'height': 'calc(('+_cardWidth+' - 10px)*1.48)','background-image':'url(./assets/test-assets/wall-e_poster.jpg)'}"
     class='movie-card-image-container' (click)='onPreview(movie)'> -->
 
     <!-- <div
-    [ngStyle]="{'height': 'calc(('+cardWidth+' - 10px)*1.48)','background-image':'url(./assets/test-assets/wall-e_poster.jpg)'}"
+    [ngStyle]="{'height': 'calc(('+_cardWidth+' - 10px)*1.48)','background-image':'url(./assets/test-assets/wall-e_poster.jpg)'}"
     class='movie-card-image-container' (click)='onHighlight(movie)'> -->
 
     <!-- alt image -->
-    <!-- <div style=' text-align: center; color: white;' [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth + ')'}"
+    <!-- <div style=' text-align: center; color: white;' [ngStyle]="{'height': 'calc(1.45 * '+ _cardWidth + ')'}"
         class='movie-card-image-container'>
-        <h3>{{movie.title}}</h3>
+        <h3>{{_movie.title}}</h3>
         <div class="overlay overlay-add">
         </div>-->
     <!-- end of alt image -->
 
-    <div *ngIf="movie.video && movie.video.id" class='movie-available' data-toggle='tooltip' title='Available offline'>
+    <div *ngIf="_movie.video && _movie.video.id" class='movie-available' data-toggle='tooltip' title='Available offline'>
     </div>
 
-    <div class='movie-mark-as-watched' *ngIf='!movie.watched'>
+    <div class='movie-mark-as-watched' *ngIf='!_movie.watched'>
       <div (click)='onToggleWatched()' *ngIf='!procWatched'>
         <img style='height:20px; margin-bottom: 4px;
       margin-right: 2px;' src='./assets/icons/check.svg' data-toggle='tooltip' title='Mark as watched' />
@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <div *ngIf="movie.watched && movie.watched.id" [ngStyle]="{'width':movie.watched.percentage}"
+    <div *ngIf="_movie.watched && _movie.watched.id" [ngStyle]="{'width':_movie.watched.percentage}"
       id='watchedProgressBar' class='movie-progress-bar'>
     </div>
     <div class="overlay overlay-add" (click)='onPreview()'></div>
@@ -70,13 +70,13 @@
   <div class="card-body movie-card-body">
     <div class="movie-card-text">
       <h6 (click)="onOpenMovie()" class='text-primary movie-card-title card-title text-hyperlink' data-toggle="tooltip"
-        title="{{movie.title}}">{{movie.title}}</h6>
+        title="{{_movie.title}}">{{_movie.title}}</h6>
       <label class='text-hyperlink' style='float: left'
-        (click)='goToYear(getYear(movie.release_date))'>{{movie.release_date|releaseYear}}</label>
-      <label *ngIf='movie.vote_average>0' style='float: right' data-toggle='tooltip' title='{{movie.vote_count}} votes'>
+        (click)='goToYear(getYear(_movie.release_date))'>{{_movie.release_date|releaseYear}}</label>
+      <label *ngIf='_movie.vote_average>0' style='float: right' data-toggle='tooltip' title='{{_movie.vote_count}} votes'>
         <img style='height:10px;
       filter: invert(1);margin-bottom: 4px;
-      margin-right: 2px;' src='./assets/icons/star.svg' />{{movie.vote_average}}</label>
+      margin-right: 2px;' src='./assets/icons/star.svg' />{{_movie.vote_average}}</label>
     </div>
   </div>
 </div>
