@@ -63,19 +63,20 @@ export class IpcService {
     if (environment.runConfig.electron) {
       this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
-      function enumKeys<E>(e: E): (keyof E)[] {
-        return Object.keys(e) as (keyof E)[];
-      }
-      for (const key of enumKeys(Channel)) {
-        const locale: Channel = Channel[key];
-        console.log(locale);
-        this.listen(locale)
-      }
+      // COMMENTED FOR ANGULAR UPDATE
+      // function enumKeys<E>(e: E): (keyof E)[] {
+      //   return Object.keys(e) as (keyof E)[];
+      // }
+      // for (const key of enumKeys(Channel)) {
+      //   const locale: Channel = Channel[key];
+      //   console.log(locale);
+      //   this.listen(locale)
+      // }
 
-      this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
-        console.log('searchList:', data)
-        this.searchList.next(data)
-      })
+      // this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
+      //   console.log('searchList:', data)
+      //   this.searchList.next(data)
+      // })
     }
   }
 

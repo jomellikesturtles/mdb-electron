@@ -88,7 +88,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
           this.director = value[key]
           break;
         case 'Genre':
-          this._genres = value[key]
+          this.genres = value[key]
           break;
         case 'homepage':
           this.website = value[key]

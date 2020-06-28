@@ -6,7 +6,6 @@ import { Observable, of, Subscriber, forkJoin } from 'rxjs';
 import { catchError, map, tap, retry } from 'rxjs/operators';
 // import { Test, Movie, Torrent } from '../subject'
 import { ITorrent } from '../interfaces'
-import { forEach } from '@angular/router/src/utils/collection';
 import { IpcService, IpcCommand } from '../services/ipc.service'
 import { DomSanitizer } from '@angular/platform-browser'
 import { Pipe, PipeTransform } from '@angular/core';

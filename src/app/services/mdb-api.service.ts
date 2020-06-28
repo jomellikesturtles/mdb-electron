@@ -7,7 +7,6 @@ import { Observable, of, Subscriber, forkJoin } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
 import { ITorrent, IOmdbMovieDetail, IRating, TmdbParameters, OmdbParameters } from '../interfaces'
-import { forEach } from '@angular/router/src/utils/collection';
 import { STRING_REGEX_IMDB_ID, MDB_API_URL } from '../constants';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
