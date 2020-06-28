@@ -25,14 +25,6 @@ export class MovieService {
   plot = 'full' // short
   results = ''
 
-  // test only
-  // getTestApi(id: number): Observable<any> {
-  //   return this.http.get<any>(this.testBaseUrl).pipe(
-  //     tap(_ => this.log(`get id ${id}`)),
-  //     catchError(this.handleError<any>('getTEst'))
-  //   );
-  // }
-
   /**
    * Gets movie info. First it gets from offline source,
    * if there is none, it gets from online source (OMDB)
@@ -84,13 +76,6 @@ export class MovieService {
     const url = `${OMDB_URL}/?t=${val}&apikey=${TMDB_API_KEY}`
     return this.http.get<IOmdbMovieDetail>(url).pipe(tap(_ => this.log(`getMovie ${val}`)),
       catchError(this.handleError<IOmdbMovieDetail>('getMovie')))
-  }
-
-  searchMovieByTitle(val: string): Observable<any> {
-    const url2 = `${OMDB_URL}/?s=${val}&apikey=${OMDB_API_KEY}`
-    const url = `${TMDB_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${val}`
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('searchMovieByTitle')))
   }
 
   searchSubtitleById(val: string) {
@@ -200,6 +185,7 @@ export class MovieService {
   }
 
   /**
+   * !UNUSED
    * Gets movie details.
    * @param tmdbId the tmdb id.
    * @param val list of key object pair.`[key,object]`
@@ -264,7 +250,7 @@ export class MovieService {
    * @param val parameters key-value pair list
    * @param myHttpParam http param to append to
    */
-  appendParameters(val: any[], myHttpParam: HttpParams) {
+  private appendParameters(val: any[], myHttpParam: HttpParams) {
     val[0].forEach(element => {
       console.log(element);
       myHttpParam = myHttpParam.append(element[0], element[1])
@@ -272,8 +258,10 @@ export class MovieService {
     return myHttpParam
   }
 
+  /**
+   * !UNUSED
+   */
   getBookmark(id) {
-
     return this.http.get<any>(`http:\\\\localhost:3000\\getBookmark\\${id}`).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getBookmark')))
   }

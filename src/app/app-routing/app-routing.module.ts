@@ -6,6 +6,7 @@ import { BrowseComponent } from '../components/browse/browse.component';
 import { PersonDetailsComponent } from '../components/person-details/person-details.component';
 import { PreferencesComponent } from '../components/preferences/preferences.component';
 import { PreviewComponent } from '../components/preview/preview/preview.component';
+import { MdbGuardGuard } from '../mdb-guard.guard';
 
 const routes: Routes = [
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // homepage
@@ -20,7 +21,7 @@ const routes: Routes = [
   { path: 'person-details', component: PersonDetailsComponent },
   { path: 'preview', component: PreviewComponent },
 
-  { path: 'bookmarks', loadChildren: '../components/bookmarks/bookmarks.module#BookmarksModule' },
+  { path: 'bookmarks', loadChildren: '../components/bookmarks/bookmarks.module#BookmarksModule', canLoad: [MdbGuardGuard] },
   { path: 'watched', loadChildren: '../components/watched/watched.module#WatchedModule' },
   { path: 'dashboard', loadChildren: '../components/dashboard/dashboard.module#DashboardModule' },
   { path: 'discover', loadChildren: '../components/discover/discover.module#DiscoverModule' },
@@ -33,7 +34,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes,{enableTracing:true})],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

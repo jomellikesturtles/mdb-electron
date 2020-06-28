@@ -1,6 +1,7 @@
-import { CommaSpacePipe, MdbPipesPipe,
+import {
+  CommaSpacePipe, MdbPipesPipe,
   ReleaseYearPipe
- } from './mdb-pipes.pipe';
+} from './mdb-pipes.pipe';
 import { SimplifySizePipe, MagnetPipe } from './services/torrent.service';
 import { SearchComponent } from './components/search/search.component';
 import { BrowserModule } from '@angular/platform-browser';
@@ -28,6 +29,9 @@ import { SelectedMoviesState } from './movie.state';
 import { NotificationComponent } from './components/notification/notification.component';
 import { PreviewComponent } from './components/preview/preview/preview.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { MdbGuardGuard } from './mdb-guard.guard';
+import { backendProvider } from './services/http-interceptor.service';
+import { RouterModule } from '@angular/router';
 // import { UsernameExistValidatorDirective } from './directives/username-exist.directive'
 @NgModule({
   declarations: [
@@ -56,10 +60,11 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,
+    RouterModule.forRoot([]),
     NgxsModule.forRoot([CountState, SelectedMoviesState, AppRunState]),
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
-  providers: [],
+  providers: [MdbGuardGuard, backendProvider],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

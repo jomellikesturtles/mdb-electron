@@ -83,13 +83,16 @@ export class DetailsComponent implements OnInit, OnDestroy {
     if (!environment.runConfig.useTestData) {
       this.ngZone.runOutsideAngular(() => {
         console.time('convertTime');
-        this.activatedRoute.params.subscribe(params => {
-          if (params.id) {
-            this.getMovieOnline(params.id)
-          } else {
-            this.hasData = false
-          }
-        });
+        const id = this.activatedRoute.snapshot.paramMap.get('id')
+        this.getMovieOnline(id)
+        // this.activatedRoute.params.subscribe(params => {
+        //   if (params.id) {
+        //     this.getMovieOnline(params.id)
+        //   } else {
+        //     this.hasData = false
+        //     Number()
+        //   }
+        // });
         console.timeEnd('convertTime');
       })
     } else {
@@ -162,6 +165,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.showVideo = true
   }
 
+  /**
+   * !UNUSED
+   */
   getMovieCredits() {
     // TmdbParameters.
     const tmdbId = this.movieDetails.tmdbId

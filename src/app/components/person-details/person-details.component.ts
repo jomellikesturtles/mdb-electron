@@ -35,14 +35,17 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
       this.creditsCrew = PERSON_COMBINED_CREDITS.crew
       this.hasData = true
     } else {
-      this.activatedRoute.params.subscribe(params => {
-        console.log('activatedRoute.params', params);
-        if (params.id) {
-          this.getPersonDetails(params.id)
-        } else {
-          this.hasData = false
-        }
-      });
+
+      const id = this.activatedRoute.snapshot.paramMap.get('id')
+      this.getPersonDetails(id)
+      // this.activatedRoute.params.subscribe(params => {
+      //   console.log('activatedRoute.params', params);
+      //   if (params.id) {
+      //     this.getPersonDetails(params.id)
+      //   } else {
+      //     this.hasData = false
+      //   }
+      // });
     }
   }
 

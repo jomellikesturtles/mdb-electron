@@ -30,15 +30,10 @@ export class DiscoverComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if (environment.runConfig.useTestData === true) {
-      this.discoverResults = TMDB_SEARCH_RESULTS.results
-      this.hasResults = true
-    } else {
       this.dataService.discoverQuery.subscribe(data => {
         console.log('fromdataservice: ', data);
         this.discoverQuery(data[0], data[1], data[2])
       });
-    }
   }
 
   /**

@@ -11,7 +11,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es6",
-    "types": ["node"],
+    "types": ["node","karma"],
     "typeRoots": [
       "node_modules/@types"
     ],

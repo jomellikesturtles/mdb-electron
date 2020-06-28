@@ -78,15 +78,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   globalPlayerApiScript
 
   ngOnInit() {
-    if (environment.runConfig.useTestData === true) {
-      this.sampleListMovies[this.dataString] = TMDB_SEARCH_RESULTS.results
-      this.sampleListMovies[this.nameString] = `Sample Data`
-      this.dashboardLists.push(this.sampleListMovies)
-    } else {
       this.getNowShowingMovies()
       this.getTopMoviesFromYear()
       this.getTopGenreMovie()
-    }
     this.ipcService.libraryFolders.subscribe(value => {
       console.log('dashboard libraryFolders', value)
     })
