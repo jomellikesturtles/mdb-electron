@@ -28,7 +28,7 @@ const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`
 let DEBUG = (() => {
   let timestamp = () => { }
   timestamp.toString = () => {
-    return '[DEBUG ' + (new Date).toLocaleString() + ']'
+    return '[DEBUG ' + (new Date()).toLocaleString() + ']'
   }
   return {
     log: console.log.bind(console, '%s', timestamp)

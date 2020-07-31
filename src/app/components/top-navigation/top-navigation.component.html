@@ -70,9 +70,9 @@
   </div>
 </div>
 
-<!-- advaned find -->
+<!-- advanced find -->
 <!-- <div style='margin-top: 30px;display:none'> -->
-<div style='margin-top: 30px;z-index: 55;display:none'>
+<!--<div style='margin-top: 30px;z-index: 55;display:none'>
   <h4>Region</h4>
   <button class='btn'></button>
   <h4>Genre</h4>
@@ -95,18 +95,20 @@
     <label class="form-check-label" for="{{decade.value}}">{{decade.display}}</label>
   </div>
   <h4>Vote count</h4>
-  <div class="form-check form-check-inline list-criteria-container" *ngFor="let decade of decadesList">
-    <input class="form-check-input" type="radio" id="{{decade.value}}" name="inlineRadioOptions"
-      value="{{decade.value}}">
-    <label class="form-check-label" for="{{decade.value}}">{{decade.display}}</label>
+  <div class="form-check form-check-inline list-criteria-container" *ngFor="let vote of voteCountList">
+    <input class="form-check-input" type="radio" id="{{vote.value}}" name="inlineRadioOptions"
+      value="{{vote.value}}">
+    <label class="form-check-label" for="{{vote.value}}">{{vote.label}}</label>
   </div>
   <h4>Language</h4>
-  <div class="form-check form-check-inline list-criteria-container" *ngFor="let decade of decadesList">
+  <!-- <div class="form-check form-check-inline list-criteria-container" *ngFor="let decade of decadesList">
     <input class="form-check-input" type="radio" id="{{decade.value}}" name="inlineRadioOptions"
       value="{{decade.value}}">
     <label class="form-check-label" for="{{decade.value}}">{{decade.display}}</label>
-  </div>
-</div>
+  </div> -->
+  <!--<button (click)='clearAdvancedSearch()'>Clear</button>
+  <button (click)='goAdvancedSearch()'>Search</button>
+</div>-->
 
 <!-- <div> -->
 <!-- search queries: {{searchQuery.keywords}}, {{searchQuery.startYear}}, {{searchQuery.endYear}},

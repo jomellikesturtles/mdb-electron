@@ -17,7 +17,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { TopNavigationComponent } from './components/top-navigation/top-navigation.component';
 import { BrowseComponent } from './components/browse/browse.component';
 import { PersonDetailsComponent } from './components/person-details/person-details.component';
-// import { ProfileComponent } from './components/user/profile/profile.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
 import { AngularFireAuthModule } from '@angular/fire/auth';
@@ -32,12 +31,11 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { MdbGuardGuard } from './mdb-guard.guard';
 import { backendProvider } from './services/http-interceptor.service';
 import { RouterModule } from '@angular/router';
-// import { UsernameExistValidatorDirective } from './directives/username-exist.directive'
+import { FloatingPlayerComponent } from './components/floating-player/floating-player.component';
 @NgModule({
   declarations: [
     AppComponent,
     BulkDownloadComponent,
-    // PreferencesComponent,
     NavigationComponent,
     TopNavigationComponent,
     BrowseComponent,
@@ -49,6 +47,7 @@ import { RouterModule } from '@angular/router';
     CommaSpacePipe,
     MdbPipesPipe,
     PreviewComponent,
+    FloatingPlayerComponent,
     // ReleaseYearPipe/
     // UsernameExistValidatorDirective
   ],
@@ -62,7 +61,7 @@ import { RouterModule } from '@angular/router';
     AngularFirestoreModule,
     RouterModule.forRoot([]),
     NgxsModule.forRoot([CountState, SelectedMoviesState, AppRunState]),
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [MdbGuardGuard, backendProvider],
   bootstrap: [AppComponent]

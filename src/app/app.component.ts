@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
   constructor(private firebaseService: FirebaseService, private store: Store) { }
 
   ngOnInit() {
-    this.getCurrentUser()
+    // this.getCurrentUser()
   }
 
   getCurrentUser() {

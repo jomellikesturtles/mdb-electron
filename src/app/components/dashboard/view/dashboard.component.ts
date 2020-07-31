@@ -2,7 +2,8 @@ import { environment } from './../../../../environments/environment';
 import {
   AfterViewInit, Component, OnInit, ChangeDetectorRef, ElementRef, Input, ChangeDetectionStrategy, ViewChild, OnDestroy
 } from '@angular/core'
-import { Observable } from 'rxjs'
+import { Observable, Subject } from 'rxjs'
+import { takeUntil } from 'rxjs/operators'
 import { MovieService } from '../../../services/movie.service'
 import { DataService } from '../../../services/data.service'
 import { IpcService } from '../../../services/ipc.service'
@@ -41,7 +42,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   hasAlreadySelected: any
 
   @Select(state => state.moviesList) moviesList$
-  @ViewChild('player') thePlayer: ElementRef;
+  // @ViewChild('player') thePlayer: ElementRef;
 
   browserConnection = navigator.onLine
   theLink = ''
@@ -76,15 +77,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   tag
   done = false;
   globalPlayerApiScript
+  private ngUnsubscribe = new Subject();
 
   ngOnInit() {
-      this.getNowShowingMovies()
-      this.getTopMoviesFromYear()
-      this.getTopGenreMovie()
+    this.getNowShowingMovies()
+    this.getTopMoviesFromYear()
+    this.getTopGenreMovie()
     this.ipcService.libraryFolders.subscribe(value => {
       console.log('dashboard libraryFolders', value)
     })
-
     // $('[data-toggle="popover"]').popover()
     // $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
   }
@@ -93,6 +94,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
+    this.ngUnsubscribe.next()
+    this.ngUnsubscribe.complete()
   }
 
   /**

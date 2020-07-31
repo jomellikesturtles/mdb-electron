@@ -215,9 +215,10 @@ export class MovieService {
   }
 
   /**
-   * [[key,value],[key,value]]
+   * Get movies discover by genre, year, etc.
+   * @param val [[key,value],[key,value]]
    */
-  getMoviesDiscover(...val): Observable<any> {
+  getMoviesDiscover(...val: any): Observable<any> {
     const url = `${TMDB_URL}/discover/movie`
     let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
     myHttpParam = this.appendParameters(val, myHttpParam)

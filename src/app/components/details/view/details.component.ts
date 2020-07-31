@@ -18,7 +18,12 @@ import { UserDataService } from 'src/app/services/user-data.service';
 import { environment } from 'src/environments/environment';
 import { WatchedService, IWatched } from 'src/app/services/watched.service';
 declare var $: any
+import { takeUntil } from 'rxjs/operators'
+import { Subject } from 'rxjs';
 
+// this.movieService.getMoviesDiscover(params).pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
+
+// })
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -60,6 +65,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   showVideo = false
   isBookmarked = false
   isWatched = false
+  private ngUnsubscribe = new Subject();
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -142,10 +148,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // this.movieMetadataSubscription.unsubscribe()
-    // this.libraryMovieSubscription.unsubscribe()
-    // this.selectedMovie = null
-    // this.isVideoAvailable = false
+    this.ngUnsubscribe.next()
+    this.ngUnsubscribe.complete()
   }
 
   /**
@@ -228,9 +232,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     if (bookmark) {
       this.movieDetails.bookmark = bookmark
       this.isBookmarked = true
-      // {
-      //   id: bookmark['id']
-      // }
     }
     console.log('BOOKMARK: ', bookmark)
     this.procBookmark = false
@@ -322,7 +323,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getMovieOnline(val: any) {
     // tt2015381 is Guardians of the galaxy 2014; for testing only
     console.log('getMovie initializing with value...', val);
-    this.movieService.getTmdbMovieDetails(val, [], 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
+
+    this.movieService.getTmdbMovieDetails(val, [], 'videos,images,credits,similar,external_ids,recommendations').pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
+    // this.movieService.getTmdbMovieDetails(val, [], 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
       console.log('got from getMovieOnline ', data)
       this.selectedMovie = data;
       const myObject = this.selectedMovie
@@ -360,6 +363,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // this.ipcService.getImage(this.selectedMovie.imdbID, 'backdrop')
     return this.selectedMovie.Poster
   }
+
   /**
    * Gets backdrop or background image
    * @param val IMDb id
@@ -464,7 +468,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   goToPerson(val) {
     this.router.navigate([`/person-details/${val}`], { relativeTo: this.activatedRoute });
-    // d
   }
 
   goToFullCredits() {

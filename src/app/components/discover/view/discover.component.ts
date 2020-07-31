@@ -1,9 +1,9 @@
-import { environment } from './../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../../services/data.service'
 import { MovieService } from '../../../services/movie.service'
 import { TmdbParameters, GenreCodes, TmdbSearchMovieParameters } from '../../../interfaces';
-import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-discover',
@@ -23,6 +23,7 @@ export class DiscoverComponent implements OnInit {
   discoverTitle = ''
   hasMoreResults = false
   currentParams = []
+  private ngUnsubscribe = new Subject();
 
   constructor(
     private dataService: DataService,
