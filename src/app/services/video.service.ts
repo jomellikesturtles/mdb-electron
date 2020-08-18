@@ -11,10 +11,18 @@ export class VideoService {
 
   constructor(
     private ipcService: IpcService,
-    private firebaseService: FirebaseService
-  ) { }
+    private firebaseService: FirebaseService,
+  ) {
 
+  }
+  // checkCompatibility(): Observable<boolean> {
+  //   (window as any).RTCPeerConnection = (window as any).RTCPeerConnection || (window as any).webkitRTCPeerConnection || (window as any).mozRTCPeerConnection;
+  //   return of(!!(window as any).RTCPeerConnection);
+  // }
+  // private client: typeof WebTorrent
+  newWebTorrent() {
 
+  }
   /**
    * Gets movie video.
    */

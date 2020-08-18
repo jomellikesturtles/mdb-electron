@@ -5,7 +5,7 @@ import { BulkDownloadComponent } from '../components/bulk-download/bulk-download
 import { BrowseComponent } from '../components/browse/browse.component';
 import { PersonDetailsComponent } from '../components/person-details/person-details.component';
 import { PreferencesComponent } from '../components/preferences/preferences.component';
-import { PreviewComponent } from '../components/preview/preview/preview.component';
+import { PreviewComponent } from '../components/preview/preview.component';
 import { MdbGuardGuard } from '../mdb-guard.guard';
 
 const routes: Routes = [

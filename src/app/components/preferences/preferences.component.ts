@@ -14,7 +14,6 @@ declare var $: any;
 export class PreferencesComponent implements OnInit {
   @Input() data: Observable<any>
 
-  currentDrive = 'C:\\'
   initialFolder = 'C:\\'
   testFoldersList = ['folder1', 'folder2']
   testLibraryFolders = ['C:\\Users\\', 'D:\\Movies']
@@ -46,7 +45,6 @@ export class PreferencesComponent implements OnInit {
     let libraryFoldersSubscription = this.ipcService.libraryFolders.subscribe((value) => {
       this.libraryFolders = value
       console.log('libraryfolders: ', value);
-      // value.
       this.cdr.detectChanges()
     })
     console.log(typeof libraryFoldersSubscription);

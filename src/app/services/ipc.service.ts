@@ -53,16 +53,20 @@ export class IpcService {
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
   movieIdentified = new BehaviorSubject<any>({ id: 0 })
   searchList = new BehaviorSubject<any>([])
+  torrentVideo = new BehaviorSubject<string[]>([])
   private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone,
     // private cdr: ChangeDetectorRef
-  ) ////
-  {
-    // UNCOMMENT IF IN ELECTRON MODE
+  ) {
     if (environment.runConfig.electron) {
       this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
+      this.ipcRenderer.on('torrent-video', (event, data: any) => {
+        console.log('event: ', event)
+        console.log('data: ', data)
+        this.torrentVideo.next(data)
+      })
       // COMMENTED FOR ANGULAR UPDATE
       // function enumKeys<E>(e: E): (keyof E)[] {
       //   return Object.keys(e) as (keyof E)[];
@@ -238,7 +242,6 @@ export enum IpcCommand {
   MinimizeApp = 'app-min',
   RestoreApp = 'app-restore',
   ExitApp = 'exit-program',
-  FirebaseProvider = 'firebase-provider',
   ScanLibrary = 'scan-library',
   StopScanLibrary = 'stop-scan-library',
   OpenLinkExternal = 'open-link-external',

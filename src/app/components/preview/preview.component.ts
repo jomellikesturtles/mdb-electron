@@ -5,13 +5,11 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRe
 import { TEST_TMDB_MOVIE_DETAILS, TEST_TMDB_SINGLE_RESULT } from 'src/app/mock-data';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
-import { BookmarkService } from 'src/app/services/bookmark.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { GenreCodes, ITmdbResult } from 'src/app/interfaces';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MovieService } from 'src/app/services/movie.service';
 import { UserDataService } from 'src/app/services/user-data.service';
-import { WatchedService } from 'src/app/services/watched.service';
 declare var $: any
 
 @Component({
@@ -100,6 +98,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
     event.target.playVideo();
   }
 
+  /**
+   * Detects the state change of trailer player (YouTube)
+   * @param event
+   */
   onPlayerStateChange(event) {
     /**
      * -1 (unstarted)
@@ -193,6 +195,8 @@ export class PreviewComponent implements OnInit, OnDestroy {
       this.generateYoutube()
       this.hasAlreadySelected = true
     }
+
+
     const root = this
     // setTimeout(() => {
     root.setVideo(videoId)
