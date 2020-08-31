@@ -7,13 +7,15 @@ import { SelectedListComponent } from './selected-list/selected-list.component';
 import { MovieCardComponent } from './movie-card/movie-card.component';
 import { CardListComponent } from './card-list/card-list.component';
 import { ReleaseYearPipe } from 'src/app/mdb-pipes.pipe';
+import { VideoPlayerComponent } from '../video-player/video-player/video-player.component';
 
 @NgModule({
   declarations: [
     SelectedListComponent,
     MovieCardComponent,
     CardListComponent,
-    ReleaseYearPipe
+    ReleaseYearPipe,
+    VideoPlayerComponent
   ],
   imports: [
     CommonModule
@@ -22,7 +24,8 @@ import { ReleaseYearPipe } from 'src/app/mdb-pipes.pipe';
     SelectedListComponent,
     MovieCardComponent,
     CardListComponent,
-    ReleaseYearPipe
+    ReleaseYearPipe,
+    VideoPlayerComponent
   ]
 })
 export class SharedModule { }

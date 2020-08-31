@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 // import { Torrent, Movie, Test } from '../../subject'
-import { ITorrent } from '../../interfaces'
-import { MovieService } from '../../services/movie.service'
+import { MDBTorrent } from '../../interfaces'
 import { IpcService, IpcCommand } from '../../services/ipc.service'
 import { DISPLAYEDMOVIES, MOVIEGENRES } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
@@ -27,7 +26,6 @@ export class BulkDownloadComponent implements OnInit {
   result: any
 
   constructor(
-    private movieService: MovieService,
     private ipcService: IpcService,
     private torrentService: TorrentService,
     private router: Router,

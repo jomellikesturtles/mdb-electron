@@ -78,25 +78,6 @@ export class TopNavigationComponent implements OnInit {
   lastQuery = ''
 
   ngOnInit() {
-    this.init()
-  }
-
-  initializeAdvancedSearchCriteria() {
-    for (let index = 1; index <= 10; index++) {
-      this.voteAverageList.push({
-        label: `+${index}`,
-        value: index
-      });
-    }
-    for (let index = 1910; index <= (new Date).getFullYear(); index+=10) {
-      this.decadesList.push({
-        display: `${index}s`,
-        value: index
-      });
-    }
-  }
-
-  init() {
     const e = localStorage.getItem('user')
     // this.user$.pipe(delay(1000)).subscribe(e => {
     if (e === null) {
@@ -112,6 +93,21 @@ export class TopNavigationComponent implements OnInit {
       this.searchHistoryList = data
       console.log('DATA:', data)
     })
+  }
+
+  initializeAdvancedSearchCriteria() {
+    for (let index = 1; index <= 10; index++) {
+      this.voteAverageList.push({
+        label: `+${index}`,
+        value: index
+      });
+    }
+    for (let index = 1910; index <= (new Date).getFullYear(); index+=10) {
+      this.decadesList.push({
+        display: `${index}s`,
+        value: index
+      });
+    }
   }
 
   /**
@@ -135,15 +131,14 @@ export class TopNavigationComponent implements OnInit {
   /**
    * Initialize search
    */
-  onSearch(val: any) {
+  onSearch(val: string) {
     val = val.trim()
-    // ifcurrent router === results
-
     if (this.lastQuery === val && this.router.url === '/results') {
       return
     }
     this.lastQuery = val
     this.searchHistoryList.unshift(val)
+    this.searchHistoryList.splice(this.searchHistoryList.indexOf(val), 1)
     console.log(this.searchHistoryList);
     if (this.searchHistoryList.length >= this.searchHistoryMaxLength) {
       // this.searchHistoryList = this.searchHistoryList.splice(1)
@@ -159,7 +154,7 @@ export class TopNavigationComponent implements OnInit {
 
     const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`)
     if (enteredQuery.match(REGEX_IMDB_ID)) {
-      // this.searchByImdbId(enteredQuery)
+      this.searchByImdbId(enteredQuery)
     } else {
       this.searchByTitle(enteredQuery)
     }

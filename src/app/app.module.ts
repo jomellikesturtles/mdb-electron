@@ -32,6 +32,7 @@ import { MdbGuardGuard } from './mdb-guard.guard';
 import { backendProvider } from './services/http-interceptor.service';
 import { RouterModule } from '@angular/router';
 import { FloatingPlayerComponent } from './components/floating-player/floating-player.component';
+import { SharedModule } from './components/shared/shared.module';
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,6 +62,7 @@ import { FloatingPlayerComponent } from './components/floating-player/floating-p
     AngularFirestoreModule,
     RouterModule.forRoot([]),
     NgxsModule.forRoot([CountState, SelectedMoviesState, AppRunState]),
+    SharedModule
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [MdbGuardGuard, backendProvider],

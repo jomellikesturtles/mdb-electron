@@ -1,16 +1,11 @@
 import { environment } from './../../../../environments/environment';
-import { Component, Input, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core'
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core'
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../../interfaces'
-import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../../services/data.service'
-import { IpcService } from '../../../services/ipc.service'
 import { MovieService } from '../../../services/movie.service'
-import { NavigationService } from '../../../services/navigation.service'
-import { UtilsService } from '../../../services/utils.service'
 import { ISearchQuery } from '../../top-navigation/top-navigation.component'
 import { Select, Store } from '@ngxs/store'
-import { AddMovie, RemoveMovie } from '../../../movie.actions'
 
 declare var $: any
 
@@ -32,17 +27,12 @@ export class ResultsComponent implements OnInit, OnDestroy {
   displayMessage = ''
   displaySnackbar = false
   currentPage = 1
+  isProcSearching = true
 
   constructor(
     private dataService: DataService,
-    private ipcService: IpcService,
     private movieService: MovieService,
-    private navigationService: NavigationService,
-    private utilsService: UtilsService,
-    private cdr: ChangeDetectorRef,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private store: Store) { }
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     console.log('inResutlts')
@@ -64,6 +54,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   getData() {
     this.dataService.searchQuery.subscribe(data => {
       console.log('fromdataservice searchQuery: ', data);
+      this.isProcSearching = true;
       this.searchResults = [] // clear for new search
       this.currentPage = 1
       this.searchQuery = data
@@ -85,6 +76,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
         this.hasMoreResults = true
       }
       // this.setHighlights()
+      this.isProcSearching = false;
       this.cdr.detectChanges()
     })
   }
@@ -121,5 +113,4 @@ export class ResultsComponent implements OnInit, OnDestroy {
     })
   }
 
-  // download, add to watchlsit, mark as watched
 }

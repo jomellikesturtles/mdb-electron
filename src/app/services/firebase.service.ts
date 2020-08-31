@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-import { catchError, map } from 'rxjs/operators'
-import { pipe, Observable } from 'rxjs'
 import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFireModule } from '@angular/fire/'
 import { AngularFirestore, } from '@angular/fire/firestore'
 import * as firebase from 'firebase';
 import { IpcService, BookmarkChanges, IpcCommand } from './ipc.service';
-import { Select, Store } from '@ngxs/store';
+import { Store } from '@ngxs/store';
 import { RemoveUser } from '../app.actions';
 @Injectable({
   providedIn: 'root'
@@ -177,7 +175,7 @@ export class FirebaseService {
   deleteItemsFromFirestore() {
     const val = this.bookmarkDeleteList
     val.forEach(element => {
-      const removeBookmarkRef = this.db.collection('bookmark').where('tmdbId', '==', element.tmdbId).get().then(snapshot => {
+      const removeBookmarkRef = this.db.collection('bookmark').where(FieldName.TmdbId, FirebaseOperator.Equal, element.tmdbId).get().then(snapshot => {
         snapshot.forEach(e => {
           const ref = this.db.collection('bookmark').doc(e.id)
           this.batch.delete(ref);

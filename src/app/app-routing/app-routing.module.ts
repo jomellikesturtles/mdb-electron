@@ -7,10 +7,12 @@ import { PersonDetailsComponent } from '../components/person-details/person-deta
 import { PreferencesComponent } from '../components/preferences/preferences.component';
 import { PreviewComponent } from '../components/preview/preview.component';
 import { MdbGuardGuard } from '../mdb-guard.guard';
+import { VideoPlayerComponent } from '../components/video-player/video-player/video-player.component';
 
 const routes: Routes = [
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // homepage
   // { path: '', redirectTo: '/results', pathMatch: 'full' },
+  { path: 'video', component: VideoPlayerComponent },
   { path: '', redirectTo: '/preferences', pathMatch: 'full' }, // for fast boot?
   // { path: '', redirectTo: '/preview', pathMatch: 'full' }, // for fast boot?
   { path: 'browse', component: BrowseComponent },

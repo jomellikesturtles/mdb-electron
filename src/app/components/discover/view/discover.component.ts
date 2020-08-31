@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { DataService } from '../../../services/data.service'
 import { MovieService } from '../../../services/movie.service'
 import { TmdbParameters, GenreCodes, TmdbSearchMovieParameters } from '../../../interfaces';
@@ -10,7 +10,7 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './discover.component.html',
   styleUrls: ['./discover.component.scss']
 })
-export class DiscoverComponent implements OnInit {
+export class DiscoverComponent implements OnInit, OnDestroy {
 
   sortByList = ['popularity.asc', 'popularity.desc', 'release_date.asc', 'release_date.desc', 'revenue.asc', 'revenue.desc', 'primary_release_date.asc', 'primary_release_date.desc', 'original_title.asc', 'original_title.desc', 'vote_average.asc', 'vote_average.desc', 'vote_count.asc', 'vote_count.desc']
   sortByDefault = 'popularity.desc'
@@ -29,12 +29,16 @@ export class DiscoverComponent implements OnInit {
     private dataService: DataService,
     private movieService: MovieService,
   ) { }
-
   ngOnInit(): void {
-      this.dataService.discoverQuery.subscribe(data => {
+      this.dataService.discoverQuery.pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
         console.log('fromdataservice: ', data);
         this.discoverQuery(data[0], data[1], data[2])
       });
+  }
+
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next()
+    this.ngUnsubscribe.complete()
   }
 
   /**

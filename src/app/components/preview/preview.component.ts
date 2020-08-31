@@ -160,19 +160,17 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
     let theRes = await this.movieService.getTmdbVideos(this.previewMovie.id).toPromise()
 
-    if (theRes.results.length > 0) {
-      theRes = theRes.results.find(e => e.type === 'Trailer')
-      this.hasTrailerClip = true
-      if (theRes) {
-        theRes = theRes.key
-      } else {
-        return
-      }
-      // const index = Math.round(Math.random() * (theRes.results.length - 1))
-      // theRes = theRes.results[index].key
+    if (theRes.results.length === 0) { return }
+
+    theRes = theRes.results.find(e => e.type === 'Trailer')
+    this.hasTrailerClip = true
+    if (theRes) {
+      theRes = theRes.key
     } else {
       return
     }
+      // const index = Math.round(Math.random() * (theRes.results.length - 1))
+      // theRes = theRes.results[index].key
     // this.movieService.getRandomVideoClip(query).subscribe(data => {
     // data.forEach(element => {
     //   const snipTitle = $.parseHTML(element.snippet.title.toLowerCase())[0].textContent

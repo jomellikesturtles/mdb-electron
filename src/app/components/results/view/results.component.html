@@ -12,8 +12,12 @@
 
 <div class="container-fluid">
 
-  <div *ngIf='searchResults.length===0'>
+  <div *ngIf='searchResults.length===0 && !isProcSearching'>
     <h1 class='jumbo-message'>No results found for '{{currentSearchQuery}}' :(</h1>
+  </div>
+
+  <div *ngIf='isProcSearching'>
+    <h1 class='jumbo-message'>Searching for '{{currentSearchQuery}}'...</h1>
   </div>
 
   <h1 *ngIf="searchResults.length>0">Search results for "{{currentSearchQuery}}"</h1>

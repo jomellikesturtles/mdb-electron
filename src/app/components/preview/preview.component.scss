@@ -16,6 +16,20 @@
   opacity: 1
 }
 
+#closeIcon {
+  background-image: url(~/assets/icons/close.svg);position: absolute;
+  filter: invert(1) contrast(0);
+  color: #ccc;
+  background-position: center;
+  background-size: cover;
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  right: 8vw;
+  margin: auto;
+  transform: translateY(50%);z-index:5000;
+}
+
 #closeIcon :hover {
   filter: invert(1);
 }

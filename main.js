@@ -613,7 +613,6 @@ function listen(eventName, processName, path, params) {
           startProc(processName);
         }
         break;
-
       default:
         break;
     }

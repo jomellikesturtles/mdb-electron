@@ -1,20 +1,8 @@
-<div id='isVideoAvailable' *ngIf='showVideo' id='target'
-  style='background-color: black;width: 100%;height: calc(100vh - 50px);'>
-  <!-- <video *ngIf="showVideo" src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4 -->
-  <!-- " id="videoPlayer" controls style="width: 100%;height:100%;"> -->
-  <video *ngIf="showVideo" style="width:100%; height:100%;" poster="" controls preload="none" autoplay>
-    <!-- <video *ngIf="showVideo" controlsList="nodownload" style="width:100%;height:100%;" poster="" controls preload="none"> -->
-    <source [src]='streamLink' type="video/mp4">
-    <!-- <source [src]='"http://"+streamLink' type="video/mp4"> -->
-    <!-- <source src="http://localhost:3000/stream" type="video/mp4"> -->
-    <!-- <source src="https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4" type="video/mp4"> -->
-    <!-- <track label="English subtitles" kind="subtitles" srclang="en" src="assets/sample-subtitles.vtt" default> -->
-  </video>
-  <!-- </video> -->
+<div *ngIf="showVideo">
+  <app-video-player [streamLink]='streamLink'></app-video-player>
 </div>
-
 <div
-  [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(https://image.tmdb.org/t/p/original' + movieDetails.backgroundPath + ')'}"
+  [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(https://image.tmdb.org/t/p/original' + movieBackdrop + ')'}"
   style='background-size: cover;background-repeat: no-repeat;background-position: center;
   background-attachment: fixed;'>
   <div style='padding-top: 70px; padding-bottom: 100px'>
@@ -27,13 +15,7 @@
               [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/w342'+movieDetails.posterPath+')','height':'calc(1.481*300px)'}"
               style='background-size: cover; background-position: center; width: 100%; background-color: white;'>
             </div>
-
-            <!-- <div class='img-container'
-              [ngStyle]="{'background-image':'url('+movieDetails.posterPath+')','height':'calc(1.481*300px)'}"
-              style='background-size: cover; background-position: center; width: 100%; background-color: white;'>
-            </div> -->
             <div class='uk-button-group'>
-
               <button [disabled]='procBookmark' class='btn btn-small'
                 [ngClass]="{'btn-success': !isBookmarked,'btn-danger':isBookmarked}" (click)='toggleBookmark()'>
                 <span *ngIf="isBookmarked">Remove bookmark</span>
@@ -54,36 +36,47 @@
             <div style='display: flex;'>
               <h2 id="movie-title">{{movieDetails.original_title}}</h2>&nbsp;
               <h2 id="movie-title">{{movieDetails.title}}</h2>&nbsp;
-              {{progress}}
-              <button (click)='processOutsideOfAngularZone()'>Outside</button>
-              <button (click)='processWithinAngularZone()'>Within</button>
               <h2 *ngIf="movieDetails.releaseDate" class='text-hyperlink'
                 (click)='goToDiscover("year",getYear(movieDetails.releaseDate))'>
                 ({{movieDetails.releaseDate|releaseYear}})
               </h2>
               <h2 (click)='goToDiscover("certification",movieCertification)'>{{movieCertification}}</h2>
 
-              <button *ngIf="isVideoAvailable" class="btn btn-primary" type="button" (click)='playVideo()'
-                [disabled]='procVideo || !isVideoAvailable'>
+              <button *ngIf="isMovieAvailable" class="btn btn-primary" type="button" (click)='playVideo()'
+                [disabled]='procVideo || !isMovieAvailable'>
                 <div *ngIf="procVideo">
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                   Loading...
                 </div>
                 <div *ngIf="!procVideo">
-                  <div *ngIf="isVideoAvailable">
+                  <div *ngIf="isMovieAvailable">
                     Play
                   </div>
-                  <div *ngIf="!isVideoAvailable">
+                  <div *ngIf="!isMovieAvailable">
                     Not available
                   </div>
                 </div>
               </button>
-              <button class='btn btn-primary' (click)='playTrailer()'>
+
+              <!-- play options -->
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Play
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <div *ngFor="let torrent of torrents">
+                    <a class="dropdown-item" (click)='playTorrent(torrent.hash)'>{{torrent.name}} {{torrent.quality}}
+                      {{torrent.peers}}</a>
+                  </div>
+                </div>
+              </div>
+
+              <button class='btn btn-primary' (click)='playTrailer()' *ngIf='movieTrailer'>
                 Play Trailer
               </button>
             </div>
 
-            <!-- isVideoAvailable  -->
             <p id="movie-plot" style='overflow-wrap: break-word !important;
             word-wrap: break-word !important;
             white-space: pre-line;'>{{movieDetails.plot}}</p>
@@ -132,7 +125,7 @@
                   data-toggle='tooltip' title='{{movieDetails.website}}'>
                   Website
                 </div>
-                <div *ngIf="movieDetails.external_ids" class='text-hyperlink'>
+                <div *ngIf="movieDetails.external_ids" class='row'>
                   <div *ngIf="movieDetails.external_ids.facebook_id" class='text-hyperlink'
                     (click)="goToLink('facebook', movieDetails.external_ids.facebook_id)">
                     Facebook
@@ -172,7 +165,7 @@
                   <p>{{torrent.peers}}</p>
                 </td>
                 <td>
-                  <button class="btn btn-primary" (click)="copyToClipboard(torrent.magnet_link)">Copy to
+                  <button class="btn btn-primary" (click)="copyToClipboard(torrent.magnetLink)">Copy to
                     clipboard</button>
                 </td>
               </tr>

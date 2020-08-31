@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, Pipe, PipeTransform } from '@angular/core';
 import { Observable } from 'rxjs'
 import { IpcService, IpcCommand } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
@@ -24,14 +24,7 @@ export class PreferencesComponent implements OnInit {
   foldersList = this.testFoldersList
   currentFolder = this.initialFolder
   previousFolder = ''
-  preferencesObject: IPreferences = {
-    isDarkMode: false,
-    isDirty: false,
-    isEnableCache: false,
-    frequencyValue: 3,
-    frequencyUnit: 'day',
-    libraryFolders: this.libraryFolders
-  }
+  preferencesObject: IPreferences = DEFAULT_PREFERENCES
   constructor(
     private ipcService: IpcService,
     private cdr: ChangeDetectorRef
@@ -129,12 +122,17 @@ export class PreferencesComponent implements OnInit {
     this.ipcService.call(IpcCommand.UpdateTorrentDump)
   }
 
+  onSyncUserData() {
+
+  }
+
   /**
    * saves config file
    */
   onSave() {
     this.preferencesObject.libraryFolders = this.libraryFolders
     this.ipcService.call(IpcCommand.SavePreferences, this.preferencesObject)
+    this.preferencesObject.isDirty = false;
   }
 
   /**
@@ -142,6 +140,7 @@ export class PreferencesComponent implements OnInit {
    */
   onReset() {
     this.preferencesObject = DEFAULT_PREFERENCES
+    this.preferencesObject.isDirty = false;
   }
 
   onAddFolder(folderName: string) {
@@ -187,7 +186,6 @@ export class PreferencesComponent implements OnInit {
 
   // goes back to the parent folder
   onGoToParentFolder() {
-
     if ((this.currentFolder.lastIndexOf('\\')) <= 2) {
     } else {
       this.previousFolder = this.currentFolder
@@ -199,5 +197,13 @@ export class PreferencesComponent implements OnInit {
     this.previousFolder = this.currentFolder
     this.currentFolder = folder
     this.ipcService.openFolder(folder)
+  }
+}
+
+@Pipe({ name: 'dataDisplay' })
+export class DataDisplayPipe implements PipeTransform {
+  transform(value: any): string {
+    if (value === null || value === undefined || value === '')
+      return 'noData'
   }
 }

@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of, Subscriber, forkJoin } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
-import { ITorrent, IOmdbMovieDetail, IRating, TmdbParameters } from '../interfaces'
+import { TmdbParameters } from '../interfaces'
 
 const jsonContentType = new HttpHeaders({ 'Content-Type': 'application/json' })
 

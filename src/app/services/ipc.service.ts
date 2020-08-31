@@ -236,6 +236,17 @@ export class IpcService {
     // this.ipcRenderer.send('bookmark', ['bookmark-get', val])
   }
 
+  scanLibrary() {
+
+    this.ipcRenderer.send('scan-library')
+    this.ipcRenderer.on('scan-result', e => {
+    })
+    this.ipcRenderer.on('scan-complete', e => {
+      this.ipcRenderer.removeListener('scan-result', d => { })
+      this.ipcRenderer.removeListener('scan-complete', d => { })
+    })
+  }
+
 }
 
 export enum IpcCommand {

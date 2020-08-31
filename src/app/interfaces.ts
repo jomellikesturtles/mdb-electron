@@ -261,6 +261,7 @@ export interface IPreferences {
   isDirty: boolean
   isEnableCache: boolean
   libraryFolders: string[]
+  torrentSeedRatio: number
 }
 
 export interface Credits {
@@ -304,7 +305,7 @@ export enum Department {
   Writing = 'Writing',
 }
 
-export interface ITorrent {
+export class MDBTorrent {
   id?: number
   name?: string
   size?: string
@@ -320,6 +321,14 @@ export interface ITorrent {
   dateUploadedUnix?: number
   isYts?: boolean
   magnetLink?: string
+}
+
+export class ITPBTorrent {
+  id?: number
+  name?: string
+  hash: string
+  sizeBytes?: number
+  added?: string
 }
 
 // export interface ITmdbDiscoverParameters {
