@@ -1,13 +1,16 @@
 <div class='image-container'
-  style='border-radius: 50%; height:100px;width:100px;background-image: url("./assets/icons/human.svg");'></div>
+  style='border-radius: 50%; height:100px;width:100px;background-image: url("./assets/icons/human.svg");' ngStyle='{}'>
+</div>
 <!-- let movie of (movies$| async)?.movies -->
 <div class='image-container' style='border-radius: 50%; height:100px;width:100px;'
-  [ngStyle]="{'background-image':'url('+firebaseUser$.photoURL+')'}"> </div> <button class='btn btn-primary'>Change
+  [ngStyle]="{'background-image':'url('+firebaseUser$.photoURL+')'}"> </div>
+<p>{{firebaseUser$.displayName}}</p>
+
+<input type="file" id="myfile" placeholder="Upload file" accept=".jpg,.jpeg,.png" name="myfile"
+  (change)='uploadFile($event.target.files)'>
+<button class='btn btn-primary'>Change
   profile image</button>
 <p>{{firebaseUser$.email}}</p>
-<!-- [ngStyle]="{'height': 'calc(1.45 * '+ cardWidth +
-  ')','background-image':'url(https://image.tmdb.org/t/p/w342'+movie.poster_path+')'}" -->
-<!-- <button class='btn btn-primary'>Change profile image</button> -->
 
 <div class='container'>
   <div class='row'>
@@ -26,9 +29,9 @@
 <div>
   <h3>My Stats</h3>
   <label>You have {{userProfile.bookmarkedCount}} bookmarked movies.</label>
-  <button *ngIf="userProfile.bookmarkedCount">Bookmarks</button>
+  <button routerLink='./bookmarks' href='#' *ngIf="userProfile.bookmarkedCount">Bookmarks</button>
   <label>You have watched {{userProfile.watchedCount}} movies.</label>
-  <button *ngIf="userProfile.watchedCount">Watched</button>
+  <button routerLink='./watched' href='#' *ngIf="userProfile.watchedCount">Watched</button>
 </div>
 <div>
   <h3>Most Played</h3>

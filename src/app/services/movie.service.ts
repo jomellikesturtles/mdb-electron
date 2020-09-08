@@ -6,8 +6,8 @@ import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of, Subscriber, forkJoin } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
-import { ITorrent, IOmdbMovieDetail, IRating, TmdbParameters, OmdbParameters } from '../interfaces'
-import { forEach } from '@angular/router/src/utils/collection';
+import { MDBTorrent, IOmdbMovieDetail, IRating, TmdbParameters, OmdbParameters } from '../interfaces'
+// import { forEach } from '@angular/router/src/utils/collection';
 import { OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID, YOUTUBE_API_KEY } from '../constants';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -24,14 +24,6 @@ export class MovieService {
   imdbId = 'tt0499549'
   plot = 'full' // short
   results = ''
-
-  // test only
-  // getTestApi(id: number): Observable<any> {
-  //   return this.http.get<any>(this.testBaseUrl).pipe(
-  //     tap(_ => this.log(`get id ${id}`)),
-  //     catchError(this.handleError<any>('getTEst'))
-  //   );
-  // }
 
   /**
    * Gets movie info. First it gets from offline source,
@@ -84,13 +76,6 @@ export class MovieService {
     const url = `${OMDB_URL}/?t=${val}&apikey=${TMDB_API_KEY}`
     return this.http.get<IOmdbMovieDetail>(url).pipe(tap(_ => this.log(`getMovie ${val}`)),
       catchError(this.handleError<IOmdbMovieDetail>('getMovie')))
-  }
-
-  searchMovieByTitle(val: string): Observable<any> {
-    const url2 = `${OMDB_URL}/?s=${val}&apikey=${OMDB_API_KEY}`
-    const url = `${TMDB_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${val}`
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('searchMovieByTitle')))
   }
 
   searchSubtitleById(val: string) {
@@ -161,6 +146,21 @@ export class MovieService {
   /**
    * Gets movie details.
    * @param tmdbId the tmdb id.
+   */
+  getTmdbVideos(tmdbId: number): Observable<any> {
+    const url = `${TMDB_URL}/movie/${tmdbId}/videos`
+    const myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getTmdbMovieDetails')))
+  }
+
+  /**
+   * Gets movie details.
+   * @param tmdbId the tmdb id.
    * @param val list of key object pair.`[key,object]`
    * @param appendToResponse optional append to response
    */
@@ -185,6 +185,7 @@ export class MovieService {
   }
 
   /**
+   * !UNUSED
    * Gets movie details.
    * @param tmdbId the tmdb id.
    * @param val list of key object pair.`[key,object]`
@@ -214,9 +215,10 @@ export class MovieService {
   }
 
   /**
-   * [[key,value],[key,value]]
+   * Get movies discover by genre, year, etc.
+   * @param val [[key,value],[key,value]]
    */
-  getMoviesDiscover(...val): Observable<any> {
+  getMoviesDiscover(...val: any): Observable<any> {
     const url = `${TMDB_URL}/discover/movie`
     let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
     myHttpParam = this.appendParameters(val, myHttpParam)
@@ -249,7 +251,7 @@ export class MovieService {
    * @param val parameters key-value pair list
    * @param myHttpParam http param to append to
    */
-  appendParameters(val: any[], myHttpParam: HttpParams) {
+  private appendParameters(val: any[], myHttpParam: HttpParams) {
     val[0].forEach(element => {
       console.log(element);
       myHttpParam = myHttpParam.append(element[0], element[1])
@@ -257,8 +259,10 @@ export class MovieService {
     return myHttpParam
   }
 
+  /**
+   * !UNUSED
+   */
   getBookmark(id) {
-
     return this.http.get<any>(`http:\\\\localhost:3000\\getBookmark\\${id}`).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getBookmark')))
   }
@@ -281,6 +285,7 @@ export class MovieService {
       headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
     };
+    // https://www.googleapis.com/youtube/v3/search?part=snippet&key=AIzaSyAC1kcZu_DoO7mbrMxMuCpO57iaDByGKV0&q=Toy%20Story%204%202019&maxResults=50&order=relevance&type=video
     return this.http.get<any>(baseUrl, httpOptions).pipe(map((e) => e.items))
   }
 
@@ -291,9 +296,7 @@ export class MovieService {
    */
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-      // TODO: send the error to remote logging infrastructure
       console.error(error); // log to console instead
-      // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
       // Let the app keep running by returning an empty result.
       return of(result as T);

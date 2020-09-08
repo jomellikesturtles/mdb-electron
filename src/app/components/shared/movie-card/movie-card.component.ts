@@ -1,13 +1,11 @@
 import { UserDataService } from './../../../services/user-data.service';
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { AddMovie, RemoveMovie } from '../../../movie.actions';
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { DataService } from '../../../services/data.service';
 import { UtilsService } from '../../../services/utils.service';
-import { MovieService } from '../../../services/movie.service';
-import { IpcCommand, IpcService } from '../../../services/ipc.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
 declare var $: any
 
@@ -16,78 +14,70 @@ declare var $: any
   templateUrl: './movie-card.component.html',
   styleUrls: ['./movie-card.component.scss']
 })
-export class MovieCardComponent implements OnInit, OnChanges {
+export class MovieCardComponent implements OnInit {
 
-  @Input() movie // TODO: add an interface.
-  @Input() cardWidth
-  @Input() bookmark
-  @Input() watched
-  @Input() video
-  @Output() previewMovieId = new EventEmitter<any>();
+  _movie
+  @Input()  // TODO: add an interface.
+  set movie(inputMessage: any) {
+    this._movie = inputMessage
+  }
+  get movie(): any {
+    return this._movie;
+  }
 
-  isBookmarked = false
-  isWatched = false
-  isAvailable = false
+  _cardWidth
+  @Input()
+  set cardWidth(inputMessage: any) {
+    this._cardWidth = inputMessage
+  }
+  get cardWidth(): any {
+    return this._cardWidth;
+  }
+
+  _bookmark
+  @Input()
+  set bookmark(inputBookmark: any) {
+    this._bookmark = inputBookmark
+  }
+  get bookmark(): any {
+    return this._cardWidth;
+  }
+
+  _watched
+  @Input()
+  set watched(inputWatched: any) {
+    this._watched = inputWatched
+  }
+  get watched(): any {
+    return this._watched;
+  }
+
+  _video
+  @Input()
+  set video(inputVideo: any) {
+    this._video = inputVideo
+  }
+  get video(): any {
+    return this._video;
+  }
+
   procBookmark = false
   procWatched = false
-  watchedProgress = '0%'
+  procHighlight = false
 
   constructor(
-    private bookmarkService: BookmarkService,
     private dataService: DataService,
-    private ipcService: IpcService,
-    private movieService: MovieService,
     private utilsService: UtilsService,
-    private watchedService: WatchedService,
     private userDataService: UserDataService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private store: Store,
-    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     $('[data-toggle="popover"]').popover()
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
-    // this.getData()
     // console.log('MOVIECARD:', this.movie)
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // if (changes.bookmark && changes.bookmark.firstChange === false) {
-    //   this.isBookmarked = this.bookmark.id ? true : false
-    // }
-    // if (changes.video && changes.video.firstChange === false) {
-    //   this.isAvailable = this.video.id ? true : false
-    // }
-    // if (changes.watched && changes.watched.firstChange === false) {
-    //   this.isWatched = this.watched.id ? true : false
-    // }
-  }
-
-  /**
-   * Gets bookmark and watched status individually...To be removed, since bulk fetch will be used.
-   */
-  getData(): void {
-
-    this.bookmarkService.getBookmark(this.movie.id).then(e => {
-      if (e) {
-        this.isBookmarked = true
-        this.bookmark.id = e.toString()
-      }
-    })
-    this.watchedService.getWatched(this.movie.id).then(e => {
-      // if (e) {
-      //   this.isWatched = true
-      //   this.watchedDocId = e.toString()
-      //   this.watched.percentage = '100%'
-      //   this.watched.tmdbId = this.movie.id
-      //   this.watched.id = e.toString()
-      // }
-    })
-    // this.watched.id
-    // get availability
-    // get watched
   }
 
   /**
@@ -95,19 +85,21 @@ export class MovieCardComponent implements OnInit, OnChanges {
    * @param movie current selected movie
    */
   onHighlight(): void {
-    this.movie.isHighlighted = !this.movie.isHighlighted
-    if (this.movie.isHighlighted) {
-      this.store.dispatch(new AddMovie(this.movie))
+    this.procHighlight = true
+    this._movie.isHighlighted = !this._movie.isHighlighted
+    if (this._movie.isHighlighted) {
+      this.store.dispatch(new AddMovie(this._movie))
     } else {
-      this.store.dispatch(new RemoveMovie(this.movie))
+      this.store.dispatch(new RemoveMovie(this._movie))
     }
+    this.procHighlight = false
   }
 
   /**
    * Opens the movie's details page.
    */
   onOpenMovie(): void {
-    const highlightedId = this.movie.id;
+    const highlightedId = this._movie.id;
     this.dataService.updateHighlightedMovie(highlightedId);
     // this.navigationService.goToPage()
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
@@ -122,52 +114,23 @@ export class MovieCardComponent implements OnInit, OnChanges {
   }
 
   onPreview(): void {
-    this.previewMovieId.emit(this.movie)
+    this.dataService.updatePreviewMovie(this._movie)
   }
 
   async onToggleBookmark(): Promise<any> {
-    console.log('togglingBookmark')
-    // const root = this
-    // setTimeout(() => {
-    //   root.isBookmarked = !root.isBookmarked
-    //   root.procBookmark = false
-    // }, 2000);
-    // -----------
     this.procBookmark = true
     let bmDoc
-    if (!this.movie.bookmark || !this.movie.bookmark.id) {
-      bmDoc = await this.userDataService.saveUserData('bookmark', this.movie)
-      this.movie.bookmark = bmDoc
-    } else {
-      bmDoc = await this.bookmarkService.removeBookmark(this.movie.bookmark.id)
-      this.movie.bookmark.id = ''
-    }
+    bmDoc = await this.userDataService.toggleBookmark(this._movie)
     console.log('BOOKMARKADD/remove:', bmDoc)
     this.procBookmark = false
-    this.cdr.detectChanges()
   }
 
   async onToggleWatched() {
     this.procWatched = true
     let wDocId
-    if (!this.movie.watched || !this.movie.watched.id) {
-      wDocId = await this.userDataService.saveUserData('watched', this.movie)
-      this.movie.watched = wDocId
-    } else {
-      wDocId = await this.watchedService.removeWatched(this.movie.watched.id)
-      this.movie.watched.id = ''
-    }
+    wDocId = await this.userDataService.toggleWatched(this._movie)
     console.log('WATCHEDADD/remove:', wDocId)
-    this.procWatched = false
-    this.cdr.detectChanges()
-
-    // const root = this
-    // setTimeout(() => {
-    //   root.isWatched = !root.isWatched
-    //   root.procWatched = false
-    //   root.watchedProgress = '100%'
-    //   root.movie.isWatched = true
-    // }, 2000);
+    this.procBookmark = false
   }
 
   /**
@@ -184,13 +147,11 @@ export class MovieCardComponent implements OnInit, OnChanges {
    * TODO: Fetch from offline or generate canvass.
    */
   getPoster(poster: string): string {
-    console.log(this.movieService.getMoviePoster(poster))
     // return poster;
     return ''
   }
 
   goToYear(year: string): void {
-    console.log('year', year)
     this.dataService.updateDiscoverQuery(['year', year])
     this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
   }

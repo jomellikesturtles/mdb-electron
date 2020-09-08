@@ -1,4 +1,7 @@
-import { CommaSpacePipe, MdbPipesPipe } from './mdb-pipes.pipe';
+import {
+  CommaSpacePipe, MdbPipesPipe,
+  ReleaseYearPipe
+} from './mdb-pipes.pipe';
 import { SimplifySizePipe, MagnetPipe } from './services/torrent.service';
 import { SearchComponent } from './components/search/search.component';
 import { BrowserModule } from '@angular/platform-browser';
@@ -14,7 +17,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { TopNavigationComponent } from './components/top-navigation/top-navigation.component';
 import { BrowseComponent } from './components/browse/browse.component';
 import { PersonDetailsComponent } from './components/person-details/person-details.component';
-// import { ProfileComponent } from './components/user/profile/profile.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
 import { AngularFireAuthModule } from '@angular/fire/auth';
@@ -24,12 +26,17 @@ import { CountState } from './app.state';
 import { AppRunState } from './states/app-run.state';
 import { SelectedMoviesState } from './movie.state';
 import { NotificationComponent } from './components/notification/notification.component';
-// import { UsernameExistValidatorDirective } from './directives/username-exist.directive'
+import { PreviewComponent } from './components/preview/preview.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { MdbGuardGuard } from './mdb-guard.guard';
+import { backendProvider } from './services/http-interceptor.service';
+import { RouterModule } from '@angular/router';
+import { FloatingPlayerComponent } from './components/floating-player/floating-player.component';
+import { SharedModule } from './components/shared/shared.module';
 @NgModule({
   declarations: [
     AppComponent,
     BulkDownloadComponent,
-    PreferencesComponent,
     NavigationComponent,
     TopNavigationComponent,
     BrowseComponent,
@@ -39,7 +46,10 @@ import { NotificationComponent } from './components/notification/notification.co
     SimplifySizePipe,
     MagnetPipe,
     CommaSpacePipe,
-    MdbPipesPipe
+    MdbPipesPipe,
+    PreviewComponent,
+    FloatingPlayerComponent,
+    // ReleaseYearPipe/
     // UsernameExistValidatorDirective
   ],
   imports: [
@@ -50,9 +60,12 @@ import { NotificationComponent } from './components/notification/notification.co
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,
+    RouterModule.forRoot([]),
     NgxsModule.forRoot([CountState, SelectedMoviesState, AppRunState]),
+    SharedModule
+    // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
-  providers: [],
+  providers: [MdbGuardGuard, backendProvider],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

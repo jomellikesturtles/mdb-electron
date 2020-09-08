@@ -2,8 +2,9 @@
  * Mock data and Defaults. For pre-defined lists and offline data
  */
 
-import { ITmdbResultObject, ILibraryMovie, IPreferences, IGenre, ITorrent, IOmdbMovieDetail } from './interfaces'
+import { ITmdbResultObject, ILibraryMovie, IPreferences, IGenre, MDBTorrent, IOmdbMovieDetail } from './interfaces'
 import { Injectable } from '@angular/core'
+import { IYTSSingleQuery } from './models/yts-torrent.model'
 
 export const TEST_LIBRARY_MOVIES: ILibraryMovie[] = [
   {
@@ -241,7 +242,7 @@ export const MOVIES: IOmdbMovieDetail[] = [
   // { id: 8, Title: 'Three Musketeers', Year: 2011, Plot: '', genre: 'Action', isAvailable: true, imageDirectory: './assets/images/2011-three_musketeers.jpg', Runtime: '180', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' }
 ]
 
-export const TORRENTS: ITorrent[] = [
+export const TORRENTS: MDBTorrent[] = [
   //   {
   //   id: 1,
   //   name: 'Valkyrie.DVD-R.NTSC.2008',
@@ -370,7 +371,7 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       title: 'The Lion King',
       vote_average: 8.2,
       overview:
-        "A young lion cub named Simba can't wait to be king. But his uncle craves the title for himself and will stop at nothing to get it.",
+        'A young lion cub named Simba can\'t wait to be king. But his uncle craves the title for himself and will stop at nothing to get it.',
       release_date: '1994-06-23'
     },
     {
@@ -422,7 +423,7 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       title: 'The Mask',
       vote_average: 6.8,
       overview:
-        "When timid bank clerk Stanley Ipkiss discovers a magical mask containing the spirit of the Norse god Loki, his entire life changes. While wearing the mask, Ipkiss becomes a supernatural playboy exuding charm and confidence which allows him to catch the eye of local nightclub singer Tina Carlyle. Unfortunately, under the mask's influence, Ipkiss also robs a bank, which angers junior crime lord Dorian Tyrell, whose goons get blamed for the heist.",
+        'When timid bank clerk Stanley Ipkiss discovers a magical mask containing the spirit of the Norse god Loki, his entire life changes. While wearing the mask, Ipkiss becomes a supernatural playboy exuding charm and confidence which allows him to catch the eye of local nightclub singer Tina Carlyle. Unfortunately, under the mask\'s influence, Ipkiss also robs a bank, which angers junior crime lord Dorian Tyrell, whose goons get blamed for the heist.',
       release_date: '1994-07-29'
     },
     {
@@ -451,9 +452,9 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       adult: false,
       backdrop_path: '/cTNYRUTXkBgPH3wP3kmPUB5U6dA.jpg',
       original_language: 'en',
-      original_title: "Schindler's List",
+      original_title: 'Schindler\'s List',
       genre_ids: [18, 36, 10752],
-      title: "Schindler's List",
+      title: 'Schindler\'s List',
       vote_average: 8.6,
       overview:
         'The true story of how businessman Oskar Schindler saved over a thousand Jewish lives from the Nazis while they worked as slaves in his factory during World War II.',
@@ -604,9 +605,9 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       adult: false,
       backdrop_path: '/1MaJH9m8TfmwLgS98kcjU4faiMg.jpg',
       original_language: 'en',
-      original_title: "Beethoven's 2nd",
+      original_title: 'Beethoven\'s 2nd',
       genre_ids: [35, 10751],
-      title: "Beethoven's 2nd",
+      title: 'Beethoven\'s 2nd',
       vote_average: 5.2,
       overview:
         `Beethoven is back -- and this time, he has a whole brood with him now that he's met his canine match, Missy, and fathered a family. The only problem is that Missy's owner, Regina, wants to sell the puppies and tear the clan apart. It's up to Beethoven and the Newton kids to save the day and keep everyone together.`,
@@ -665,7 +666,10 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
     }
   ]
 }
-
+export const TEST_TMDB_SINGLE_RESULT =
+{
+  popularity: 28.872, vote_count: 13772, video: false, poster_path: '\/nk11pvocdb5zbFhX5oq5YiLPYMo.jpg', id: 14160, adult: false, backdrop_path: '\/6fX7NF6IUJCTVssei7Shgl9J6LL.jpg', original_language: 'en', original_title: 'Up', genre_ids: [12, 16, 35, 10751], title: 'Up', vote_average: 7.9, overview: 'Carl Fredricksen spent his entire life dreaming of exploring the globe and experiencing life to its fullest. But at age 78, life seems to have passed him by, until a twist of fate (and a persistent 8-year old Wilderness Explorer named Russell) gives him a new lease on life.', release_date: '2009-05-28'
+}
 export const TEST_TMDB_MOVIE_DETAILS = {
   adult: false,
   backdrop_path: '/wMgbnUVS9wbRGAdki8fqxKU1O0N.jpg',
@@ -811,5 +815,93 @@ export const DEFAULT_PREFERENCES: IPreferences = {
   isDarkMode: false,
   isDirty: false,
   isEnableCache: true,
-  libraryFolders: []
+  libraryFolders: [],
+  torrentSeedRatio: 1
+}
+
+export const YTS_TORRENT_SINGLE_RESULT: IYTSSingleQuery = {
+  "status": "ok",
+  "status_message": "Query was successful",
+  "data": {
+    "movie_count": 1,
+    "limit": 20,
+    "page_number": 1,
+    "movies": [
+      {
+        "id": 3897,
+        "url": "https:\/\/yts.mx\/movies\/titanic-1997",
+        "imdb_code": "tt0120338",
+        "title": "Titanic",
+        "title_english": "Titanic",
+        "title_long": "Titanic (1997)",
+        "slug": "titanic-1997",
+        "year": 1997,
+        "rating": 7.8,
+        "runtime": 194,
+        "genres": [
+          "Action",
+          "Drama",
+          "Romance"
+        ],
+        "summary": "84 years later, a 100 year-old woman named Rose DeWitt Bukater tells the story to her granddaughter Lizzy Calvert, Brock Lovett, Lewis Bodine, Bobby Buell and Anatoly Mikailavich on the Keldysh about her life set in April 10th 1912, on a ship called Titanic when young Rose boards the departing ship with the upper-class passengers and her mother, Ruth DeWitt Bukater, and her fianc\u00e9, Caledon Hockley. Meanwhile, a drifter and artist named Jack Dawson and his best friend Fabrizio De Rossi win third-class tickets to the ship in a game. And she explains the whole story from departure until the death of Titanic on its first and last voyage April 15th, 1912 at 2:20 in the morning.",
+        "description_full": "84 years later, a 100 year-old woman named Rose DeWitt Bukater tells the story to her granddaughter Lizzy Calvert, Brock Lovett, Lewis Bodine, Bobby Buell and Anatoly Mikailavich on the Keldysh about her life set in April 10th 1912, on a ship called Titanic when young Rose boards the departing ship with the upper-class passengers and her mother, Ruth DeWitt Bukater, and her fianc\u00e9, Caledon Hockley. Meanwhile, a drifter and artist named Jack Dawson and his best friend Fabrizio De Rossi win third-class tickets to the ship in a game. And she explains the whole story from departure until the death of Titanic on its first and last voyage April 15th, 1912 at 2:20 in the morning.",
+        "synopsis": "84 years later, a 100 year-old woman named Rose DeWitt Bukater tells the story to her granddaughter Lizzy Calvert, Brock Lovett, Lewis Bodine, Bobby Buell and Anatoly Mikailavich on the Keldysh about her life set in April 10th 1912, on a ship called Titanic when young Rose boards the departing ship with the upper-class passengers and her mother, Ruth DeWitt Bukater, and her fianc\u00e9, Caledon Hockley. Meanwhile, a drifter and artist named Jack Dawson and his best friend Fabrizio De Rossi win third-class tickets to the ship in a game. And she explains the whole story from departure until the death of Titanic on its first and last voyage April 15th, 1912 at 2:20 in the morning.",
+        "yt_trailer_code": "CHekzSiZjrY",
+        "language": "English",
+        "mpa_rating": "PG-13",
+        "background_image": "https:\/\/yts.mx\/assets\/images\/movies\/Titanic_1997\/background.jpg",
+        "background_image_original": "https:\/\/yts.mx\/assets\/images\/movies\/Titanic_1997\/background.jpg",
+        "small_cover_image": "https:\/\/yts.mx\/assets\/images\/movies\/Titanic_1997\/small-cover.jpg",
+        "medium_cover_image": "https:\/\/yts.mx\/assets\/images\/movies\/Titanic_1997\/medium-cover.jpg",
+        "large_cover_image": "https:\/\/yts.mx\/assets\/images\/movies\/Titanic_1997\/large-cover.jpg",
+        "state": "ok",
+        "torrents": [
+          {
+            "url": "https:\/\/yts.mx\/torrent\/download\/237457BA8029DEF449A0D3EF5B7E508780AC68DB",
+            "hash": "237457BA8029DEF449A0D3EF5B7E508780AC68DB",
+            "quality": "3D",
+            "type": "bluray",
+            "seeds": 75,
+            "peers": 13,
+            "size": "2.80 GB",
+            "size_bytes": 3006477107,
+            "date_uploaded": "2015-11-02 04:25:37",
+            "date_uploaded_unix": 1446434737
+          },
+          {
+            "url": "https:\/\/yts.mx\/torrent\/download\/A86B4ADB83506BB12CEABAC2F42AE480BA44ECFA",
+            "hash": "A86B4ADB83506BB12CEABAC2F42AE480BA44ECFA",
+            "quality": "720p",
+            "type": "bluray",
+            "seeds": 326,
+            "peers": 52,
+            "size": "1.4 GB",
+            "size_bytes": 1503238554,
+            "date_uploaded": "2017-08-11 19:25:11",
+            "date_uploaded_unix": 1502472311
+          },
+          {
+            "url": "https:\/\/yts.mx\/torrent\/download\/98CD5D90252265F1C59AB47330FF4C39F48CCC78",
+            "hash": "98CD5D90252265F1C59AB47330FF4C39F48CCC78",
+            "quality": "1080p",
+            "type": "bluray",
+            "seeds": 408,
+            "peers": 63,
+            "size": "2.97 GB",
+            "size_bytes": 3189013217,
+            "date_uploaded": "2017-08-12 02:14:57",
+            "date_uploaded_unix": 1502496897
+          }
+        ],
+        "date_uploaded": "2017-08-11 19:25:11",
+        "date_uploaded_unix": 1502472311
+      }
+    ]
+  },
+  "@meta": {
+    "server_time": 1598788840,
+    "server_timezone": "CET",
+    "api_version": 2,
+    "execution_time": "0 ms"
+  }
 }

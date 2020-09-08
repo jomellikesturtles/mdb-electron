@@ -10,11 +10,12 @@ export class MdbGuardGuard implements CanActivate, CanActivateChild, CanLoad {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     const user = localStorage.getItem('user')
-    if (user) {
-      return true
-    } else {
-      return false
-    }
+    // if (user) {
+    //   return true
+    // } else {
+    //   return false
+    // }
+    return false
   }
   canActivateChild(
     next: ActivatedRouteSnapshot,

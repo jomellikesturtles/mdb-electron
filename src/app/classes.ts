@@ -16,7 +16,8 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   country?: string
   director?: string
   dvd?: string // dvd release
-  private _genres?: string[]
+  // private _genres?: string[]
+  genres: []
   imdbId?: string
   imdbRating?: string
   imdbVotes?: string
@@ -87,7 +88,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
           this.director = value[key]
           break;
         case 'Genre':
-          this._genres = value[key]
+          this.genres = value[key]
           break;
         case 'homepage':
           this.website = value[key]
@@ -144,8 +145,9 @@ export class MdbMovieDetails implements IMdbMovieDetails {
           break;
       }
     });
-    // Object.keys(this.movieDetails).forEach(key => {
-    //   console.log(`movieDetails key ${key} with value `, key);
+    console.log(this)
+    // Object.keys(value).forEach(key => {
+    //   console.log(`movieDetails key ${key} with value `, value[key]);
     // })
   }
 
@@ -184,26 +186,26 @@ export class MdbMovieDetails implements IMdbMovieDetails {
     return this._boxOffice
   }
 
-  /**
-   * Sets the genre list. Parameterized by string of genres `'Genre 1, Genre2'` or list of `IGenre`.
-   * @param v genres to list.
-   */
-  set genres(v: any) {
-    let result: string[] = []
-    if (typeof v === 'string') {
-      result = v.split(', ')
-    } else {
-      const localV = v as IGenre[]
-      localV.forEach(element => {
-        result.push(element.name.toString())
-      })
-    }
-    this._genres = result
-  }
+  // /**
+  //  * Sets the genre list. Parameterized by string of genres `'Genre 1, Genre2'` or list of `IGenre`.
+  //  * @param v genres to list.
+  //  */
+  // set genres(v: any) {
+  //   let result: string[] = []
+  //   if (typeof v === 'string') {
+  //     result = v.split(', ')
+  //   } else {
+  //     const localV = v as IGenre[]
+  //     localV.forEach(element => {
+  //       result.push(element.name.toString())
+  //     })
+  //   }
+  //   this._genres = result
+  // }
 
-  get genres() {
-    return this._genres
-  }
+  // get genres() {
+  //   return this._genres
+  // }
   /**
    * Sets the language list. Parameterized by string of languages `'Language, Idioma'` or list of `ISpokenLanguage`.
    * @param v languages to list.

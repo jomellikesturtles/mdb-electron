@@ -11,10 +11,18 @@ export class VideoService {
 
   constructor(
     private ipcService: IpcService,
-    private firebaseService: FirebaseService
-  ) { }
+    private firebaseService: FirebaseService,
+  ) {
 
+  }
+  // checkCompatibility(): Observable<boolean> {
+  //   (window as any).RTCPeerConnection = (window as any).RTCPeerConnection || (window as any).webkitRTCPeerConnection || (window as any).mozRTCPeerConnection;
+  //   return of(!!(window as any).RTCPeerConnection);
+  // }
+  // private client: typeof WebTorrent
+  newWebTorrent() {
 
+  }
   /**
    * Gets movie video.
    */
@@ -40,7 +48,7 @@ export class VideoService {
    * Gets multiple videos. Movie(s) eventually becomes available in status.
    */
   getVideosMultiple(idList: number[]): Promise<any> {
-    console.log('getting multiplebookmarks...', idList);
+    console.log('getting multiplevideos...', idList);
     return new Promise((resolve, reject) => {
       this.firebaseService.getFromFirestoreMultiple(CollectionName.Video, FieldName.TmdbId, idList).then(value => {
         resolve(value)
@@ -54,7 +62,6 @@ export class VideoService {
    * Gets multiple videos. Movie(s) eventually becomes available in status.
    */
   getVideos(): Promise<any> {
-    // console.log('getting multiplebookmarks...', idList);
     return new Promise((resolve, reject) => {
       this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Video, FieldName.TmdbId, 20).then(value => {
         resolve(value)

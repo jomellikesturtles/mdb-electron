@@ -11,20 +11,32 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 > This readme may have alot of contents
 
-- [Prerequisites](#prerequisites)
-- [Built with](#built-with)
-- [How to run](#how-to-run)
-- [Installation](#installation)
-- [Offline Assets](#offline-assets)
-- [Development Notes](#development-notes)
-  - [APIs](#apis)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Clone](#clone)
-- [Todo](#todo)
-- [Branches](#branches)
-- [Project Status](#project-status)
-- [FAQ](#faq)
+- [MdbElectron](#mdbelectron)
+  - [Table of Contents](#table-of-contents)
+  - [Built with](#built-with)
+  - [How To run](#how-to-run)
+    - [Run as electron project](#run-as-electron-project)
+    - [Run as angular project](#run-as-angular-project)
+  - [Code scaffolding](#code-scaffolding)
+  - [Build](#build)
+  - [Running unit tests](#running-unit-tests)
+  - [Running end-to-end tests](#running-end-to-end-tests)
+  - [Project Structure](#project-structure)
+  - [Development Notes](#development-notes)
+    - [APIs](#apis)
+      - [OMDb](#omdb)
+      - [themoviedb](#themoviedb)
+      - [Google](#google)
+      - [YTS](#yts)
+      - [imdb offline database](#imdb-offline-database)
+      - [Fanart.tv](#fanarttv)
+  - [Features](#features)
+  - [Todo](#todo)
+  - [Offline Assets](#offline-assets)
+  - [Influenced by](#influenced-by)
+  - [Useful links](#useful-links)
+  - [Resources](#resources)
+  - [notes](#notes)
 
 ## Built with
 
@@ -340,6 +352,7 @@ UI and functionalities are influenced by follows: (in descending order)
 - tmdb criteria: year,region, language, vote count, vote average.
 - snackbar/toast doesnt work
 - omdb and Imdb has same genre in movies
+- use releaseyear pipe in mdb moviecard
 
 https://api.themoviedb.org/3/movie/157336?api_key=a636ce7bd0c125045f4170644b4d3d25&append_to_response=videos,images,credits,changes,translations,similar,external_ids,ss
 

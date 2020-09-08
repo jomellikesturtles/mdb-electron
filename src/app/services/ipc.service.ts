@@ -53,29 +53,34 @@ export class IpcService {
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
   movieIdentified = new BehaviorSubject<any>({ id: 0 })
   searchList = new BehaviorSubject<any>([])
+  torrentVideo = new BehaviorSubject<string[]>([])
   private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone,
     // private cdr: ChangeDetectorRef
-  ) ////
-  {
-    // UNCOMMENT IF IN ELECTRON MODE
+  ) {
     if (environment.runConfig.electron) {
       this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
-      function enumKeys<E>(e: E): (keyof E)[] {
-        return Object.keys(e) as (keyof E)[];
-      }
-      for (const key of enumKeys(Channel)) {
-        const locale: Channel = Channel[key];
-        console.log(locale);
-        this.listen(locale)
-      }
-
-      this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
-        console.log('searchList:', data)
-        this.searchList.next(data)
+      this.ipcRenderer.on('torrent-video', (event, data: any) => {
+        console.log('event: ', event)
+        console.log('data: ', data)
+        this.torrentVideo.next(data)
       })
+      // COMMENTED FOR ANGULAR UPDATE
+      // function enumKeys<E>(e: E): (keyof E)[] {
+      //   return Object.keys(e) as (keyof E)[];
+      // }
+      // for (const key of enumKeys(Channel)) {
+      //   const locale: Channel = Channel[key];
+      //   console.log(locale);
+      //   this.listen(locale)
+      // }
+
+      // this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
+      //   console.log('searchList:', data)
+      //   this.searchList.next(data)
+      // })
     }
   }
 
@@ -231,13 +236,23 @@ export class IpcService {
     // this.ipcRenderer.send('bookmark', ['bookmark-get', val])
   }
 
+  scanLibrary() {
+
+    this.ipcRenderer.send('scan-library')
+    this.ipcRenderer.on('scan-result', e => {
+    })
+    this.ipcRenderer.on('scan-complete', e => {
+      this.ipcRenderer.removeListener('scan-result', d => { })
+      this.ipcRenderer.removeListener('scan-complete', d => { })
+    })
+  }
+
 }
 
 export enum IpcCommand {
   MinimizeApp = 'app-min',
   RestoreApp = 'app-restore',
   ExitApp = 'exit-program',
-  FirebaseProvider = 'firebase-provider',
   ScanLibrary = 'scan-library',
   StopScanLibrary = 'stop-scan-library',
   OpenLinkExternal = 'open-link-external',

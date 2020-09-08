@@ -7,7 +7,6 @@ padding: 20px 0 20px 0; transition: .3s ease-in-out;' *ngIf="display==true">
         <div class='selected-movie-card-image-container' (click)='removeMovie(movie)' [ngStyle]="{'height': '180px'
           ,'background-image':'url(https://image.tmdb.org/t/p/w342'+ movie.poster_path + ')'}" data-toggle='tooltip'
           title='{{movie.title}}'>
-
           <div class="overlay overlay-remove">
           </div>
         </div>

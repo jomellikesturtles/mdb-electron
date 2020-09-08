@@ -70,16 +70,14 @@ export class TopNavigationComponent implements OnInit {
   isSearchDirty = false
   searchHistoryList = []
   searchHistoryMaxLength = 8
-  decadesList = DECADES
+  decadesList = []
   genresList = GENRES
+  voteCountList = VOTE_COUNT
+  voteAverageList = []
   isSignedIn = false
   lastQuery = ''
 
   ngOnInit() {
-    this.init()
-  }
-
-  init() {
     const e = localStorage.getItem('user')
     // this.user$.pipe(delay(1000)).subscribe(e => {
     if (e === null) {
@@ -97,6 +95,21 @@ export class TopNavigationComponent implements OnInit {
     })
   }
 
+  initializeAdvancedSearchCriteria() {
+    for (let index = 1; index <= 10; index++) {
+      this.voteAverageList.push({
+        label: `+${index}`,
+        value: index
+      });
+    }
+    for (let index = 1910; index <= (new Date).getFullYear(); index+=10) {
+      this.decadesList.push({
+        display: `${index}s`,
+        value: index
+      });
+    }
+  }
+
   /**
    * Go to previous location
    */
@@ -110,19 +123,22 @@ export class TopNavigationComponent implements OnInit {
   onAdvancedSearch() {
 
   }
+  goAdvancedSearch() { }
 
+  clearAdvancedSearch() {
+
+  }
   /**
    * Initialize search
    */
-  onSearch(val: any) {
+  onSearch(val: string) {
     val = val.trim()
-    // ifcurrent router === results
-
     if (this.lastQuery === val && this.router.url === '/results') {
       return
     }
     this.lastQuery = val
     this.searchHistoryList.unshift(val)
+    this.searchHistoryList.splice(this.searchHistoryList.indexOf(val), 1)
     console.log(this.searchHistoryList);
     if (this.searchHistoryList.length >= this.searchHistoryMaxLength) {
       // this.searchHistoryList = this.searchHistoryList.splice(1)
@@ -138,10 +154,8 @@ export class TopNavigationComponent implements OnInit {
 
     const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`)
     if (enteredQuery.match(REGEX_IMDB_ID)) {
-      console.log('searchByImdbId');
-      // this.searchByImdbId(enteredQuery)
+      this.searchByImdbId(enteredQuery)
     } else {
-      console.log('searchByTitle');
       this.searchByTitle(enteredQuery)
     }
   }
@@ -150,7 +164,7 @@ export class TopNavigationComponent implements OnInit {
    * Searches movie by imdb id and redirects if there are results
    * @param imdbId imdb id to search
    */
-  searchByImdbId(imdbId) {
+  searchByImdbId(imdbId: string) {
     this.movieService.getMovieByImdbId(imdbId).subscribe(data => {
       if (data.Response !== 'False') {
         this.router.navigate([`/details/${imdbId}`], { relativeTo: this.activatedRoute });
@@ -165,7 +179,7 @@ export class TopNavigationComponent implements OnInit {
    * Searches by title
    * @param enteredQuery query to search
    */
-  searchByTitle(enteredQuery) {
+  searchByTitle(enteredQuery: string) {
     // this.dataService.currentSearchQuery = enteredQuery
     if (this.searchQuery && this.searchQuery.query.length > 0) {
       this.dataService.updateSearchQuery(this.searchQuery)
@@ -217,3 +231,30 @@ export interface ITmdbSearchQuery {
   endYear: number,
   genres: IGenre[],
 }
+
+const VOTE_COUNT = [
+  {
+    label: '100',
+    value: 100
+  },
+  {
+    label: '+1,000',
+    value: 1000
+  },
+  {
+    label: '+10,000',
+    value: 10000
+  },
+  {
+    label: '+100,000',
+    value: 100000
+  },
+  {
+    label: '+1,000,000',
+    value: 1000000
+  },
+  {
+    label: '+10,000,000',
+    value: 10000000
+  },
+]

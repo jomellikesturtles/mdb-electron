@@ -1,7 +1,7 @@
 /**
  * Objects/Interfaces template
  */
-import { BrowserPlatformLocation } from '@angular/platform-browser/src/browser/location/browser_platform_location'
+// import { BrowserPlatformLocation } from '@angular/platform-browser/src/browser/location/browser_platform_location'
 
 
 /*

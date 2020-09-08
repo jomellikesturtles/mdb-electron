@@ -1,6 +1,7 @@
 import { Action, StateContext, Select, State, Selector } from '@ngxs/store'
 import { AddMovie, RemoveMovie, ClearList, AddWatched, AddBookmark } from './movie.actions'
 import { BookmarkService, IBookmark } from './services/bookmark.service'
+import { UserDataService } from './services/user-data.service'
 // import { IBookmark } from './components/bookmarks/view/bookmarks.component'
 
 export interface MovieList {
@@ -30,6 +31,10 @@ const defaults: MovieListStateModel = {
 })
 
 export class SelectedMoviesState {
+
+  constructor(private userDataService: UserDataService,
+    private bookmarkService: BookmarkService) { }
+
   @Selector()
   static getList(state: MovieListStateModel) {
     return state
@@ -37,7 +42,6 @@ export class SelectedMoviesState {
   @Action(AddMovie)
   addMovie(context: StateContext<MovieListStateModel>, action: AddMovie) {
     console.log('ACTION: ', action)
-    console.log('ACTION PAYLOAD: ', action.payload)
     const current = context.getState()
     const movies = [...current.movies, action.payload]
     context.patchState({
@@ -73,7 +77,6 @@ export class SelectedMoviesState {
     console.log('BEFORE:', current.movies)
     const numberList = []
     current.movies.forEach(e => {
-
       e.isWatched = true; e.watchedProgress = '100%'; numberList.push(e.id)
     })
 
@@ -96,7 +99,7 @@ export class SelectedMoviesState {
   }
 
   @Action(AddBookmark)
-  addBookmark(context: StateContext<MovieListStateModel>, bookmarkService: BookmarkService) {
+  addBookmark(context: StateContext<MovieListStateModel>) {
     const current = context.getState()
     console.log('BEFORE:', current.movies)
     const bookmarksList = []
@@ -114,7 +117,7 @@ export class SelectedMoviesState {
       // e.bookmark = bookmark
     })
 
-    bookmarkService.saveBookmarkMulti(bookmarksList)
+    this.bookmarkService.saveBookmarkMulti(bookmarksList)
 
     // current.movies.forEach(e => {
     //   const bookmark: IBookmark = {

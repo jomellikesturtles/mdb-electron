@@ -99,7 +99,7 @@ export interface IWatched extends IUserSavedData {
   // id?: string,
   cre8Ts?: number, // create timestamp
   timestamp?: number,
-  percentage?: string,
+  percentage: string,
 }
 
 // export class Watched implements IWatched {

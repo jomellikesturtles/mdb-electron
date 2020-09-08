@@ -1,5 +1,4 @@
-import { UserDataService } from './../../../services/user-data.service';
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
@@ -22,8 +21,6 @@ export class CardListComponent implements OnInit {
     private bookmarkService: BookmarkService,
     private watchedService: WatchedService,
     private videoService: VideoService,
-    private userService: UserDataService,
-    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -31,6 +28,9 @@ export class CardListComponent implements OnInit {
     this.getMoviesUserData()
   }
 
+  /**
+   * Gets the user data like: bookmark, watched, video.
+   */
   getMoviesUserData() {
     const idList = this.collectIds()
     const listLength = idList.length
@@ -68,32 +68,36 @@ export class CardListComponent implements OnInit {
     docs.forEach(doc => {
       // console.log(doc)
       const docData = doc.data()
+      const dTmdbId = docData.tmdbId
+      const dTitle = docData.title
+      const dYear = docData.year
       let myData
       switch (dataType) {
         case 'bookmark':
           const bm: IBookmark = {
             id: doc.id ? doc.id : '',
-            tmdbId: docData.tmdbId ? docData.tmdbId : 0,
-            title: docData.title ? docData.title : '',
-            year: docData.year ? docData.year : 0
+            tmdbId: dTmdbId ? dTmdbId : 0,
+            title: dTitle ? dTitle : '',
+            year: dYear ? dYear : 0
           }
           myData = bm
           break;
         case 'watched':
           const wtchd: IWatched = {
             id: doc.id ? doc.id : '',
-            tmdbId: docData.tmdbId ? docData.tmdbId : 0,
-            title: docData.title ? docData.title : '',
-            year: docData.year ? parseInt(docData.year, 10) : 0
+            tmdbId: dTmdbId ? dTmdbId : 0,
+            title: dTitle ? dTitle : '',
+            year: dYear ? parseInt(dYear, 10) : 0,
+            percentage: docData.percentage ? docData.percentage : '100%'
           }
           myData = wtchd
           break;
         case 'video':
           const vid: IVideo = {
             id: doc.id ? doc.id : '',
-            tmdbId: docData.tmdbId ? docData.tmdbId : 0,
-            title: docData.title ? docData.title : '',
-            year: docData.year ? docData.year : 0,
+            tmdbId: dTmdbId ? dTmdbId : 0,
+            title: dTitle ? dTitle : '',
+            year: dYear ? dYear : 0,
             videoUrl: docData.videoUrl ? docData.videoUrl : ''
           }
           myData = vid
@@ -110,7 +114,6 @@ export class CardListComponent implements OnInit {
         }
       });
     })
-    this.cdr.detectChanges()
   }
 
   getData() {
@@ -167,4 +170,5 @@ export class CardListComponent implements OnInit {
     }
     return toReturn
   }
+
 }

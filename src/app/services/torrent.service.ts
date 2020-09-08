@@ -5,12 +5,13 @@ import { Observable, of, Subscriber, forkJoin } from 'rxjs';
 // import 'rxjs/add/operator/catch';
 import { catchError, map, tap, retry } from 'rxjs/operators';
 // import { Test, Movie, Torrent } from '../subject'
-import { ITorrent } from '../interfaces'
-import { forEach } from '@angular/router/src/utils/collection';
+import { MDBTorrent, ITPBTorrent } from '../interfaces'
 import { IpcService, IpcCommand } from '../services/ipc.service'
 import { DomSanitizer } from '@angular/platform-browser'
 import { Pipe, PipeTransform } from '@angular/core';
 import { STRING_REGEX_IMDB_ID } from '../constants';
+import { IYTSSingleQuery, YTSTorrent } from '../models/yts-torrent.model';
+import { UtilsService } from './utils.service';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -24,7 +25,8 @@ export class TorrentService {
   constructor(
     private http: HttpClient,
     private ipcService: IpcService,
-    private sanitizer: DomSanitizer) { }
+    private sanitizer: DomSanitizer,
+    private utilsService: UtilsService) { }
 
   trackers = [`udp://glotorrents.pw:6969/announce`,
     `udp://tracker.opentrackr.org:1337/announce`,
@@ -40,24 +42,32 @@ export class TorrentService {
   fileLine: string[]
   torrentsInfo = []
   displayedTorrentsInfo = []
-  ytsUrl = 'https://yts.am/api/v2/list_movies.json'
+  ytsUrl = 'https://yts.mx/api/v2/list_movies.json'
+  ytsUrl2 = 'https://yts.am/api/v2/list_movies.json'
 
-  getTorrentsOnline(imdbId: String) {
-    // tt2015381
+
+  /**
+   * Gets torrent from online.
+   */
+  getTorrentsOnline(imdbId: String): Observable<IYTSSingleQuery | null> {
+    // tt2015381 - guardians of the galaxy
     let url = `${this.ytsUrl}?query_term=${imdbId}`
-    return this.http.get<any>(url).pipe(map(data => {
-      // let torrents: Torrent[];
-      return data.data.movies[0].torrents;
-    }))
+    return this.http.get<IYTSSingleQuery>(url).pipe(
+      //   map(data => {
+      //   // return data.data.movies[0].torrents;
+      //   // return data;
+      // }
+    )
   }
   /**
    * Searches torrents offline
    * @param val imdb or title
+   * @param year year
    */
-  async getTorrentsOffline(val: string[]) {
+  async getTorrentsOffline(val: string, year: string | number) {
     console.log('in getTorrentsOffline...; to be removed, jquery will handle instead')
 
-    this.ipcService.call(IpcCommand.SearchTorrent, val)
+    this.ipcService.call(IpcCommand.SearchTorrent, [val, year])
     // return new Promise<any>((resolve, reject) => {
     //   this.ipcRenderer.once('library-movies', (event, arg) => {
     //     console.log('library-movies', arg);
@@ -67,13 +77,17 @@ export class TorrentService {
 
   }
 
-  getTorrents(val): Observable<any> {
+  /**
+   * TODO: add checking for online source connnection.
+   * @param val `[title, year]`
+   */
+  getTorrents(query: string, year?: string | number): Observable<any> {
     let result
     const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`);
-    if (typeof val === 'string' && val.trim().match(REGEX_IMDB_ID)) {
-      result = this.getTorrentsOnline(val);
+    if (typeof query === 'string' && query.trim().match(REGEX_IMDB_ID)) {
+      result = this.getTorrentsOnline(query);
     } else {
-      result = this.getTorrentsOffline(val);
+      result = this.getTorrentsOffline(query, year);
     }
     // this.sanitize(result)
     return result
@@ -96,7 +110,7 @@ export class TorrentService {
    * Sanitizes magnet link
    * @param torrent Torrent object
    */
-  sanitize(torrent: ITorrent) {
+  sanitize(torrent: MDBTorrent) {
     let val
     if (torrent.hash.length !== 40) {
       val = this.getMagnetLinkWithImproperHash(torrent.hash, torrent.name);
@@ -153,6 +167,73 @@ export class TorrentService {
       .replace(/\)/g, '%29')
       .replace(/\*/g, '%2A')
       .replace(/%20/g, '+');
+  }
+
+  /**
+   * Converts trrents to MDB torrent regardless of source. ie thepiratebay, yts
+   */
+  mapTorrent(rawTorrent: ITPBTorrent | YTSTorrent): MDBTorrent {
+    let newTorrent = new MDBTorrent()
+    // check yts properties first
+    newTorrent.hash = rawTorrent.hash
+    newTorrent.sizeBytes = rawTorrent.hasOwnProperty('size_bytes') ? rawTorrent['size_bytes'] : rawTorrent['sizeBytes']
+    newTorrent.size = rawTorrent.hasOwnProperty('size') ? rawTorrent['size'] :
+      this.utilsService.prettyBytes(rawTorrent['sizeBytes'])
+    newTorrent.name = rawTorrent.hasOwnProperty('name') ? rawTorrent['name'] : null
+    newTorrent.dateUploaded = rawTorrent.hasOwnProperty('date_uploaded') ? rawTorrent['date_uploaded'] : rawTorrent['added']
+    newTorrent.dateUploadedUnix = rawTorrent.hasOwnProperty('date_uploaded_unix') ? rawTorrent['date_uploaded_unix'] : (new Date(rawTorrent['added']).getTime() / 1000)
+    newTorrent.magnetLink = this.getMagnetLinkWithProperHash(rawTorrent.hash)
+    newTorrent.isYts = rawTorrent.hasOwnProperty('url') ? true : false
+    newTorrent.url = rawTorrent.hasOwnProperty('url') ? rawTorrent['url'] : this.getMagnetLinkWithProperHash(rawTorrent.hash)
+    newTorrent.quality = rawTorrent.hasOwnProperty('quality') ? rawTorrent['quality'] : 'unknown'
+    newTorrent.seeds = rawTorrent.hasOwnProperty('seeds') ? rawTorrent['seeds'] : null
+    newTorrent.peers = rawTorrent.hasOwnProperty('peers') ? rawTorrent['peers'] : null
+    return newTorrent;
+  }
+
+  mapTorrentsList(rawTorrents: YTSTorrent[] | ITPBTorrent[]): MDBTorrent[] {
+    let torrents: (ITPBTorrent | YTSTorrent)[]
+    if (rawTorrents.hasOwnProperty('@meta')) {  // if yts
+      torrents = rawTorrents['data'].movies[0].torrents // assuming there is only 1 movie or is searched with ID
+    } else {
+      torrents = rawTorrents
+    }
+    let newTorrents = []
+    torrents.forEach((torrent: ITPBTorrent | YTSTorrent) => {
+      newTorrents.push(this.mapTorrent(torrent))
+    })
+    return newTorrents;
+  }
+
+  /**
+   * Gets the straming link with Hash.
+   * @param hash hash
+   * @returns streaming url
+   */
+  getStreamLink(hash: String): Observable<any> {
+    // tt2015381 - guardians of the galaxy
+    let url = `http://localhost:3000/getStreamLink/${hash}`
+
+    return this.http.get<string>(url).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getStreamLink')))
+  }
+
+  /**
+   * Error handler.
+   * @param operation the operation
+   * @param result result
+   */
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(error); // log to console instead
+      this.log(`${operation} failed: ${error.message}`);
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
+  }
+
+  private log(message: string) {
+    console.log(`TorrentService: ${message} `);
   }
 }
 

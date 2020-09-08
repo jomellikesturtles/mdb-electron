@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, Pipe, PipeTransform } from '@angular/core';
 import { Observable } from 'rxjs'
 import { IpcService, IpcCommand } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
@@ -14,7 +14,6 @@ declare var $: any;
 export class PreferencesComponent implements OnInit {
   @Input() data: Observable<any>
 
-  currentDrive = 'C:\\'
   initialFolder = 'C:\\'
   testFoldersList = ['folder1', 'folder2']
   testLibraryFolders = ['C:\\Users\\', 'D:\\Movies']
@@ -25,14 +24,7 @@ export class PreferencesComponent implements OnInit {
   foldersList = this.testFoldersList
   currentFolder = this.initialFolder
   previousFolder = ''
-  preferencesObject: IPreferences = {
-    isDarkMode: false,
-    isDirty: false,
-    isEnableCache: false,
-    frequencyValue: 3,
-    frequencyUnit: 'day',
-    libraryFolders: this.libraryFolders
-  }
+  preferencesObject: IPreferences = DEFAULT_PREFERENCES
   constructor(
     private ipcService: IpcService,
     private cdr: ChangeDetectorRef
@@ -46,7 +38,6 @@ export class PreferencesComponent implements OnInit {
     let libraryFoldersSubscription = this.ipcService.libraryFolders.subscribe((value) => {
       this.libraryFolders = value
       console.log('libraryfolders: ', value);
-      // value.
       this.cdr.detectChanges()
     })
     console.log(typeof libraryFoldersSubscription);
@@ -92,7 +83,6 @@ export class PreferencesComponent implements OnInit {
    * Opens file explorer modal
    */
   onOpenModal() {
-    console.log('onOpenModal');
     this.onGoToFolder(this.initialFolder)
     this.ipcService.getSystemDrives()
   }
@@ -101,7 +91,6 @@ export class PreferencesComponent implements OnInit {
    * Closes file explorer modal
    */
   onCloseModal() {
-    console.log('onClose');
     this.previousFolder = ''
   }
 
@@ -109,7 +98,6 @@ export class PreferencesComponent implements OnInit {
    * Scans library folders for new movies
    */
   onScanLibrary() {
-    console.log('onScanLibrary');
     this.ipcService.call(IpcCommand.ScanLibrary)
   }
 
@@ -134,32 +122,33 @@ export class PreferencesComponent implements OnInit {
     this.ipcService.call(IpcCommand.UpdateTorrentDump)
   }
 
+  onSyncUserData() {
+
+  }
+
   /**
    * saves config file
    */
   onSave() {
     this.preferencesObject.libraryFolders = this.libraryFolders
     this.ipcService.call(IpcCommand.SavePreferences, this.preferencesObject)
-    console.log('onSave');
+    this.preferencesObject.isDirty = false;
   }
 
   /**
    * Resets preferences.
    */
   onReset() {
-    console.log('onReset');
     this.preferencesObject = DEFAULT_PREFERENCES
+    this.preferencesObject.isDirty = false;
   }
 
   onAddFolder(folderName: string) {
-    console.log('onAddFolder');
     this.ipcService.openFolder('');
-    // console.log(__dirname);
     // this.ipcService.openFolder(__dirname)
     // this.unsavedPreferences.libraryFolders.push(folderName)
   }
   onEditFolder(folder) {
-    console.log('onEditFolder');
   }
 
   /**
@@ -167,7 +156,6 @@ export class PreferencesComponent implements OnInit {
    * @param folder folder directory to delete
    */
   onDeleteFolder(folder) {
-    console.log('onDeleteFolder', folder);
     this.libraryFolders = this.libraryFolders.filter(h => h !== folder)
     this.cdr.detectChanges()
   }
@@ -198,9 +186,7 @@ export class PreferencesComponent implements OnInit {
 
   // goes back to the parent folder
   onGoToParentFolder() {
-
     if ((this.currentFolder.lastIndexOf('\\')) <= 2) {
-      console.log('isparent');
     } else {
       this.previousFolder = this.currentFolder
     }
@@ -211,5 +197,13 @@ export class PreferencesComponent implements OnInit {
     this.previousFolder = this.currentFolder
     this.currentFolder = folder
     this.ipcService.openFolder(folder)
+  }
+}
+
+@Pipe({ name: 'dataDisplay' })
+export class DataDisplayPipe implements PipeTransform {
+  transform(value: any): string {
+    if (value === null || value === undefined || value === '')
+      return 'noData'
   }
 }

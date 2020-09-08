@@ -1,20 +1,8 @@
-<div id='isVideoAvailable' *ngIf='showVideo' id='target'
-  style='background-color: black;width: 100%;height: calc(100vh - 50px);'>
-  <!-- <video *ngIf="showVideo" src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4 -->
-  <!-- " id="videoPlayer" controls style="width: 100%;height:100%;"> -->
-  <video *ngIf="showVideo" style="width:100%; height:100%;" poster="" controls preload="none" autoplay>
-    <!-- <video *ngIf="showVideo" controlsList="nodownload" style="width:100%;height:100%;" poster="" controls preload="none"> -->
-    <source [src]='streamLink' type="video/mp4">
-    <!-- <source [src]='"http://"+streamLink' type="video/mp4"> -->
-    <!-- <source src="http://localhost:3000/stream" type="video/mp4"> -->
-    <!-- <source src="https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4" type="video/mp4"> -->
-    <!-- <track label="English subtitles" kind="subtitles" srclang="en" src="assets/sample-subtitles.vtt" default> -->
-  </video>
-  <!-- </video> -->
+<div *ngIf="showVideo">
+  <app-video-player [streamLink]='streamLink'></app-video-player>
 </div>
-
 <div
-  [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(https://image.tmdb.org/t/p/original' + movieDetails.backgroundPath + ')'}"
+  [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(https://image.tmdb.org/t/p/original' + movieBackdrop + ')'}"
   style='background-size: cover;background-repeat: no-repeat;background-position: center;
   background-attachment: fixed;'>
   <div style='padding-top: 70px; padding-bottom: 100px'>
@@ -27,30 +15,19 @@
               [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/w342'+movieDetails.posterPath+')','height':'calc(1.481*300px)'}"
               style='background-size: cover; background-position: center; width: 100%; background-color: white;'>
             </div>
-
-            <!-- <div class='img-container'
-              [ngStyle]="{'background-image':'url('+movieDetails.posterPath+')','height':'calc(1.481*300px)'}"
-              style='background-size: cover; background-position: center; width: 100%; background-color: white;'>
-            </div> -->
             <div class='uk-button-group'>
-
               <button [disabled]='procBookmark' class='btn btn-small'
-                [ngClass]="{'btn-success': !movieDetails.bookmark,'btn-danger':movieDetails.bookmark}"
-                (click)='toggleBookmark()'>
-                <span *ngIf="movieDetails.bookmark">Remove bookmark</span>
-                <span *ngIf="!movieDetails.bookmark">Add bookmark</span>
+                [ngClass]="{'btn-success': !isBookmarked,'btn-danger':isBookmarked}" (click)='toggleBookmark()'>
+                <span *ngIf="isBookmarked">Remove bookmark</span>
+                <span *ngIf="!isBookmarked">Add bookmark</span>
               </button>
 
-              <div *ngIf="movieDetails.watched">
-                <button [disabled]='procWatched' class='btn btn-danger btn-small' (click)='toggleWatched()'>
-                  Unmark as watched
-                </button>
-              </div>
-              <div *ngIf="!movieDetails.watched">
-                <button [disabled]='procWatched' class='btn btn-success btn-small' (click)='toggleWatched("100%")'>
-                  Mark as watched
-                </button>
-              </div>
+              <button [disabled]='procWatched' class='btn btn-small'
+                [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}" (click)='toggleWatched("100%")'>
+                <span *ngIf="isWatched">Unmark as watched</span>
+                <span *ngIf="!isWatched">Mark as watched</span>
+              </button>
+
             </div>
           </div>
           <div class="col-sm-8">
@@ -64,61 +41,74 @@
                 ({{movieDetails.releaseDate|releaseYear}})
               </h2>
               <h2 (click)='goToDiscover("certification",movieCertification)'>{{movieCertification}}</h2>
-              <!-- <button (click)='playVideo()' class='btn btn-primary'>Play</button> -->
 
-              <button class="btn btn-primary" type="button" (click)='playVideo()'
-                [disabled]='procVideo||!isVideoAvailable'>
+              <button *ngIf="isMovieAvailable" class="btn btn-primary" type="button" (click)='playVideo()'
+                [disabled]='procVideo || !isMovieAvailable'>
                 <div *ngIf="procVideo">
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                   Loading...
                 </div>
                 <div *ngIf="!procVideo">
-                  <div *ngIf="isVideoAvailable">
+                  <div *ngIf="isMovieAvailable">
                     Play
                   </div>
-                  <div *ngIf="!isVideoAvailable">
+                  <div *ngIf="!isMovieAvailable">
                     Not available
                   </div>
                 </div>
               </button>
+
+              <!-- play options -->
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Play
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <div *ngFor="let torrent of torrents">
+                    <a class="dropdown-item" (click)='playTorrent(torrent.hash)'>{{torrent.name}} {{torrent.quality}}
+                      {{torrent.peers}}</a>
+                  </div>
+                </div>
+              </div>
+
+              <button class='btn btn-primary' (click)='playTrailer()' *ngIf='movieTrailer'>
+                Play Trailer
+              </button>
             </div>
 
-            <!-- isVideoAvailable  -->
             <p id="movie-plot" style='overflow-wrap: break-word !important;
             word-wrap: break-word !important;
             white-space: pre-line;'>{{movieDetails.plot}}</p>
 
-            <span class='text-hyperlink' (click)='goToDiscover("genre",item)'
+            <span class='text-hyperlink' (click)='goToDiscover("genre",item.id)'
               *ngFor="let item of movieDetails.genres; let isLast=last">
-              {{item}}{{isLast ? '' : ', '}}
+              {{item.name}}{{isLast ? '' : ', '}}
             </span>
 
             <p id="movie-runtime" class="">{{movieDetails.runtime|runtimeDisplay}}</p>
             <p *ngIf="movieDetailsDirectors">Directed by
-              <span class='text-hyperlink' (click)='goToPerson(director.id)'
+
+              <span class='text-hyperlink' (click)='goToDiscover("person",director.id,director.name)'
                 *ngFor="let director of movieDetailsDirectors; let isLast=last">
                 {{director.name}}{{isLast ? '' : ', '}}
               </span>
             </p>
 
             <p *ngIf="movieDetailsWriters">Written by
-              <span class='text-hyperlink' (click)='goToPerson(writer.id)'
+              <span class='text-hyperlink' (click)='goToDiscover(writer.id)'
                 *ngFor="let writer of movieDetailsWriters; let isLast=last">
                 {{writer.name}}{{isLast ? '' : ', '}}
               </span>
             </p>
             <p *ngIf="movieDetailsProducers">Produced by
-              <span class='text-hyperlink' (click)='goToPerson(producer.id)'
+              <span class='text-hyperlink' (click)='goToDiscover(producer.id)'
                 *ngFor="let producer of movieDetailsProducers; let isLast=last">
                 {{producer.name}}{{isLast ? '' : ', '}}
               </span>
             </p>
 
             <div *ngIf="movieDetails.isAvailable">
-              <button class="btn btn-success">Play</button>
-            </div>
-            <div *ngIf="movieDetails.isAvailable==false">
-              <p>Movie is not available</p>
             </div>
             <div>
               <!-- external links -->
@@ -135,7 +125,7 @@
                   data-toggle='tooltip' title='{{movieDetails.website}}'>
                   Website
                 </div>
-                <div *ngIf="movieDetails.external_ids" class='text-hyperlink'>
+                <div *ngIf="movieDetails.external_ids" class='row'>
                   <div *ngIf="movieDetails.external_ids.facebook_id" class='text-hyperlink'
                     (click)="goToLink('facebook', movieDetails.external_ids.facebook_id)">
                     Facebook
@@ -156,11 +146,6 @@
         <div *ngIf="movieDetails.isAvailable">
 
         </div>
-        <h1>video 1</h1>
-        <!-- <div *ngIf="isVideoAvailable">
-          <video src="http://localhost:3000/stream" id="videoPlayer" style='height:100%;width:100%' controls>
-          </video>
-        </div> -->
 
         <div class="table-responsive-lg container">
           <table class="table">
@@ -180,7 +165,7 @@
                   <p>{{torrent.peers}}</p>
                 </td>
                 <td>
-                  <button class="btn btn-primary" (click)="copyToClipboard(torrent.magnet_link)">Copy to
+                  <button class="btn btn-primary" (click)="copyToClipboard(torrent.magnetLink)">Copy to
                     clipboard</button>
                 </td>
               </tr>
@@ -218,7 +203,8 @@
               <div>
                 <h6 (click)='goToMovie(recommendedMovie.id)' class='text-hyperlink'>{{recommendedMovie.title}}</h6>
                 <label class='text-hyperlink' style='float: left'
-                  (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>{{getYear(recommendedMovie.release_date)}}</label>
+                  (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>
+                  {{recommendedMovie.release_date|releaseYear}}</label>
                 <label *ngIf='recommendedMovie.vote_average>0' style='float: right' data-toggle='tooltip'
                   title='{{recommendedMovie.vote_count}} votes'>
                   <img style='height:10px;
