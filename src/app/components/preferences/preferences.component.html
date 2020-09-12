@@ -53,8 +53,9 @@
   <p>Last update: January 1, 1970 12:00 AM</p>
   <button class="btn btn-primary" (click)="onUpdateOfflineMetadata()">Update Offline Metadata</button>
   <button class="btn btn-primary" (click)="onSyncUserData()">Sync User Data</button>
-  <button class="btn btn-success" [disabled]='!preferencesObject.isDirty' (click)="onSave()">Save</button>
-  <button class="btn btn-warning" [disabled]='!preferencesObject.isDirty' (click)="onReset()">Reset</button>
+  <button class="btn btn-success" (click)="onSave()">Save</button>
+  <!-- <button class="btn btn-success" [disabled]='!preferencesObject.isDirty' (click)="onSave()">Save</button> -->
+  <button class="btn btn-warning" [disabled]='!isDirty' (click)="onReset()">Reset</button>
 
   <div class='form-inline'>
     <h2>Statistics</h2>

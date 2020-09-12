@@ -82,7 +82,7 @@ export const GENRES: IGenre[] = [
   { id: 20006, name: 'Sport' }
 ]
 
-export const STRING_REGEX_IMDB_ID = `(^tt[0-9]{7})$`;
+export const STRING_REGEX_IMDB_ID = `(^tt[0-9]{7,8})$`;
 export const STRING_REGEX_TMDB_RUNTIME = `([\\d,]+)(\\s)(min)`;
 export const STRING_REGEX_OMDB_RELEASE_DATE = `^(\\d{2})+\\s+([a-z]{3,})+\\s+(\\d{4})+`;
 export const STRING_REGEX_TMDB_RELEASE_DATE = `([0-9]{2,4})-([0-9]{2})-([0-9]{2})`

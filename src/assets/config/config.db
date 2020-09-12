@@ -7,3 +7,4 @@
 {"type":"libraryFolders","foldersList":["C:\\Users\\Lenovo\\Downloads\\Completed Downloads","D:\\media server\\movies"],"_id":"6"}
 {"type":"moviesList","list":[],"_id":"7"}
 {"type":"searchList","list":["titanic","wall-e","toy story 4","i am mother","guardians of the galaxy"],"_id":"8"}
+{"type":"preferences","frequencyUnit":"day","frequencyValue":3,"isDarkMode":false,"isEnableCache":true,"libraryFolders":[],"torrentSeedRatio":1,"_id":"9","isDirty":false}

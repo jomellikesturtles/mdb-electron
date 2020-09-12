@@ -3,6 +3,9 @@
  * TODO: change behaviorsubjects to something else.
  */
 import { environment } from './../../environments/environment';
+import * as IPCRendererChannel from '../../assets/IPCRendererChannel.json';
+import * as IPCMainChannel from '../../assets/IPCMainChannel.json';
+
 /**
  * Service to communicate to ipc main
  */
@@ -13,27 +16,8 @@ import {
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
 declare var electron: any
 import { ipcRenderer } from 'electron'
-// // const { ipcRenderer } = electron
 import { ILibraryInfo } from '../interfaces'
 
-export enum Channel {
-  BookmarkAddSuccess = 'bookmark-add-success',
-  BookmarkGetSuccess = 'bookmark-get-success',
-  BookmarkRemoveSuccess = 'bookmark-remove-success',
-  BookmarkChanges = 'bookmark-changes',
-  LibraryFolders = 'library-folders',
-  LibraryMovie = 'library-movie',
-  LibraryMovies = 'library-movies',
-  AppMinimizing = 'app-minimizing',
-  AppRestoring = 'app-restoring',
-  MovieMetadata = 'movie-metadata',
-  PreferencesConfig = 'preferences-config',
-  ScannedSuccess = 'scanned-success',
-  SearchList = 'search-list',
-  VideoSuccess = 'video-success',
-  WatchedSuccess = 'watched-success',
-  MovieIdentified = 'movie-identified-success', // emits when movie from library is identified
-}
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +28,6 @@ export class IpcService {
   libraryMovies = new BehaviorSubject<string[]>([])
   libraryMovie = new BehaviorSubject<string[]>([])
   movieMetadata = new BehaviorSubject<string[]>([])
-  preferencesConfig = new BehaviorSubject<string[]>([])
   bookmarkSingle = new BehaviorSubject<IBookmark>({ id: '', imdbId: '', tmdbId: 0 })
   watchedSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   scannedMovieSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
@@ -54,11 +37,16 @@ export class IpcService {
   movieIdentified = new BehaviorSubject<any>({ id: 0 })
   searchList = new BehaviorSubject<any>([])
   torrentVideo = new BehaviorSubject<string[]>([])
+  preferences = new BehaviorSubject<any>([])
+  streamLink = new BehaviorSubject<any>('')
   private ipcRenderer: typeof ipcRenderer
 
   constructor(private ngZone: NgZone,
     // private cdr: ChangeDetectorRef
   ) {
+    console.log(IPCRendererChannel)
+    console.log(IPCMainChannel)
+    console.log()
     if (environment.runConfig.electron) {
       this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
@@ -81,6 +69,18 @@ export class IpcService {
       //   console.log('searchList:', data)
       //   this.searchList.next(data)
       // })
+      // this.ipcRenderer.on(IPCMainChannel.PREFERENCES_SET_COMPLETE, (event: Electron.IpcRendererEvent, data: any) => {
+      //   this.preferences.next(data)
+      // })
+      this.ipcRenderer.on(IPCMainChannel.PREFERENCES_GET_COMPLETE, (event: Electron.IpcRendererEvent, data) => {
+        this.preferences.next(data)
+        console.log('IPCMainChannel.PREFERENCES_COMPLETE ', data)
+      })
+      this.ipcRenderer.on(IPCMainChannel.STREAM_LINK, (event: Electron.IpcRendererEvent, data) => {
+        this.streamLink.next(data)
+        console.log('IPCMainChannel.STREAM_LINK ', data)
+      })
+
     }
   }
 
@@ -93,7 +93,7 @@ export class IpcService {
     // });
   }
 
-  call(message: IpcCommand, args?: any) {
+  call(message: string, args?: any) {
 
     if (environment.runConfig.electron) {
       console.log(`IPC Command: ${message}, args: ${args}`)
@@ -105,47 +105,44 @@ export class IpcService {
    * Listens to ipc renderer.
    * @param channel name of the channel
    */
-  listen(channel: Channel): void | Promise<any> {
+  listen(channel: string): void | Promise<any> {
     // this.ipcRenderer.removeListener().
     if (environment.runConfig.electron) {
       console.log('LISTENING...');
       this.ipcRenderer.on(channel, (event, data: any) => {
         console.log(`ipcRenderer channel: ${channel} data: ${data}`)
         switch (channel) {
-          case Channel.BookmarkAddSuccess:
+          case IPCMainChannel.BookmarkAddSuccess:
             this.bookmarkSingle.next(data)
             break;
-          case Channel.BookmarkGetSuccess:
+          case IPCMainChannel.BookmarkGetSuccess:
             this.bookmarkSingle.next(data)
             break;
-          case Channel.BookmarkRemoveSuccess:
+          case IPCMainChannel.BookmarkRemoveSuccess:
             this.bookmarkSingle.next(data)
             break;
-          case Channel.BookmarkChanges:
+          case IPCMainChannel.BookmarkChanges:
             this.bookmarkChanges.next(data)
             break;
-          case Channel.LibraryFolders:
+          case IPCMainChannel.LibraryFolders:
             this.libraryFolders.next(data)
             break;
-          case Channel.LibraryMovies:
+          case IPCMainChannel.LibraryMovies:
             this.libraryMovies.next(data)
             break;
-          case Channel.LibraryMovie:
+          case IPCMainChannel.LibraryMovie:
             this.libraryMovie.next(data)
             break;
-          case Channel.PreferencesConfig:
-            this.preferencesConfig.next(data)
-            break;
-          case Channel.MovieMetadata:
+          case IPCMainChannel.MovieMetadata:
             this.movieMetadata.next(data)
             break;
-          case Channel.ScannedSuccess:
+          case IPCMainChannel.ScannedSuccess:
             this.scannedMovieSingle.next(data)
             break;
-          case Channel.WatchedSuccess:
+          case IPCMainChannel.WatchedSuccess:
             this.watchedSingle.next(data)
             break;
-          case Channel.VideoSuccess:
+          case IPCMainChannel.VideoSuccess:
             this.videoFile.next(data)
             break;
           default:
@@ -176,15 +173,6 @@ export class IpcService {
   openFolder(data: string) {
     console.log('open', data)
     // this.ipcRenderer.send('go-to-folder', ['open', data])
-  }
-
-  /**
-   * Search movie
-   * @param data query to search
-   */
-  searchQuery(data) {
-    console.log('Searching ', data)
-    // this.ipcRenderer.send('search-query', data)
   }
 
   // library movies db
@@ -236,49 +224,63 @@ export class IpcService {
     // this.ipcRenderer.send('bookmark', ['bookmark-get', val])
   }
 
-  scanLibrary() {
+  startScanLibrary() {
 
-    this.ipcRenderer.send('scan-library')
-    this.ipcRenderer.on('scan-result', e => {
+    this.ipcRenderer.send(IPCRendererChannel.SCAN_LIBRARY_START)
+    this.ipcRenderer.on(IPCMainChannel.ScanLibraryResult, e => {
     })
-    this.ipcRenderer.on('scan-complete', e => {
-      this.ipcRenderer.removeListener('scan-result', d => { })
-      this.ipcRenderer.removeListener('scan-complete', d => { })
+    this.ipcRenderer.on(IPCMainChannel.ScanLibraryComplete, e => {
+      this.ipcRenderer.removeListener(IPCMainChannel.ScanLibraryResult, d => { })
+      this.ipcRenderer.removeListener(IPCMainChannel.ScanLibraryComplete, d => { })
     })
   }
 
-}
+  stopScanLibrary() {
+    this.ipcRenderer.send(IPCRendererChannel.SCAN_LIBRARY_STOP)
+  }
 
-export enum IpcCommand {
-  MinimizeApp = 'app-min',
-  RestoreApp = 'app-restore',
-  ExitApp = 'exit-program',
-  ScanLibrary = 'scan-library',
-  StopScanLibrary = 'stop-scan-library',
-  OpenLinkExternal = 'open-link-external',
-  OpenInFileExplorer = 'open-file-explorer',
-  OpenVideo = 'open-video',
-  RetrieveLibraryFolders = 'retrieve-library-folders',
-  Bookmark = 'bookmark',
-  BookmarkAdd = 'bookmark-add',
-  BookmarkGet = 'bookmark-get',
-  Watched = 'watched',
-  MovieMetadata = 'movie-metadata',
-  Get = 'get',
-  Add = 'add',
-  Set = 'set',
-  Remove = 'remove',
-  GetPreferences = 'get-preferences',
-  SavePreferences = 'save-preferences',
-  GoToFolder = 'go-to-folder',
-  Up = 'up',
-  UpdateTorrentDump = 'update-torrent-dump',
-  GetBookmarkChanges = 'get-bookmark-changes',
-  SearchTorrent = 'torrent-search',
-  ModalFileExplorer = 'modal-file-explorer',
-  GetTorrentsTitle = 'get-torrents-title',
-  GetImage = 'get-image',
-  GetSearchList = 'get-search-list'
+  getPlayTorrent(hash: string) {
+    this.ipcRenderer.send(IPCRendererChannel.PLAY_TORRENT, hash)
+  }
+  stopStream() {
+    this.ipcRenderer.send(IPCRendererChannel.STOP_STREAM)
+  }
+
+  getPreferences() {
+
+    this.ipcRenderer.send(IPCRendererChannel.PREFERENCES_GET)
+    // this.ipcRenderer.addListener(IPCMainChannel.PREFERENCES_GET_COMPLETE, this.pref)
+
+    // (event, data: any) => {
+    // console.log('IPCMainChannel.PREFERENCES_COMPLETE ', data)
+    // this.pref()
+    // this.preferences.next(data)
+    // this.ipcRenderer.removeListener(IPCMainChannel.PREFERENCES_GET_COMPLETE, e => { })
+    // })
+  }
+
+  savePreferences(val) {
+    this.ipcRenderer.send(IPCRendererChannel.PREFERENCES_SET, val)
+    // this.ipcRenderer.on(IPCMainChannel.PREFERENCES_SET_COMPLETE, (event, data: any) => {
+    //   console.log('IPCMainChannel.PREFERENCES_SET_COMPLETE ', data)
+    //   this.preferences.next(data)
+    //   this.ipcRenderer.removeListener(IPCMainChannel.PREFERENCES_SET_COMPLETE, d => { })
+    // })
+  }
+
+  pref = ((event, data) => {
+    console.log('got something', data)
+    // this.preferences.next(data)
+  })
+
+  removeListener(channel: string) {
+    console.log('REMOVING LISTENER', channel)
+    // this.ipcRenderer.removeListener(channel, d => { })
+    this.ipcRenderer.removeListener(channel, this.pref)
+  }
+
+  IPCCommand = IPCRendererChannel['default']
+  IPCChannel = IPCMainChannel['default']
 }
 
 export interface IBookmarkChanges {
@@ -303,3 +305,4 @@ export interface IWatched {
   id: string
   timestamp?: number,
 }
+// browse folder

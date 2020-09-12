@@ -121,7 +121,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       this.isYTReady = true
       this.isYTPlaying = true
     }
-    if (event.data === -1 || event.data === 0) {
+    if (event.data === -1 || event.data === 5 || event.data === 0) {
       this.isYTReady = false
       this.isYTPlaying = false
     }

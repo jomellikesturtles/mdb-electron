@@ -2,7 +2,7 @@ import { IUserSavedData } from './../interfaces';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { FirebaseService, FirebaseOperator, CollectionName, FieldName } from './firebase.service'
-import { IpcService, IpcCommand } from './ipc.service'
+import { IpcService } from './ipc.service'
 import { Observable, from } from 'rxjs';
 @Injectable({
   providedIn: 'root'
@@ -25,7 +25,7 @@ export class BookmarkService {
         })
       })
     } else {
-      // this.ipcService.call(IpcCommand.)
+      // this.ipcService.call(IPCCommand.)
     }
   }
 
@@ -115,5 +115,5 @@ export interface IBookmark extends IUserSavedData {
   //  * @param val tmdb id
   //  */
   // onAddBookmarkSingle(val): void {
-  //   this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.Add, val])
+  //   this.ipcService.call(IPCCommand.Bookmark, [IPCCommand.Add, val])
   // }

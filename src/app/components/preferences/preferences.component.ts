@@ -1,17 +1,18 @@
-import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, Pipe, PipeTransform } from '@angular/core';
-import { Observable } from 'rxjs'
-import { IpcService, IpcCommand } from '../../services/ipc.service';
+import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, Pipe, PipeTransform, OnDestroy } from '@angular/core';
+import { Observable, Subject } from 'rxjs'
+import { IpcService } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
 import { STRING_REGEX_PREFIX } from '../../constants';
-declare var $: any;
+import { takeUntil } from 'rxjs/operators';
+// declare var $: any;
 @Component({
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
   styleUrls: ['./preferences.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PreferencesComponent implements OnInit {
+export class PreferencesComponent implements OnInit, OnDestroy {
   @Input() data: Observable<any>
 
   initialFolder = 'C:\\'
@@ -24,13 +25,15 @@ export class PreferencesComponent implements OnInit {
   foldersList = this.testFoldersList
   currentFolder = this.initialFolder
   previousFolder = ''
+  isDirty
   preferencesObject: IPreferences = DEFAULT_PREFERENCES
+  private ngUnsubscribe = new Subject();
   constructor(
     private ipcService: IpcService,
     private cdr: ChangeDetectorRef
   ) { }
   ngOnInit() {
-    $('.title').slideToggle();
+    // $('.title').slideToggle();
     //// var $j = $.noConflict();
 
     // this.onGetLibraryFolders()
@@ -46,8 +49,8 @@ export class PreferencesComponent implements OnInit {
       this.libraryMovies = value
       this.cdr.detectChanges()
     })
-    $('[data-toggle="popover"]').popover();
-    $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
+    // $('[data-toggle="popover"]').popover();
+    // $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
     this.ipcService.getFiles().then(value => {
       console.log('getFiles', value);
     }).catch(e => {
@@ -58,10 +61,22 @@ export class PreferencesComponent implements OnInit {
     }).catch(e => {
       console.log(e);
     })
+
+    this.ipcService.getPreferences()
+    this.ipcService.preferences.pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
+      console.log('this.ipcService.preferences ', e)
+      this.preferencesObject = e
+    })
+
+  }
+
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next()
+    this.ngUnsubscribe.complete()
   }
 
   toggleTitle() {
-    $('.title').slideToggle(); // test only
+    // $('.title').slideToggle(); // test only
   }
 
   setFoldersList() {
@@ -76,7 +91,7 @@ export class PreferencesComponent implements OnInit {
    * Get list of library folders
    */
   onGetLibraryFolders() {
-    this.ipcService.call(IpcCommand.RetrieveLibraryFolders)
+    this.ipcService.call(this.ipcService.IPCCommand.RetrieveLibraryFolders)
   }
 
   /**
@@ -98,7 +113,7 @@ export class PreferencesComponent implements OnInit {
    * Scans library folders for new movies
    */
   onScanLibrary() {
-    this.ipcService.call(IpcCommand.ScanLibrary)
+    this.ipcService.startScanLibrary()
   }
 
   /**
@@ -106,20 +121,20 @@ export class PreferencesComponent implements OnInit {
    */
   onStopScanLibrary() {
     console.log('onStopScanLibrary');
-    this.ipcService.call(IpcCommand.StopScanLibrary)
+    this.ipcService.call(this.ipcService.IPCCommand.StopScanLibrary)
   }
 
   /**
    * Updates thepiratebay torrent dump
    */
   onUpdateTorrentDump() {
-    this.ipcService.call(IpcCommand.UpdateTorrentDump)
+    this.ipcService.call(this.ipcService.IPCCommand.UpdateTorrentDump)
   }
   /**
    * Updates imdb files
    */
   onUpdateOfflineMetadata() {
-    this.ipcService.call(IpcCommand.UpdateTorrentDump)
+    this.ipcService.call(this.ipcService.IPCCommand.UpdateTorrentDump)
   }
 
   onSyncUserData() {
@@ -130,9 +145,14 @@ export class PreferencesComponent implements OnInit {
    * saves config file
    */
   onSave() {
-    this.preferencesObject.libraryFolders = this.libraryFolders
-    this.ipcService.call(IpcCommand.SavePreferences, this.preferencesObject)
-    this.preferencesObject.isDirty = false;
+    this.ipcService.savePreferences(DEFAULT_PREFERENCES)
+    // this.ipcService.preferences.subscribe(e => {
+    //   console.log('this.ipcService.preferences ', e)
+    //   this.preferencesObject = e
+    // })
+    // this.preferencesObject.libraryFolders = this.libraryFolders
+    // this.ipcService.call(this.ipcService.IPCCommand.PREFERENCES_SET, this.preferencesObject)
+    // this.preferencesObject.isDirty = false;
   }
 
   /**
@@ -140,7 +160,7 @@ export class PreferencesComponent implements OnInit {
    */
   onReset() {
     this.preferencesObject = DEFAULT_PREFERENCES
-    this.preferencesObject.isDirty = false;
+    this.isDirty = false;
   }
 
   onAddFolder(folderName: string) {
@@ -172,7 +192,7 @@ export class PreferencesComponent implements OnInit {
     } else {
       folderToOpen = folder
     }
-    this.ipcService.call(IpcCommand.OpenInFileExplorer, folderToOpen)
+    this.ipcService.call(this.ipcService.IPCCommand.OpenInFileExplorer, folderToOpen)
   }
 
   // modal file explorer
@@ -190,7 +210,7 @@ export class PreferencesComponent implements OnInit {
     } else {
       this.previousFolder = this.currentFolder
     }
-    this.ipcService.call(IpcCommand.GoToFolder, [IpcCommand.Up, this.currentFolder])
+    this.ipcService.call(this.ipcService.IPCCommand.GoToFolder, [this.ipcService.IPCCommand.Up, this.currentFolder])
   }
 
   onGoToFolder(folder: string) {

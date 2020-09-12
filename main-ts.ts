@@ -25,7 +25,7 @@ let offlineMovieDataService;
 let procmovieImageService;
 let mainWindow
 let mdbTray
-const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`
+const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex@2x.png`
 
 function createWindow() {
 

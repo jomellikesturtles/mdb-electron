@@ -1,7 +1,7 @@
 import { IUserSavedData } from './../interfaces';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
-import { IpcService, IpcCommand, Channel } from './ipc.service';
+import { IpcService } from './ipc.service';
 import { FirebaseService, CollectionName, FieldName, FirebaseOperator } from './firebase.service';
 
 @Injectable({
@@ -23,12 +23,13 @@ export class VideoService {
   newWebTorrent() {
 
   }
+
   /**
    * Gets movie video.
    */
   getVideo(id): Promise<any> {
-    this.ipcService.call(IpcCommand.OpenVideo)
-    this.ipcService.listen(Channel.VideoSuccess)
+    // this.ipcService.call(this.ipcService.IPCCommand.OpenVideo) // commented to make way for torrent-play
+    this.ipcService.listen(this.ipcService.IPCChannel.VideoSuccess) // TODO: might remove. all IPC calls and listens must be in IPC SERVICE
     if (environment.runConfig.firebaseMode) {
       return new Promise((resolve, reject) => {
         this.firebaseService.getFromFirestore(CollectionName.Video, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {

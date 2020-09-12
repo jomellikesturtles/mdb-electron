@@ -1,16 +1,10 @@
-import { environment } from './../../../../environments/environment';
-import {
-  AfterViewInit, Component, OnInit, ChangeDetectorRef, ElementRef, Input, ChangeDetectionStrategy, ViewChild, OnDestroy
-} from '@angular/core'
-import { Observable, Subject } from 'rxjs'
-import { takeUntil } from 'rxjs/operators'
+import { Component, OnInit } from '@angular/core'
 import { MovieService } from '../../../services/movie.service'
 import { DataService } from '../../../services/data.service'
 import { IpcService } from '../../../services/ipc.service'
 import { UtilsService } from '../../../services/utils.service'
 import { Router, ActivatedRoute } from '@angular/router'
-import { ITmdbResult, ILibraryInfo, TmdbParameters, GenreCodes } from '../../../interfaces'
-import { TMDB_SEARCH_RESULTS } from '../../../mock-data'
+import { TmdbParameters, } from '../../../interfaces'
 import { GENRES } from '../../../constants'
 import { Select, Store } from '@ngxs/store'
 import { DomSanitizer } from '@angular/platform-browser'
@@ -22,9 +16,8 @@ declare var $: any
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Default
 })
-export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+export class DashboardComponent implements OnInit {
   [x: string]: any
 
   constructor(
@@ -42,42 +35,17 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   hasAlreadySelected: any
 
   @Select(state => state.moviesList) moviesList$
-  // @ViewChild('player') thePlayer: ElementRef;
 
   browserConnection = navigator.onLine
   theLink = ''
   nameString = 'name'
   dataString = 'data'
-  selectedMovies = []
-  sampleListMovies: ITmdbResult[] = []
   topMoviesFromYear = []
   dashboardLists = []
-  selectedMovie: ITmdbResult = {
-    popularity: 0,
-    id: -1,
-    video: false,
-    vote_count: 0,
-    vote_average: -1,
-    title: '',
-    release_date: '',
-    original_language: '',
-    original_title: '',
-    genre_ids: [],
-    backdrop_path: '',
-    adult: false,
-    overview: '',
-    poster_path: '',
-    isAvailable: false
-  }
   selectedMovieBookmarkStatus = false
   isHighlighted = false
   cardWidth = '130px'
-  clipSrc = null
-  youtubeUrl = ''
   tag
-  done = false;
-  globalPlayerApiScript
-  private ngUnsubscribe = new Subject();
 
   ngOnInit() {
     this.getNowShowingMovies()
@@ -86,28 +54,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.ipcService.libraryFolders.subscribe(value => {
       console.log('dashboard libraryFolders', value)
     })
-    // $('[data-toggle="popover"]').popover()
-    // $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
-  }
-
-  ngAfterViewInit(): void {
-  }
-
-  ngOnDestroy(): void {
-    this.ngUnsubscribe.next()
-    this.ngUnsubscribe.complete()
-  }
-
-  /**
-   * Gets the availability of movies in the dashboard.
-   */
-  async getAvailability() {
-    for (const element of this.sampleListMovies) {
-      const result = await this.ipcService.getMovieFromLibrary(element.id)
-      if (result) {
-        element.isAvailable = true
-      }
-    }
   }
 
   /**
@@ -187,15 +133,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.selectedMovieBookmarkStatus = false
       }
     })
-  }
-
-  /**
-   * Converts genre code into its genre name equivalent.
-   * @param genreCode genre code origin
-   * @returns genre name
-   */
-  getGenre(genreCode: number) {
-    return GenreCodes[genreCode]
   }
 
   /**

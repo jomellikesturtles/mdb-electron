@@ -1,6 +1,7 @@
 /**
  * service for user's data, watchlist, watched; for happy path, we will use TMDB for now.
  */
+/*jshint esversion: 8 */
 let args = process.argv.slice(2);
 let command = args[0];
 let tmdbIdArg = args[1];
@@ -8,10 +9,10 @@ let imdbIdArg = args[2];
 
 let fs = require('fs');
 const path = require('path');
-var DataStore = require('nedb')
-var utilJs = require('./util.js')
-var bookmarksService = require('./bookmarks-service.js')
-var bookmarksDb = new DataStore({
+const DataStore = require('nedb')
+const utilJs = require('./util.js')
+const bookmarksService = require('./bookmarks-service.js')
+const bookmarksDb = new DataStore({
   filename: path.join(__dirname, '..', 'db', 'bookmarks.db'), // for node only
   //   // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks.db'),
   autoload: true

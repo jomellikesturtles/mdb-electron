@@ -258,7 +258,6 @@ export interface IPreferences {
   frequencyUnit: string
   frequencyValue: number
   isDarkMode: boolean
-  isDirty: boolean
   isEnableCache: boolean
   libraryFolders: string[]
   torrentSeedRatio: number
@@ -447,15 +446,6 @@ export enum TmdbAppendToResponseParameters {
 }
 
 export enum TmdbReleaseTypes {
-  PREMIERE = 'Premiere',  // 1
-  THEATRICAL_LIMITED = 'Theatrical(limited)', // 2
-  THEATRICAL = 'Theatrical', // 3
-  DIGITAL = 'Digital', // 4
-  PHYSICAL = 'Physical', // 5
-  TV = 'TV', // 6
-}
-
-export enum TmdbReleaseTypes2 {
   PREMIERE = 'Premiere',  // 1
   THEATRICAL_LIMITED = 'Theatrical(limited)', // 2
   THEATRICAL = 'Theatrical', // 3

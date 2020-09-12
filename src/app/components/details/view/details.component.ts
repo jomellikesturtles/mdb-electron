@@ -10,7 +10,7 @@ import { DataService } from '../../../services/data.service';
 import { MovieService } from '../../../services/movie.service';
 import { TorrentService } from '../../../services/torrent.service';
 import { UtilsService } from '../../../services/utils.service';
-import { IpcService, IpcCommand } from '../../../services/ipc.service';
+import { IpcService } from '../../../services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TROUBLE_QUOTES } from '../../../constants';
 import { TMDB_FULL_MOVIE_DETAILS } from '../../../mock-data-movie-details';
@@ -21,9 +21,6 @@ declare var $: any
 import { takeUntil } from 'rxjs/operators'
 import { Subject } from 'rxjs';
 
-// this.movieService.getMoviesDiscover(params).pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
-
-// })
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -135,7 +132,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   getVideo() {
-    // this.ipcService.call(IpcCommand.OpenVideo, this.movieDetails.tmdbId)
+    // this.ipcService.call(IPCCommand.OpenVideo, this.movieDetails.tmdbId)
     this.procVideo = true
     // this.ipcService.videoFile.subscribe(data => {
     //   if (data === null || data === 0) {
@@ -152,6 +149,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
       if (e) {
         this.streamLink = e.videoUrl
         this.isMovieAvailable = true
+        this.showVideo = true
       }
     }).catch(e => {
 
@@ -166,7 +164,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets bookmark status.
    */
   async getBookmark() {
-    // this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.BookmarkGet, this.movieDetails.tmdbId])
+    // this.ipcService.call(IPCCommand.Bookmark, [IPCCommand.BookmarkGet, this.movieDetails.tmdbId])
     // this.procBookmark = true
     // this.ipcService.bookmarkSingle.subscribe(data => {
     //   if (data === null || data.id === '') {
@@ -202,15 +200,15 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.procBookmark = false
     this.cdr.detectChanges()
 
-    //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-remove', this.movieDetails.tmdbId])
-    //   this.ipcService.call(IpcCommand.Bookmark, ['bookmark-add', this.movieDetails.tmdbId])
+    //   this.ipcService.call(IPCCommand.Bookmark, ['bookmark-remove', this.movieDetails.tmdbId])
+    //   this.ipcService.call(IPCCommand.Bookmark, ['bookmark-add', this.movieDetails.tmdbId])
   }
 
   /**
    * Gets the mark as watched status of the movie
    */
   async getWatched() {
-    // this.ipcService.call(IpcCommand.Watched, [IpcCommand.Get, this.movieDetails.tmdbId])
+    // this.ipcService.call(IPCCommand.Watched, [IPCCommand.Get, this.movieDetails.tmdbId])
     this.ipcService.watchedSingle.subscribe(data => { })
     this.procWatched = true
     const res = await this.watchedService.getWatched(this.movieDetails.tmdbId)
@@ -243,8 +241,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // this.procWatched = false
     // this.cdr.detectChanges()
 
-    //   this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieDetails.tmdbId])
-    //   this.ipcService.call(IpcCommand.Watched, [IpcCommand.Remove, this.movieDetails.tmdbId])
+    //   this.ipcService.call(IPCCommand.Watched, [IPCCommand.Add, this.movieDetails.tmdbId])
+    //   this.ipcService.call(IPCCommand.Watched, [IPCCommand.Remove, this.movieDetails.tmdbId])
   }
 
   /**
@@ -252,7 +250,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param val imdb id
    */
   getMovieDataOffline(val: any) {
-    this.ipcService.call(IpcCommand.MovieMetadata, [IpcCommand.Get, val])
+    this.ipcService.call(this.ipcService.IPCCommand.MovieMetadata, [this.ipcService.IPCCommand.Get, val])
   }
 
   async getMovieFromLibrary() {
@@ -264,7 +262,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   saveMovieDataOffline(val: any) {
-    this.ipcService.call(IpcCommand.MovieMetadata, [IpcCommand.Set, val])
+    this.ipcService.call(this.ipcService.IPCCommand.MovieMetadata, [this.ipcService.IPCCommand.Set, val])
   }
 
   /**
@@ -303,7 +301,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets the movie poster
    */
   getMoviePoster() {
-    this.ipcService.call(IpcCommand.GetImage, [this.selectedMovie.Poster, this.selectedMovie.imdbID, 'poster'])
+    this.ipcService.call(this.ipcService.IPCCommand.GetImage, [this.selectedMovie.Poster, this.selectedMovie.imdbID, 'poster'])
     return this.selectedMovie.Poster
   }
 
@@ -370,15 +368,26 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Plays selected torrent.
+   * @param hash torrent hash
    */
   playTorrent(hash: string) {
-    this.torrentService.getStreamLink(hash).subscribe(e => {
-      if (e) {
-        this.streamLink = e.url
+    this.ipcService.getPlayTorrent(hash)
+    this.ipcService.streamLink.subscribe(e => {
+      console.log('streamlink1:', e)
+      if (e != 0 && e != [] && e != '' && e.length > 0) {
+        console.log('streamlink2:', e)
+        this.streamLink = e
         this.showVideo = true
+        this.cdr.detectChanges()
       }
-      this.cdr.detectChanges()
     })
+    // this.torrentService.getStreamLink(hash).subscribe(e => {
+    //   if (e) {
+    //     this.streamLink = e.url
+    //     this.showVideo = true
+    //   }
+    //   this.cdr.detectChanges()
+    // })
   }
 
   /**
@@ -422,7 +431,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
     const env = this.utilsService.getEnvironment()
     if (env === 'desktop') {
-      this.ipcService.call(IpcCommand.OpenLinkExternal, url)
+      this.ipcService.call(this.ipcService.IPCCommand.OpenLinkExternal, url)
     } else if (env === 'web') {
       window.open(url)
     }
@@ -439,10 +448,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
   }
 
-  goToMovie(val) {
+  goToMovie(val: string) {
     const highlightedId = val
     this.dataService.updateHighlightedMovie(highlightedId);
     this.router.navigate([`/details/${highlightedId}`]);
+    this.cdr.detectChanges()
     // this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
   }
 
@@ -455,6 +465,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.router.navigate([`/credits/${val}`], { relativeTo: this.activatedRoute });
   }
 
+  /**
+   * Get year from date.
+   */
   getYear(val: string) {
     return this.utilsService.getYear(val)
   }

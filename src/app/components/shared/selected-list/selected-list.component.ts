@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../../services/data.service'
-import { IpcService, IpcCommand } from '../../../services/ipc.service'
+import { IpcService } from '../../../services/ipc.service'
 import { UtilsService } from '../../../services/utils.service'
 import { Select, Store } from '@ngxs/store';
 import { ClearList, AddWatched, AddBookmark } from '../../../movie.actions'
@@ -27,6 +27,7 @@ export class SelectedListComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dataService: DataService,
+    private ipcService: IpcService,
     private store: Store) { }
 
   ngOnInit() {
@@ -82,9 +83,9 @@ export class SelectedListComponent implements OnInit, OnDestroy {
   }
 
   markAsWatched() {
-    // this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieIdList])
+    // this.ipcService.call(IPCCommand.Watched, [IPCCommand.Add, this.movieIdList])
     // // const root = this
-    // // this.ipcService.call(IpcCommand.Watched, [IpcCommand.Add, this.movieIdList])
+    // // this.ipcService.call(IPCCommand.Watched, [IPCCommand.Add, this.movieIdList])
     // // this.displayMessage = 'Marked as watched'
     // // this.displaySnackbar = true
     // // this.utilsService.hideSnackbar(root)

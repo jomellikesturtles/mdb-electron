@@ -22,8 +22,9 @@ const {
   Tray,
   shell,
 } = electron;
-let WebTorrent = require("webtorrent");
-
+let WebTorrentService = require("./src/assets/scripts/webtorrent");
+const IPCRendererChannel = require("./src/assets/IPCRendererChannel.json");
+const IPCMainChannel = require("./src/assets/IPCMainChannel.json");
 let procBookmark;
 let procWatched;
 let procLibraryDb;
@@ -33,6 +34,7 @@ let procVideoService;
 let offlineMovieDataService;
 let procmovieImageService;
 let procScanLibrary;
+let procWebTorrent;
 let mainWindow;
 let mdbTray;
 const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`;
@@ -46,6 +48,11 @@ let DEBUG = (() => {
     log: console.log.bind(console, "%s", timestamp),
   };
 })();
+
+const PROC_OPTION = {
+  cwd: __dirname,
+  silent: true,
+};
 
 /**
  * Creates the browser window
@@ -74,8 +81,11 @@ function createWindow() {
     mainWindow = null;
   });
   mainWindow.once("show", function () {
-    console.log("main window Show");
+    DEBUG.log("main window Show");
   });
+
+  // mainWindow.webContents.
+
   // ipcMain.on('error', (_, err) => {
   // 	if (!argv.debug) {
   // 		console.error(err);
@@ -85,15 +95,16 @@ function createWindow() {
 
   // ---------shortcuts. BUG: shortcuts also applies to other electron apps
   // globalShortcut.register('CommandOrControl+F', () => {
-  //   console.log('search');
+  //   DEBUG.log('search');
   //   mainWindow.webContents.send('shortcut-search');
   // })
   // globalShortcut.register('CommandOrControl+Shift+P', () => {
-  //   console.log('pref');
+  //   DEBUG.log('pref');
   //   mainWindow.webContents.send('shortcut-preferences');
   // })
 
   setSystemTray();
+  startTorrentClient();
 }
 
 app.setAppUserModelId(process.execPath);
@@ -124,8 +135,8 @@ function setSystemTray() {
   mdbTray = new Tray(trayIcon);
   const trayMnu = Menu.buildFromTemplate([
     { label: "Preferences", icon: trayIcon, enabled: false },
-    { label: "Torrent", click: showTorrent },
-    { type: "separator" },
+    { label: "Torrent1", click: playTorrentSample },
+    { label: "Torrent2", click: playTorrentSample2 },
     { label: "Quit", click: app.quit },
   ]);
   mdbTray.setToolTip("Media Database");
@@ -142,41 +153,49 @@ function showWindow() {
   //   app.dock.show();
   // }
 }
-function showTorrent() {
-  var client = new WebTorrent();
-  // client.
-  // this.client = new webtorrent.WebTorrent()
-  // // // Sintel, a free, Creative Commons movie
-  var torrentId =
-    "magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel.torrent";
 
-  client.add(torrentId, function (torrent) {
-    torrent.on("infoHash", function () {
-      DEBUG.log(err);
-    });
-    // Emitted when the info hash of the torrent has been determined.
+function playTorrentSample() {
+  procWebTorrent.send([
+    "play-torrent",
+    "2ef6de6be35239d370db76e5b47be49d96bbf4da",
+  ]);
+}
 
-    torrent.on("metadata", function () {});
-    // Emitted when the metadata of the torrent has been determined. This includes the full contents of the .torrent file, including list of files, torrent length, piece hashes, piece length, etc.
+function playTorrentSample2() {
+  procWebTorrent.send([
+    "play-torrent",
+    "2f200765bbfa5802ac2afdf0cb71865714e833a2",
+  ]);
+}
 
-    torrent.on("ready", function () {});
+ipcMain.on(IPCRendererChannel.STOP_STREAM, function (event, args) {
+  procWebTorrent.send("stop-stream");
+});
+ipcMain.on(IPCRendererChannel.PLAY_TORRENT, function (event, args) {
+  DEBUG.log("playtorrentArgs: ", args);
+  procWebTorrent.send([IPCRendererChannel.PLAY_TORRENT, args]);
+});
 
-    var file = torrent.files.find(function (file) {
-      let hasMp4 = file.name.endsWith(".mp4");
-      if (hasMp4) {
-        console.log(".mp4: ", file);
-        // console.log("torrent-video", JSON.stringify(file));
-        // mainWindow.webContents.send('torrent-video', JSON.stringify(file));
-      }
-      return hasMp4;
-    });
-    //   // file.appendTo('body')
+function startTorrentClient() {
+  procWebTorrent = cp.fork(
+    path.join(__dirname, "src", "assets", "scripts", "webtorrent.js"),
+    [],
+    PROC_OPTION
+  );
+  procWebTorrent.stdout.on("data", function (data) {
+    DEBUG.log(data.toString().slice(0, -1));
   });
-  client.on("torrent", function (torrent) {
-    DEBUG.log("ontorrent", torrent);
+  procWebTorrent.on("exit", function () {
+    DEBUG.log("procWebTorrent ended");
   });
-  client.on("error", function (err) {
-    DEBUG.log(err);
+  /**
+   * webtorrent client messages:
+   * 1. streamlink
+   * 2. progress
+   */
+  procWebTorrent.on("message", function (m) {
+    DEBUG.log("sending: ", m);
+    mainWindow.webContents.send(m[0], m[1]);
   });
 }
 /* IPC Event handling
@@ -184,14 +203,15 @@ function showTorrent() {
 /* Logger */
 ipcMain.on("logger", function (event, data) {
   logger("logger..");
-  console.log(data);
-}); // Handle console.logs from Renderer
+  DEBUG.log(data);
+});
 
 /** Set to maximized or restore */
-ipcMain.on("app-restore", function () {
+// !Press CTRL + Hover to property to view
+ipcMain.on(IPCRendererChannel.RestoreApp, function () {
   mainWindow.isMaximized() ? mainWindow.restore() : mainWindow.maximize();
 });
-ipcMain.on("app-min", function () {
+ipcMain.on(IPCRendererChannel.MinimizeApp, function () {
   mainWindow.minimize();
 });
 
@@ -213,16 +233,13 @@ ipcMain.on("go-to-folder", function (event, param) {
   procLibraryDb = cp.fork(
     path.join(__dirname, "src", "assets", "scripts", "file-explorer.js"),
     [param[0], param[1]],
-    {
-      cwd: __dirname,
-      silent: true,
-    }
+    PROC_OPTION
   );
   procLibraryDb.stdout.on("data", function (data) {
-    console.log(data.toString().slice(0, -1));
+    DEBUG.log(data.toString().slice(0, -1));
   });
   procLibraryDb.on("exit", function () {
-    console.log("file-explorer process ended");
+    DEBUG.log("file-explorer process ended");
   });
   procLibraryDb.on("message", function (m) {
     // command, list of folders
@@ -237,7 +254,7 @@ ipcMain.on("modal-file-explorer", function (folder) {
 // gets system drives
 ipcMain.on("get-drives", function () {
   cp.exec("wmic logicaldisk get name", (error, stdout) => {
-    console.log(
+    DEBUG.log(
       stdout
         .split("\r\r\n")
         .filter((value) => /[A-Za-z]:/.test(value))
@@ -261,17 +278,14 @@ ipcMain.on("open-link-external", function (event, url) {
 /**
  * Initializes scan-library.js
  */
-ipcMain.on("scan-library", function (event) {
-  console.log("scan-librarye");
+ipcMain.on(IPCRendererChannel.SCAN_LIBRARY_START, function (event) {
+  DEBUG.log("scan-library");
   if (!procScanLibrary) {
     // if process search is not yet running
-    console.log("procSearch true");
+    DEBUG.log("procSearch true");
     procScanLibrary = cp.fork(
       path.join(__dirname, "src", "assets", "scripts", "scan-library.js"),
-      {
-        cwd: __dirname,
-        silent: true,
-      }
+      PROC_OPTION
     );
     procScanLibrary.on("exit", function () {
       DEBUG.log("ScanLibrary process ended");
@@ -284,32 +298,30 @@ ipcMain.on("scan-library", function (event) {
   }
 });
 
-ipcMain.on("stop-scan-library", function (event) {
-  console.log("stop scan-librarye");
+ipcMain.on(IPCRendererChannel.SCAN_LIBRARY_STOP, function (event) {
+  DEBUG.log("stopping scan-librarye");
   if (procScanLibrary) {
     // if process search is not yet running
-    console.log("killing....");
+    DEBUG.log("killing....");
     procScanLibrary.kill();
   }
 });
 
+// !UNUSED
 ipcMain.on("search-query", function (event, data) {
   if (!procSearch) {
     // if process search is not yet running
-    console.log("procSearch true");
+    DEBUG.log("procSearch true");
     procSearch = cp.fork(
       path.join(__dirname, "src", "assets", "scripts", "search-movie.js"),
-      {
-        cwd: __dirname,
-        silent: true,
-      }
+      PROC_OPTION
     );
     procSearch.stdout.on("data", function (data) {
-      console.log("printing data..");
-      console.log(data.toString());
+      DEBUG.log("printing data..");
+      DEBUG.log(data.toString());
     });
   } else {
-    console.log("One Search process is already running");
+    DEBUG.log("One Search process is already running");
   }
 });
 
@@ -334,7 +346,7 @@ ipcMain.on("retrieve-library-folders", function (event, data) {
 });
 
 /**
- * Gets list of library folders
+ * Gets list of last searches
  */
 ipcMain.on("get-search-list", function (event, data) {
   var config = configDb;
@@ -356,12 +368,38 @@ ipcMain.on("get-search-list", function (event, data) {
 /* Preferences
 ----------------------*/
 /* Logger */
-ipcMain.on("get-preferences", function (event, data) {
-  console.log("get-preferences ", data);
+ipcMain.on(IPCRendererChannel.PREFERENCES_GET, function (event, data) {
+  DEBUG.log("preferences-get ", data);
+  configDb.findOne({ type: "preferences" }, function (err, dbPref) {
+    if (!err) {
+      DEBUG.log("dbPref: ", dbPref);
+      // foldersList = dbPref.foldersList;
+      mainWindow.webContents.send(
+        IPCMainChannel.PREFERENCES_GET_COMPLETE,
+        dbPref
+      );
+    } else {
+      reject();
+    }
+  });
 });
 
-ipcMain.on("save-preferences", function (event, data) {
-  console.log("save-preferences ", data);
+ipcMain.on(IPCRendererChannel.PREFERENCES_SET, function (event, data) {
+  DEBUG.log("preferences-set ", data);
+  configDb.update({ type: "preferences" }, { $set: data }, {}, function (
+    err,
+    result
+  ) {
+    if (err) {
+      DEBUG.log(err);
+    } else {
+      DEBUG.log("result", result);
+      mainWindow.webContents.send(
+        IPCMainChannel.PREFERENCES_SET_COMPLETE,
+        result
+      );
+    }
+  });
 });
 /* Preferences---------------------*/
 
@@ -369,25 +407,22 @@ ipcMain.on("save-preferences", function (event, data) {
  * Gets all movies from libraryFiles.db
  */
 ipcMain.on("get-library-movies", function (event, data) {
-  console.log("get movies from library..");
+  DEBUG.log("get movies from library..");
   if (!procLibraryDb) {
     procLibraryDb = cp.fork(
       path.join(__dirname, "src", "assets", "scripts", "library-db-service.js"),
       [data[0], data[1]],
-      {
-        cwd: __dirname,
-        silent: true,
-      }
+      PROC_OPTION
     );
     procLibraryDb.stdout.on("data", function (data) {
-      console.log(data.toString().slice(0, -1));
+      DEBUG.log(data.toString().slice(0, -1));
     });
     procLibraryDb.on("exit", function () {
-      console.log("get-library-movies process ended");
+      DEBUG.log("get-library-movies process ended");
       procLibraryDb = null;
     });
     procLibraryDb.on("message", function (m) {
-      console.log("from main", m[0], m[1]);
+      DEBUG.log("from main", m[0], m[1]);
       mainWindow.webContents.send(m[0], m[1]);
     });
   }
@@ -397,20 +432,17 @@ ipcMain.on("get-library-movies", function (event, data) {
  * Gets the movie from libraryFiles.db
  */
 ipcMain.on("get-library-movie", function (event, data) {
-  console.log("get 1 movie from library..");
+  DEBUG.log("get 1 movie from library..");
   procLibraryDb = cp.fork(
     path.join(__dirname, "src", "assets", "scripts", "library-db-service.js"),
     ["find-one", data[0], data[1]],
-    {
-      cwd: __dirname,
-      silent: true,
-    }
+    PROC_OPTION
   );
   procLibraryDb.stdout.on("data", function (data) {
-    console.log(data.toString().slice(0, -1));
+    DEBUG.log(data.toString().slice(0, -1));
   });
   procLibraryDb.on("exit", function () {
-    console.log("get-library-movie process ended");
+    DEBUG.log("get-library-movie process ended");
   });
   procLibraryDb.on("message", function (m) {
     mainWindow.webContents.send(m[0], m[1]);
@@ -424,15 +456,15 @@ ipcMain.on("get-torrents-title", function (event, data) {});
  * TODO: minify the param2 to just the basic movie metadata. Otherwise, it will an error: 'error spawn ENAMETOOLONG'
  */
 ipcMain.on("movie-metadata", function (event, data) {
-  // console.log('movies into movie-metadata-service..', data[0], data[1])
+  // DEBUG.log('movies into movie-metadata-service..', data[0], data[1])
   let param2 = "";
   // if (data[0] == 'set') {
   //   param2 = JSON.stringify(data[1])
   // } else {
   //   param2 = data[1]
   // }
-  // console.log(data[0])
-  // console.log(param2)
+  // DEBUG.log(data[0])
+  // DEBUG.log(param2)
   offlineMovieDataService = cp.fork(
     path.join(
       __dirname,
@@ -442,16 +474,13 @@ ipcMain.on("movie-metadata", function (event, data) {
       "offlineMetadataService.js"
     ),
     [data[0], param2],
-    {
-      cwd: __dirname,
-      silent: true,
-    }
+    PROC_OPTION
   );
   offlineMovieDataService.stdout.on("data", function (data) {
-    // console.log(data.toString().slice(0, -1));
+    // DEBUG.log(data.toString().slice(0, -1));
   });
   offlineMovieDataService.on("exit", function () {
-    console.log("movie-metadata process ended");
+    DEBUG.log("movie-metadata process ended");
   });
   offlineMovieDataService.on("message", function (m) {
     mainWindow.webContents.send(m[0], m[1]); // reply
@@ -462,20 +491,17 @@ ipcMain.on("movie-metadata", function (event, data) {
  * Procesess images.
  */
 ipcMain.on("get-image", function (event, data) {
-  console.log("image-data-service..", data[0], data[1]);
+  DEBUG.log("image-data-service..", data[0], data[1]);
   procmovieImageService = cp.fork(
     path.join(__dirname, "src", "assets", "scripts", "image-data-service.js"),
     [data[0], data[1], data[2], data[3]],
-    {
-      cwd: __dirname,
-      silent: true,
-    }
+    PROC_OPTION
   );
   procmovieImageService.stdout.on("data", function (data) {
-    console.log(data.toString().slice(0, -1));
+    DEBUG.log(data.toString().slice(0, -1));
   });
   procmovieImageService.on("exit", function () {
-    console.log("image-data process ended");
+    DEBUG.log("image-data process ended");
   });
   procmovieImageService.on("message", function (m) {
     mainWindow.webContents.send(m[0], m[1]); // reply
@@ -484,50 +510,43 @@ ipcMain.on("get-image", function (event, data) {
 
 // TORRENTS
 ipcMain.on("torrent-search", function (event, data) {
-  console.log("data: ", data[0], data[1]);
+  DEBUG.log("data: ", data[0], data[1]);
 
   if (!procTorrentSearch) {
     // if process search is not yet running
-    console.log("procTorrentSearch ", data);
+    DEBUG.log("procTorrentSearch ", data);
     procTorrentSearch = cp.fork(
       path.join(__dirname, "src", "assets", "scripts", "search-torrent.js"),
       [data[0], [data[1]]],
-      {
-        cwd: __dirname,
-        silent: true,
-      }
+      PROC_OPTION
     );
     procTorrentSearch.stdout.on("data", function (data) {
-      console.log("printing data..");
-      console.log(data.toString());
+      DEBUG.log(data.toString());
     });
   } else {
-    console.log("One Search process is already running");
+    DEBUG.log("One Search process is already running");
   }
 });
 
 // BOOKMARK
 ipcMain.on("bookmark", function (event, data) {
   if (!procBookmark) {
-    console.log("procBookmark ", data);
+    DEBUG.log("procBookmark ", data);
     procBookmark = cp.fork(
       path.join(__dirname, "src", "assets", "scripts", "user-db-service.js"),
       [data[0], [data[1]]],
-      {
-        cwd: __dirname,
-        silent: true,
-      }
+      PROC_OPTION
     );
     procBookmark.stdout.on("data", function (data) {
-      console.log("printing data..");
-      console.log(data.toString());
+      DEBUG.log("printing data..");
+      DEBUG.log(data.toString());
     });
     procBookmark.on("exit", function () {
-      console.log("procBookmark process ended");
+      DEBUG.log("procBookmark process ended");
       procBookmark = null;
     });
     procBookmark.on("message", function (m) {
-      console.log("bookmark in IPCMAIN", m);
+      DEBUG.log("bookmark in IPCMAIN", m);
       mainWindow.webContents.send(m[0], m[1]); // reply
     });
   }
@@ -536,25 +555,22 @@ ipcMain.on("bookmark", function (event, data) {
 // WATCHED
 ipcMain.on("watched", function (event, data) {
   if (!procWatched) {
-    console.log("procWatched ", data);
+    DEBUG.log("procWatched ", data);
     procWatched = cp.fork(
       path.join(__dirname, "src", "assets", "scripts", "watched-db-service.js"),
       [data[0], [data[1]]],
-      {
-        cwd: __dirname,
-        silent: true,
-      }
+      PROC_OPTION
     );
     procWatched.stdout.on("data", function (data) {
-      console.log("printing data..");
-      console.log(data.toString());
+      DEBUG.log("printing data..");
+      DEBUG.log(data.toString());
     });
     procWatched.on("exit", function () {
-      console.log("procWatched process ended");
+      DEBUG.log("procWatched process ended");
       procWatched = null;
     });
     procWatched.on("message", function (m) {
-      console.log("watched in IPCMAIN", m);
+      DEBUG.log("watched in IPCMAIN", m);
       mainWindow.webContents.send(m[0], m[1]); // reply
     });
   }
@@ -569,34 +585,20 @@ ipcMain.on("open-video", function (event, data) {
   procVideoService = cp.fork(
     path.join(__dirname, "src", "assets", "scripts", "video-service.js"),
     [data],
-    {
-      cwd: __dirname,
-      silent: true,
-    }
+    PROC_OPTION
   );
   procVideoService.stdout.on("data", function (data) {
     DEBUG.log("printing data", data.toString());
   });
   procVideoService.on("exit", function () {
-    // console.log('video service process ended');
     DEBUG.log("video service process ended");
     procVideoService = null;
   });
   procVideoService.on("message", function (m) {
-    // console.log('video service in IPCMAIN', m);
     DEBUG.log("video service in IPCMAIN", m);
     mainWindow.webContents.send(m[0], m[1]); // reply
   });
-  // }
 });
-
-// initListen()
-
-function initListen() {
-  listen();
-}
-
-function listenMini(processName, path, params) {}
 
 /**
  *
@@ -608,7 +610,7 @@ function listenMini(processName, path, params) {}
 function listen(eventName, processName, path, params) {
   ipcMain.on(eventName, function (event) {
     switch (processName) {
-      case PROC_NAMES.SCAN_LIBRARY:
+      case IPCRendererChannel.SCAN_LIBRARY_START:
         if (!procScanLibrary) {
           startProc(processName);
         }
@@ -619,13 +621,17 @@ function listen(eventName, processName, path, params) {
   });
 }
 
-function startProc(processName, path, params, proc) {
+/**
+ * TODO: assign a global proc
+ * @param {string} processName
+ * @param {string []} procPath
+ * @param {any[]} params
+ * @param {null| import("child_process").ChildProcess} proc
+ */
+function startProc(processName, procPath, params) {
   DEBUG.log(`starting ${processName}...`);
-  // DEBUG.log(`procvariable value ${proc}...`);
-  proc = cp.fork(path.join(__dirname, path), params, {
-    cwd: __dirname,
-    silent: true,
-  });
+  DEBUG.log(`starting ${procPath}...`);
+  let proc = cp.fork(path.join(__dirname, procPath), params, PROC_OPTION);
   proc.on("exit", () => {
     DEBUG.log(`process ${processName} ended`);
     proc = null;
@@ -640,4 +646,7 @@ function startProc(processName, path, params, proc) {
   proc.on("uncaughtException", function (m) {
     DEBUG.log(`${scriptName} in uncaughtException`, m);
   });
+  // globalProc = proc;
+
+  return proc;
 }

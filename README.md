@@ -361,3 +361,4 @@ $env:debug=electron-packager . --overwrite --platform=win32 --arch=x64 --prune=t
 Possible fix to have oauth2 possible in electron project: C:\Users\Lenovo\AppData\Roaming\npm\node_modules\firebase-tools\lib\auth.js
 
 https://itnext.io/an-oauth-2-0-introduction-for-beginners-6e386b19f7a9
+RE-ADD Jquery
