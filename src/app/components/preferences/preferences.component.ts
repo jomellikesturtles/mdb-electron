@@ -121,7 +121,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
    */
   onStopScanLibrary() {
     console.log('onStopScanLibrary');
-    this.ipcService.call(this.ipcService.IPCCommand.StopScanLibrary)
+    this.ipcService.stopScanLibrary()
   }
 
   /**

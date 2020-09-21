@@ -38,6 +38,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   movieBackdrop;
   torrents: MDBTorrent[] = [];
   testSelectedMovie = TEST_TMDB_MOVIE_DETAILS
+  rawData = null
   testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
   isAvailable = false
   isMovieAvailable = false
@@ -57,6 +58,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   isBookmarked = false
   isWatched = false
   movieTrailer: string
+  hasContinueWatching: boolean
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -104,10 +106,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // this.movieCertification = this.getMovieCertification()
     this.getBookmark()
     this.getWatched()
-    this.getVideo()
+    // this.getVideo()
     this.getTorrents()
     this.displayBackdrop()
     this.getTrailer()
+
   }
 
   getTrailer() {
@@ -115,7 +118,16 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   playVideo() {
-    this.showVideo = true
+    this.videoService.openVideoStream(this.movieDetails.tmdbId).then(
+      e => {
+        console.log('streamlink1:', e)
+        if (e != 0 && e != [] && e != '' && e.length > 0) {
+          console.log('streamlink2:', e)
+          this.streamLink = e
+          this.showVideo = true
+          this.cdr.detectChanges()
+        }
+      })
   }
 
   /**
@@ -144,13 +156,17 @@ export class DetailsComponent implements OnInit, OnDestroy {
     //   this.procVideo = false
     //   this.cdr.detectChanges()
     // })
+
+
+    // playOfflineVideo
+
     this.videoService.getVideo(this.movieDetails.tmdbId).then(e => {
-      console.log('FROM VEIDEOSERVICE: ', e)
-      if (e) {
-        this.streamLink = e.videoUrl
-        this.isMovieAvailable = true
-        this.showVideo = true
-      }
+      // console.log('FROM VEIDEOSERVICE: ', e)
+      // if (e) {
+      //   this.streamLink = e.videoUrl
+      //   this.isMovieAvailable = true
+      //   this.showVideo = true
+      // }
     }).catch(e => {
 
     }).finally(() => {
@@ -158,6 +174,15 @@ export class DetailsComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges()
     }
     )
+
+    this.ipcService.videoFile.subscribe(e => {
+      console.log('FROM videoFile: ', e)
+      if (e) {
+        this.streamLink = e
+        this.isMovieAvailable = true
+        this.showVideo = true
+      }
+    })
   }
 
   /**
@@ -280,6 +305,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
       const myObject = this.selectedMovie
       this.movieDetails.convertToMdbObject(myObject)
       this.loadVideoData()
+      this.rawData = data
       this.hasData = true
       // COMMENTED UNTIL 'error spawn ENAMETOOLONG' is fixed.
       // this.saveMovieDataOffline(this.movieDetails)
@@ -360,10 +386,14 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.torrentService.getTorrents(query).subscribe(data => {
       if (data) {
         this.torrents = this.torrentService.mapTorrentsList(data);
-        this.torrents.sort(function (a, b) { return b.peers - a.peers });
+        this.torrents.sort(function (a, b) { return b.peers - a.peers }); // sort by seeders
       }
       this.cdr.detectChanges()
     });
+  }
+
+  continueWatching() {
+
   }
 
   /**
@@ -497,6 +527,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   playTrailer() {
+    this.dataService.updatePreviewMovie(this.rawData)
     // this.dataService.updatePreviewMovie()
   }
 

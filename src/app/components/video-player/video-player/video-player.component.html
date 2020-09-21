@@ -1,7 +1,8 @@
 <div style='background-color: black;width: 100%;height: calc(100vh - 50px);'>
   <!-- <video *ngIf="showVideo" src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4 -->
   <!-- " id="videoPlayer" controls style="width: 100%;height:100%;"> -->
-  <video style="width:100%; height:100%;" poster="" controls preload="none" autoplay>
+  <video id='videoPlayer' (keypress)='onKeyPress($event)' style="width:100%; height:100%;" poster="" controls
+    preload="none" autoplay>
     <!-- <video *ngIf="showVideo" controlsList="nodownload" style="width:100%;height:100%;" poster="" controls preload="none"> -->
     <source [src]='streamLink' type="video/mp4">
     <!-- <source [src]='"http://"+streamLink' type="video/mp4"> -->

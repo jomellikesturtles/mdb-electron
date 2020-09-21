@@ -1,6 +1,5 @@
 import {
-  CommaSpacePipe, MdbPipesPipe,
-  ReleaseYearPipe
+  CommaSpacePipe, ReleaseYearPipe
 } from './mdb-pipes.pipe';
 import { SimplifySizePipe, MagnetPipe } from './services/torrent.service';
 import { SearchComponent } from './components/search/search.component';
@@ -10,7 +9,6 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing/app-routing.module';
 import { AppComponent } from './app.component';
 import { BulkDownloadComponent } from './components/bulk-download/bulk-download.component';
-import { PreferencesComponent } from './components/preferences/preferences.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http';
@@ -26,7 +24,7 @@ import { CountState } from './app.state';
 import { AppRunState } from './states/app-run.state';
 import { SelectedMoviesState } from './movie.state';
 import { NotificationComponent } from './components/notification/notification.component';
-import { PreviewComponent } from './components/preview/preview.component';
+import { PreviewComponent, GenrePipe } from './components/preview/preview.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MdbGuardGuard } from './mdb-guard.guard';
 import { backendProvider } from './services/http-interceptor.service';
@@ -46,9 +44,9 @@ import { SharedModule } from './components/shared/shared.module';
     SimplifySizePipe,
     MagnetPipe,
     CommaSpacePipe,
-    MdbPipesPipe,
     PreviewComponent,
     FloatingPlayerComponent,
+    GenrePipe
     // ReleaseYearPipe/
     // UsernameExistValidatorDirective
   ],

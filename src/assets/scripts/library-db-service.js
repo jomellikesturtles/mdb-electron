@@ -1,6 +1,7 @@
 /**
  * Library db service. add comments on proccess functions to run as node js file
  */
+/*jshint esversion: 6 */
 let args = process.argv.slice(2);
 let command = args[0];
 let data1 = args[1];

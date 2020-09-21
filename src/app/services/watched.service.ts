@@ -97,7 +97,6 @@ export interface IWatched extends IUserSavedData {
   title: string,
   year: number,
   // id?: string,
-  cre8Ts?: number, // create timestamp
   timestamp?: number,
   percentage: string,
 }

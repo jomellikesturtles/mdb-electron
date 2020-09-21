@@ -6,3 +6,6 @@
 {"fullFilePath":"D:\\media server\\movies\\video-1502671863.mp4","title":"video-1502671863","year":0,"tmdbId":0,"_id":"mn3dtZuGxKrWhsDD"}
 {"fullFilePath":"D:\\media server\\movies\\videoplayback.mp4","title":"videoplayback","year":0,"tmdbId":0,"_id":"uQsSRflzgRMFCZIn"}
 {"$$indexCreated":{"fieldName":"fullFilePath","unique":true,"sparse":false}}
+{"$$indexCreated":{"fieldName":"imdbId","unique":true}}
+{"$$indexCreated":{"fieldName":"imdbId","unique":true}}
+{"$$indexCreated":{"fieldName":"imdbId","unique":true}}

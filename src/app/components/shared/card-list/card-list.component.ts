@@ -3,6 +3,7 @@ import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
 import { VideoService, IVideo } from '../../../services/video.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-card-list',
@@ -35,6 +36,7 @@ export class CardListComponent implements OnInit {
     const idList = this.collectIds()
     const listLength = idList.length
     const arr2 = this.createDividedList(idList, listLength)
+    // const arr2 = thisidList, listLength)
     // tslint:disable-next-line:prefer-for-of
     for (let index = 0; index < arr2.length; index++) {
       const queryList = arr2[index];
@@ -67,7 +69,8 @@ export class CardListComponent implements OnInit {
 
     docs.forEach(doc => {
       // console.log(doc)
-      const docData = doc.data()
+      const docData = doc
+      // const docData = doc.data() ? doc.data() : {}
       const dTmdbId = docData.tmdbId
       const dTitle = docData.title
       const dYear = docData.year
@@ -93,12 +96,17 @@ export class CardListComponent implements OnInit {
           myData = wtchd
           break;
         case 'video':
-          const vid: IVideo = {
-            id: doc.id ? doc.id : '',
-            tmdbId: dTmdbId ? dTmdbId : 0,
-            title: dTitle ? dTitle : '',
-            year: dYear ? dYear : 0,
-            videoUrl: docData.videoUrl ? docData.videoUrl : ''
+          // const vid: IVideo = {
+          //   id: doc.id ? doc.id : '',
+          //   tmdbId: dTmdbId ? dTmdbId : 0,
+          //   title: dTitle ? dTitle : '',
+          //   year: dYear ? dYear : 0,
+          //   videoUrl: docData.videoUrl ? docData.videoUrl : ''
+          // }
+          const vid = {
+            id: doc.id,
+            tmdbId: doc.tmdbId,
+            videoUrl: doc.fullFilePath
           }
           myData = vid
           break;
@@ -158,10 +166,17 @@ export class CardListComponent implements OnInit {
     return idList
   }
 
+  /**
+   * Divides a list of Ids
+   * @param idList
+   * @param listLength
+   * @returns list of split list `[[],[]]`
+   */
   createDividedList(idList: number[], listLength: number) {
     const toReturn = []
     let temparray
-    const chunk = 10; // Firebase's max length in IN query.
+    const chunk = environment.runConfig.firebaseMode ? 10 : 20
+    // const chunk = 10; // Firebase's max length in IN query.
     let a = 0
     for (let i = 0; i < listLength; i += chunk) {
       temparray = idList.slice(i, i + chunk);

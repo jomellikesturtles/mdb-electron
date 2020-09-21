@@ -84,8 +84,6 @@ function createWindow() {
     DEBUG.log("main window Show");
   });
 
-  // mainWindow.webContents.
-
   // ipcMain.on('error', (_, err) => {
   // 	if (!argv.debug) {
   // 		console.error(err);
@@ -177,11 +175,12 @@ ipcMain.on(IPCRendererChannel.PLAY_TORRENT, function (event, args) {
 });
 
 function startTorrentClient() {
-  procWebTorrent = cp.fork(
-    path.join(__dirname, "src", "assets", "scripts", "webtorrent.js"),
+  procWebTorrent = forkChildProcess(
+    "src/assets/scripts/webtorrent.js",
     [],
     PROC_OPTION
   );
+
   procWebTorrent.stdout.on("data", function (data) {
     DEBUG.log(data.toString().slice(0, -1));
   });
@@ -193,10 +192,7 @@ function startTorrentClient() {
    * 1. streamlink
    * 2. progress
    */
-  procWebTorrent.on("message", function (m) {
-    DEBUG.log("sending: ", m);
-    mainWindow.webContents.send(m[0], m[1]);
-  });
+  procWebTorrent.on("message", (m) => sendContents(m[0], m[1]));
 }
 /* IPC Event handling
 ----------------------*/
@@ -230,21 +226,16 @@ ipcMain.on("open-file-explorer", function (event, folder) {
 // go to folder folder then return list of folders inside
 ipcMain.on("go-to-folder", function (event, param) {
   DEBUG.log("go to folder", param);
-  procLibraryDb = cp.fork(
-    path.join(__dirname, "src", "assets", "scripts", "file-explorer.js"),
+  procLibraryDb = forkChildProcess(
+    "src/assets/scripts/file-explorer.js",
     [param[0], param[1]],
     PROC_OPTION
   );
-  procLibraryDb.stdout.on("data", function (data) {
-    DEBUG.log(data.toString().slice(0, -1));
-  });
+  procLibraryDb.stdout.on("data", (data) => printData(data));
   procLibraryDb.on("exit", function () {
     DEBUG.log("file-explorer process ended");
   });
-  procLibraryDb.on("message", function (m) {
-    // command, list of folders
-    mainWindow.webContents.send(m[0], m[1]);
-  });
+  procLibraryDb.on("message", (m) => sendContents(m[0], m[1]));
 });
 // opens modal file explorer
 ipcMain.on("modal-file-explorer", function (folder) {
@@ -282,26 +273,26 @@ ipcMain.on(IPCRendererChannel.SCAN_LIBRARY_START, function (event) {
   DEBUG.log("scan-library");
   if (!procScanLibrary) {
     // if process search is not yet running
-    DEBUG.log("procSearch true");
-    procScanLibrary = cp.fork(
-      path.join(__dirname, "src", "assets", "scripts", "scan-library.js"),
-      PROC_OPTION
+    procScanLibrary = forkChildProcess(
+      "src/assets/scripts/scan-library.js",
+      [],
+      {
+        cwd: __dirname,
+        silent: false,
+      }
     );
     procScanLibrary.on("exit", function () {
       DEBUG.log("ScanLibrary process ended");
       procScanLibrary = null;
     });
-    procScanLibrary.on("message", function (m) {
-      DEBUG.log("scan-library in IPCMAIN", m);
-      mainWindow.webContents.send(m[0], m[1]);
-    });
+    procScanLibrary.on("error", (e) => printError("scanLibrary", e));
+    procScanLibrary.on("message", (m) => sendContents(m[0], m[1]));
   }
 });
 
 ipcMain.on(IPCRendererChannel.SCAN_LIBRARY_STOP, function (event) {
   DEBUG.log("stopping scan-librarye");
   if (procScanLibrary) {
-    // if process search is not yet running
     DEBUG.log("killing....");
     procScanLibrary.kill();
   }
@@ -311,15 +302,12 @@ ipcMain.on(IPCRendererChannel.SCAN_LIBRARY_STOP, function (event) {
 ipcMain.on("search-query", function (event, data) {
   if (!procSearch) {
     // if process search is not yet running
-    DEBUG.log("procSearch true");
-    procSearch = cp.fork(
-      path.join(__dirname, "src", "assets", "scripts", "search-movie.js"),
+    procSearch = forkChildProcess(
+      "src/assets/scripts/search-movie.js",
+      [],
       PROC_OPTION
     );
-    procSearch.stdout.on("data", function (data) {
-      DEBUG.log("printing data..");
-      DEBUG.log(data.toString());
-    });
+    procSearch.stdout.on("data", (data) => printData(data));
   } else {
     DEBUG.log("One Search process is already running");
   }
@@ -337,7 +325,7 @@ ipcMain.on("retrieve-library-folders", function (event, data) {
     function (err, dbPref) {
       if (!err) {
         foldersList = dbPref.foldersList;
-        mainWindow.webContents.send("library-folders", foldersList);
+        sendContents("library-folders", foldersList);
       } else {
         reject();
       }
@@ -357,7 +345,7 @@ ipcMain.on("get-search-list", function (event, data) {
     function (err, dbPref) {
       if (!err) {
         searchList = dbPref.list;
-        mainWindow.webContents.send("search-list", searchList);
+        sendContents("search-list", searchList);
       } else {
         reject();
       }
@@ -373,11 +361,7 @@ ipcMain.on(IPCRendererChannel.PREFERENCES_GET, function (event, data) {
   configDb.findOne({ type: "preferences" }, function (err, dbPref) {
     if (!err) {
       DEBUG.log("dbPref: ", dbPref);
-      // foldersList = dbPref.foldersList;
-      mainWindow.webContents.send(
-        IPCMainChannel.PREFERENCES_GET_COMPLETE,
-        dbPref
-      );
+      sendContents(IPCMainChannel.PREFERENCES_GET_COMPLETE, dbPref);
     } else {
       reject();
     }
@@ -390,14 +374,11 @@ ipcMain.on(IPCRendererChannel.PREFERENCES_SET, function (event, data) {
     err,
     result
   ) {
-    if (err) {
-      DEBUG.log(err);
-    } else {
+    if (!err) {
       DEBUG.log("result", result);
-      mainWindow.webContents.send(
-        IPCMainChannel.PREFERENCES_SET_COMPLETE,
-        result
-      );
+      sendContents(IPCMainChannel.PREFERENCES_SET_COMPLETE, result);
+    } else {
+      DEBUG.log(err);
     }
   });
 });
@@ -407,46 +388,53 @@ ipcMain.on(IPCRendererChannel.PREFERENCES_SET, function (event, data) {
  * Gets all movies from libraryFiles.db
  */
 ipcMain.on("get-library-movies", function (event, data) {
-  DEBUG.log("get movies from library..");
-  if (!procLibraryDb) {
-    procLibraryDb = cp.fork(
-      path.join(__dirname, "src", "assets", "scripts", "library-db-service.js"),
-      [data[0], data[1]],
-      PROC_OPTION
+  DEBUG.log("get movies from library..", data);
+  // if (!procLibraryDb) {
+   let localProcLibraryDb = forkChildProcess(
+      "src/assets/scripts/library-db-service-2.js",
+      data,
+      // PROC_OPTION
+      { cwd: __dirname, silent: false }
     );
-    procLibraryDb.stdout.on("data", function (data) {
-      DEBUG.log(data.toString().slice(0, -1));
-    });
-    procLibraryDb.on("exit", function () {
+    // procLibraryDb.stdout.on("data", (data) => printData(data));
+    localProcLibraryDb.on("exit", function () {
       DEBUG.log("get-library-movies process ended");
-      procLibraryDb = null;
+      localProcLibraryDb = null;
     });
-    procLibraryDb.on("message", function (m) {
-      DEBUG.log("from main", m[0], m[1]);
-      mainWindow.webContents.send(m[0], m[1]);
-    });
-  }
+    localProcLibraryDb.on("message", (m) => sendContents(m[0], m[1]));
+  // }
+  // if (!procLibraryDb) {
+  //   procLibraryDb = forkChildProcess(
+  //     "src/assets/scripts/library-db-service-2.js",
+  //     data,
+  //     // PROC_OPTION
+  //     { cwd: __dirname, silent: false }
+  //   );
+  //   // procLibraryDb.stdout.on("data", (data) => printData(data));
+  //   procLibraryDb.on("exit", function () {
+  //     DEBUG.log("get-library-movies process ended");
+  //     procLibraryDb = null;
+  //   });
+  //   procLibraryDb.on("message", (m) => sendContents(m[0], m[1]));
+  // }
 });
 
 /**
  * Gets the movie from libraryFiles.db
  */
 ipcMain.on("get-library-movie", function (event, data) {
-  DEBUG.log("get 1 movie from library..");
-  procLibraryDb = cp.fork(
-    path.join(__dirname, "src", "assets", "scripts", "library-db-service.js"),
+  DEBUG.log("get 1 movie from library..", data);
+  procLibraryDb = forkChildProcess(
+    "src/assets/scripts/library-db-service-2.js",
+    // "src/assets/scripts/library-db-service.js",
     ["find-one", data[0], data[1]],
     PROC_OPTION
   );
-  procLibraryDb.stdout.on("data", function (data) {
-    DEBUG.log(data.toString().slice(0, -1));
-  });
+  procLibraryDb.stdout.on("data", (data) => printData(data));
   procLibraryDb.on("exit", function () {
     DEBUG.log("get-library-movie process ended");
   });
-  procLibraryDb.on("message", function (m) {
-    mainWindow.webContents.send(m[0], m[1]);
-  });
+  procLibraryDb.on("message", (m) => sendContents(m[0], m[1]));
 });
 
 ipcMain.on("get-torrents-title", function (event, data) {});
@@ -465,26 +453,16 @@ ipcMain.on("movie-metadata", function (event, data) {
   // }
   // DEBUG.log(data[0])
   // DEBUG.log(param2)
-  offlineMovieDataService = cp.fork(
-    path.join(
-      __dirname,
-      "src",
-      "assets",
-      "scripts",
-      "offlineMetadataService.js"
-    ),
+  offlineMovieDataService = forkChildProcess(
+    "src/assets/scripts/offlineMetadataService.js",
     [data[0], param2],
     PROC_OPTION
   );
-  offlineMovieDataService.stdout.on("data", function (data) {
-    // DEBUG.log(data.toString().slice(0, -1));
-  });
+  offlineMovieDataService.stdout.on("data", (data) => printData(data));
   offlineMovieDataService.on("exit", function () {
     DEBUG.log("movie-metadata process ended");
   });
-  offlineMovieDataService.on("message", function (m) {
-    mainWindow.webContents.send(m[0], m[1]); // reply
-  });
+  offlineMovieDataService.on("message", (m) => sendContents(m[0], m[1]));
 });
 
 /**
@@ -492,37 +470,27 @@ ipcMain.on("movie-metadata", function (event, data) {
  */
 ipcMain.on("get-image", function (event, data) {
   DEBUG.log("image-data-service..", data[0], data[1]);
-  procmovieImageService = cp.fork(
-    path.join(__dirname, "src", "assets", "scripts", "image-data-service.js"),
+  procmovieImageService = forkChildProcess(
+    "src/assets/scripts/image-data-service.js",
     [data[0], data[1], data[2], data[3]],
     PROC_OPTION
   );
-  procmovieImageService.stdout.on("data", function (data) {
-    DEBUG.log(data.toString().slice(0, -1));
-  });
+  procmovieImageService.stdout.on("data", (data) => printData(data));
   procmovieImageService.on("exit", function () {
     DEBUG.log("image-data process ended");
   });
-  procmovieImageService.on("message", function (m) {
-    mainWindow.webContents.send(m[0], m[1]); // reply
-  });
+  procmovieImageService.on("message", (m) => sendContents(m[0], m[1]));
 });
 
 // TORRENTS
 ipcMain.on("torrent-search", function (event, data) {
-  DEBUG.log("data: ", data[0], data[1]);
-
   if (!procTorrentSearch) {
-    // if process search is not yet running
-    DEBUG.log("procTorrentSearch ", data);
-    procTorrentSearch = cp.fork(
-      path.join(__dirname, "src", "assets", "scripts", "search-torrent.js"),
+    procTorrentSearch = forkChildProcess(
+      "src/assets/scripts/search-torrent.js",
       [data[0], [data[1]]],
       PROC_OPTION
     );
-    procTorrentSearch.stdout.on("data", function (data) {
-      DEBUG.log(data.toString());
-    });
+    procTorrentSearch.stdout.on("data", (data) => printData(data));
   } else {
     DEBUG.log("One Search process is already running");
   }
@@ -532,23 +500,17 @@ ipcMain.on("torrent-search", function (event, data) {
 ipcMain.on("bookmark", function (event, data) {
   if (!procBookmark) {
     DEBUG.log("procBookmark ", data);
-    procBookmark = cp.fork(
-      path.join(__dirname, "src", "assets", "scripts", "user-db-service.js"),
+    procBookmark = forkChildProcess(
+      "src/assets/scripts/user-db-service.js",
       [data[0], [data[1]]],
       PROC_OPTION
     );
-    procBookmark.stdout.on("data", function (data) {
-      DEBUG.log("printing data..");
-      DEBUG.log(data.toString());
-    });
+    procBookmark.stdout.on("data", (data) => printData(data));
     procBookmark.on("exit", function () {
       DEBUG.log("procBookmark process ended");
       procBookmark = null;
     });
-    procBookmark.on("message", function (m) {
-      DEBUG.log("bookmark in IPCMAIN", m);
-      mainWindow.webContents.send(m[0], m[1]); // reply
-    });
+    procBookmark.on("message", (m) => sendContents(m[0], m[1]));
   }
 });
 
@@ -556,70 +518,54 @@ ipcMain.on("bookmark", function (event, data) {
 ipcMain.on("watched", function (event, data) {
   if (!procWatched) {
     DEBUG.log("procWatched ", data);
-    procWatched = cp.fork(
-      path.join(__dirname, "src", "assets", "scripts", "watched-db-service.js"),
+    procWatched = forkChildProcess(
+      "src/assets/script/watched-db-service.js",
       [data[0], [data[1]]],
       PROC_OPTION
     );
-    procWatched.stdout.on("data", function (data) {
-      DEBUG.log("printing data..");
-      DEBUG.log(data.toString());
-    });
+    procWatched.stdout.on("data", (data) => printData(data));
     procWatched.on("exit", function () {
       DEBUG.log("procWatched process ended");
       procWatched = null;
     });
-    procWatched.on("message", function (m) {
-      DEBUG.log("watched in IPCMAIN", m);
-      mainWindow.webContents.send(m[0], m[1]); // reply
-    });
+    procWatched.on("message", (m) => sendContents(m[0], m[1]));
   }
 });
 
 /**
  * Gets the video by id and streams to localhost.
  */
-ipcMain.on("open-video", function (event, data) {
-  // if (!procVideoService) {
+ipcMain.on("play-offline-video-stream", function (event, data) {
   DEBUG.log("procVideoService", data);
-  procVideoService = cp.fork(
-    path.join(__dirname, "src", "assets", "scripts", "video-service.js"),
+  procVideoService = forkChildProcess(
+    "src/assets/scripts/video-service.js",
     [data],
     PROC_OPTION
   );
-  procVideoService.stdout.on("data", function (data) {
-    DEBUG.log("printing data", data.toString());
-  });
+  // procVideoService.stdout.on("data", (data) => printData(data));
   procVideoService.on("exit", function () {
     DEBUG.log("video service process ended");
     procVideoService = null;
   });
-  procVideoService.on("message", function (m) {
-    DEBUG.log("video service in IPCMAIN", m);
-    mainWindow.webContents.send(m[0], m[1]); // reply
-  });
+  procVideoService.on("message", (m) => sendContents(m[0], m[1]));
 });
 
-/**
- *
- * @param {*} eventName name of event to listen to
- * @param {*} processName name of the process
- * @param {*} path path
- * @param {*} params list of params
- */
-function listen(eventName, processName, path, params) {
-  ipcMain.on(eventName, function (event) {
-    switch (processName) {
-      case IPCRendererChannel.SCAN_LIBRARY_START:
-        if (!procScanLibrary) {
-          startProc(processName);
-        }
-        break;
-      default:
-        break;
-    }
-  });
+function forkChildProcess(modulePath, args, processOptions) {
+  return cp.fork(path.join(__dirname, modulePath), args, processOptions);
 }
+function printError(processName, args) {
+  DEBUG.log(`${processName} in error`, args);
+}
+function printData(data) {
+  DEBUG.log("printing data", data.toString());
+}
+
+function sendContents(channel, args) {
+  DEBUG.log("sending...", channel, " | ", args);
+  mainWindow.webContents.send(channel, args); // reply
+}
+
+//---------------------------
 
 /**
  * TODO: assign a global proc
@@ -650,3 +596,14 @@ function startProc(processName, procPath, params) {
 
   return proc;
 }
+
+/**
+ * exit codes
+ * 0 success
+ * 1 general error / operation unsucesful
+ * 126 - Command invoked cannot execute
+ * 127 - “command not found”
+ * 128 - Invalid argument to exit
+ * 128+n - Fatal error signal “n”
+ * 130 - Script terminated by Control-C
+ */

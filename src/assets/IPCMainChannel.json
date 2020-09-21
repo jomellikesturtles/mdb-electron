@@ -15,7 +15,7 @@
   "ScanLibraryResult": "scan-library-result",
   "ScanLibraryComplete": "scan-library-complete",
   "SearchList": "search-list",
-  "VideoSuccess": "video-success",
+  "VideoSuccess": "open-video-success",
   "WatchedSuccess": "watched-success",
   "MovieIdentified": "movie-identified-success",
   "STREAM_LINK": "stream-link"

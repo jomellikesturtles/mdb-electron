@@ -74,7 +74,7 @@ export class FirebaseService {
   }
 
 
-  getFromFirestoreMultiple(collectionName: CollectionName, fieldName: string, list: any[]) {
+  getFromFirestoreMultiple(collectionName: CollectionName, fieldName: FieldName, list: any[]) {
     return new Promise((resolve, reject) => {
       this.db.collection(collectionName).where(fieldName, FirebaseOperator.In, list).get().then(snapshot => {
         resolve(snapshot.docs)

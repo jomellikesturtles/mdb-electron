@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 const path = require('path');
 
 var DataStore = require('nedb')
@@ -41,15 +42,16 @@ const count = function () {
  * @param {*} params the object
  */
 function insertLibraryFiles(params) {
-  libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) { })
+  libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) {
   libraryFilesDb.insert(params, function (err, numReplaced) {
     console.log('adding');
     if (!err || (numReplaced < 1)) {
       console.log("replaced---->" + numReplaced);
     } else {
-      // console.log(err);
+      // console.log('ERR! ', err);
     }
   })
+})
 }
 
 /**
@@ -105,16 +107,39 @@ function getLibraryFilesMulti2(skip, limit) {
   return Promise.reject(true)
 }
 
+/**
+ * Gets movie library in list.
+ * @param {any[]} idList list of id
+ * @returns list of movie libary with filepath
+ */
+function getLibrayMovieInList(uuid, idList) {
+  idList = idList.split(",").map((e) => parseInt(e, 10));
+  libraryFilesDb.find({ tmdbId: { $in: idList }}, function (err, docs) {
+    if (!err) {
+      let toList = [];
+      docs.forEach((element) => {
+        toList.push({ tmdbId: element.tmdbId, fullFilePath: element.fullFilePath, id: element._id });
+      });
+      console.log('DOCS: ', docs);
+      console.log(toList);
+      // Promise.resolve(toList);
+      process.send(['library-movies-' + uuid, toList]);
+    } else {
+      console.log('ERROR', err)
+    }
+  });
+}
+
 function removeLibraryFile(val) {
   libraryFilesDb.remove({ fullFilePath: val }, {}, function (err, numRemoved) {
     if (!err) {
-      console.log(numRemoved)
+      console.log(numRemoved);
       // fullFilePath = data.fullFilePath
-      Promise.resolve(numRemoved)
+      Promise.resolve(numRemoved);
     } else {
-      return Promise.reject(err)
+      return Promise.reject(err);
     }
-  })
+  });
 }
 
 function getLibraryFilesByStep(index, step) {
@@ -123,7 +148,7 @@ function getLibraryFilesByStep(index, step) {
     libraryFilesDb.find({}).sort({}).skip(index).limit(step).exec(function (err, data) {
       if (!err) {
         // console.log('data:', data)
-        resolve(data[0])
+        resolve(data[0]);
       } else {
         // reject()
       }
@@ -151,16 +176,86 @@ function getLibraryFilesByTmdbId(tmdbIdArg) {
   return new Promise(function (resolve, reject) {
     libraryFilesDb.find({ tmdbId: tmdbIdArg }, function (err, data) {
       if (!err) {
-        console.log('data:', data)
-        resolve(data)
+        console.log('data:', data);
+        resolve(data);
         // return data
       } else {
-        console.log('err:', err)
+        console.log('err:', err);
         // reject()
       }
     })
   })
 }
+
+let args = process.argv.slice(2);
+let command = args[0];
+let data1 = args[1];
+let data2 = args[2];
+
+// command = 'find-list'
+// data1=[516486,9441,718867,9444,400535]
+
+if (command) {
+  initializeDataAccess(command, data1, data2);
+} else {
+  console.log('noCommand');
+}
+
+/**
+ * Starts db service.
+ * @param {string} command name of commend
+ * @param {*} data1
+ * @param {*} data2
+ */
+function initializeDataAccess(command, data1, data2) {
+  console.log('command', command, 'data1', data1, 'data2', data2)
+  libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) {
+    if (err) {
+      console.log(err);
+    }
+  });
+  switch (command) {
+    case 'find':
+      getMovie(data1);
+      break;
+    case 'find-collection': // not in use
+      getMoviesByPage(data1);
+      break;
+    case 'find-in-list':
+      getLibrayMovieInList(data1, data2);
+      break;
+    case 'find-one':
+      getMovie(data1, data2);
+      break;
+    case 'find-one-async': // not in use
+      getMovieAsync(data1, data2).then(function (result) {
+        console.log('f one async ', result);
+      }).catch(function (err) {
+        console.log('f one err ', err);
+      });
+      break;
+    case 'find-all':
+      getAllMovies();
+      break;
+    case 'delete':
+      deleteMovie(data1);
+      break;
+    case 'insert':
+      addMovie(data1);
+      break;
+    case 'insert-directory':
+      addDirectoryToMovie(data1, data2);
+      break;
+    case 'remove-directory':
+      removeDirectoryFromMovie(data1, data2);
+      break;
+    case 'count':
+      break;
+    default:
+      break;
+  }
+}
+
 
 // getLibraryFilesByTmdbId(505948)
 // updateFields('3JKDWUVlWfLQ5y1v', '505948', 'I Am Mother', 2019)
@@ -175,4 +270,4 @@ module.exports = {
   getLibraryFilesByStep: getLibraryFilesByStep,
   updateFields,
   getLibraryFilesByTmdbId
-}
+};

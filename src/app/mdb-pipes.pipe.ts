@@ -2,17 +2,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { STRING_REGEX_TMDB_RUNTIME } from './constants';
 import { UtilsService } from './services/utils.service';
 
-@Pipe({
-  name: 'mdbPipes'
-})
-export class MdbPipesPipe implements PipeTransform {
-
-  transform(value: any, args?: any): any {
-    return null;
-  }
-
-}
-
 /**
  * Gets the release year from string with format `00 Month 0000`.
  * @param value date string with format `00 Month 0000`

@@ -1,7 +1,7 @@
 /**
  * TODO: Compatibility for details component.
  */
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Pipe, PipeTransform, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { TEST_TMDB_MOVIE_DETAILS, TEST_TMDB_SINGLE_RESULT } from 'src/app/mock-data';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
@@ -15,7 +15,8 @@ declare var $: any
 @Component({
   selector: 'app-preview',
   templateUrl: './preview.component.html',
-  styleUrls: ['./preview.component.scss']
+  styleUrls: ['./preview.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreviewComponent implements OnInit, OnDestroy {
 
@@ -25,7 +26,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private userDataService: UserDataService,
-    // private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef,
     private movieService: MovieService,
     private utilsService: UtilsService,
     private domSanitizer: DomSanitizer,
@@ -56,14 +57,16 @@ export class PreviewComponent implements OnInit, OnDestroy {
   procBookmark = false
   procWatched = false
   procHighlight = false
+  showPreviewOverlayContext = false
 
   ngOnInit() {
     this.frameReady()
     this.dataService.previewMovie.subscribe(e => {
       console.log('PREVIEWMOVIE:', e)
       this.getVideoClip(e)
+      this.showPreviewOverlayContext = this.router.url.includes('/details/') ? false : true
+      this.cdr.detectChanges()
     })
-    // this.getVideoClip(TEST_TMDB_SINGLE_RESULT)
   }
 
   ngOnDestroy() {
@@ -131,9 +134,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
       // setTimeout(() => {
       //   root.player.playVideo()
       //   console.log('settoplay')
-      // }, 5000);
+      // }, 3000);
     }
-    // this.cdr.detectChanges()
+    this.cdr.detectChanges()
 
   }
 
@@ -160,17 +163,22 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
     let theRes = await this.movieService.getTmdbVideos(this.previewMovie.id).toPromise()
 
-    if (theRes.results.length === 0) { return }
-
-    theRes = theRes.results.find(e => e.type === 'Trailer')
-    this.hasTrailerClip = true
-    if (theRes) {
-      theRes = theRes.key
-    } else {
+    if (theRes.results.length === 0) {
+      this.clipSrc = null
       return
     }
-      // const index = Math.round(Math.random() * (theRes.results.length - 1))
-      // theRes = theRes.results[index].key
+
+    theRes = theRes.results.find(e => e.type === 'Trailer')
+    if (theRes) {
+      this.hasTrailerClip = true
+      theRes = theRes.key
+    } else {
+      this.clipSrc = null
+      this.hasTrailerClip = false
+      return
+    }
+    // const index = Math.round(Math.random() * (theRes.results.length - 1))
+    // theRes = theRes.results[index].key
     // this.movieService.getRandomVideoClip(query).subscribe(data => {
     // data.forEach(element => {
     //   const snipTitle = $.parseHTML(element.snippet.title.toLowerCase())[0].textContent
@@ -194,10 +202,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
       this.hasAlreadySelected = true
     }
 
-
     const root = this
     // setTimeout(() => {
     root.setVideo(videoId)
+    this.cdr.detectChanges()
     // }, 5000
     // )
     // })
@@ -276,15 +284,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Converts genre code into its genre name equivalent.
-   * @param genreCode genre code origin
-   * @returns genre name
-   */
-  getGenre(genreCode: number) {
-    return GenreCodes[genreCode]
-  }
-
-  /**
    * Discovers movies based from criteria.
    * @param type type of discovery. (year, certification, genre)
    * @param id value to discover
@@ -309,6 +308,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   onHidePlayer() {
     console.log(this.player)
     this.isHide = true
+    this.clipSrc = null
     this.stopVideo()
   }
 
@@ -316,4 +316,17 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   }
 
+}
+
+/**
+ * Converts genre code into its genre name equivalent.
+ * @param genreCode genre code origin
+ * @returns genre name
+ */
+@Pipe({ name: 'genre' })
+export class GenrePipe implements PipeTransform {
+  constructor() { }
+  transform(genreCode: number): string {
+    return GenreCodes[genreCode]
+  }
 }

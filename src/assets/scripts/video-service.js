@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 const express = require('express');
 const fs = require('fs')
 const path = require('path')
@@ -20,7 +21,7 @@ process.send = process.send || function (...args) { DEBUG.log('SIMULATING proces
 let DEBUG = (() => {
   let timestamp = () => { }
   timestamp.toString = () => {
-    return '[DEBUG ' + (new Date).toLocaleString() + ']'
+    return '[DEBUG ' + (new Date()).toLocaleString() + ']'
   }
   return {
     log: console.log.bind(console, '%s', timestamp)
@@ -37,7 +38,7 @@ var libraryFilesDb = new DataStore({
 
 function openStream(libraryData) {
   DEBUG.log(`set streaming from: localhost:3000/stream/${libraryData._id}`)
-  process.send(['video-success', `localhost:3000/stream/${libraryData._id}`])
+  process.send(['stream-link', `http://localhost:3000/stream/${libraryData._id}`])
   app.get(`/stream/${libraryData._id}`, function (req, res) {
     // const filePath = path.join(process.cwd(), '..', '..', '..', '..', 'A.Streetcar.Named.Desire.1951.1080p.BluRay.x264-[YTS.AM].mp4')
     // console.log('filepath: ', libraryData.fullFilePath);
@@ -74,6 +75,7 @@ function openPort() {
 
   app.listen(3000, function () {
     DEBUG.log('listening from 3000...')
+    isPortOpen=true
   })
 }
 

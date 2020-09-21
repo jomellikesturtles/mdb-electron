@@ -56,14 +56,15 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ### Run as electron project
 
-1. type `electron .` to run as electron project
-2. type `npm run electron` to run as electron project
+2. type `npm run start:electron` to build angular project and run as electron project
+3. type `npm run start:electron2` to build angular project as prod and run as electron project
+4. type `npm run electron` to run a built angular ui in an electron **window**
+5. type `electron .` to run as electron project
 
 ### Run as angular project
 
-1. comment/remove ipcRenderer related lines to make it run for localhost:4200
-
-2. type `npm start` to start as angular project
+1. type `npm start` to start as angular project
+2. open localhost:4200 on browser
 
 ## Code scaffolding
 
@@ -203,7 +204,8 @@ Logos, Backgrounds, Posters and more forTV, Movie and Music collections
 http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
 ```
 
-## Features
+
+## Todo
 
 - Search by title, imdbId or keyword,
 - 'advanced' filters by date, genre, isAvailable, etc.
@@ -211,17 +213,15 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 - must enable caching
 - electron project
 - Scan for movies in user-specified directory
-
-## Todo
-
-- torrents from online source
-- fix background image in movie-info
+- add originaltitle AND/OR save metadata on identifyMovie script
+- ~~torrents from online source~~
+- ~~fix background image in movie-info~~
 - imdbId goes null/undefined if Tmdb doesn't have imdb id(especially on new movies)
 - mismatch number of search results because of filters(adults/non-movie)
 - add individual .js file for major functions
   - update offline files
   - torrent
-- add offline files into OneDrive
+- ~~add offline files into OneDrive~~
 
 > major
 
@@ -238,7 +238,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 
 > minor
 
-- lazy loading
+- ~~lazy loading~~
 - subtitles apis
 - loading screen
 - shortcut keys
@@ -352,7 +352,6 @@ UI and functionalities are influenced by follows: (in descending order)
 - tmdb criteria: year,region, language, vote count, vote average.
 - snackbar/toast doesnt work
 - omdb and Imdb has same genre in movies
-- use releaseyear pipe in mdb moviecard
 
 https://api.themoviedb.org/3/movie/157336?api_key=a636ce7bd0c125045f4170644b4d3d25&append_to_response=videos,images,credits,changes,translations,similar,external_ids,ss
 

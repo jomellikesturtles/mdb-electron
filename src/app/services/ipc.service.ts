@@ -5,7 +5,7 @@
 import { environment } from './../../environments/environment';
 import * as IPCRendererChannel from '../../assets/IPCRendererChannel.json';
 import * as IPCMainChannel from '../../assets/IPCMainChannel.json';
-
+import { v4 as uuidv4 } from 'uuid'
 /**
  * Service to communicate to ipc main
  */
@@ -44,9 +44,6 @@ export class IpcService {
   constructor(private ngZone: NgZone,
     // private cdr: ChangeDetectorRef
   ) {
-    console.log(IPCRendererChannel)
-    console.log(IPCMainChannel)
-    console.log()
     if (environment.runConfig.electron) {
       this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
@@ -79,6 +76,10 @@ export class IpcService {
       this.ipcRenderer.on(IPCMainChannel.STREAM_LINK, (event: Electron.IpcRendererEvent, data) => {
         this.streamLink.next(data)
         console.log('IPCMainChannel.STREAM_LINK ', data)
+      })
+      this.ipcRenderer.on(IPCMainChannel.VideoSuccess, (event: Electron.IpcRendererEvent, data) => {
+        this.videoFile.next(data)
+        console.log('IPCMainChannel.VideoSuccess ', data)
       })
 
     }
@@ -185,19 +186,17 @@ export class IpcService {
   /**
    * Ipc renderer that sends command to main renderer to get movies from library db.
    */
-  getMoviesFromLibraryByPage(val) {
-    // this.ipcRenderer.send('get-library-movies', ['find-collection', val]);
+  getMoviesFromLibraryInList(val: number[]): Promise<any> {
+    const theUuid = uuidv4()
+    console.log(`libraryMovies ${theUuid}`)
+    this.ipcRenderer.send(`get-library-movies`, [`find-in-list`, theUuid, val]);
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`library-movies-${theUuid}`, (event, arg) => {
+        console.log(`libraryMovies ${theUuid}`)
+        resolve(arg);
+      });
+    });
   }
-  // getMoviesFromLibraryByPage(val) {
-
-  //   this.ipcRenderer.send('get-library-movies', ['find-collection', val]);
-  //   return new Promise<any>((resolve, reject) => {
-  //     this.ipcRenderer.once('library-movies', (event, arg) => {
-  //       console.log('library-movies', arg);
-  //       resolve(arg);
-  //     });
-  //   });
-  // }
 
   /**
    * Ipc renderer that sends command to main renderer to get specified movie from library db.
@@ -224,12 +223,18 @@ export class IpcService {
     // this.ipcRenderer.send('bookmark', ['bookmark-get', val])
   }
 
+  updateWatchedStatus(val: IWatched) {
+    this.ipcRenderer.send('', val)
+  }
+
   startScanLibrary() {
 
     this.ipcRenderer.send(IPCRendererChannel.SCAN_LIBRARY_START)
     this.ipcRenderer.on(IPCMainChannel.ScanLibraryResult, e => {
+      console.log(IPCMainChannel.ScanLibraryResult, e)
     })
     this.ipcRenderer.on(IPCMainChannel.ScanLibraryComplete, e => {
+      console.log('completscan')
       this.ipcRenderer.removeListener(IPCMainChannel.ScanLibraryResult, d => { })
       this.ipcRenderer.removeListener(IPCMainChannel.ScanLibraryComplete, d => { })
     })
@@ -242,8 +247,20 @@ export class IpcService {
   getPlayTorrent(hash: string) {
     this.ipcRenderer.send(IPCRendererChannel.PLAY_TORRENT, hash)
   }
+
   stopStream() {
     this.ipcRenderer.send(IPCRendererChannel.STOP_STREAM)
+  }
+
+  playOfflineVideo(tmdbId): Promise<any> {
+    this.ipcRenderer.send(IPCRendererChannel.PLAY_OFFLINE_VIDEO_STREAM, tmdbId);
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`stream-link`, (event, arg) => {
+        // this.ipcRenderer.once(`open-video-success`, (event, arg) => {
+        // console.log(`libraryMovies ${theUuid}`)
+        resolve(arg);
+      });
+    });
   }
 
   getPreferences() {
@@ -268,15 +285,10 @@ export class IpcService {
     // })
   }
 
-  pref = ((event, data) => {
-    console.log('got something', data)
-    // this.preferences.next(data)
-  })
-
   removeListener(channel: string) {
     console.log('REMOVING LISTENER', channel)
     // this.ipcRenderer.removeListener(channel, d => { })
-    this.ipcRenderer.removeListener(channel, this.pref)
+    this.ipcRenderer.removeListener(channel, d => { })
   }
 
   IPCCommand = IPCRendererChannel['default']

@@ -5,6 +5,7 @@
 // const cp = require('child_process');
 
 /*jshint esversion: 8 */
+let args = process.argv.slice(2);
 const searchMovie = require("./search-movie");
 const fs = require("fs");
 const path = require("path");
@@ -14,11 +15,22 @@ var libraryDbService = require("./library-db-service-2.js");
 var identifyMovie = require("./identify-movie");
 var DataStore = require("nedb");
 var config = new DataStore({
-  filename: "../config/config.db",
-  // filename: path.join(__dirname, '..', 'config', 'config.db'), // for node only
+  // filename: "../config/config.db",// for node only
+  filename: path.join(__dirname, "..", "config", "config.db"),
   // filename: '../config/config.db',
   autoload: true,
 });
+
+let DEBUG = (() => {
+  let timestamp = () => {};
+  timestamp.toString = () => {
+    return "[DEBUG " + new Date().toLocaleString() + "]";
+  };
+  return {
+    log: console.log.bind(console, "%s", timestamp),
+  };
+})();
+
 process.on("uncaughtException", function (error) {
   console.log("ERROR: ", error);
 });
@@ -26,11 +38,20 @@ process.on("uncaughtException", function (error) {
 process.on("unhandledRejection", function (error) {
   console.log("unhandledRejection ERROR: ", error);
 });
-process.send =
-  process.send ||
-  function (...args) {
-    DEBUG.log("SIMULATING process.send", ...args);
-  };
+
+process.on("exit", function (error) {
+  console.log("exit ERROR: ", error);
+});
+
+process.on("disconnect", function (error) {
+  console.log("disconnect: ", error);
+});
+
+// process.send =
+//   process.send ||
+//   function (...args) {
+//     DEBUG.log("SIMULATING process.send", ...args);
+//   };
 
 // Toy.Story.4
 /**
@@ -94,7 +115,7 @@ function getTitleAndYear(parentFolder, fullFileName) {
   var titleRegex = new RegExp(fileTitleRegexStr, "gmi");
   var result = null;
   result = titleRegex.exec(fullFileName);
-  if (result[1]) {
+  if (result && result[1]) {
     //if not blank or undefined
     return result;
   } else {
@@ -228,6 +249,9 @@ async function scanExistingLibraryMovies() {
   });
 }
 
+/**
+ * TODO: add isPreviouslyIdentified flag to prevent 'double searching'
+ */
 async function identifyMovies() {
   const totalCount = await libraryDbService.count();
   let index = 0;
@@ -235,7 +259,8 @@ async function identifyMovies() {
     const libraryFile = await libraryDbService.getLibraryFilesByStep(index, 1);
     if (!libraryFile.tmdbId) {
       const identityResult = await identifyMovie.identifyMovie(
-        libraryFile.title
+        libraryFile.title,
+        libraryFile.year
       );
       if (identityResult.tmdbId != 0) {
         // if query has returned a movie
@@ -259,33 +284,26 @@ async function identifyMovies() {
  * Starts scan. First checks for the folders in the database.
  */
 async function initializeScan() {
-  console.log("process not object");
-  if (typeof window === "undefined") {
-    console.log("window undefined");
-  } else {
-    console.log("window not undefined");
-  }
-  if (typeof process === "object") {
-    console.log("process object");
-  } else {
-    console.log("process not object");
-  }
   let result = await scanExistingLibraryMovies();
-  // console.log('inresults');
   console.log("result:", result);
 
   getLibraryFolders().then(function (libraryFolders) {
     libraryFolders.forEach((folder) => {
       readDirectory(folder);
     });
-    identifyMovies().then({
-      // process.send('scan-library-success', '')
+    identifyMovies().then((e) => {
+      process.send(["scan-library-complete"]);
+      process.exit(0);
     });
   });
 }
-console.log("initializing scan");
-initializeScan();
 
+DEBUG.log("initializing scan");
+initializeScan().then((e) => {
+  // process.send("scan-library-success");
+  // process.exit(0);
+});
+// init2();
 // var regexList =
 // Tested: `^ (.+?)[.(\\t]* (?: (?: (19\\d{ 2} | 20(?: 0\\d | 1[0 - 9]))).*| (?: (?= bluray |\\d + p | brrip | WEBRip)..*)?[.](mkv | avi | mpe ? g | mp4)$)`
 // tested : ^((.*[^ (_.])[ (_.]+((\d{4})([ (_.]+S(\d{1,2})E(\d{1,2}))?(?<!\d{4}[ (_.])S(\d{1,2})E(\d{1,2})|(\d{3}))|(.+))

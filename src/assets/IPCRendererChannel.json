@@ -9,7 +9,7 @@
   "StopScanLibrary": "stop-scan-library",
   "OpenLinkExternal": "open-link-external",
   "OpenInFileExplorer": "open-file-explorer",
-  "OpenVideo": "open-video",
+  "PLAY_OFFLINE_VIDEO_STREAM": "play-offline-video-stream",
   "RetrieveLibraryFolders": "retrieve-library-folders",
   "Bookmark": "bookmark",
   "BookmarkAdd": "bookmark-add",

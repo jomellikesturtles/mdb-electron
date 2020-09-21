@@ -15,33 +15,50 @@ export class VideoService {
   ) {
 
   }
-  // checkCompatibility(): Observable<boolean> {
-  //   (window as any).RTCPeerConnection = (window as any).RTCPeerConnection || (window as any).webkitRTCPeerConnection || (window as any).mozRTCPeerConnection;
-  //   return of(!!(window as any).RTCPeerConnection);
-  // }
-  // private client: typeof WebTorrent
-  newWebTorrent() {
 
+  async openVideoStream(id) {
+    // this.ipcService.playOfflineVideo(id) // commented to make way for torrent-play
+    return this.ipcService.playOfflineVideo(id)
+    // return new Promise((resolve, reject) => {
+    //   if (environment.runConfig.firebaseMode) {
+    //     this.firebaseService.getFromFirestore(CollectionName.Video, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
+    //       console.log('BOOKMARK: ', e)
+    //       resolve(e)
+    //     }).catch(e => {
+    //       reject(e)
+    //     })
+    //     // })
+    //   } else {
+    //     this.ipcService.videoFile.toPromise().then(e => {
+    //       resolve(e)
+    //     })
+    //   }
+    // })
   }
-
   /**
    * Gets movie video.
+   * @param id - tmdbId or imdbId
    */
   getVideo(id): Promise<any> {
-    // this.ipcService.call(this.ipcService.IPCCommand.OpenVideo) // commented to make way for torrent-play
-    this.ipcService.listen(this.ipcService.IPCChannel.VideoSuccess) // TODO: might remove. all IPC calls and listens must be in IPC SERVICE
-    if (environment.runConfig.firebaseMode) {
-      return new Promise((resolve, reject) => {
+    this.ipcService.call(this.ipcService.IPCCommand.OpenVideo) // commented to make way for torrent-play
+    this.ipcService.playOfflineVideo(id) // commented to make way for torrent-play
+    return new Promise((resolve, reject) => {
+      if (environment.runConfig.firebaseMode) {
         this.firebaseService.getFromFirestore(CollectionName.Video, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
           console.log('BOOKMARK: ', e)
           resolve(e)
         }).catch(e => {
           reject(e)
         })
-      })
-    } else {
-
-    }
+        // })
+      } else {
+        // return new Promise((resolve, reject) => {
+        this.ipcService.videoFile.toPromise().then(e => {
+          resolve(e)
+        })
+        // this.ipcService.listen(this.ipcService.IPCChannel.VideoSuccess) // TODO: might remove. all IPC calls and listens must be in IPC SERVICE
+      }
+    })
 
   }
 
@@ -51,11 +68,19 @@ export class VideoService {
   getVideosMultiple(idList: number[]): Promise<any> {
     console.log('getting multiplevideos...', idList);
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiple(CollectionName.Video, FieldName.TmdbId, idList).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.getFromFirestoreMultiple(CollectionName.Video, FieldName.TmdbId, idList).then(value => {
+          resolve(value)
+        }).catch(err => {
+          reject(err)
+        })
+      } else {
+        this.ipcService.getMoviesFromLibraryInList(idList).then(value => {
+          resolve(value)
+        }).catch(err => {
+          reject(err)
+        })
+      }
     })
   }
 
@@ -70,13 +95,6 @@ export class VideoService {
         reject(err)
       })
     })
-    // return new Promise((resolve, reject) => {
-    //   this.firebaseService.getFromFirestoreMultiple(CollectionName.Video, FieldName.TmdbId, idList).then(value => {
-    //     resolve(value)
-    //   }).catch(err => {
-    //     reject(err)
-    //   })
-    // })
   }
 
   /**

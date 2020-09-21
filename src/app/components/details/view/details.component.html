@@ -42,6 +42,7 @@
               </h2>
               <h2 (click)='goToDiscover("certification",movieCertification)'>{{movieCertification}}</h2>
 
+              <button class="btn btn-primary" type="button" (click)='playVideo()'>PLAYYYY</button>
               <button *ngIf="isMovieAvailable" class="btn btn-primary" type="button" (click)='playVideo()'
                 [disabled]='procVideo || !isMovieAvailable'>
                 <div *ngIf="procVideo">
@@ -72,6 +73,9 @@
                 </div>
               </div>
 
+              <button class='btn btn-primary' (click)='continueWatching()' *ngIf='hasContinueWatching'>
+                Continue Watching
+              </button>
               <button class='btn btn-primary' (click)='playTrailer()' *ngIf='movieTrailer'>
                 Play Trailer
               </button>

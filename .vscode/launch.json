@@ -38,5 +38,15 @@
         "${workspaceFolder}/dist/out-tsc/**/*.js"
       ]
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "scan-library",
+      "program": "${workspaceFolder}\\src\\assets\\scripts\\scan-library.js",
+      // "program": "${workspaceFolder}\\async.ts",
+      "outFiles": [
+        "${workspaceFolder}/dist/out-tsc/**/*.js"
+      ]
+    },
   ]
 }

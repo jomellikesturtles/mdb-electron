@@ -27,6 +27,7 @@ const RESET_LIMIT = 50;
 let currentServer = null;
 let currentStreamHash = "";
 let currentStreamLink = "";
+let currentDisplayInterval = null;
 let torrentClient = new WebTorrent(TORRENT_CONFIG);
 
 function initializeClient() {
@@ -48,7 +49,13 @@ function playMovieTorrent(hash) {
   currentStreamHash = hash;
   console.log("torrentClient.ratio: ", torrentClient.ratio);
   torrentClient.add(torrentId, {}, function (torrent) {
-    let noConIndex = 0;
+    torrent.on("error", (e) => {
+      DEBUG.log("noPeers", hash);
+    });
+    torrent.on("noPeers", (e) => {
+      DEBUG.log("noPeers", hash);
+    });
+
     if (currentServer) {
       currentServer.close();
     }
@@ -61,8 +68,10 @@ function playMovieTorrent(hash) {
     currentStreamLink = "http:\\\\localhost:3001\\" + desiredFileIndex;
     process.send(["stream-link", currentStreamLink]);
 
-    // TODO: remove display if torrent is paused/stopped
-    let displayInterval = setInterval(() => {
+    let noConIndex = 0;
+    // remove display if torrent is paused/stopped
+    if (currentDisplayInterval) clearInterval(currentDisplayInterval);
+    currentDisplayInterval = setInterval(() => {
       displayTorrentProgress(torrent);
       displayTorrentPiecesInProgress(torrent);
       // const isConnected = checkInternetConnectivity().then((e) => {});
@@ -84,6 +93,7 @@ function playMovieTorrent(hash) {
 function stopStream() {
   if (currentServer) currentServer.close();
   // torrentClient.destroy();
+  clearInterval(currentDisplayInterval);
   if (torrentClient) {
     torrentClient.remove(currentStreamHash);
     torrentClient.torrents.forEach((torrent) => {
@@ -93,12 +103,6 @@ function stopStream() {
         " torrent.paused: ",
         torrent.paused
       );
-      // torrent.pause();
-      // torrent.remove();
-      // then torrent.add()
-      // torrent.files.forEach(f=>{
-      //   // f./
-      // });
     });
   }
 }

@@ -42,7 +42,7 @@ export class TopNavigationComponent implements OnInit {
     private location: Location,
     private store: Store) { }
 
-  isElectron = environment.runConfig.electron
+  isElectron = environment.runConfig.electron != null ? true : false
   status = 'LOGIN'
   browserConnection = navigator.onLine;
   selectedMovie: IOmdbMovieDetail
