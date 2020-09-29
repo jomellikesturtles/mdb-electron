@@ -14,11 +14,16 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     // this.getCurrentUser()
+    this.syncTime()
   }
 
   getCurrentUser() {
     this.firebaseService.getUser().then(e => {
       this.store.dispatch(new SetUser(e))
     })
+  }
+
+  syncTime() {
+
   }
 }

@@ -1,4 +1,4 @@
-import { IVideo, VideoService } from './video.service';
+import { IVideo, LibraryService } from './library.service';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IBookmark, BookmarkService } from './bookmark.service';
@@ -15,7 +15,7 @@ export class UserDataService {
     private bookmarkService: BookmarkService,
     private movieService: MovieService,
     private watchedService: WatchedService,
-    private videoService: VideoService,
+    private libraryService: LibraryService,
     private utilsService: UtilsService
   ) { }
 
@@ -121,7 +121,7 @@ export class UserDataService {
         dataList = watchedList
         break;
       case 'video':
-        const videoList = await this.videoService.getVideoPaginatedFirstPage()
+        const videoList = await this.libraryService.getVideoPaginatedFirstPage()
         dataList = videoList
         break;
       default:
@@ -145,7 +145,7 @@ export class UserDataService {
         dataList = await this.watchedService.getWatchedPaginated(lastValue)
         break;
       case 'video':
-        dataList = await this.videoService.getVideoPaginated(lastValue)
+        dataList = await this.libraryService.getVideoPaginated(lastValue)
         break;
       default:
         break;
@@ -157,6 +157,9 @@ export class UserDataService {
     })
   }
 
+  /**
+   * TODO: include libraryFile/libaryObj to the list even if not identified.
+   */
   private getMovieListDetails(dataType: string, dataDocList: any[]): Observable<any> | any {
     // ----------------------------
     // const fj = forkJoin(obsList)
@@ -175,16 +178,19 @@ export class UserDataService {
       const len = dataDocList.length
       let index = 0
       dataDocList.forEach(dataDoc => {
-        this.movieService.getTmdbMovieDetails(dataDoc.data().tmdbId, [], '').pipe().subscribe(movie => {
-          const userData = this.setDataObject(dataType, dataDoc)
-          movie[dataType] = userData
-          moviesDisplayList.push(movie)
-          index++
-          if (len === index) {
-            resolve(moviesDisplayList)
-            // return moviesDisplayList
-          }
-        })
+        dataDoc = (typeof dataDoc.data === "function") ? dataDoc.data() : dataDoc // firebaseData or offlineData
+        index++
+        if (dataDoc.tmdbId > 0) {
+          this.movieService.getTmdbMovieDetails(dataDoc.tmdbId, [], '').pipe().subscribe(movie => {
+            const userData = this.setDataObject(dataType, dataDoc)
+            movie[dataType] = userData
+            moviesDisplayList.push(movie)
+            if (len === index) {
+              resolve(moviesDisplayList)
+              // return moviesDisplayList
+            }
+          })
+        }
       })
     })
   }
@@ -196,11 +202,13 @@ export class UserDataService {
    */
   private setDataObject(dataType: string, dataDoc) {
     let userData = null
-    const docData = dataDoc.data()
+    // const docData = dataDoc.data()
+    const docData = (typeof dataDoc.data === "function") ? dataDoc.data() : dataDoc // firebaseData or offlineData
+    const docDataId = dataDoc.id ? dataDoc.id : dataDoc._id;
     switch (dataType) {
       case 'bookmark':
         const bm: IBookmark = {
-          id: dataDoc.id,
+          id: docDataId,
           title: docData.title,
           year: docData.year,
           tmdbId: docData.tmdbId,
@@ -209,7 +217,7 @@ export class UserDataService {
         break;
       case 'watched':
         const w: IWatched = {
-          id: dataDoc.id,
+          id: docDataId,
           title: docData.title,
           year: docData.year,
           tmdbId: docData.tmdbId,
@@ -218,13 +226,20 @@ export class UserDataService {
         userData = w
         break;
       case 'video':
-        const v: IVideo = {
-          id: dataDoc.id,
+        const v = {
+          id: docDataId,
           title: docData.title,
           year: docData.year,
           tmdbId: docData.tmdbId,
-          videoUrl: docData.videoUrl
+          // videoUrl: docData.videoUrl
         }
+        // const v: IVideo = {
+        //   id: docDataId,
+        //   title: docData.title,
+        //   year: docData.year,
+        //   tmdbId: docData.tmdbId,
+        //   videoUrl: docData.videoUrl
+        // }
         userData = v
         break;
     }

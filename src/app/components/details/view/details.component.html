@@ -32,7 +32,7 @@
           </div>
           <div class="col-sm-8">
 
-            <h6>{{movieDetails.voteAverage}}</h6>
+            <h3>{{movieDetails.voteAverage}}</h3>
             <div style='display: flex;'>
               <h2 id="movie-title">{{movieDetails.original_title}}</h2>&nbsp;
               <h2 id="movie-title">{{movieDetails.title}}</h2>&nbsp;
@@ -42,8 +42,23 @@
               </h2>
               <h2 (click)='goToDiscover("certification",movieCertification)'>{{movieCertification}}</h2>
 
-              <button class="btn btn-primary" type="button" (click)='playVideo()'>PLAYYYY</button>
-              <button *ngIf="isMovieAvailable" class="btn btn-primary" type="button" (click)='playVideo()'
+              <!-- unified play button -->
+              <div class="btn-group">
+                <button type="button" class="btn btn-danger" (click)='playMovie()'>Play</button>
+                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu">
+                  <div *ngFor="let torrent of torrents">
+                    <a class="dropdown-item" (click)='playTorrent(torrent.hash)'>{{torrent.name}} {{torrent.quality}}
+                      {{torrent.peers}}</a>
+                  </div>
+                </div>
+              </div>
+
+              <button class="btn btn-primary" type="button" (click)='playMovie()'>PLAYYYY</button>
+              <button *ngIf="isMovieAvailable" class="btn btn-primary" type="button" (click)='playMovie()'
                 [disabled]='procVideo || !isMovieAvailable'>
                 <div *ngIf="procVideo">
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -146,9 +161,6 @@
               </div>
             </div>
           </div>
-        </div>
-        <div *ngIf="movieDetails.isAvailable">
-
         </div>
 
         <div class="table-responsive-lg container">

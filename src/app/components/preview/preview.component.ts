@@ -2,7 +2,6 @@
  * TODO: Compatibility for details component.
  */
 import { Component, OnInit, OnDestroy, Pipe, PipeTransform, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { TEST_TMDB_MOVIE_DETAILS, TEST_TMDB_SINGLE_RESULT } from 'src/app/mock-data';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -19,7 +18,6 @@ declare var $: any
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreviewComponent implements OnInit, OnDestroy {
-
 
   constructor(
     private dataService: DataService,
@@ -168,7 +166,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
       return
     }
 
-    theRes = theRes.results.find(e => e.type === 'Trailer')
+    theRes = theRes.results.find(e => e.type.toLowerCase() === 'trailer')
     if (theRes) {
       this.hasTrailerClip = true
       theRes = theRes.key

@@ -9,10 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 /**
  * Service to communicate to ipc main
  */
-import {
-  Injectable, NgZone
-  //// , ChangeDetectionStrategy, ChangeDetectorRef,
-} from '@angular/core'
+import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
 declare var electron: any
 import { ipcRenderer } from 'electron'
@@ -41,9 +38,7 @@ export class IpcService {
   streamLink = new BehaviorSubject<any>('')
   private ipcRenderer: typeof ipcRenderer
 
-  constructor(private ngZone: NgZone,
-    // private cdr: ChangeDetectorRef
-  ) {
+  constructor() {
     if (environment.runConfig.electron) {
       this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
@@ -81,7 +76,6 @@ export class IpcService {
         this.videoFile.next(data)
         console.log('IPCMainChannel.VideoSuccess ', data)
       })
-
     }
   }
 
@@ -162,9 +156,7 @@ export class IpcService {
     //   this.ipcRenderer.once('system-drives', (event, arg) => {
     //     resolve(arg);
     //   });
-    //   this.ipcRenderer.send('get-drives');
     // });
-    // console.log('get system drives')
     // this.ipcRenderer.send('get-drives')
   }
   /**
@@ -179,17 +171,55 @@ export class IpcService {
   // library movies db
   getMoviesFromLibrary() {
     console.log('get-library-movies')
-    // this.ipcRenderer.send('get-library-movies', ['find-collection', 1])
+    // this.ipcRenderer.send('get-library-movies', ['get-by-page', 1])
     // this.ipcRenderer.send('get-library-movies')
   }
 
   /**
    * Ipc renderer that sends command to main renderer to get movies from library db.
+   * @param idList
    */
-  getMoviesFromLibraryInList(val: number[]): Promise<any> {
+  getMoviesFromLibraryInList(idList: number[]): Promise<any> {
     const theUuid = uuidv4()
     console.log(`libraryMovies ${theUuid}`)
-    this.ipcRenderer.send(`get-library-movies`, [`find-in-list`, theUuid, val]);
+    this.ipcRenderer.send(`get-library-movies`, [`find-in-list`, theUuid, idList]);
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`library-movies-${theUuid}`, (event, arg) => {
+        console.log(`libraryMovies ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
+  /**
+   * Paginated, first page.
+   * @param collectionName
+   * @param order
+   * @param limit
+   */
+  getMultiplePaginatedFirst(collectionName: string, order: string, limit?: number) {
+    const theUuid = uuidv4()
+    console.log(`libraryMovies ${theUuid}`)
+    this.ipcRenderer.send(`get-library-movies`, [`get-by-page`, theUuid, order, limit, 0]);
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`library-movies-${theUuid}`, (event, arg) => {
+        console.log(`libraryMovies ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
+  /**
+   * Paginated, NOT first page.
+   * @param collectionName
+   * @param order
+   * @param limit
+   * @param lastVal
+   */
+  getMultiplePaginated(collectionName: string, order: string, limit?: number, lastVal?: string | number) {
+    const theUuid = uuidv4()
+    console.log(`libraryMovies ${theUuid}`)
+    this.ipcRenderer.send(`get-library-movies`, [`get-by-page`, theUuid, order, limit, lastVal]);
     return new Promise<any>((resolve, reject) => {
       this.ipcRenderer.once(`library-movies-${theUuid}`, (event, arg) => {
         console.log(`libraryMovies ${theUuid}`)
@@ -200,24 +230,21 @@ export class IpcService {
 
   /**
    * Ipc renderer that sends command to main renderer to get specified movie from library db.
-   * Replies offline directories.
-   * @param data imdb id or movie title and release year or tmdb id
+   * Replies offline library object(s).
+   * @param arg imdb id or movie title and release year or tmdb id
    */
-  getMovieFromLibrary(data) {
-    // this.ipcRenderer.send('get-library-movie', [data]);
-    // return new Promise<ILibraryInfo>((resolve, reject) => {
-    //   this.ipcRenderer.once('library-movie', (event, arg) => {
-    //     console.log('library-movie', arg);
-    //     resolve(arg);
-    //   });
-    // });
-    return new Promise<ILibraryInfo>((resolve, reject) => {
-      resolve(null);
+  getMovieFromLibrary(arg) {
+    const theUuid = uuidv4()
+    console.log(`getMovieFromLibrary ${theUuid}`)
+    this.ipcRenderer.send(`get-library-movies`, [`find`, theUuid, arg]);
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`library-movie-${theUuid}`, (event, arg) => {
+        console.log(`getMovieFromLibrary ${theUuid}`)
+        resolve(arg);
+      });
     });
-    // return null
   }
 
-  // // User services
   // // user services; watchlist/bookmarks, watched
   getBookmark(val) {
     // this.ipcRenderer.send('bookmark', ['bookmark-get', val])
@@ -233,10 +260,9 @@ export class IpcService {
     this.ipcRenderer.on(IPCMainChannel.ScanLibraryResult, e => {
       console.log(IPCMainChannel.ScanLibraryResult, e)
     })
-    this.ipcRenderer.on(IPCMainChannel.ScanLibraryComplete, e => {
+    this.ipcRenderer.once(IPCMainChannel.ScanLibraryComplete, e => {
       console.log('completscan')
       this.ipcRenderer.removeListener(IPCMainChannel.ScanLibraryResult, d => { })
-      this.ipcRenderer.removeListener(IPCMainChannel.ScanLibraryComplete, d => { })
     })
   }
 
@@ -256,8 +282,6 @@ export class IpcService {
     this.ipcRenderer.send(IPCRendererChannel.PLAY_OFFLINE_VIDEO_STREAM, tmdbId);
     return new Promise<any>((resolve, reject) => {
       this.ipcRenderer.once(`stream-link`, (event, arg) => {
-        // this.ipcRenderer.once(`open-video-success`, (event, arg) => {
-        // console.log(`libraryMovies ${theUuid}`)
         resolve(arg);
       });
     });
@@ -287,7 +311,6 @@ export class IpcService {
 
   removeListener(channel: string) {
     console.log('REMOVING LISTENER', channel)
-    // this.ipcRenderer.removeListener(channel, d => { })
     this.ipcRenderer.removeListener(channel, d => { })
   }
 

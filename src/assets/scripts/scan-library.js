@@ -256,7 +256,8 @@ async function identifyMovies() {
   const totalCount = await libraryDbService.count();
   let index = 0;
   while (index < totalCount) {
-    const libraryFile = await libraryDbService.getLibraryFilesByStep(index, 1);
+    let libraryFile = await libraryDbService.getLibraryFilesByStep(index, 1);
+    libraryFile = libraryFile[0];
     if (!libraryFile.tmdbId) {
       const identityResult = await identifyMovie.identifyMovie(
         libraryFile.title,

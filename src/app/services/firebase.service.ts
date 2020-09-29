@@ -89,9 +89,9 @@ export class FirebaseService {
    * @param collectionName name of the collection
    * @param order order
    * @param limit the limit
+   * @param lastVal last value of previous page
    */
   getFromFirestoreMultiplePaginated(collectionName: CollectionName, order: string, limit?: number, lastVal?: string | number) {
-    const resultList = []
     const defaultLimit = 20
 
     return new Promise(resolve => {

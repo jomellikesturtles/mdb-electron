@@ -52,9 +52,7 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   writer?: string // omdb
   [propName: string]: any;
 
-  constructor() {
-    this.isAvailable = false
-  }
+  constructor() {}
 
   /**
    * Converts omdb or tmdb object into Mdb object

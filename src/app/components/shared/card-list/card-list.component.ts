@@ -2,7 +2,7 @@ import { Component, OnInit, Input, ChangeDetectorRef, Output, EventEmitter } fro
 import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
-import { VideoService, IVideo } from '../../../services/video.service';
+import { LibraryService, IVideo } from '../../../services/library.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -21,7 +21,7 @@ export class CardListComponent implements OnInit {
   constructor(
     private bookmarkService: BookmarkService,
     private watchedService: WatchedService,
-    private videoService: VideoService,
+    private libraryService: LibraryService,
   ) { }
 
   ngOnInit() {
@@ -53,7 +53,7 @@ export class CardListComponent implements OnInit {
         })
       }
       if (this.listType !== 'video') {
-        this.videoService.getVideosMultiple(queryList).then(docs => {
+        this.libraryService.getMoviesFromLibraryInList(queryList).then(docs => {
           const dataType = 'video'
           this.curateUserData(dataType, docs)
         })

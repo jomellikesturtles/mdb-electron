@@ -64,8 +64,23 @@ function prettyBytes(num) {
   return (neg ? "-" : "") + num + " " + unit;
 }
 
+function regexify(text) {
+  text = text.trim().replace(/(\s+)/g, " ");
+  const words = text.split(" ");
+  let final = "";
+  words.forEach((item) => {
+    final += "(" + escapeRegExp(item) + ")[.\\s-_=;,]?";
+  });
+  return final;
+}
+
+function escapeRegExp(text) {
+  return text.replace(/[-[\]{}()*+?.,\\/^$|#\s]/g, "\\$&");
+}
+
 module.exports = {
   sayHello: sayHello,
   getReleaseYear: getReleaseYear,
   prettyBytes: prettyBytes,
+  regexify: regexify,
 };

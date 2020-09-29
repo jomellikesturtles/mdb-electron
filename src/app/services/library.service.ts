@@ -1,13 +1,11 @@
-import { IUserSavedData } from './../interfaces';
-import { environment } from './../../environments/environment';
+import { IUserSavedData } from '../interfaces';
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { IpcService } from './ipc.service';
 import { FirebaseService, CollectionName, FieldName, FirebaseOperator } from './firebase.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class VideoService {
+@Injectable({ providedIn: 'root' })
+export class LibraryService {
 
   constructor(
     private ipcService: IpcService,
@@ -16,6 +14,11 @@ export class VideoService {
 
   }
 
+  /**
+   * Opens a video stream to watch.
+   * @param id library id to open stream
+   * @returns stream link/url
+   */
   async openVideoStream(id) {
     // this.ipcService.playOfflineVideo(id) // commented to make way for torrent-play
     return this.ipcService.playOfflineVideo(id)
@@ -35,13 +38,14 @@ export class VideoService {
     //   }
     // })
   }
+
   /**
    * Gets movie video.
+   * !TODO: change to open movie./streamlink
    * @param id - tmdbId or imdbId
    */
-  getVideo(id): Promise<any> {
+  getMovieFromLibrary(id: number | string): Promise<any> {
     this.ipcService.call(this.ipcService.IPCCommand.OpenVideo) // commented to make way for torrent-play
-    this.ipcService.playOfflineVideo(id) // commented to make way for torrent-play
     return new Promise((resolve, reject) => {
       if (environment.runConfig.firebaseMode) {
         this.firebaseService.getFromFirestore(CollectionName.Video, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
@@ -50,22 +54,19 @@ export class VideoService {
         }).catch(e => {
           reject(e)
         })
-        // })
       } else {
-        // return new Promise((resolve, reject) => {
-        this.ipcService.videoFile.toPromise().then(e => {
+        this.ipcService.getMovieFromLibrary(id).then((e: IRawLibrary) => {
           resolve(e)
         })
-        // this.ipcService.listen(this.ipcService.IPCChannel.VideoSuccess) // TODO: might remove. all IPC calls and listens must be in IPC SERVICE
       }
     })
-
   }
 
   /**
-   * Gets multiple videos. Movie(s) eventually becomes available in status.
+   * Gets multiple videos using list. Movie(s) eventually becomes available in status.
+   * @param idList
    */
-  getVideosMultiple(idList: number[]): Promise<any> {
+  getMoviesFromLibraryInList(idList: number[]): Promise<any> {
     console.log('getting multiplevideos...', idList);
     return new Promise((resolve, reject) => {
       if (environment.runConfig.firebaseMode) {
@@ -102,7 +103,8 @@ export class VideoService {
    */
   getVideoPaginatedFirstPage(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Video, FieldName.TmdbId, 20).then(value => {
+      this.ipcService.getMultiplePaginatedFirst(CollectionName.Video, FieldName.TmdbId, 20).then(value => {
+        // this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Video, FieldName.TmdbId, 20).then(value => {
         resolve(value)
       }).catch(err => {
         reject(err)
@@ -117,7 +119,8 @@ export class VideoService {
   getVideoPaginated(lastVal: string | number): Promise<any> {
     console.log('getVideoPaginated...', lastVal);
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Video, FieldName.TmdbId, 20, lastVal).then(value => {
+      this.ipcService.getMultiplePaginated(CollectionName.Video, FieldName.TmdbId, 20, lastVal).then(value => {
+        // this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Video, FieldName.TmdbId, 20, lastVal).then(value => {
         resolve(value)
       }).catch(err => {
         reject(err)
@@ -137,4 +140,19 @@ export interface IVideo extends IUserSavedData {
   filePath?: string,
   cre8Ts?: number, // create timestamp
   timestamp?: number,
+}
+
+export interface IRawLibrary {
+  fullFilePath: string,
+  title: string,
+  year: number,
+  tmdbId: number,
+  _id: string
+}
+
+interface Library {
+  type: 'movie' | 'video' | 'audio' | 'music' | 'podcast' | 'videogame',
+  source: 'local' | 'online',
+  id: string,
+  title: string
 }

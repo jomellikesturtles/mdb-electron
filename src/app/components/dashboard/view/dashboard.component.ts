@@ -145,14 +145,6 @@ export class DashboardComponent implements OnInit {
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
   }
 
-  toggleBookmark(id: number) {
-    // if (this.selectedMovieBookmarkStatus === false) {
-    this.bookmarkService.saveBookmark(id)
-    // } else {
-    //   this.bookmarkService.removeBookmark(id)
-    // }
-  }
-
   goToGenre(val) {
     this.dataService.updateDiscoverQuery(['genre', val])
     this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });

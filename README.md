@@ -30,7 +30,6 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
       - [YTS](#yts)
       - [imdb offline database](#imdb-offline-database)
       - [Fanart.tv](#fanarttv)
-  - [Features](#features)
   - [Todo](#todo)
   - [Offline Assets](#offline-assets)
   - [Influenced by](#influenced-by)
@@ -343,6 +342,7 @@ UI and functionalities are influenced by follows: (in descending order)
 - http://www.opensubtitles.org/en/downloads#exports
 - https://trac.opensubtitles.org/projects/opensubtitles/wiki/DevReadFirst
 - https://forum.opensubtitles.org/viewtopic.php?f=8&t=16453#p39771
+- https://trello.com/b/VjhTQ9BS/mdb
 
 ## notes
 

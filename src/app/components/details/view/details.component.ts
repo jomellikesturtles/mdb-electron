@@ -1,6 +1,12 @@
 import { TmdbAppendToResponseParameters, GenreCodes } from './../../../interfaces';
-import { VideoService } from './../../../services/video.service';
-import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, OnDestroy, NgZone } from '@angular/core';
+import { IRawLibrary, LibraryService } from '../../../services/library.service';
+import {
+  Component, OnInit,
+  // ChangeDetectorRef,
+  Input,
+  // ChangeDetectionStrategy,
+  OnDestroy
+} from '@angular/core';
 import { IRating, MDBTorrent, ILibraryInfo, ITmdbMovieDetail, TmdbParameters } from '../../../interfaces';
 import { MdbMovieDetails } from '../../../classes';
 import { TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
@@ -25,7 +31,7 @@ import { Subject } from 'rxjs';
   selector: 'app-details',
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 /**
@@ -71,17 +77,19 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private torrentService: TorrentService,
     private utilsService: UtilsService,
     private userDataService: UserDataService,
-    private videoService: VideoService,
+    private libraryService: LibraryService,
     private watchedService: WatchedService,
     private router: Router,
-    private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
+    // private cdr: ChangeDetectorRef,
+    // private ngZone: NgZone
   ) { }
 
   ngOnInit() {
     if (!environment.runConfig.useTestData) {
-      const id = this.activatedRoute.snapshot.paramMap.get('id')
-      this.getMovieOnline(id)
+      this.activatedRoute.params.subscribe(val => {
+        console.log(val)
+        this.getMovieOnline(val['id'])
+      })
     } else {
       this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
       this.loadVideoData()
@@ -106,7 +114,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // this.movieCertification = this.getMovieCertification()
     this.getBookmark()
     this.getWatched()
-    // this.getVideo()
+    this.getLibrary()
     this.getTorrents()
     this.displayBackdrop()
     this.getTrailer()
@@ -114,64 +122,33 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   getTrailer() {
-    this.movieTrailer = this.movieDetails.videos.results.find((e) => e.type === 'Trailer')
+    this.movieTrailer = this.movieDetails.videos.results.find((e) => e.type.toLowerCase() === 'trailer')
   }
 
-  playVideo() {
-    this.videoService.openVideoStream(this.movieDetails.tmdbId).then(
-      e => {
-        console.log('streamlink1:', e)
-        if (e != 0 && e != [] && e != '' && e.length > 0) {
-          console.log('streamlink2:', e)
-          this.streamLink = e
-          this.showVideo = true
-          this.cdr.detectChanges()
-        }
-      })
+  playMovie() {
+    this.libraryService.openVideoStream(this.movieDetails.tmdbId).then(e => {
+      console.log('streamlink1:', e)
+      if (e != 0 && e != [] && e != '' && e.length > 0) {
+        this.streamLink = e
+        this.showVideo = true
+        // this.cdr.detectChanges()
+      }
+    })
   }
 
   /**
-   * !UNUSED
+   * Gets movie from library (offline,online source). Can return multiple library object instances of the movie.
    */
-  getMovieCredits() {
-    // TmdbParameters.
-    const tmdbId = this.movieDetails.tmdbId
-    this.movieService.getTmdbMovieDetails(tmdbId, [], 'credits').subscribe(data => {
-      console.log('got from getMovieCredits ', data)
-      // this.selectedMovie = data;
-      // this.saveMovieDataOffline(data)
-    });
-  }
-
-  getVideo() {
-    // this.ipcService.call(IPCCommand.OpenVideo, this.movieDetails.tmdbId)
+  getLibrary() {
     this.procVideo = true
-    // this.ipcService.videoFile.subscribe(data => {
-    //   if (data === null || data === 0) {
-    //     this.isMovieAvailable = false
-    //   } else {
-    //     this.streamLink = data
-    //     this.isMovieAvailable = true
-    //   }
-    //   this.procVideo = false
-    //   this.cdr.detectChanges()
-    // })
-
-
-    // playOfflineVideo
-
-    this.videoService.getVideo(this.movieDetails.tmdbId).then(e => {
-      // console.log('FROM VEIDEOSERVICE: ', e)
-      // if (e) {
-      //   this.streamLink = e.videoUrl
-      //   this.isMovieAvailable = true
-      //   this.showVideo = true
-      // }
+    this.libraryService.getMovieFromLibrary(this.movieDetails.tmdbId).then((e: IRawLibrary[] | any) => {
+      if (e) {
+        this.isMovieAvailable = true
+      }
     }).catch(e => {
-
     }).finally(() => {
       this.procVideo = false
-      this.cdr.detectChanges()
+      // this.cdr.detectChanges()
     }
     )
 
@@ -209,7 +186,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
     console.log('BOOKMARK: ', bookmark)
     this.procBookmark = false
-    this.cdr.detectChanges()
+    // this.cdr.detectChanges()
   }
 
   /**
@@ -223,7 +200,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.isBookmarked = !this.isBookmarked
     console.log('BOOKMARKADD/remove:', bmDoc)
     this.procBookmark = false
-    this.cdr.detectChanges()
+    // this.cdr.detectChanges()
 
     //   this.ipcService.call(IPCCommand.Bookmark, ['bookmark-remove', this.movieDetails.tmdbId])
     //   this.ipcService.call(IPCCommand.Bookmark, ['bookmark-add', this.movieDetails.tmdbId])
@@ -242,7 +219,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
       this.isWatched = true
     }
     this.procWatched = false
-    this.cdr.detectChanges()
+    // this.cdr.detectChanges()
   }
 
   async toggleWatched(percentage: string) {
@@ -253,7 +230,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.isWatched = !this.isWatched
     console.log('WATCHEDADD/remove:', wDoc)
     this.procWatched = false
-    this.cdr.detectChanges()
+    // this.cdr.detectChanges()
 
     // if (!this.movieDetails.watched || !this.movieDetails.watched.id) {
     //   wDocId = await this.userDataService.saveUserData('watched', this.movieDetails)
@@ -276,14 +253,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
    */
   getMovieDataOffline(val: any) {
     this.ipcService.call(this.ipcService.IPCCommand.MovieMetadata, [this.ipcService.IPCCommand.Get, val])
-  }
-
-  async getMovieFromLibrary() {
-    const val = this.movieDetails.tmdbId
-    const result = await this.ipcService.getMovieFromLibrary(val)
-    console.log(result);
-    // this.streamLink = result
-    this.cdr.detectChanges()
   }
 
   saveMovieDataOffline(val: any) {
@@ -388,7 +357,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
         this.torrents = this.torrentService.mapTorrentsList(data);
         this.torrents.sort(function (a, b) { return b.peers - a.peers }); // sort by seeders
       }
-      this.cdr.detectChanges()
+      // this.cdr.detectChanges()
     });
   }
 
@@ -408,7 +377,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
         console.log('streamlink2:', e)
         this.streamLink = e
         this.showVideo = true
-        this.cdr.detectChanges()
+        // this.cdr.detectChanges()
       }
     })
     // this.torrentService.getStreamLink(hash).subscribe(e => {
@@ -479,11 +448,17 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   goToMovie(val: string) {
+
+    // const highlightedId = this._movie.id;
+    // this.dataService.updateHighlightedMovie(highlightedId);
+    // // this.navigationService.goToPage()
+    // this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+
     const highlightedId = val
     this.dataService.updateHighlightedMovie(highlightedId);
-    this.router.navigate([`/details/${highlightedId}`]);
-    this.cdr.detectChanges()
-    // this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+    // this.router.navigate([`./details/${highlightedId}`]);
+    // this.cdr.detectChanges()
+    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
   }
 
   goToPerson(val) {

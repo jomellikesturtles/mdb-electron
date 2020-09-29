@@ -27,6 +27,8 @@ export class PreferencesComponent implements OnInit, OnDestroy {
   previousFolder = ''
   isDirty
   preferencesObject: IPreferences = DEFAULT_PREFERENCES
+  language = 'en'
+  HOTKEYS = HOTKEYS
   private ngUnsubscribe = new Subject();
   constructor(
     private ipcService: IpcService,
@@ -218,12 +220,21 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     this.currentFolder = folder
     this.ipcService.openFolder(folder)
   }
+
+  resetHotkeys() { }
+  saveHotkeys() { }
 }
 
-@Pipe({ name: 'dataDisplay' })
-export class DataDisplayPipe implements PipeTransform {
-  transform(value: any): string {
-    if (value === null || value === undefined || value === '')
-      return 'noData'
-  }
+// @Pipe({ name: 'dataDisplay' })
+// export class DataDisplayPipe implements PipeTransform {
+//   transform(value: any): string {
+//     if (value === null || value === undefined || value === '')
+//       return 'noData'
+//   }
+// }
+
+const HOTKEYS = {
+  // ToggleFULL
+  mute: 'm',
+  fullscreen: 'f'
 }

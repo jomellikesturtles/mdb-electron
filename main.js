@@ -9,7 +9,6 @@ const configDb = new Datastore({
   filename: "src/assets/config/config.db",
   autoload: true,
 });
-// import * as url from 'url'const
 const path = require("path");
 const fs = require("fs");
 const { PROC_NAMES } = require("./src/assets/scripts/shared/constants");
@@ -22,7 +21,6 @@ const {
   Tray,
   shell,
 } = electron;
-let WebTorrentService = require("./src/assets/scripts/webtorrent");
 const IPCRendererChannel = require("./src/assets/IPCRendererChannel.json");
 const IPCMainChannel = require("./src/assets/IPCMainChannel.json");
 let procBookmark;
@@ -295,6 +293,7 @@ ipcMain.on(IPCRendererChannel.SCAN_LIBRARY_STOP, function (event) {
   if (procScanLibrary) {
     DEBUG.log("killing....");
     procScanLibrary.kill();
+    procScanLibrary = null;
   }
 });
 
@@ -402,21 +401,6 @@ ipcMain.on("get-library-movies", function (event, data) {
       localProcLibraryDb = null;
     });
     localProcLibraryDb.on("message", (m) => sendContents(m[0], m[1]));
-  // }
-  // if (!procLibraryDb) {
-  //   procLibraryDb = forkChildProcess(
-  //     "src/assets/scripts/library-db-service-2.js",
-  //     data,
-  //     // PROC_OPTION
-  //     { cwd: __dirname, silent: false }
-  //   );
-  //   // procLibraryDb.stdout.on("data", (data) => printData(data));
-  //   procLibraryDb.on("exit", function () {
-  //     DEBUG.log("get-library-movies process ended");
-  //     procLibraryDb = null;
-  //   });
-  //   procLibraryDb.on("message", (m) => sendContents(m[0], m[1]));
-  // }
 });
 
 /**

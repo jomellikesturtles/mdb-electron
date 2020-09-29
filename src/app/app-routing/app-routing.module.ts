@@ -1,10 +1,8 @@
-// import { PreviewComponent } from './../components/preview/preview/preview.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { BulkDownloadComponent } from '../components/bulk-download/bulk-download.component';
 import { BrowseComponent } from '../components/browse/browse.component';
 import { PersonDetailsComponent } from '../components/person-details/person-details.component';
-import { PreferencesComponent } from '../components/preferences/preferences.component';
 import { PreviewComponent } from '../components/preview/preview.component';
 import { MdbGuardGuard } from '../mdb-guard.guard';
 import { VideoPlayerComponent } from '../components/video-player/video-player/video-player.component';
