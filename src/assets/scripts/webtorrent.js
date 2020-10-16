@@ -157,6 +157,7 @@ function displayClientProgress(torrent) {
   DEBUG.log("uploadSpeed: ", client.uploadSpeed);
   DEBUG.log("progress: ", client.progress);
 }
+
 /**
  *
  * @param {import("webtorrent").Torrent} torrent
@@ -184,7 +185,30 @@ function displayTorrentProgress(torrent) {
     downloadSpeed: torrent.downloadSpeed,
   };
   process.send(["progress", progressReturn]);
-  // DEBUG.log("num peers:", torrent.numPeers);
+
+  const toReturn = {
+    downSpeed: torrent.downloadSpeed,
+    upSpeed: torrent.uploadSpeed,
+    pieces: countDownloadedPieces(torrent),
+    ratio: torrent.ratio,
+  };
+
+  process.send(["stats", toReturn]);
+}
+
+/**
+ *
+ * @param {import("webtorrent").Torrent} torrent
+ */
+function countDownloadedPieces(torrent) {
+  let downloadedPiecesCount = 0;
+  torrent.pieces.forEach((piece) => {
+    if (!piece) {
+      downloadedPiecesCount++;
+    }
+    pieceIndex++;
+  });
+  return downloadedPiecesCount;
 }
 
 /**

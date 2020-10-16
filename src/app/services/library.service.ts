@@ -45,7 +45,7 @@ export class LibraryService {
    * @param id - tmdbId or imdbId
    */
   getMovieFromLibrary(id: number | string): Promise<any> {
-    this.ipcService.call(this.ipcService.IPCCommand.OpenVideo) // commented to make way for torrent-play
+    // this.ipcService.call(this.ipcService.IPCCommand.OpenVideo) // commented to make way for torrent-play
     return new Promise((resolve, reject) => {
       if (environment.runConfig.firebaseMode) {
         this.firebaseService.getFromFirestore(CollectionName.Video, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {

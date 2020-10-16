@@ -261,6 +261,7 @@ export interface IPreferences {
   isEnableCache: boolean
   libraryFolders: string[]
   torrentSeedRatio: number
+  torrentRatio?:any
 }
 
 export interface Credits {

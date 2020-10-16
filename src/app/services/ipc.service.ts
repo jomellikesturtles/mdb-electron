@@ -21,21 +21,19 @@ import { ILibraryInfo } from '../interfaces'
 })
 export class IpcService {
 
-  libraryFolders = new BehaviorSubject<string[]>([])
   libraryMovies = new BehaviorSubject<string[]>([])
   libraryMovie = new BehaviorSubject<string[]>([])
-  movieMetadata = new BehaviorSubject<string[]>([])
   bookmarkSingle = new BehaviorSubject<IBookmark>({ id: '', imdbId: '', tmdbId: 0 })
   watchedSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   scannedMovieSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   scannedMovieMulti = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
-  videoFile = new BehaviorSubject<any>([])
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
   movieIdentified = new BehaviorSubject<any>({ id: 0 })
   searchList = new BehaviorSubject<any>([])
   torrentVideo = new BehaviorSubject<string[]>([])
   preferences = new BehaviorSubject<any>([])
   streamLink = new BehaviorSubject<any>('')
+  statsForNerds = new BehaviorSubject<any>({})
   private ipcRenderer: typeof ipcRenderer
 
   constructor() {
@@ -57,13 +55,6 @@ export class IpcService {
       //   this.listen(locale)
       // }
 
-      // this.ipcRenderer.once(Channel.SearchList, (event, data: any) => {
-      //   console.log('searchList:', data)
-      //   this.searchList.next(data)
-      // })
-      // this.ipcRenderer.on(IPCMainChannel.PREFERENCES_SET_COMPLETE, (event: Electron.IpcRendererEvent, data: any) => {
-      //   this.preferences.next(data)
-      // })
       this.ipcRenderer.on(IPCMainChannel.PREFERENCES_GET_COMPLETE, (event: Electron.IpcRendererEvent, data) => {
         this.preferences.next(data)
         console.log('IPCMainChannel.PREFERENCES_COMPLETE ', data)
@@ -72,9 +63,9 @@ export class IpcService {
         this.streamLink.next(data)
         console.log('IPCMainChannel.STREAM_LINK ', data)
       })
-      this.ipcRenderer.on(IPCMainChannel.VideoSuccess, (event: Electron.IpcRendererEvent, data) => {
-        this.videoFile.next(data)
-        console.log('IPCMainChannel.VideoSuccess ', data)
+      this.ipcRenderer.on(IPCMainChannel.STATS, (event: Electron.IpcRendererEvent, data) => {
+        this.statsForNerds.next(data)
+        console.log('IPCMainChannel.STATS ', data)
       })
     }
   }
@@ -119,26 +110,17 @@ export class IpcService {
           case IPCMainChannel.BookmarkChanges:
             this.bookmarkChanges.next(data)
             break;
-          case IPCMainChannel.LibraryFolders:
-            this.libraryFolders.next(data)
-            break;
           case IPCMainChannel.LibraryMovies:
             this.libraryMovies.next(data)
             break;
           case IPCMainChannel.LibraryMovie:
             this.libraryMovie.next(data)
             break;
-          case IPCMainChannel.MovieMetadata:
-            this.movieMetadata.next(data)
-            break;
           case IPCMainChannel.ScannedSuccess:
             this.scannedMovieSingle.next(data)
             break;
           case IPCMainChannel.WatchedSuccess:
             this.watchedSingle.next(data)
-            break;
-          case IPCMainChannel.VideoSuccess:
-            this.videoFile.next(data)
             break;
           default:
             console.log(`channel ${channel} uncaught`)
@@ -250,10 +232,51 @@ export class IpcService {
     // this.ipcRenderer.send('bookmark', ['bookmark-get', val])
   }
 
+  // ----- WATCHED
+  getWatched(data) {
+    const theUuid = uuidv4()
+    console.log(`watched ${theUuid}`)
+    this.ipcRenderer.send(`watched`, [`findOne`, theUuid, data]);
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`watched-${theUuid}`, (event, arg) => {
+        console.log(`getWatched ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
+  /**
+   * Ipc renderer that sends command to main renderer to get movies from library db.
+   * @param idList
+   */
+  getWatchedInList(idList: number[]): Promise<any> {
+    const theUuid = uuidv4()
+    console.log(`libraryMovies ${theUuid}`)
+    this.ipcRenderer.send(`watched`, [`find-in-list`, theUuid, idList]);
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`watched-${theUuid}`, (event, arg) => {
+        console.log(`libraryMovies ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
+  saveWatched(data) {
+    const theUuid = uuidv4()
+    console.log(`watched ${theUuid}`)
+    this.ipcRenderer.send(`watched`, ['save', theUuid, data]);
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`watched-${theUuid}`, (event, arg) => {
+        console.log(`saveWatched ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
   updateWatchedStatus(val: IWatched) {
     this.ipcRenderer.send('', val)
   }
-
+  // ----- END OF WATCHED
   startScanLibrary() {
 
     this.ipcRenderer.send(IPCRendererChannel.SCAN_LIBRARY_START)
@@ -341,3 +364,7 @@ export interface IWatched {
   timestamp?: number,
 }
 // browse folder
+export interface ITorrent {
+  uploadSpeed: number,
+  downloadSpeed: number,
+}

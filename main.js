@@ -176,9 +176,12 @@ function startTorrentClient() {
   procWebTorrent = forkChildProcess(
     "src/assets/scripts/webtorrent.js",
     [],
-    PROC_OPTION
+    {
+      cwd: __dirname,
+      silent: false,
+    }
+    // PROC_OPTION
   );
-
   procWebTorrent.stdout.on("data", function (data) {
     DEBUG.log(data.toString().slice(0, -1));
   });
@@ -389,18 +392,18 @@ ipcMain.on(IPCRendererChannel.PREFERENCES_SET, function (event, data) {
 ipcMain.on("get-library-movies", function (event, data) {
   DEBUG.log("get movies from library..", data);
   // if (!procLibraryDb) {
-   let localProcLibraryDb = forkChildProcess(
-      "src/assets/scripts/library-db-service-2.js",
-      data,
-      // PROC_OPTION
-      { cwd: __dirname, silent: false }
-    );
-    // procLibraryDb.stdout.on("data", (data) => printData(data));
-    localProcLibraryDb.on("exit", function () {
-      DEBUG.log("get-library-movies process ended");
-      localProcLibraryDb = null;
-    });
-    localProcLibraryDb.on("message", (m) => sendContents(m[0], m[1]));
+  let localProcLibraryDb = forkChildProcess(
+    "src/assets/scripts/library-db-service-2.js",
+    data,
+    // PROC_OPTION
+    { cwd: __dirname, silent: false }
+  );
+  // procLibraryDb.stdout.on("data", (data) => printData(data));
+  localProcLibraryDb.on("exit", function () {
+    DEBUG.log("get-library-movies process ended");
+    localProcLibraryDb = null;
+  });
+  localProcLibraryDb.on("message", (m) => sendContents(m[0], m[1]));
 });
 
 /**
@@ -499,21 +502,22 @@ ipcMain.on("bookmark", function (event, data) {
 });
 
 // WATCHED
-ipcMain.on("watched", function (event, data) {
-  if (!procWatched) {
-    DEBUG.log("procWatched ", data);
-    procWatched = forkChildProcess(
-      "src/assets/script/watched-db-service.js",
-      [data[0], [data[1]]],
-      PROC_OPTION
-    );
-    procWatched.stdout.on("data", (data) => printData(data));
-    procWatched.on("exit", function () {
-      DEBUG.log("procWatched process ended");
-      procWatched = null;
-    });
-    procWatched.on("message", (m) => sendContents(m[0], m[1]));
-  }
+ipcMain.on("watched", function (event, args) {
+  // if (!procWatched) {
+  DEBUG.log("procWatched ", args);
+  // procWatched = forkChildProcess(
+  let procWatched = forkChildProcess(
+    "src/assets/script/watched-db-service.js",
+    args,
+    PROC_OPTION
+  );
+  // procWatched.stdout.on("data", (data) => printData(data));
+  procWatched.on("exit", function () {
+    DEBUG.log("procWatched process ended");
+    procWatched = null;
+  });
+  procWatched.on("message", (m) => sendContents(m[0], m[1]));
+  // }
 });
 
 /**

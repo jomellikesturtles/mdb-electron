@@ -56,9 +56,9 @@ export class FirebaseService {
    * @param operator firebase operator
    * @param value value to compare
    */
-  getFromFirestore(collectionName: string, columnName: string, operator: FirebaseOperator, value: any) {
+  getFromFirestore(collectionName: CollectionName, fieldName: FieldName, operator: FirebaseOperator, value: any) {
     return new Promise(resolve => {
-      this.db.collection(collectionName).where(columnName, operator, value).get().then((snapshot) => {
+      this.db.collection(collectionName).where(fieldName, operator, value).get().then((snapshot) => {
         console.log('SNAPSHOT: ', snapshot);
         if (!snapshot.empty) {
           const objectToReturn = snapshot.docs[0].data()

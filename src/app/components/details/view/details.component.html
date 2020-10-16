@@ -43,47 +43,16 @@
               <h2 (click)='goToDiscover("certification",movieCertification)'>{{movieCertification}}</h2>
 
               <!-- unified play button -->
-              <div class="btn-group">
-                <button type="button" class="btn btn-danger" (click)='playMovie()'>Play</button>
+              <div class="btn-group" *ngIf="playLinks.length > 0">
+                <button type="button" class="btn btn-danger" (click)='playBestPlayLink()'>Play</button>
                 <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split"
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <div class="dropdown-menu">
-                  <div *ngFor="let torrent of torrents">
-                    <a class="dropdown-item" (click)='playTorrent(torrent.hash)'>{{torrent.name}} {{torrent.quality}}
-                      {{torrent.peers}}</a>
-                  </div>
-                </div>
-              </div>
-
-              <button class="btn btn-primary" type="button" (click)='playMovie()'>PLAYYYY</button>
-              <button *ngIf="isMovieAvailable" class="btn btn-primary" type="button" (click)='playMovie()'
-                [disabled]='procVideo || !isMovieAvailable'>
-                <div *ngIf="procVideo">
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  Loading...
-                </div>
-                <div *ngIf="!procVideo">
-                  <div *ngIf="isMovieAvailable">
-                    Play
-                  </div>
-                  <div *ngIf="!isMovieAvailable">
-                    Not available
-                  </div>
-                </div>
-              </button>
-
-              <!-- play options -->
-              <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Play
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <div *ngFor="let torrent of torrents">
-                    <a class="dropdown-item" (click)='playTorrent(torrent.hash)'>{{torrent.name}} {{torrent.quality}}
-                      {{torrent.peers}}</a>
+                  <div *ngFor="let playLink of playLinks">
+                    <a class="dropdown-item" (click)='playMovie(playLink)'>{{playLink.name}} {{playLink.type}}
+                      {{playLink.quality}}</a>
                   </div>
                 </div>
               </div>
@@ -113,7 +82,6 @@
                 {{director.name}}{{isLast ? '' : ', '}}
               </span>
             </p>
-
             <p *ngIf="movieDetailsWriters">Written by
               <span class='text-hyperlink' (click)='goToDiscover(writer.id)'
                 *ngFor="let writer of movieDetailsWriters; let isLast=last">
@@ -163,7 +131,7 @@
           </div>
         </div>
 
-        <div class="table-responsive-lg container">
+        <div class="table-responsive-lg container" *ngIf="false">
           <table class="table">
             <thead>
             </thead>

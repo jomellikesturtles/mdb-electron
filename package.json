@@ -21,7 +21,7 @@
     "start:server": "node src/assets/scripts/server/main",
     "start:angular-server": " start ng serve & start npm run start:server",
     "start:angular-server2": "start npm start && npm run start:server",
-    "pack": "electron-packager"
+    "pack": "electron-packager ./ --overwrite"
   },
   "dependencies": {
     "@angular/animations": "~8.2.14",
@@ -78,6 +78,7 @@
     "@types/jasmine": "^2.8.17",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^8.10.62",
+    "@types/uuid": "^8.3.0",
     "@types/webtorrent": "^0.107.1",
     "codelyzer": "^5.0.1",
     "electron": "^9.1.2",

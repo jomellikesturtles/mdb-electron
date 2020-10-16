@@ -179,23 +179,23 @@ function initializeService() {
   // "tmdbId":10681,"imdbId":"tt0910970"
   console.log('user-db-service initializeService', command, tmdbIdArg, imdbIdArg);
   switch (command) {
-    case 'bookmark-get': getBookmark()
+    case 'bookmark-get': getBookmark();
       break;
-    case 'bookmark-add': addBookmark()
+    case 'bookmark-add': addBookmark();
       break;
-    case 'bookmark-add-multi': addBookmarkMulti()
+    case 'bookmark-add-multi': addBookmarkMulti();
       break;
-    case 'bookmark-update': updateBookmark()
+    case 'bookmark-update': updateBookmark();
       break;
-    case 'bookmark-remove': removeBookmark()
+    case 'bookmark-remove': removeBookmark();
       break;
     case 'bookmark-count-all':
-      bookmarksService.count()
+      bookmarksService.count();
       break;
     default:
       break;
   }
 }
 
-command = 'bookmark-count-all'
-initializeService()
+// command = 'bookmark-count-all';
+initializeService();

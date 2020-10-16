@@ -1,17 +1,17 @@
 /*jshint esversion: 6 */
 const express = require('express');
-const fs = require('fs')
-const path = require('path')
+const fs = require('fs');
+const path = require('path');
 let args = process.argv.slice(2);
 let tmdbIdArg = args[0];
-var http = require('http')
+var http = require('http');
 
-isPortOpen = false
+isPortOpen = false;
 // let tmdbIdArg = args[1];
 // let imdbIdArg = args[2];
-const app = express()
-const DataStore = require('nedb')
-const libraryDbService = require('./library-db-service-2')
+const app = express();
+const DataStore = require('nedb');
+const libraryDbService = require('./library-db-service-2');
 process.on('uncaughtException', function (error) {
   console.log('ERROR!!!!!!!!!!!!!!!!!!!!!!!!!', error);
   process.send(['operation-failed', 'general']);
@@ -74,9 +74,9 @@ function openStream(libraryData) {
 function openPort() {
 
   app.listen(3000, function () {
-    DEBUG.log('listening from 3000...')
-    isPortOpen=true
-  })
+    DEBUG.log('listening from 3000...');
+    isPortOpen = true;
+  });
 }
 
 function initialize() {

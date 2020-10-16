@@ -51,9 +51,6 @@ export class DashboardComponent implements OnInit {
     this.getNowShowingMovies()
     this.getTopMoviesFromYear()
     this.getTopGenreMovie()
-    this.ipcService.libraryFolders.subscribe(value => {
-      console.log('dashboard libraryFolders', value)
-    })
   }
 
   /**

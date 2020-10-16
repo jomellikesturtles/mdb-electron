@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, OnDestroy, AfterViewInit, ElementRef } from '@angular/core';
 import { MovieService } from 'src/app/services/movie.service';
 import { IpcService } from 'src/app/services/ipc.service';
+import { WatchedService } from 'src/app/services/watched.service';
 
 @Component({
   selector: 'app-video-player',
@@ -16,14 +17,25 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   isPlaying = false
   volume = this.DEFAULT_VOLUME
   videoPlayerElement;
+  statsForNerds: Stats
+
   constructor(
     private movieService: MovieService,
     private ipcService: IpcService,
+    private watchedService: WatchedService,
     private elementRef: ElementRef) { }
 
   ngOnInit() {
     // this.streamLink = 'http://localhost:3001/0'
+    this.statsForNerds.source = this.streamLink;
+    this.ipcService.statsForNerds.subscribe(stats => {
+      this.statsForNerds.downSpeed = stats.downSpeed
+      this.statsForNerds.upSpeed = stats.upSpeed
+      this.statsForNerds.pieces= stats.pieces
+      this.statsForNerds.ratio = stats.ratio
+    })
   }
+
   ngOnDestroy(): void {
     this.ipcService.stopStream()
   }
@@ -39,18 +51,22 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
       console.log('durationchange', e)
     })
     this.videoPlayerElement.addEventListener('ended', (e) => {
+      this.isPlaying = false
       console.log('ended', e)
     })
     this.videoPlayerElement.addEventListener('error', (e) => {
       console.log('error', e)
     })
     this.videoPlayerElement.addEventListener('pause', (e) => {
+      this.isPlaying = false
       console.log('pause', e)
     })
     this.videoPlayerElement.addEventListener('play', (e) => {
+      this.isPlaying = true
       console.log('play', e)
     })
     this.videoPlayerElement.addEventListener('playing', (e) => {
+      this.isPlaying = true
       console.log('playing', e)
     })
     this.videoPlayerElement.addEventListener('progress', (e) => {
@@ -71,7 +87,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.videoPlayerElement.addEventListener('timeupdate', (e) => {
       // console.log('timeupdate', e)
     })
-    setInterval((e) => this.updateWatchedStatus(e), 10000)
+    setInterval((e) => {
+      if (this.isPlaying) {
+        this.updateWatchedStatus(e)
+      }
+    }, 10000)
   }
 
   onKeyPress(val: KeyboardEvent) {
@@ -125,7 +145,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
         case 'k':
           // toggle pause/play
           this.isPlaying ? this.videoPlayerElement.play() : this.videoPlayerElement.pause()
-          this.isPlaying = !this.isPlaying
+          // this.isPlaying = !this.isPlaying
           break;
         case 'arrowup':
           // if (this.volume >= 1) return
@@ -191,15 +211,31 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     // timestamp?: number,
     // percentage: string,
     let watchedObj = {
-      id: this.id,
+      // id: this.id,
       tmdbId: this.tmdbId,
       imdbId: this.imdbId,
-      percentage: Math.floor(this.videoPlayerElement.currentTime / this.videoPlayerElement.duration * 100)
+      watchedTime: this.videoPlayerElement.currentTime
+      // percentage: Math.floor(this.videoPlayerElement.currentTime / this.videoPlayerElement.duration * 100)
     }
-    this.ipcService.updateWatchedStatus(watchedObj)
+    console.log('updating watched', watchedObj);
+    this.watchedService.saveWatched(watchedObj);
   }
 
   addCaption() {
     // this.videoPlayerElement.addTextTrack()
   }
+}
+
+interface Stats {
+  bufferhealth: string // in seconds
+  connectionSpeed: string
+  pieces: string // (pieces have.)
+  downSpeed: string // leech speed
+  upSpeed: string // seed speed
+  ratio: string // downloaded/uploaded ratio
+  // codec
+  id: string // hash/id
+  source: string; // stream link
+  size: string;
+  resolution: string
 }

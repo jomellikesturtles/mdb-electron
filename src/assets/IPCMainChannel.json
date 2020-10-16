@@ -18,5 +18,6 @@
   "VideoSuccess": "open-video-success",
   "WatchedSuccess": "watched-success",
   "MovieIdentified": "movie-identified-success",
-  "STREAM_LINK": "stream-link"
+  "STREAM_LINK": "stream-link",
+  "STATS": "stats"
 }

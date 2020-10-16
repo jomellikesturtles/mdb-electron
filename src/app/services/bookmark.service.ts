@@ -18,7 +18,7 @@ export class BookmarkService {
   getBookmark(id) {
     if (environment.runConfig.firebaseMode) {
       return new Promise(resolve => {
-        this.firebaseService.getFromFirestore(CollectionName.Bookmark, 'tmdbId', FirebaseOperator.Equal, id).then(e => {
+        this.firebaseService.getFromFirestore(CollectionName.Bookmark, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
           console.log('BOOKMARK: ', e)
           // bookmarkObservable=
           resolve(e)
@@ -65,11 +65,15 @@ export class BookmarkService {
   getBookmarksMultiple(idList: number[]): Promise<any> {
     console.log('getting multiplebookmarks multiple...', idList);
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiple(CollectionName.Bookmark, FieldName.TmdbId, idList).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.getFromFirestoreMultiple(CollectionName.Bookmark, FieldName.TmdbId, idList).then(value => {
+          resolve(value)
+        }).catch(err => {
+          reject(err)
+        })
+      } else {
+
+      }
     })
   }
 
@@ -79,23 +83,30 @@ export class BookmarkService {
   getBookmarksPaginated(lastVal: string | number): Promise<any> {
     console.log('getting multiplebookmarks paginated...', lastVal);
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Bookmark, FieldName.TmdbId, 20, lastVal).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Bookmark, FieldName.TmdbId, 20, lastVal).then(value => {
+          resolve(value)
+        }).catch(err => {
+          reject(err)
+        })
+      } else {
+      }
     })
   }
 
   getBookmarksPaginatedFirstPage(): Promise<any> {
     console.log('getting multiplebookmarks FirstPage(...');
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20).then(value => {
+          resolve(value)
+        }).catch(err => {
+          reject(err)
+        })
+      } else {
+      }
     })
+
   }
 }
 

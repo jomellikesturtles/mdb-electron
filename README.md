@@ -30,6 +30,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
       - [YTS](#yts)
       - [imdb offline database](#imdb-offline-database)
       - [Fanart.tv](#fanarttv)
+    - [Commands layout](#commands-layout)
   - [Todo](#todo)
   - [Offline Assets](#offline-assets)
   - [Influenced by](#influenced-by)
@@ -202,24 +203,28 @@ Logos, Backgrounds, Posters and more forTV, Movie and Music collections
 ```
 http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
 ```
+### Commands layout
 
+- message, [...args]
+- `watched`, [command, uuid, ...args]
+- `watched`, [ `findOne`, `0000-1111-2222-3333`, `123`]
 
 ## Todo
 
-- Search by title, imdbId or keyword,
+- ~~Search by title, imdbId~~ or keyword,
 - 'advanced' filters by date, genre, isAvailable, etc.
 - has backup offline search by using torrent_dump and offline-imdb
 - must enable caching
-- electron project
-- Scan for movies in user-specified directory
-- add originaltitle AND/OR save metadata on identifyMovie script
+- ~~electron project~~
+- ~~Scan for movies in user-specified directory~~
+- ~~add originaltitle AND/OR save metadata on identifyMovie script~~
 - ~~torrents from online source~~
 - ~~fix background image in movie-info~~
-- imdbId goes null/undefined if Tmdb doesn't have imdb id(especially on new movies)
-- mismatch number of search results because of filters(adults/non-movie)
-- add individual .js file for major functions
+- ~~imdbId goes null/undefined if Tmdb doesn't have imdb id(especially on new movies)~~
+- mismatch number of search results because of filters(adults/non-movie) -- omdb source only
+- ~~add individual .js file for major functions~~
   - update offline files
-  - torrent
+  - ~~torrent~~
 - ~~add offline files into OneDrive~~
 
 > major
@@ -234,7 +239,16 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 - ipcRenderers subscriptions
   - preferences
   - library movies
-
+  - stats for nerds{
+  pieces
+  bufferhealth
+  connection speed
+  codec
+  hash/id
+  source
+  size
+  res
+}
 > minor
 
 - ~~lazy loading~~
@@ -361,3 +375,6 @@ Possible fix to have oauth2 possible in electron project: C:\Users\Lenovo\AppDat
 
 https://itnext.io/an-oauth-2-0-introduction-for-beginners-6e386b19f7a9
 RE-ADD Jquery
+
+http://javascriptobfuscator.com/javascript-Obfuscator.aspx
+https://www.daftlogic.com/projects-online-javascript-obfuscator.htm

@@ -40,12 +40,6 @@ export class PreferencesComponent implements OnInit, OnDestroy {
 
     // this.onGetLibraryFolders()
     // this.onGetLibraryMovies()
-    let libraryFoldersSubscription = this.ipcService.libraryFolders.subscribe((value) => {
-      this.libraryFolders = value
-      console.log('libraryfolders: ', value);
-      this.cdr.detectChanges()
-    })
-    console.log(typeof libraryFoldersSubscription);
 
     this.ipcService.libraryMovies.subscribe((value) => {
       this.libraryMovies = value

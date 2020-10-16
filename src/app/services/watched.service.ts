@@ -1,20 +1,29 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './firebase.service';
 import { IUserSavedData } from '../interfaces';
+import { environment } from 'mdb-win32-x64/resources/app/src/environments/environment';
+import { IpcService } from './ipc.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WatchedService {
 
-  constructor(private firebaseService: FirebaseService) { }
+  constructor(private firebaseService: FirebaseService,
+    private ipcService: IpcService) { }
 
   getWatched(id): Promise<any> {
     return new Promise(resolve => {
-      this.firebaseService.getFromFirestore(CollectionName.Watched, 'tmdbId', FirebaseOperator.Equal, id).then(e => {
-        console.log('WATCHED: ', e)
-        resolve(e)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.getFromFirestore(CollectionName.Watched, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
+          console.log('WATCHED: ', e)
+          resolve(e)
+        })
+      } else {
+        this.ipcService.getWatched(id).then(e => {
+          resolve(e)
+        })
+      }
     })
   }
 
@@ -34,9 +43,15 @@ export class WatchedService {
 
   saveWatched(data): Promise<any> {
     return new Promise(resolve => {
-      this.firebaseService.insertIntoFirestore(CollectionName.Watched, data).then(e => {
-        resolve(e)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.insertIntoFirestore(CollectionName.Watched, data).then(e => {
+          resolve(e)
+        })
+      } else {
+        this.ipcService.saveWatched(data).then(e => {
+          resolve(e)
+        })
+      }
     })
   }
 
@@ -45,19 +60,27 @@ export class WatchedService {
    * @param docId watched id to remove.
    */
   removeWatched(docId: string) {
-    return new Promise(resolve => {
-      this.firebaseService.deleteFromFirestore(CollectionName.Watched, docId).then(e => {
-        resolve(e)
+    if (environment.runConfig.firebaseMode) {
+      return new Promise(resolve => {
+        this.firebaseService.deleteFromFirestore(CollectionName.Watched, docId).then(e => {
+          resolve(e)
+        })
       })
-    })
+    } else {
+
+    }
   }
 
   saveWatchedMulti(data: object[]) {
-    const list = []
-    data.forEach(element => {
-      list.push({ tmdbId: element })
-    })
-    this.firebaseService.insertIntoFirestoreMulti(CollectionName.Watched, list)
+    if (environment.runConfig.firebaseMode) {
+      const list = []
+      data.forEach(element => {
+        list.push({ tmdbId: element })
+      })
+      this.firebaseService.insertIntoFirestoreMulti(CollectionName.Watched, list)
+    } else {
+
+    }
   }
 
   /**

@@ -5,7 +5,7 @@ var DataStore = require('nedb')
 var { regexify } = require('./shared/util')
 var libraryFilesDb = new DataStore(
   {
-    // filename: '../db/libraryFiles2.db', // each file will now have their own row/id // nodeJS mode
+    // filename: '../db/libraryFiles2.db', // nodeJS mode
     filename: path.join(process.cwd(), 'src', 'assets', 'db', 'libraryFiles2.db'),
     autoload: true
   });
@@ -136,11 +136,14 @@ function getLibraryFilesMulti2(skip, limit) {
 
 /**
  * Gets movie library in list.
+ * @param {string} uuid the uuid
  * @param {any[]} idList list of id
  * @returns list of movie libary with filepath
  */
 function getLibrayMovieInList(uuid, idList) {
   idList = idList.split(",").map((e) => parseInt(e, 10));
+  // return new Promise(function (resolve, reject) {
+  // })
   libraryFilesDb.find({ tmdbId: { $in: idList }}, function (err, docs) {
     if (!err) {
       let toList = [];
@@ -180,7 +183,7 @@ function getLibraryFilesByStep(skip, step, sort) {
   return new Promise(function (resolve, reject) {
     libraryFilesDb.find({}).sort(sort).skip(skip).limit(step).exec(function (err, data) {
       if (!err) {
-        console.log('data:', data)
+        console.log('data:', data);
         resolve(data);
       } else {
         // reject()
@@ -226,13 +229,23 @@ function getLibraryFilesByTmdbId(tmdbIdArg) {
       if (!err) {
         console.log('data:', data);
         resolve(data);
-        // return data
       } else {
         console.log('err:', err);
-        // reject()
       }
-    })
-  })
+    });
+  });
+}
+
+function getLibraryFileById(id) {
+  return new Promise(function (resolve, reject) {
+    libraryFilesDb.find({ _id: id }, function (err, data) {
+      if (!err) {
+        resolve(data);
+      } else {
+        console.log('err:', err);
+      }
+    });
+  });
 }
 
 let args = process.argv.slice(2);

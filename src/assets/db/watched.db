@@ -1,0 +1,3 @@
+{"tmdbId":123,"imdbId":"tt1234567","watchedTime":23,"_id":"aDzvLa5oYHjwxtLj"}
+{"$$indexCreated":{"fieldName":"tmdbId","unique":true,"sparse":true}}
+{"tmdbId":123,"imdbId":"tt1234567","watchedTime":24,"_id":"aDzvLa5oYHjwxtLj"}
