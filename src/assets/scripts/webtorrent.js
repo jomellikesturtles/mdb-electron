@@ -2,7 +2,7 @@
 /*jshint esversion: 8 */
 const WebTorrent = require("webtorrent");
 let moment = require("moment");
-const util = require("./shared/util");
+const {prettyBytes} = require("./shared/util");
 const TorrentUtil = require("./utils/torrentUtil");
 
 let args = process.argv.slice(2);
@@ -95,6 +95,7 @@ function stopStream() {
   // torrentClient.destroy();
   clearInterval(currentDisplayInterval);
   if (torrentClient) {
+    torrentClient.get(currentStreamHash).removeAllListeners()
     torrentClient.remove(currentStreamHash);
     torrentClient.torrents.forEach((torrent) => {
       DEBUG.log(
@@ -165,7 +166,7 @@ function displayClientProgress(torrent) {
 function displayTorrentProgress(torrent) {
   let percent = Math.round(torrent.progress * 100 * 100) / 100;
   DEBUG.log("progress: ", percent + "%");
-  DEBUG.log("downloaded: ", util.prettyBytes(torrent.downloaded));
+  DEBUG.log("downloaded: ", prettyBytes(torrent.downloaded));
   if (!torrent.done) {
     const remaining = moment
       .duration(torrent.timeRemaining / 1000, "seconds")
@@ -177,19 +178,18 @@ function displayTorrentProgress(torrent) {
   }
   DEBUG.log(
     "down speed:",
-    util.prettyBytes(torrent.downloadSpeed) + "/s | " + "up speed:",
-    util.prettyBytes(torrent.uploadSpeed) + "/s"
+    prettyBytes(torrent.downloadSpeed) + "/s | " + "up speed:",
+    prettyBytes(torrent.uploadSpeed) + "/s"
   );
   const progressReturn = {
     progress: percent + "%",
     downloadSpeed: torrent.downloadSpeed,
   };
-  process.send(["progress", progressReturn]);
 
   const toReturn = {
-    downSpeed: torrent.downloadSpeed,
-    upSpeed: torrent.uploadSpeed,
-    pieces: countDownloadedPieces(torrent),
+    downSpeed: prettyBytes(torrent.downloadSpeed),
+    upSpeed: prettyBytes(torrent.uploadSpeed),
+    downloadedPieces: countDownloadedPieces(torrent),
     ratio: torrent.ratio,
   };
 
@@ -206,7 +206,7 @@ function countDownloadedPieces(torrent) {
     if (!piece) {
       downloadedPiecesCount++;
     }
-    pieceIndex++;
+    // pieceIndex++;
   });
   return downloadedPiecesCount;
 }

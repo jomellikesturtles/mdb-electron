@@ -1,3 +1,5 @@
+// IPC Main utils.
+/*jshint esversion: 6 */
 const path = require("path");
 
 const sayHello = function () {

@@ -182,9 +182,9 @@ function startTorrentClient() {
     }
     // PROC_OPTION
   );
-  procWebTorrent.stdout.on("data", function (data) {
-    DEBUG.log(data.toString().slice(0, -1));
-  });
+  // procWebTorrent.stdout.on("data", function (data) {
+  //   DEBUG.log(data.toString().slice(0, -1));
+  // });
   procWebTorrent.on("exit", function () {
     DEBUG.log("procWebTorrent ended");
   });
@@ -398,7 +398,6 @@ ipcMain.on("get-library-movies", function (event, data) {
     // PROC_OPTION
     { cwd: __dirname, silent: false }
   );
-  // procLibraryDb.stdout.on("data", (data) => printData(data));
   localProcLibraryDb.on("exit", function () {
     DEBUG.log("get-library-movies process ended");
     localProcLibraryDb = null;
@@ -483,22 +482,48 @@ ipcMain.on("torrent-search", function (event, data) {
   }
 });
 
+// USER DATA
+ipcMain.on("user-data", function (event, data) {
+    DEBUG.log("myProcUserData ", data);
+
+    data[0] = JSON.stringify(data[0]);
+    data[1] = JSON.stringify(data[1]);
+    let myProcUserData = forkChildProcess(
+      "src/assets/scripts/user-db-service.js",
+      data,
+      {
+        cwd: __dirname,
+        silent: false,
+      }
+    );
+    myProcUserData.on("data", (data) => printData(data));
+    myProcUserData.on("exit", function () {
+      DEBUG.log("myProcUserData process ended");
+      myProcUserData = null;
+    });
+    myProcUserData.on("message", (m) => sendContents(m[0], m[1]));
+
+});
+
 // BOOKMARK
 ipcMain.on("bookmark", function (event, data) {
-  if (!procBookmark) {
+  // if (!procBookmark) {
     DEBUG.log("procBookmark ", data);
-    procBookmark = forkChildProcess(
-      "src/assets/scripts/user-db-service.js",
-      [data[0], [data[1]]],
+
+    data[0] = JSON.stringify(data[0]);
+    data[1] = JSON.stringify(data[1]);
+    let myProcBookmark = forkChildProcess(
+      "src/assets/scripts/bookmark-db-service.js",
+      data,
       PROC_OPTION
     );
-    procBookmark.stdout.on("data", (data) => printData(data));
-    procBookmark.on("exit", function () {
+    myProcBookmark.on("data", (data) => printData(data));
+    myProcBookmark.on("exit", function () {
       DEBUG.log("procBookmark process ended");
-      procBookmark = null;
+      myProcBookmark = null;
     });
-    procBookmark.on("message", (m) => sendContents(m[0], m[1]));
-  }
+    myProcBookmark.on("message", (m) => sendContents(m[0], m[1]));
+  // }
 });
 
 // WATCHED
@@ -506,12 +531,17 @@ ipcMain.on("watched", function (event, args) {
   // if (!procWatched) {
   DEBUG.log("procWatched ", args);
   // procWatched = forkChildProcess(
+  args[0] = JSON.stringify(args[0]);
+  args[1] = JSON.stringify(args[1]);
   let procWatched = forkChildProcess(
-    "src/assets/script/watched-db-service.js",
+    "src/assets/scripts/watched-db-service.js",
     args,
-    PROC_OPTION
+    {
+      cwd: __dirname,
+      silent: false,
+    }
+    // PROC_OPTION
   );
-  // procWatched.stdout.on("data", (data) => printData(data));
   procWatched.on("exit", function () {
     DEBUG.log("procWatched process ended");
     procWatched = null;

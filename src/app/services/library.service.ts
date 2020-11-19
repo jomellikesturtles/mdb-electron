@@ -24,7 +24,7 @@ export class LibraryService {
     return this.ipcService.playOfflineVideo(id)
     // return new Promise((resolve, reject) => {
     //   if (environment.runConfig.firebaseMode) {
-    //     this.firebaseService.getFromFirestore(CollectionName.Video, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
+    //     this.firebaseService.getFromFirestore(CollectionName.Library, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
     //       console.log('BOOKMARK: ', e)
     //       resolve(e)
     //     }).catch(e => {
@@ -32,7 +32,7 @@ export class LibraryService {
     //     })
     //     // })
     //   } else {
-    //     this.ipcService.videoFile.toPromise().then(e => {
+    //     this.ipcService.LibraryFile.toPromise().then(e => {
     //       resolve(e)
     //     })
     //   }
@@ -48,7 +48,7 @@ export class LibraryService {
     // this.ipcService.call(this.ipcService.IPCCommand.OpenVideo) // commented to make way for torrent-play
     return new Promise((resolve, reject) => {
       if (environment.runConfig.firebaseMode) {
-        this.firebaseService.getFromFirestore(CollectionName.Video, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
+        this.firebaseService.getFromFirestore(CollectionName.Library, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
           console.log('BOOKMARK: ', e)
           resolve(e)
         }).catch(e => {
@@ -70,7 +70,7 @@ export class LibraryService {
     console.log('getting multiplevideos...', idList);
     return new Promise((resolve, reject) => {
       if (environment.runConfig.firebaseMode) {
-        this.firebaseService.getFromFirestoreMultiple(CollectionName.Video, FieldName.TmdbId, idList).then(value => {
+        this.firebaseService.getFromFirestoreMultiple(CollectionName.Library, FieldName.TmdbId, idList).then(value => {
           resolve(value)
         }).catch(err => {
           reject(err)
@@ -90,7 +90,7 @@ export class LibraryService {
    */
   getVideos(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Video, FieldName.TmdbId, 20).then(value => {
+      this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20).then(value => {
         resolve(value)
       }).catch(err => {
         reject(err)
@@ -103,8 +103,8 @@ export class LibraryService {
    */
   getVideoPaginatedFirstPage(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.ipcService.getMultiplePaginatedFirst(CollectionName.Video, FieldName.TmdbId, 20).then(value => {
-        // this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Video, FieldName.TmdbId, 20).then(value => {
+      this.ipcService.getMultiplePaginatedFirst(CollectionName.Library, FieldName.TmdbId, 20).then(value => {
+        // this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Library, FieldName.TmdbId, 20).then(value => {
         resolve(value)
       }).catch(err => {
         reject(err)
@@ -113,14 +113,14 @@ export class LibraryService {
   }
 
   /**
-   * Gets multiple watched.
+   * Gets multiple library.
    * @param lastVal the last value to start with.
    */
-  getVideoPaginated(lastVal: string | number): Promise<any> {
+  getLibraryPaginated(lastVal: string | number): Promise<any> {
     console.log('getVideoPaginated...', lastVal);
     return new Promise((resolve, reject) => {
-      this.ipcService.getMultiplePaginated(CollectionName.Video, FieldName.TmdbId, 20, lastVal).then(value => {
-        // this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Video, FieldName.TmdbId, 20, lastVal).then(value => {
+      this.ipcService.getMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20, lastVal).then(value => {
+        // this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20, lastVal).then(value => {
         resolve(value)
       }).catch(err => {
         reject(err)

@@ -30,7 +30,6 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
       - [YTS](#yts)
       - [imdb offline database](#imdb-offline-database)
       - [Fanart.tv](#fanarttv)
-    - [Commands layout](#commands-layout)
   - [Todo](#todo)
   - [Offline Assets](#offline-assets)
   - [Influenced by](#influenced-by)
@@ -203,11 +202,6 @@ Logos, Backgrounds, Posters and more forTV, Movie and Music collections
 ```
 http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
 ```
-### Commands layout
-
-- message, [...args]
-- `watched`, [command, uuid, ...args]
-- `watched`, [ `findOne`, `0000-1111-2222-3333`, `123`]
 
 ## Todo
 

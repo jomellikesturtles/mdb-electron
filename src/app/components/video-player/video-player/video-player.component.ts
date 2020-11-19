@@ -1,5 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, AfterViewInit, ElementRef } from '@angular/core';
-import { MovieService } from 'src/app/services/movie.service';
+import { Component, OnInit, Input, OnDestroy, AfterViewInit, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 import { IpcService } from 'src/app/services/ipc.service';
 import { WatchedService } from 'src/app/services/watched.service';
 
@@ -8,7 +7,7 @@ import { WatchedService } from 'src/app/services/watched.service';
   templateUrl: './video-player.component.html',
   styleUrls: ['./video-player.component.scss']
 })
-export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
+export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
   @Input() streamLink: string
   @Input() id: string
   @Input() tmdbId: number
@@ -20,20 +19,19 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   statsForNerds: Stats
 
   constructor(
-    private movieService: MovieService,
     private ipcService: IpcService,
     private watchedService: WatchedService,
     private elementRef: ElementRef) { }
+  ngOnChanges(changes: SimpleChanges): void {
+    const cs = changes.streamLink
+    if (cs && !cs.firstChange) {
+      this.statsForNerds.source = this.streamLink;
+    }
+  }
 
   ngOnInit() {
     // this.streamLink = 'http://localhost:3001/0'
-    this.statsForNerds.source = this.streamLink;
-    this.ipcService.statsForNerds.subscribe(stats => {
-      this.statsForNerds.downSpeed = stats.downSpeed
-      this.statsForNerds.upSpeed = stats.upSpeed
-      this.statsForNerds.pieces= stats.pieces
-      this.statsForNerds.ratio = stats.ratio
-    })
+    // this.streamLink.s
   }
 
   ngOnDestroy(): void {
@@ -41,6 +39,17 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+
+    this.ipcService.statsForNerdsSubscribable.subscribe(stats => {
+      console.log(stats)
+      if (stats){
+        this.statsForNerds.downSpeed = stats.downSpeed
+        this.statsForNerds.upSpeed = stats.upSpeed
+        this.statsForNerds.downloadedPieces= stats.downloadedPieces
+        this.statsForNerds.ratio = stats.ratio
+      }
+    })
+
     //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
 
     this.videoPlayerElement = this.elementRef.nativeElement.querySelector('#videoPlayer')
@@ -89,7 +98,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     })
     setInterval((e) => {
       if (this.isPlaying) {
-        this.updateWatchedStatus(e)
+        // this.updateWatchedStatus(e)
       }
     }, 10000)
   }
@@ -211,10 +220,12 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     // timestamp?: number,
     // percentage: string,
     let watchedObj = {
-      // id: this.id,
+      id: '',
       tmdbId: this.tmdbId,
       imdbId: this.imdbId,
-      watchedTime: this.videoPlayerElement.currentTime
+      title: '',
+      percentage: this.videoPlayerElement.currentTime,
+      year: 0
       // percentage: Math.floor(this.videoPlayerElement.currentTime / this.videoPlayerElement.duration * 100)
     }
     console.log('updating watched', watchedObj);
@@ -229,7 +240,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit {
 interface Stats {
   bufferhealth: string // in seconds
   connectionSpeed: string
-  pieces: string // (pieces have.)
+  downloadedPieces: string // (pieces have.)
   downSpeed: string // leech speed
   upSpeed: string // seed speed
   ratio: string // downloaded/uploaded ratio

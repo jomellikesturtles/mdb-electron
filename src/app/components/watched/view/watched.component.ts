@@ -6,10 +6,8 @@ import { IWatched } from './../../../services/watched.service';
 import { WatchedService } from './../../../services/watched.service';
 import { Component, OnInit } from '@angular/core';
 import { environment } from './../../../../environments/environment';
-import { Subscription } from 'rxjs'
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { Select } from '@ngxs/store';
-import { MovieService } from 'src/app/services/movie.service';
 
 @Component({
   selector: 'app-watched',
@@ -32,7 +30,6 @@ export class WatchedComponent implements OnInit {
 
   constructor(
     private watchedService: WatchedService,
-    private movieService: MovieService,
     private userDataService: UserDataService,
   ) { }
 
@@ -47,8 +44,6 @@ export class WatchedComponent implements OnInit {
     if (environment.runConfig.useTestData) {
       this.moviesDisplayList = TMDB_SEARCH_RESULTS.results
     } else {
-      // commented for TEST
-
       const res = await this.userDataService.getUserDataFirstPage(this.listType)
       if (res.length) {
         this.moviesDisplayList = res
@@ -58,7 +53,6 @@ export class WatchedComponent implements OnInit {
           this.hasMoreResults = true
         }
       }
-
     }
   }
 
@@ -66,7 +60,6 @@ export class WatchedComponent implements OnInit {
     if (environment.runConfig.useTestData) {
       this.moviesDisplayList = TMDB_SEARCH_RESULTS.results
     } else {
-      // commented for TEST
       const res = await this.userDataService.getUserDataPagination(this.listType, this.lastVal)
       if (res.length) {
         this.moviesDisplayList.push.apply(this.moviesDisplayList, res)
@@ -76,5 +69,9 @@ export class WatchedComponent implements OnInit {
         }
       }
     }
+  }
+
+  async nextPage() {
+
   }
 }

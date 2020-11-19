@@ -3,6 +3,7 @@ import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './
 import { IUserSavedData } from '../interfaces';
 import { environment } from 'mdb-win32-x64/resources/app/src/environments/environment';
 import { IpcService } from './ipc.service';
+import { UtilsService } from './utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,33 @@ import { IpcService } from './ipc.service';
 export class WatchedService {
 
   constructor(private firebaseService: FirebaseService,
-    private ipcService: IpcService) { }
+    private ipcService: IpcService,
+    private utilsService: UtilsService) { }
+
+  async toggleWatched(movie) {
+    let wDocId
+    if (!movie.watched || !movie.watched.id) {
+      const rDate = movie.release_date ? movie.release_date : movie.releaseDate
+      const releaseYear = parseInt(this.utilsService.getYear(rDate), 10)
+      const data: IWatched = {
+        title: movie.title,
+        tmdbId: movie.id ? movie.id : movie.tmdbId,
+        imdbId: movie.imdbId ? movie.imdbId : '',
+        year: releaseYear ? releaseYear : 0,
+        percentage: 100
+      }
+      wDocId = await this.saveWatched(data)
+      movie.watched = wDocId
+    } else {
+      const type = movie.watched && movie.watched.id ? 'id' : 'tmdbId'
+      if (type === 'id')
+        wDocId = await this.removeWatched(type, movie.watched.id)
+      else
+        wDocId = await this.removeWatched(type, movie.tmdbId)
+      movie.watched.id = ''
+    }
+    return wDocId;
+  }
 
   getWatched(id): Promise<any> {
     return new Promise(resolve => {
@@ -29,11 +56,17 @@ export class WatchedService {
 
   /**
    * Gets multiple watched movies.
+   * @param idList
    */
-  getWatchedMultiple(idList: number[]): Promise<any> {
-    console.log('getting multiplewatched...', idList);
+  getWatchedInList(idList: number[]): Promise<any> {
+    console.log('getWatchedInList...', idList);
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiple(CollectionName.Watched, FieldName.TmdbId, idList).then(value => {
+
+      const myFunction = environment.runConfig.firebaseMode ?
+        this.firebaseService.getFromFirestoreMultiple(CollectionName.Watched, FieldName.TmdbId, idList) :
+        this.ipcService.getWatchedInList(idList);
+
+      myFunction.then(value => {
         resolve(value)
       }).catch(err => {
         reject(err)
@@ -41,7 +74,7 @@ export class WatchedService {
     })
   }
 
-  saveWatched(data): Promise<any> {
+  saveWatched(data: IWatched): Promise<any> {
     return new Promise(resolve => {
       if (environment.runConfig.firebaseMode) {
         this.firebaseService.insertIntoFirestore(CollectionName.Watched, data).then(e => {
@@ -57,18 +90,21 @@ export class WatchedService {
 
   /**
    * Removes watched.
-   * @param docId watched id to remove.
+   * @param type
+   * @param id watched id/_id/tmdbId to remove.
    */
-  removeWatched(docId: string) {
-    if (environment.runConfig.firebaseMode) {
-      return new Promise(resolve => {
-        this.firebaseService.deleteFromFirestore(CollectionName.Watched, docId).then(e => {
+  removeWatched(type: 'id' | 'tmdbId', id: string | number) {
+    return new Promise(resolve => {
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.deleteFromFirestore(CollectionName.Watched, id).then(e => {
           resolve(e)
         })
-      })
-    } else {
-
-    }
+      } else {
+        this.ipcService.removeWatched(type, id).then(e => {
+          resolve(e)
+        })
+      }
+    })
   }
 
   saveWatchedMulti(data: object[]) {
@@ -88,12 +124,19 @@ export class WatchedService {
    */
   getWatchedPaginatedFirstPage(): Promise<any> {
     console.log('getting multiplewatched FirstPage(...');
+
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20).then(value => {
+          resolve(value)
+        }).catch(err => {
+          reject(err)
+        })
+      } else {
+        this.ipcService.getMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20).then(value => {
+          resolve(value)
+        })
+      }
     })
   }
 
@@ -111,28 +154,33 @@ export class WatchedService {
       })
     })
   }
+
+  /**
+   * Gets the percentage.
+   * @param timestamp timestamp in seconds
+   * @param length movie length in seconds
+   * @returns percentage
+   */
+  getPercentage(timestamp: number, length: number): number {
+    return (timestamp / length) * 100
+  }
+
+  /**
+   * Gets the timestamp.
+   * @param percentage
+   * @param length movie length in seconds
+   * @returns timestamp in seconds
+   */
+  getTimestamp(percentage: number, length: number): number {
+    return (percentage / 100) * length
+  }
 }
 
 export interface IWatched extends IUserSavedData {
-  id: string // also use in Doc Id
+  id?: string // also use in Doc Id
   tmdbId: number,
   imdbId?: string,
   title: string,
   year: number,
-  // id?: string,
-  timestamp?: number,
-  percentage: string,
+  percentage?: number,
 }
-
-// export class Watched implements IWatched {
-//   tmdbId: number
-//   imdbId: string
-//   id: string
-//   cre8Ts: number // create timestamp
-//   timestamp?: number // time spent watched
-//   percentage?: string // percentage from movie length
-
-//   setTimestamp(): void {
-//     this.timestamp = new Date().getTime()
-//   }
-// }

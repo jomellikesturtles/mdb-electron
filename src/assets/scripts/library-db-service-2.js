@@ -285,7 +285,6 @@ function initializeDataAccess(command, data1, data2) {
       getMovie(data1, data2);
       break;
     case 'get-by-page':
-      // get-by-page`, theUuid, order, limit, lastVal
       getLibraryFilesByStep(data4, data3, data2).then(value => {
         process.send([`library-movies-${data1}`, value]);
       });

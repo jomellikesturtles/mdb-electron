@@ -76,7 +76,7 @@ export class FirebaseService {
 
   getFromFirestoreMultiple(collectionName: CollectionName, fieldName: FieldName, list: any[]) {
     return new Promise((resolve, reject) => {
-      this.db.collection(collectionName).where(fieldName, FirebaseOperator.In, list).get().then(snapshot => {
+      this.db.collection(collectionName).where(fieldName, FirebaseOperator.In, list).get().then((snapshot:firebase.firestore.QuerySnapshot) => {
         resolve(snapshot.docs)
       }).catch(err => {
         reject(err)
@@ -141,7 +141,7 @@ export class FirebaseService {
    * @param collectionName name of collection/column
    * @param docId doc id to remote
    */
-  deleteFromFirestore(collectionName: CollectionName, docId: string) {
+  deleteFromFirestore(collectionName: CollectionName, docId: any) {
     return new Promise(resolve => {
       this.db.collection(collectionName).doc(docId).delete().then((e) => {
         console.error('DELETE DOC: ', e);
@@ -149,6 +149,23 @@ export class FirebaseService {
       }).catch((error) => {
         console.error('Error removing document: ', error);
       });
+    })
+  }
+
+  /**
+   * !NOT WORKING RIGHT NOW
+   * Deletes a value from firestore
+   * @param collectionName name of collection/column
+   * @param tmdbId tmdb id to remote
+   */
+  deleteFromFirestoreByTmdbId(collectionName: CollectionName, tmdbId: number) {
+    return new Promise(resolve => {
+      // this.db.collection(collectionName).doc(docId).delete().then((e) => {
+      //   console.error('DELETE DOC: ', e);
+        resolve(null)
+      // }).catch((error) => {
+      //   console.error('Error removing document: ', error);
+      // });
     })
   }
 
@@ -254,7 +271,7 @@ export class FirebaseService {
       snapshot.docs.forEach(element => {
         const bookmarkRef = element.ref
         const myData = element.data()
-        myData.percentage = '50%'
+        myData.percentage = 100
         myBatch.set(bookmarkRef, myData)
       })
       myBatch.commit()
@@ -311,6 +328,7 @@ export enum CollectionName {
   User = 'user',
   Config = 'config',
   Video = 'video',
+  Library = 'library'
 }
 
 export enum FieldName {

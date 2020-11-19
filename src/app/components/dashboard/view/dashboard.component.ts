@@ -62,11 +62,10 @@ export class DashboardComponent implements OnInit {
     sDate.setDate(sDate.getDate() - 21)
     const threeWeeksAgo = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) +
       '-' + ('0' + sDate.getDate()).slice(-2)
-    const params = [
-      [TmdbParameters.PrimaryReleaseDateGreater, threeWeeksAgo],
-      [TmdbParameters.PrimaryReleaseDateLess, today]
-    ]
-    this.sendToMovieService(params, `New Releases`)
+    const paramMap = new Map<TmdbParameters, any>();
+    paramMap.set(TmdbParameters.PrimaryReleaseDateGreater, threeWeeksAgo);
+    paramMap.set(TmdbParameters.PrimaryReleaseDateLess, today);
+    this.sendToMovieService(paramMap, `New Releases`)
   }
 
   /**
@@ -78,8 +77,9 @@ export class DashboardComponent implements OnInit {
     const randYear = Math.round(
       Math.random() * ((sDate.getFullYear() - 1) - minimumYear) + minimumYear
     )
-    const params = [[TmdbParameters.PrimaryReleaseYear, randYear]]
-    this.sendToMovieService(params, `Top movies of ${randYear}`)
+    const paramMap = new Map<TmdbParameters, any>();
+    paramMap.set(TmdbParameters.PrimaryReleaseYear, randYear);
+    this.sendToMovieService(paramMap, `Top movies of ${randYear}`)
   }
 
   /**
@@ -89,10 +89,9 @@ export class DashboardComponent implements OnInit {
     const TMDB_GENRE_LENGTH = 19 // up to index 19 is valid tmdb genre
     const GENRE_INDEX = Math.floor(Math.random() * (TMDB_GENRE_LENGTH))
     const CHOSEN_GENRE = GENRES[GENRE_INDEX]
-    const params = [
-      [TmdbParameters.WithGenres, CHOSEN_GENRE.id]
-    ]
-    this.sendToMovieService(params, `Top ${CHOSEN_GENRE.name}`)
+    const paramMap = new Map<TmdbParameters, any>();
+    paramMap.set(TmdbParameters.WithGenres, CHOSEN_GENRE.id);
+    this.sendToMovieService(paramMap, `Top ${CHOSEN_GENRE.name}`)
   }
 
   /**
@@ -100,7 +99,7 @@ export class DashboardComponent implements OnInit {
    * @param params parameters to pass to the API
    * @param listName the name of the list
    */
-  async sendToMovieService(params: any, listName: string) {
+  async sendToMovieService(params: Map<TmdbParameters, any>, listName: string) {
     const data = await this.movieService.getMoviesDiscover(params).toPromise()
     const innerList = {
       name: listName,
@@ -115,7 +114,7 @@ export class DashboardComponent implements OnInit {
    */
   getMoviesFromLibrary() {
     console.log('getMoviesFromLibrary dashboard.component')
-    this.ipcService.getMoviesFromLibrary()
+    // this.ipcService.getMoviesFromLibrary()
   }
 
   /**

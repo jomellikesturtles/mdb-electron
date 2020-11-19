@@ -1,10 +1,11 @@
-import { IVideo, LibraryService } from './library.service';
+import { LibraryService } from './library.service';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IBookmark, BookmarkService } from './bookmark.service';
 import { MovieService } from './movie.service';
 import { WatchedService, IWatched } from './watched.service';
 import { UtilsService } from './utils.service';
+import { IpcService } from './ipc.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,40 +17,34 @@ export class UserDataService {
     private movieService: MovieService,
     private watchedService: WatchedService,
     private libraryService: LibraryService,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
+    private ipcService: IpcService
   ) { }
 
+  /**
+   * Adds or remove bookmark to the movie.
+   * @param movie
+   */
   async toggleBookmark(movie) {
     let bmDoc
     if (!movie.bookmark || !movie.bookmark.id) {
       bmDoc = await this.saveUserData('bookmark', movie)
       movie.bookmark = bmDoc
     } else {
-      bmDoc = await this.bookmarkService.removeBookmark(movie.bookmark.id)
+      if (movie.bookmark && movie.bookmark.id)
+        bmDoc = await this.bookmarkService.removeBookmark('id', movie.bookmark.id)
+      else
+        bmDoc = await this.bookmarkService.removeBookmark('tmdbId', movie.tmdbId)
       movie.bookmark.id = ''
     }
     return bmDoc
   }
 
-  async toggleWatched(movie) {
-    let wDocId
-    if (!movie.watched || !movie.watched.id) {
-      wDocId = await this.saveUserData('watched', movie)
-      movie.watched = wDocId
-    } else {
-      wDocId = await this.watchedService.removeWatched(movie.watched.id)
-      movie.watched.id = ''
-    }
-    console.log('WATCHEDADD/remove:', wDocId)
-    // const root = this
-    // setTimeout(() => {
-    //   root.isWatched = !root.isWatched
-    //   root.procWatched = false
-    //   root.watchedProgress = '100%'
-    //   root.movie.isWatched = true
-    // }, 2000);
-  }
 
+  /**
+   * @param dataType `bookmark`/`watched`
+   * @param movie
+   */
   async saveUserData(dataType: string, movie: any): Promise<any> {
     const rDate = movie.release_date ? movie.release_date : movie.releaseDate
     const releaseYear = parseInt(this.utilsService.getYear(rDate), 10)
@@ -69,11 +64,11 @@ export class UserDataService {
       case 'bookmark':
         docId = await this.bookmarkService.saveBookmark(userData)
         break;
-      case 'watched':
-        userData['percentage'] = userData['percentage'] ? userData['percentage'] : '100%'
-        docId = await this.watchedService.saveWatched(userData)
-        break;
-      case 'video':
+      // case 'watched': // use watchedService
+      //   userData['percentage'] = userData['percentage'] ? userData['percentage'] : '100%'
+      //   docId = await this.watchedService.saveWatched(userData)
+      //   break;
+      case 'library':
         // ! video may only be saved from the backend.(for now)
         break;
       default:
@@ -89,13 +84,25 @@ export class UserDataService {
 
   }
 
-  getUserData() {
-
+  /**
+   * Gets watched, bookmark, library
+   *
+   */
+  getMovieUserData(id: number) {
+    return this.ipcService.getMovieUserData(id)
   }
 
-  getUserDataMultiple(dataType: 'video' | 'bookmark' | 'watched', data: object) {
+  /**
+   * Gets watched, bookmark, library in list
+   *
+   */
+  getMovieUserDataInList(idList: any[]) {
+    return this.ipcService.getMovieUserDataInList(idList)
+  }
+
+  getUserDataMultiple(dataType: 'library' | 'bookmark' | 'watched', data: object) {
     switch (dataType) {
-      case 'video':
+      case 'library':
         break;
       case 'bookmark':
         break;
@@ -120,7 +127,7 @@ export class UserDataService {
         const watchedList = await this.watchedService.getWatchedPaginatedFirstPage()
         dataList = watchedList
         break;
-      case 'video':
+      case 'library':
         const videoList = await this.libraryService.getVideoPaginatedFirstPage()
         dataList = videoList
         break;
@@ -144,8 +151,8 @@ export class UserDataService {
       case 'watched':
         dataList = await this.watchedService.getWatchedPaginated(lastValue)
         break;
-      case 'video':
-        dataList = await this.libraryService.getVideoPaginated(lastValue)
+      case 'library':
+        dataList = await this.libraryService.getLibraryPaginated(lastValue)
         break;
       default:
         break;
@@ -181,7 +188,7 @@ export class UserDataService {
         dataDoc = (typeof dataDoc.data === "function") ? dataDoc.data() : dataDoc // firebaseData or offlineData
         index++
         if (dataDoc.tmdbId > 0) {
-          this.movieService.getTmdbMovieDetails(dataDoc.tmdbId, [], '').pipe().subscribe(movie => {
+          this.movieService.getTmdbMovieDetails(dataDoc.tmdbId, '').pipe().subscribe(movie => {
             const userData = this.setDataObject(dataType, dataDoc)
             movie[dataType] = userData
             moviesDisplayList.push(movie)
@@ -202,7 +209,6 @@ export class UserDataService {
    */
   private setDataObject(dataType: string, dataDoc) {
     let userData = null
-    // const docData = dataDoc.data()
     const docData = (typeof dataDoc.data === "function") ? dataDoc.data() : dataDoc // firebaseData or offlineData
     const docDataId = dataDoc.id ? dataDoc.id : dataDoc._id;
     switch (dataType) {
@@ -221,25 +227,17 @@ export class UserDataService {
           title: docData.title,
           year: docData.year,
           tmdbId: docData.tmdbId,
-          percentage: docData.percentage ? dataDoc.data().percentage : '100%',
+          percentage: docData.percentage ? dataDoc.data().percentage : 100,
         }
         userData = w
         break;
-      case 'video':
+      case 'library':
         const v = {
           id: docDataId,
           title: docData.title,
           year: docData.year,
           tmdbId: docData.tmdbId,
-          // videoUrl: docData.videoUrl
         }
-        // const v: IVideo = {
-        //   id: docDataId,
-        //   title: docData.title,
-        //   year: docData.year,
-        //   tmdbId: docData.tmdbId,
-        //   videoUrl: docData.videoUrl
-        // }
         userData = v
         break;
     }

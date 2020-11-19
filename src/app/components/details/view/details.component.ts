@@ -1,13 +1,12 @@
-import { TmdbAppendToResponseParameters, GenreCodes } from './../../../interfaces';
+import { GenreCodes } from './../../../interfaces';
 import { IRawLibrary, LibraryService } from '../../../services/library.service';
 import {
   Component, OnInit,
   ChangeDetectorRef,
-  Input,
   ChangeDetectionStrategy,
   OnDestroy
 } from '@angular/core';
-import { IRating, MDBTorrent, ILibraryInfo, ITmdbMovieDetail, TmdbParameters } from '../../../interfaces';
+import { MDBTorrent } from '../../../interfaces';
 import { MdbMovieDetails } from '../../../classes';
 import { TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -16,7 +15,7 @@ import { DataService } from '../../../services/data.service';
 import { MovieService } from '../../../services/movie.service';
 import { TorrentService } from '../../../services/torrent.service';
 import { UtilsService } from '../../../services/utils.service';
-import { IpcService } from '../../../services/ipc.service';
+import { IpcService, IUserMovieData } from '../../../services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TROUBLE_QUOTES } from '../../../constants';
 import { TMDB_FULL_MOVIE_DETAILS } from '../../../mock-data-movie-details';
@@ -83,7 +82,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private watchedService: WatchedService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    // private ngZone: NgZone
   ) { }
 
   ngOnInit() {
@@ -115,9 +113,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.movieDetailsWriters = this.getWriters()
     this.movieDetailsProducers = this.getProducers()
     // this.movieCertification = this.getMovieCertification()
-    this.getBookmark()
-    this.getWatched()
-    this.getLibrary()
+    this.getUserMovieData()
     this.getTorrents()
     this.displayBackdrop()
     this.getTrailer()
@@ -140,9 +136,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Plays the best possible stream. Offline copy is prioritized first.
    * @param val hash or id
    */
-  playMovie(val: string) {
+  playMovie(val: any) {
     if (val) { // is torrent
-      this.playTorrent(val);
+      this.playTorrent(val.hash);
     } else {
       this.playOfflineLibrary(val);
     }
@@ -160,37 +156,32 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Gets movie from library (offline,online source). Can return multiple library object instances of the movie.
+   * Gets the user's watched, bookmark, library data of the movie
    */
-  getLibrary() {
-    this.procVideo = true
-    this.libraryService.getMovieFromLibrary(this.movieDetails.tmdbId).then((rawLibraryList: IRawLibrary[] | any) => {
-      if (rawLibraryList) {
+  getUserMovieData() {
+    this.procVideo, this.procBookmark, this.procWatched = true
+    this.userDataService.getMovieUserData(this.movieDetails.tmdbId).then((userMovieData: IUserMovieData) => {
+
+      if (userMovieData.library) {
+      // if (libraryList.length > 0) {
         this.isMovieAvailable = true
-        this.playLinks = [...this.playLinks, ...rawLibraryList]
-        this.bestPlayLink = rawLibraryList[0]
+        const libraryList = userMovieData.library.libraryList
+        this.playLinks = [...this.playLinks, ...libraryList]
+        this.bestPlayLink = libraryList[0]
+      }
+      if (userMovieData.bookmark) {
+        this.movieDetails.bookmark = userMovieData.bookmark
+        this.isBookmarked = true
+      }
+      if (userMovieData.watched) {
+        this.movieDetails.watched = userMovieData.watched
+        this.isWatched = true
       }
     }).catch(e => {
     }).finally(() => {
-      this.procVideo = false
+      this.procVideo, this.procBookmark, this.procWatched = false
       this.cdr.detectChanges()
     })
-  }
-
-  /**
-   * Gets bookmark status.
-   */
-  async getBookmark() {
-    this.procBookmark = true
-    const bookmark = await this.bookmarkService.getBookmark(this.movieDetails.tmdbId)
-
-    if (bookmark) {
-      this.movieDetails.bookmark = bookmark
-      this.isBookmarked = true
-    }
-    console.log('BOOKMARK: ', bookmark)
-    this.procBookmark = false
-    this.cdr.detectChanges()
   }
 
   /**
@@ -207,45 +198,15 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges()
   }
 
-  /**
-   * Gets the mark as watched status of the movie
-   */
-  async getWatched() {
-    // this.ipcService.call(IPCCommand.Watched, [IPCCommand.Get, this.movieDetails.tmdbId])
-    // this.ipcService.watchedSingle.subscribe(data => { })
-    this.procWatched = true
-    const res = await this.watchedService.getWatched(this.movieDetails.tmdbId)
-    if (res) {
-      this.movieDetails.watched = res
-      this.isWatched = true
-    }
-    this.procWatched = false
-    this.cdr.detectChanges()
-  }
-
-  async toggleWatched(percentage: string) {
+  async toggleWatched() {
     this.procWatched = true
     let wDoc
 
-    wDoc = await this.userDataService.toggleWatched(this.movieDetails)
+    wDoc = await this.watchedService.toggleWatched(this.movieDetails)
     this.isWatched = !this.isWatched
     console.log('WATCHEDADD/remove:', wDoc)
     this.procWatched = false
     this.cdr.detectChanges()
-
-    // if (!this.movieDetails.watched || !this.movieDetails.watched.id) {
-    //   wDocId = await this.userDataService.saveUserData('watched', this.movieDetails)
-    //   this.movieDetails.watched = wDocId
-    // } else {
-    //   wDocId = await this.watchedService.removeWatched(this.movieDetails.watched.id)
-    //   this.movieDetails.watched = null
-    // }
-    // console.log('WATCHEDADD/remove:', wDocId)
-    // this.procWatched = false
-    // this.cdr.detectChanges()
-
-    //   this.ipcService.call(IPCCommand.Watched, [IPCCommand.Add, this.movieDetails.tmdbId])
-    //   this.ipcService.call(IPCCommand.Watched, [IPCCommand.Remove, this.movieDetails.tmdbId])
   }
 
   /**
@@ -264,12 +225,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets movie details, torrents
    * @param val tmdb id
    */
-  getMovieOnline(val: any) {
+  getMovieOnline(val: number) {
     // tt2015381 is Guardians of the galaxy 2014; for testing only
     console.log('getMovie initializing with value...', val);
 
     // this.movieService.getTmdbMovieDetails(val, [], 'videos,images,credits,similar,external_ids,recommendations').pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
-    this.movieService.getTmdbMovieDetails(val, [], 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
+    this.movieService.getTmdbMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
       console.log('got from getMovieOnline ', data)
       this.selectedMovie = data;
       const myObject = this.selectedMovie
@@ -464,8 +425,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
   }
 
-  goToPerson(val) {
-    this.router.navigate([`/person-details/${val}`], { relativeTo: this.activatedRoute });
+  goToPerson(castId) {
+    this.router.navigate([`/person-details/${castId}`], { relativeTo: this.activatedRoute });
   }
 
   goToFullCredits() {
@@ -569,7 +530,7 @@ interface PlayLink {
   name?: string
   [x: string]: any
   // size?: string
-  hash: string
+  hash?: string
   // url?: string
   // quality?: string
   // type?: string

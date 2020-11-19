@@ -31,7 +31,7 @@ export class LibraryComponent implements OnInit {
   cardWidth = '130px'
   isFetchingData = false
   orderBy = 'tmdbId'
-  listType = 'video'
+  listType = 'library'
   lastVal = 0
   hasResults = false
   hasMoreResults = false

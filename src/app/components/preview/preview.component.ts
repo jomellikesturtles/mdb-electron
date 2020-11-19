@@ -9,6 +9,7 @@ import { GenreCodes, ITmdbResult } from 'src/app/interfaces';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MovieService } from 'src/app/services/movie.service';
 import { UserDataService } from 'src/app/services/user-data.service';
+import { WatchedService } from 'src/app/services/watched.service';
 declare var $: any
 
 @Component({
@@ -21,6 +22,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   constructor(
     private dataService: DataService,
+    private watchedService: WatchedService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private userDataService: UserDataService,
@@ -246,7 +248,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
   async toggleWatched() {
     this.procWatched = true
     let wDocId
-    wDocId = await this.userDataService.toggleWatched(this.previewMovie)
+    wDocId = await this.watchedService.toggleWatched(this.previewMovie)
     console.log('WATCHEDADD/remove:', wDocId)
     this.procBookmark = false
     // this.cdr.detectChanges()

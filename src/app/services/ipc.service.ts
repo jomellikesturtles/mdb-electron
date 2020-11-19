@@ -11,9 +11,9 @@ import { v4 as uuidv4 } from 'uuid'
  */
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
-declare var electron: any
 import { ipcRenderer } from 'electron'
 import { ILibraryInfo } from '../interfaces'
+import { IRawLibrary } from './library.service';
 
 
 @Injectable({
@@ -23,17 +23,14 @@ export class IpcService {
 
   libraryMovies = new BehaviorSubject<string[]>([])
   libraryMovie = new BehaviorSubject<string[]>([])
-  bookmarkSingle = new BehaviorSubject<IBookmark>({ id: '', imdbId: '', tmdbId: 0 })
-  watchedSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
-  scannedMovieSingle = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
-  scannedMovieMulti = new BehaviorSubject<IWatched>({ id: '', imdbId: '', tmdbId: 0 })
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
   movieIdentified = new BehaviorSubject<any>({ id: 0 })
   searchList = new BehaviorSubject<any>([])
   torrentVideo = new BehaviorSubject<string[]>([])
   preferences = new BehaviorSubject<any>([])
   streamLink = new BehaviorSubject<any>('')
-  statsForNerds = new BehaviorSubject<any>({})
+  private statsForNerds = new BehaviorSubject<any>({})
+  statsForNerdsSubscribable = this.statsForNerds.asObservable()
   private ipcRenderer: typeof ipcRenderer
 
   constructor() {
@@ -92,21 +89,11 @@ export class IpcService {
    * @param channel name of the channel
    */
   listen(channel: string): void | Promise<any> {
-    // this.ipcRenderer.removeListener().
     if (environment.runConfig.electron) {
       console.log('LISTENING...');
       this.ipcRenderer.on(channel, (event, data: any) => {
         console.log(`ipcRenderer channel: ${channel} data: ${data}`)
         switch (channel) {
-          case IPCMainChannel.BookmarkAddSuccess:
-            this.bookmarkSingle.next(data)
-            break;
-          case IPCMainChannel.BookmarkGetSuccess:
-            this.bookmarkSingle.next(data)
-            break;
-          case IPCMainChannel.BookmarkRemoveSuccess:
-            this.bookmarkSingle.next(data)
-            break;
           case IPCMainChannel.BookmarkChanges:
             this.bookmarkChanges.next(data)
             break;
@@ -115,12 +102,6 @@ export class IpcService {
             break;
           case IPCMainChannel.LibraryMovie:
             this.libraryMovie.next(data)
-            break;
-          case IPCMainChannel.ScannedSuccess:
-            this.scannedMovieSingle.next(data)
-            break;
-          case IPCMainChannel.WatchedSuccess:
-            this.watchedSingle.next(data)
             break;
           default:
             console.log(`channel ${channel} uncaught`)
@@ -150,21 +131,14 @@ export class IpcService {
     // this.ipcRenderer.send('go-to-folder', ['open', data])
   }
 
-  // library movies db
-  getMoviesFromLibrary() {
-    console.log('get-library-movies')
-    // this.ipcRenderer.send('get-library-movies', ['get-by-page', 1])
-    // this.ipcRenderer.send('get-library-movies')
-  }
-
   /**
    * Ipc renderer that sends command to main renderer to get movies from library db.
    * @param idList
    */
   getMoviesFromLibraryInList(idList: number[]): Promise<any> {
     const theUuid = uuidv4()
-    console.log(`libraryMovies ${theUuid}`)
-    this.ipcRenderer.send(`get-library-movies`, [`find-in-list`, theUuid, idList]);
+    this.sendToMain('get-library-movies', { operation: IpcOperations.FIND_IN_LIST, uuid: theUuid },
+      { idList: idList });
     return new Promise<any>((resolve, reject) => {
       this.ipcRenderer.once(`library-movies-${theUuid}`, (event, arg) => {
         console.log(`libraryMovies ${theUuid}`)
@@ -179,10 +153,10 @@ export class IpcService {
    * @param order
    * @param limit
    */
-  getMultiplePaginatedFirst(collectionName: string, order: string, limit?: number) {
+  getMultiplePaginatedFirst(collectionName: string, order: string, limit?: number): Promise<PageinatedObject> {
     const theUuid = uuidv4()
-    console.log(`libraryMovies ${theUuid}`)
-    this.ipcRenderer.send(`get-library-movies`, [`get-by-page`, theUuid, order, limit, 0]);
+    this.sendToMain('get-library-movies', { operation: IpcOperations.GET_BY_PAGE, uuid: theUuid },
+      { order: order, limit: limit, lastVal: 0 });
     return new Promise<any>((resolve, reject) => {
       this.ipcRenderer.once(`library-movies-${theUuid}`, (event, arg) => {
         console.log(`libraryMovies ${theUuid}`)
@@ -198,10 +172,10 @@ export class IpcService {
    * @param limit
    * @param lastVal
    */
-  getMultiplePaginated(collectionName: string, order: string, limit?: number, lastVal?: string | number) {
+  getMultiplePaginated(collectionName: string, order: string, limit?: number, lastVal?: string | number): Promise<PageinatedObject> {
     const theUuid = uuidv4()
-    console.log(`libraryMovies ${theUuid}`)
-    this.ipcRenderer.send(`get-library-movies`, [`get-by-page`, theUuid, order, limit, lastVal]);
+    this.sendToMain('get-library-movies', { operation: IpcOperations.GET_BY_PAGE, uuid: theUuid },
+      { order: order, limit: limit, lastVal: lastVal });
     return new Promise<any>((resolve, reject) => {
       this.ipcRenderer.once(`library-movies-${theUuid}`, (event, arg) => {
         console.log(`libraryMovies ${theUuid}`)
@@ -217,8 +191,8 @@ export class IpcService {
    */
   getMovieFromLibrary(arg) {
     const theUuid = uuidv4()
-    console.log(`getMovieFromLibrary ${theUuid}`)
-    this.ipcRenderer.send(`get-library-movies`, [`find`, theUuid, arg]);
+    this.sendToMain('get-library-movies', { operation: IpcOperations.FIND, uuid: theUuid },
+      { tmdbId: arg });
     return new Promise<any>((resolve, reject) => {
       this.ipcRenderer.once(`library-movie-${theUuid}`, (event, arg) => {
         console.log(`getMovieFromLibrary ${theUuid}`)
@@ -228,15 +202,60 @@ export class IpcService {
   }
 
   // // user services; watchlist/bookmarks, watched
-  getBookmark(val) {
-    // this.ipcRenderer.send('bookmark', ['bookmark-get', val])
+  getBookmark(data: number) {
+    const theUuid = uuidv4()
+    this.sendToMain('bookmark', { operation: IpcOperations.FIND_ONE, uuid: theUuid },
+      { tmdbId: data })
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`bookmark-${theUuid}`, (event, arg) => {
+        console.log(`getBookmark ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
+  getBookmarkInList(idList: number[]): Promise<any> {
+    const theUuid = uuidv4()
+    this.sendToMain('bookmark', {
+      operation: IpcOperations.FIND_IN_LIST,
+      uuid: theUuid
+    }, { idList: idList });
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`bookmark-${theUuid}`, (event, arg) => {
+        console.log(`getBookmarkInList ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
+  saveBookmark(data) {
+    const theUuid = uuidv4()
+    this.sendToMain('bookmark', { operation: IpcOperations.SAVE, uuid: theUuid },
+      data);
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`bookmark-${theUuid}`, (event, arg) => {
+        console.log(`saveBookmark ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
+  removeBookmark(type: string, id: string | number) {
+    const theUuid = uuidv4()
+    this.sendToMain('bookmark', { operation: IpcOperations.REMOVE, uuid: theUuid }, { type: type, id: id });
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`watched-${theUuid}`, (event, arg) => {
+        console.log(`removeWatched ${theUuid}`)
+        resolve(arg);
+      });
+    });
   }
 
   // ----- WATCHED
-  getWatched(data) {
+  getWatched(data: number) {
     const theUuid = uuidv4()
-    console.log(`watched ${theUuid}`)
-    this.ipcRenderer.send(`watched`, [`findOne`, theUuid, data]);
+    this.sendToMain('watched', { operation: IpcOperations.FIND_ONE, uuid: theUuid },
+      { tmdbId: data })
     return new Promise<any>((resolve, reject) => {
       this.ipcRenderer.once(`watched-${theUuid}`, (event, arg) => {
         console.log(`getWatched ${theUuid}`)
@@ -251,11 +270,13 @@ export class IpcService {
    */
   getWatchedInList(idList: number[]): Promise<any> {
     const theUuid = uuidv4()
-    console.log(`libraryMovies ${theUuid}`)
-    this.ipcRenderer.send(`watched`, [`find-in-list`, theUuid, idList]);
+    this.sendToMain('watched', {
+      operation: IpcOperations.FIND_IN_LIST,
+      uuid: theUuid
+    }, { idList: idList });
     return new Promise<any>((resolve, reject) => {
       this.ipcRenderer.once(`watched-${theUuid}`, (event, arg) => {
-        console.log(`libraryMovies ${theUuid}`)
+        console.log(`watched ${theUuid}`)
         resolve(arg);
       });
     });
@@ -263,8 +284,7 @@ export class IpcService {
 
   saveWatched(data) {
     const theUuid = uuidv4()
-    console.log(`watched ${theUuid}`)
-    this.ipcRenderer.send(`watched`, ['save', theUuid, data]);
+    this.sendToMain('watched', { operation: IpcOperations.SAVE, uuid: theUuid }, data);
     return new Promise<any>((resolve, reject) => {
       this.ipcRenderer.once(`watched-${theUuid}`, (event, arg) => {
         console.log(`saveWatched ${theUuid}`)
@@ -276,7 +296,53 @@ export class IpcService {
   updateWatchedStatus(val: IWatched) {
     this.ipcRenderer.send('', val)
   }
+
+  removeWatched(type: string, id: string | number) {
+    const theUuid = uuidv4()
+    this.sendToMain('watched', { operation: IpcOperations.REMOVE, uuid: theUuid }, { type: type, id: id });
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`watched-${theUuid}`, (event, arg) => {
+        console.log(`removeWatched ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
+
   // ----- END OF WATCHED
+  /**
+   *
+   * @param id tmdb id
+   */
+  getMovieUserData(id: number): Promise<IUserMovieData> {
+    const theUuid = uuidv4()
+    this.sendToMain('user-data', {
+      operation: IpcOperations.FIND,
+      uuid: theUuid
+    }, { tmdbId: id });
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`user-data-${theUuid}`, (event, arg) => {
+        console.log(`user-data ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
+  getMovieUserDataInList(idList: number[]): Promise<IUserMovieData[]> {
+    const theUuid = uuidv4()
+    this.sendToMain('user-data', {
+      operation: IpcOperations.FIND_IN_LIST,
+      uuid: theUuid
+    }, { idList: idList });
+    return new Promise<any>((resolve, reject) => {
+      this.ipcRenderer.once(`user-data-${theUuid}`, (event, arg) => {
+        console.log(`user-data ${theUuid}`)
+        resolve(arg);
+      });
+    });
+  }
+
+  // ----- END OF USER DATA
   startScanLibrary() {
 
     this.ipcRenderer.send(IPCRendererChannel.SCAN_LIBRARY_START)
@@ -337,10 +403,40 @@ export class IpcService {
     this.ipcRenderer.removeListener(channel, d => { })
   }
 
+  private sendToMain(channel: string, headers?: Headers, body?: Body) {
+    console.log('sending to ipc... ', channel, [headers, body])
+    try {
+      this.ipcRenderer.send(channel, [headers, body])
+    } catch {
+      // console.log('failed to send Ipc: ', channel, [headers, body])
+    }
+  }
+
   IPCCommand = IPCRendererChannel['default']
   IPCChannel = IPCMainChannel['default']
 }
 
+interface Headers {
+  operation: IpcOperations,
+  uuid: string
+}
+
+interface Body {
+  tmdbId?: number
+  idList?: number[]
+  [x: string]: any
+}
+
+enum IpcOperations {
+  FIND = 'find',
+  FIND_ONE = 'find-one',
+  FIND_IN_LIST = 'find-in-list',
+  UPDATE = 'update',
+  SAVE = 'save',
+  REMOVE = 'remove',
+  GET_BY_PAGE = 'get-by-page',
+  COUNT = 'count'
+}
 export interface IBookmarkChanges {
   change: BookmarkChanges
 }
@@ -364,7 +460,35 @@ export interface IWatched {
   timestamp?: number,
 }
 // browse folder
-export interface ITorrent {
-  uploadSpeed: number,
-  downloadSpeed: number,
+// export interface IUserMovieData {
+//   bookmark: IBookmark,
+//   watched: IWatched,
+//   library: ILibrary
+// }
+
+export interface IUserMovieData {
+  tmdbId?: number,
+  bookmark: IBookmark,
+  watched: IWatched,
+  library: ILibrary
+}
+
+interface ILibrary {
+  title?: string,
+  year?: number,
+  tmdbId?: number,
+  imdbId?: string,
+  libraryList: ILibraryData[]
+}
+
+interface ILibraryData {
+  fullFilePath: string,
+  _id: string
+}
+
+interface PageinatedObject {
+  totalPages: number,
+  totalResults: number,
+  page: number,
+  results: any[],
 }

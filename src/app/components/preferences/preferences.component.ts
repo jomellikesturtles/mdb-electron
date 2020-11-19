@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef, Input, ChangeDetectionStrategy, Pipe, PipeTransform, OnDestroy } from '@angular/core';
-import { Observable, Subject } from 'rxjs'
+import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs'
 import { IpcService } from '../../services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
@@ -13,7 +13,6 @@ import { takeUntil } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreferencesComponent implements OnInit, OnDestroy {
-  @Input() data: Observable<any>
 
   initialFolder = 'C:\\'
   testFoldersList = ['folder1', 'folder2']
@@ -34,6 +33,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     private ipcService: IpcService,
     private cdr: ChangeDetectorRef
   ) { }
+
   ngOnInit() {
     // $('.title').slideToggle();
     //// var $j = $.noConflict();
@@ -77,10 +77,6 @@ export class PreferencesComponent implements OnInit, OnDestroy {
 
   setFoldersList() {
 
-  }
-
-  onGetLibraryMovies() {
-    this.ipcService.getMoviesFromLibrary()
   }
 
   /**

@@ -22,8 +22,9 @@
                 <span *ngIf="!isBookmarked">Add bookmark</span>
               </button>
 
-              <button [disabled]='procWatched' class='btn btn-small'
-                [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}" (click)='toggleWatched("100%")'>
+              <!-- <button [disabled]='procWatched' class='btn btn-small' -->
+              <button class='btn btn-small'
+                [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}" (click)='toggleWatched()'>
                 <span *ngIf="isWatched">Unmark as watched</span>
                 <span *ngIf="!isWatched">Mark as watched</span>
               </button>

@@ -22,8 +22,7 @@
 
   <h1 *ngIf="searchResults.length>0">Search results for "{{currentSearchQuery}}"</h1>
   <div *ngIf='searchResults.length>0'>
-    <!-- <div class='movie-cards-display-grid'> -->
-    <app-card-list [movieList]='searchResults' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'></app-card-list>
+    <app-card-list [movieList]='searchResults' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"' [listType]='"none"'></app-card-list>
     <div *ngIf='currentSearchQuery' style='width: 100%; text-align: center; height: 80px;'>
       <h5 class='text-hyperlink' *ngIf="hasMoreResults" (click)='getMoreResults()'>Load more results...</h5>
     </div>
@@ -32,10 +31,6 @@
 <div>
   <h1 *ngIf="!currentSearchQuery">No results found for "{{currentSearchQuery}} :("</h1>
 </div>
-<!-- <div class="snackbar" [hidden]="displayMessage.length == 0">{{displayMessage}}</div> -->
-<!-- <div class="snackbar" [ngClass]="{'show': displayMessage.length >= 0}">
-  <p>{{displayMessage}}</p>
-</div> -->
 <div id='snackbar' [ngClass]="{'show ': displaySnackbar}">
   <p>{{displayMessage}}</p>
 </div>
