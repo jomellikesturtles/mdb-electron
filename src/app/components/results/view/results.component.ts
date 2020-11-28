@@ -64,18 +64,13 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   getSearchResults() {
-    // commented for actual
-    // this.searchResults = TMDB_SEARCH_RESULTS.results
-    // end of commented for actual
-    const params = [
-      [TmdbSearchMovieParameters.Query, this.searchQuery.query]
-    ]
-    this.movieService.searchTmdbMovie(params).subscribe(data => {
+    const paramMap = new Map<TmdbParameters | TmdbSearchMovieParameters, any>();
+    paramMap.set(TmdbSearchMovieParameters.Query, this.searchQuery.query);
+    this.movieService.searchTmdbMovie(paramMap).subscribe(data => {
       this.searchResults.push(...data.results)
       if (data.total_pages > this.currentPage) {
         this.hasMoreResults = true
       }
-      // this.setHighlights()
       this.isProcSearching = false;
       this.cdr.detectChanges()
     })
@@ -85,31 +80,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
    * Increments the currentPage by 1 to get more results.
    */
   getMoreResults() {
-    const params = [
-      [TmdbSearchMovieParameters.Query, this.searchQuery.query],
-      [TmdbParameters.Page, ++this.currentPage]
-    ]
-    this.movieService.searchTmdbMovie(params).subscribe(data => {
+    const paramMap = new Map<TmdbParameters | TmdbSearchMovieParameters, any>();
+    paramMap.set(TmdbSearchMovieParameters.Query, this.searchQuery.query);
+    paramMap.set(TmdbParameters.Page, ++this.currentPage);
+    this.movieService.searchTmdbMovie(paramMap).subscribe(data => {
       this.searchResults.push(...data.results)
       if (data.total_pages <= this.currentPage) {
         this.hasMoreResults = false
       }
-      this.setHighlights()
-    })
-  }
-
-  /**
-   * Sets the highlight to the movie image if is already in the selected list.
-   */
-  setHighlights() {
-    this.moviesList$.subscribe(e => {
-      e.movies.forEach(element => {
-        this.searchResults.forEach(res => {
-          if (element.id === res.id) {
-            res.isHighlighted = true
-          }
-        })
-      })
     })
   }
 

@@ -2,7 +2,10 @@ import { Component, OnInit, Input, ChangeDetectorRef, Output, EventEmitter } fro
 import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
-import { VideoService, IVideo } from '../../../services/video.service';
+import { LibraryService, IVideo } from '../../../services/library.service';
+import { environment } from '../../../../environments/environment';
+import { UserDataService } from 'src/app/services/user-data.service';
+import { IUserMovieData } from 'src/app/services/ipc.service';
 
 @Component({
   selector: 'app-card-list',
@@ -20,11 +23,12 @@ export class CardListComponent implements OnInit {
   constructor(
     private bookmarkService: BookmarkService,
     private watchedService: WatchedService,
-    private videoService: VideoService,
+    private libraryService: LibraryService,
+    private userDataService: UserDataService
   ) { }
 
   ngOnInit() {
-    this.getData()
+    this.renderHighlight()
     this.getMoviesUserData()
   }
 
@@ -35,26 +39,42 @@ export class CardListComponent implements OnInit {
     const idList = this.collectIds()
     const listLength = idList.length
     const arr2 = this.createDividedList(idList, listLength)
+
+    // const arr2 = thisidList, listLength)
     // tslint:disable-next-line:prefer-for-of
     for (let index = 0; index < arr2.length; index++) {
       const queryList = arr2[index];
-      if (this.listType !== 'bookmark') {
-        this.bookmarkService.getBookmarksMultiple(queryList).then(docs => {
-          const dataType = 'bookmark'
-          this.curateUserData(dataType, docs)
+
+      if (this.listType === 'none') {
+        this.userDataService.getMovieUserDataInList(idList).then(docs => {
+          // !TODO: Add firebase/spring implementation
+          const dataType = 'none'
+          docs.forEach(data => {
+              const movie = this.movieList.find(e => e.id === data.tmdbId)
+                movie['watched'] = data.watched
+                movie['bookmark'] = data.bookmark
+                movie['library'] = data.library
+            });
         })
-      }
-      if (this.listType !== 'watched') {
-        this.watchedService.getWatchedMultiple(queryList).then(docs => {
-          const dataType = 'watched'
-          this.curateUserData(dataType, docs)
-        })
-      }
-      if (this.listType !== 'video') {
-        this.videoService.getVideosMultiple(queryList).then(docs => {
-          const dataType = 'video'
-          this.curateUserData(dataType, docs)
-        })
+      } else {
+        if (this.listType !== 'bookmark') {
+          this.bookmarkService.getBookmarksInList(queryList).then(docs => {
+            const dataType = 'bookmark'
+            this.curateUserData(dataType, docs)
+          })
+        }
+        if (this.listType !== 'watched') {
+          this.watchedService.getWatchedInList(queryList).then(docs => {
+            const dataType = 'watched'
+            this.curateUserData(dataType, docs)
+          })
+        }
+        if (this.listType !== 'library') {
+          this.libraryService.getMoviesFromLibraryInList(queryList).then(docs => {
+            const dataType = 'library'
+            this.curateUserData(dataType, docs)
+          })
+        }
       }
     }
   }
@@ -62,12 +82,11 @@ export class CardListComponent implements OnInit {
   /**
    * Organizes user data and binds them into movie cards.
    */
-  curateUserData(dataType: string, docs: any): void {
+  curateUserData(dataType: string, docs: firebase.firestore.QuerySnapshot | IUserMovieData[] ): void {
     const dataList = []
 
     docs.forEach(doc => {
-      // console.log(doc)
-      const docData = doc.data()
+      const docData = environment.runConfig.firebaseMode ? doc.data() : doc
       const dTmdbId = docData.tmdbId
       const dTitle = docData.title
       const dYear = docData.year
@@ -88,19 +107,26 @@ export class CardListComponent implements OnInit {
             tmdbId: dTmdbId ? dTmdbId : 0,
             title: dTitle ? dTitle : '',
             year: dYear ? parseInt(dYear, 10) : 0,
-            percentage: docData.percentage ? docData.percentage : '100%'
+            percentage: docData.percentage ? docData.percentage : 100
           }
           myData = wtchd
           break;
         case 'video':
-          const vid: IVideo = {
-            id: doc.id ? doc.id : '',
-            tmdbId: dTmdbId ? dTmdbId : 0,
-            title: dTitle ? dTitle : '',
-            year: dYear ? dYear : 0,
-            videoUrl: docData.videoUrl ? docData.videoUrl : ''
+          // const vid: IVideo = {
+          //   id: doc.id ? doc.id : '',
+          //   tmdbId: dTmdbId ? dTmdbId : 0,
+          //   title: dTitle ? dTitle : '',
+          //   year: dYear ? dYear : 0,
+          //   videoUrl: docData.videoUrl ? docData.videoUrl : ''
+          // }
+          const vid = {
+            id: doc.id,
+            tmdbId: docData.tmdbId,
+            videoUrl: docData.fullFilePath
           }
           myData = vid
+          break;
+        case 'none':
           break;
         default:
           break;
@@ -116,7 +142,7 @@ export class CardListComponent implements OnInit {
     })
   }
 
-  getData() {
+  renderHighlight() {
     this.moviesList$.subscribe(moviesResult => {
       console.log('moviesresult: ', moviesResult)
 
@@ -158,10 +184,17 @@ export class CardListComponent implements OnInit {
     return idList
   }
 
+  /**
+   * Divides a list of Ids
+   * @param idList
+   * @param listLength
+   * @returns list of split list `[[],[]]`
+   */
   createDividedList(idList: number[], listLength: number) {
     const toReturn = []
     let temparray
-    const chunk = 10; // Firebase's max length in IN query.
+    // const chunk = 10; // Firebase's max length in IN query.
+    const chunk = environment.runConfig.firebaseMode ? 10 : 20
     let a = 0
     for (let i = 0; i < listLength; i += chunk) {
       temparray = idList.slice(i, i + chunk);

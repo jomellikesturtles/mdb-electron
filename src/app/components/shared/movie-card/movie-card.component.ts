@@ -37,7 +37,10 @@ export class MovieCardComponent implements OnInit {
   _bookmark
   @Input()
   set bookmark(inputBookmark: any) {
-    this._bookmark = inputBookmark
+    if (inputBookmark) {
+      this._bookmark = inputBookmark
+      this.isBookmarked = true
+    }
   }
   get bookmark(): any {
     return this._cardWidth;
@@ -46,29 +49,38 @@ export class MovieCardComponent implements OnInit {
   _watched
   @Input()
   set watched(inputWatched: any) {
-    this._watched = inputWatched
+    if (inputWatched) {
+      this._watched = inputWatched
+      this.watchedPercentage = this._watched.percentage + '%'
+      this.isWatched = true
+    }
   }
   get watched(): any {
     return this._watched;
   }
 
-  _video
+  _library
   @Input()
-  set video(inputVideo: any) {
-    this._video = inputVideo
+  set library(inputVideo: any) {
+    this._library = inputVideo
   }
   get video(): any {
-    return this._video;
+    return this._library;
   }
 
   procBookmark = false
   procWatched = false
   procHighlight = false
+  isWatched = false
+  isBookmarked = false
+  isAvailable = false
+  watchedPercentage = '0%'
 
   constructor(
     private dataService: DataService,
     private utilsService: UtilsService,
     private userDataService: UserDataService,
+    private watchedService: WatchedService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private store: Store,
@@ -121,6 +133,7 @@ export class MovieCardComponent implements OnInit {
     this.procBookmark = true
     let bmDoc
     bmDoc = await this.userDataService.toggleBookmark(this._movie)
+    this.isWatched = !this.isWatched
     console.log('BOOKMARKADD/remove:', bmDoc)
     this.procBookmark = false
   }
@@ -128,9 +141,9 @@ export class MovieCardComponent implements OnInit {
   async onToggleWatched() {
     this.procWatched = true
     let wDocId
-    wDocId = await this.userDataService.toggleWatched(this._movie)
-    console.log('WATCHEDADD/remove:', wDocId)
-    this.procBookmark = false
+    wDocId = await this.watchedService.toggleWatched(this._movie)
+    this.isWatched = !this.isWatched
+    this.procWatched = false
   }
 
   /**

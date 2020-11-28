@@ -2,7 +2,7 @@ import { IUserSavedData } from './../interfaces';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { FirebaseService, FirebaseOperator, CollectionName, FieldName } from './firebase.service'
-import { IpcService, IpcCommand } from './ipc.service'
+import { IpcService } from './ipc.service'
 import { Observable, from } from 'rxjs';
 @Injectable({
   providedIn: 'root'
@@ -16,37 +16,47 @@ export class BookmarkService {
     private ipcService: IpcService) { }
 
   getBookmark(id) {
+    return new Promise(resolve => {
     if (environment.runConfig.firebaseMode) {
-      return new Promise(resolve => {
-        this.firebaseService.getFromFirestore(CollectionName.Bookmark, 'tmdbId', FirebaseOperator.Equal, id).then(e => {
+        this.firebaseService.getFromFirestore(CollectionName.Bookmark, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
           console.log('BOOKMARK: ', e)
-          // bookmarkObservable=
           resolve(e)
         })
-      })
-    } else {
-      // this.ipcService.call(IpcCommand.)
-    }
+      } else {
+        // this.ipcService.call(IPCCommand.)
+      }
+    })
   }
 
-  saveBookmark(data): Promise<any> {
+  saveBookmark(data: IBookmark): Promise<any> {
     return new Promise(resolve => {
-      this.firebaseService.insertIntoFirestore(CollectionName.Bookmark, data).then(e => {
-        // this.firebaseService.insertIntoFirestore(CollectionName.Bookmark, { tmdbId: data }).then(e => {
-        resolve(e)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.insertIntoFirestore(CollectionName.Bookmark, data).then(e => {
+          resolve(e)
+        })
+      } else {
+        this.ipcService.saveBookmark(data).then(e => {
+          resolve(e)
+        })
+      }
     })
   }
 
   /**
    * Removes bookmark.
-   * @param docId bookmark id to remove.
+   * @param id watched id/_id/tmdbId to remove.
    */
-  removeBookmark(docId: string) {
+  removeBookmark(type: 'id' | 'tmdbId', id: string | number) {
     return new Promise(resolve => {
-      this.firebaseService.deleteFromFirestore(CollectionName.Bookmark, docId).then(e => {
-        resolve(e)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.deleteFromFirestore(CollectionName.Bookmark, id).then(e => {
+          resolve(e)
+        })
+      } else {
+        this.ipcService.removeBookmark(type, id).then(e => {
+          resolve(e)
+        })
+      }
     })
   }
 
@@ -62,10 +72,13 @@ export class BookmarkService {
    * Gets multiple bookmarks by list of ids.
    * @param idList list of ids to fetch.
    */
-  getBookmarksMultiple(idList: number[]): Promise<any> {
-    console.log('getting multiplebookmarks multiple...', idList);
+  getBookmarksInList(idList: number[]): Promise<firebase.firestore.QuerySnapshot | any> {
+    console.log('getBookmarksInList...', idList);
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiple(CollectionName.Bookmark, FieldName.TmdbId, idList).then(value => {
+      const myFunction = environment.runConfig.firebaseMode ?
+        this.firebaseService.getFromFirestoreMultiple(CollectionName.Bookmark, FieldName.TmdbId, idList) :
+        this.ipcService.getBookmarkInList(idList);
+      myFunction.then(value => {
         resolve(value)
       }).catch(err => {
         reject(err)
@@ -79,30 +92,37 @@ export class BookmarkService {
   getBookmarksPaginated(lastVal: string | number): Promise<any> {
     console.log('getting multiplebookmarks paginated...', lastVal);
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Bookmark, FieldName.TmdbId, 20, lastVal).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Bookmark, FieldName.TmdbId, 20, lastVal).then(value => {
+          resolve(value)
+        }).catch(err => {
+          reject(err)
+        })
+      } else {
+      }
     })
   }
 
   getBookmarksPaginatedFirstPage(): Promise<any> {
     console.log('getting multiplebookmarks FirstPage(...');
     return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
+      if (environment.runConfig.firebaseMode) {
+        this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20).then(value => {
+          resolve(value)
+        }).catch(err => {
+          reject(err)
+        })
+      } else {
+      }
     })
+
   }
 }
 
 
 
 export interface IBookmark extends IUserSavedData {
-  id: string,
+  id?: string,
   tmdbId: number,
   imdbId?: string,
   title: string,
@@ -115,5 +135,5 @@ export interface IBookmark extends IUserSavedData {
   //  * @param val tmdb id
   //  */
   // onAddBookmarkSingle(val): void {
-  //   this.ipcService.call(IpcCommand.Bookmark, [IpcCommand.Add, val])
+  //   this.ipcService.call(IPCCommand.Bookmark, [IPCCommand.Add, val])
   // }

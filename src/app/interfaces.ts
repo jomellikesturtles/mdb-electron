@@ -258,10 +258,10 @@ export interface IPreferences {
   frequencyUnit: string
   frequencyValue: number
   isDarkMode: boolean
-  isDirty: boolean
   isEnableCache: boolean
   libraryFolders: string[]
   torrentSeedRatio: number
+  torrentRatio?:any
 }
 
 export interface Credits {
@@ -331,39 +331,6 @@ export class ITPBTorrent {
   added?: string
 }
 
-// export interface ITmdbDiscoverParameters {
-//   api_key: string,
-//   language: string,
-//   region: string,
-//   sort_by: string,
-//   certification_country: string,
-//   certification: string,
-//   certification.lte: string,
-//   certification.gte: string,
-//     primary_release_year: string,
-//       primary_release_date.gte: string,
-//         primary_release_date.lte: string,
-//           release_date.gte: string,
-//             ReleaseDateLess = 'release_date.lte',
-//             WithReleaseType = 'with_release_type',
-//             Year = 'year',
-//             VoteCountGreater = 'vote_count.gte',
-//             VoteCountLess = 'vote_count.lte',
-//             VoteAverageGreater = 'vote_average.gte',
-//             VoteAverageLess = 'vote_average.lte',
-//             WithCast = 'with_cast',
-//             WithCrew = 'with_crew',
-//             WithPeople = 'with_people',
-//             WithCompanies = 'with_companies',
-//             WithGenres = 'with_genres',
-//             WithoutGenres = 'without_genres',
-//             WithKeywords = 'with_keywords',
-//             WithoutKeywords = 'without_keywords',
-//             WithRuntimeGreater = 'with_runtime.gte',
-//             WithRuntimeLess = 'with_runtime.lte',
-//             WithOriginalLanguage = 'with_original_language',
-// }
-
 export interface ISearch {
   page: number
 }
@@ -429,7 +396,7 @@ export enum TmdbSearchMovieParameters {
   PrimaryReleaseYear = 'primary_release_year'
 }
 
-export enum TmdbAppendToResponseParameters {
+enum TmdbAppendToResponseParameters {
   AccountStates = 'account_states',
   Videos = 'videos',
   Images = 'images',
@@ -446,16 +413,7 @@ export enum TmdbAppendToResponseParameters {
   Lists = 'lists'
 }
 
-export enum TmdbReleaseTypes {
-  PREMIERE = 'Premiere',  // 1
-  THEATRICAL_LIMITED = 'Theatrical(limited)', // 2
-  THEATRICAL = 'Theatrical', // 3
-  DIGITAL = 'Digital', // 4
-  PHYSICAL = 'Physical', // 5
-  TV = 'TV', // 6
-}
-
-export enum TmdbReleaseTypes2 {
+enum TmdbReleaseTypes {
   PREMIERE = 'Premiere',  // 1
   THEATRICAL_LIMITED = 'Theatrical(limited)', // 2
   THEATRICAL = 'Theatrical', // 3
@@ -550,7 +508,7 @@ export interface ICredits {
   crew: ICrew[];
 }
 
-export interface ICast {
+interface ICast {
   poster_path?: string;
   adult: boolean;
   backdrop_path?: string;
@@ -570,7 +528,7 @@ export interface ICast {
   credit_id: string;
 }
 
-export interface ICrew {
+interface ICrew {
   id: number;
   department: string;
   original_language: string;
@@ -593,7 +551,7 @@ export interface ICrew {
 }
 
 export interface IUserSavedData {
-  id: string,
+  id?: string,
   title: string,
   year: number,
   tmdbId: number,

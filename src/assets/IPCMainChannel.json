@@ -1,0 +1,23 @@
+{
+  "BookmarkAddSuccess": "bookmark-add-success",
+  "BookmarkGetSuccess": "bookmark-get-success",
+  "BookmarkRemoveSuccess": "bookmark-remove-success",
+  "BookmarkChanges": "bookmark-changes",
+  "LibraryFolders": "library-folders",
+  "LibraryMovie": "library-movie",
+  "LibraryMovies": "library-movies",
+  "AppMinimizing": "app-minimizing",
+  "AppRestoring": "app-restoring",
+  "MovieMetadata": "movie-metadata",
+  "PREFERENCES_GET_COMPLETE": "preferences-get-complete",
+  "PREFERENCES_SET_COMPLETE": "preferences-set-complete",
+  "ScannedSuccess": "scanned-success",
+  "ScanLibraryResult": "scan-library-result",
+  "ScanLibraryComplete": "scan-library-complete",
+  "SearchList": "search-list",
+  "VideoSuccess": "open-video-success",
+  "WatchedSuccess": "watched-success",
+  "MovieIdentified": "movie-identified-success",
+  "STREAM_LINK": "stream-link",
+  "STATS": "stats"
+}

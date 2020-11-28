@@ -1,16 +1,17 @@
+/*jshint esversion: 6 */
 const express = require('express');
-const fs = require('fs')
-const path = require('path')
+const fs = require('fs');
+const path = require('path');
 let args = process.argv.slice(2);
 let tmdbIdArg = args[0];
-var http = require('http')
+var http = require('http');
 
-isPortOpen = false
+isPortOpen = false;
 // let tmdbIdArg = args[1];
 // let imdbIdArg = args[2];
-const app = express()
-const DataStore = require('nedb')
-const libraryDbService = require('./library-db-service-2')
+const app = express();
+const DataStore = require('nedb');
+const libraryDbService = require('./library-db-service-2');
 process.on('uncaughtException', function (error) {
   console.log('ERROR!!!!!!!!!!!!!!!!!!!!!!!!!', error);
   process.send(['operation-failed', 'general']);
@@ -20,7 +21,7 @@ process.send = process.send || function (...args) { DEBUG.log('SIMULATING proces
 let DEBUG = (() => {
   let timestamp = () => { }
   timestamp.toString = () => {
-    return '[DEBUG ' + (new Date).toLocaleString() + ']'
+    return '[DEBUG ' + (new Date()).toLocaleString() + ']'
   }
   return {
     log: console.log.bind(console, '%s', timestamp)
@@ -37,7 +38,7 @@ var libraryFilesDb = new DataStore({
 
 function openStream(libraryData) {
   DEBUG.log(`set streaming from: localhost:3000/stream/${libraryData._id}`)
-  process.send(['video-success', `localhost:3000/stream/${libraryData._id}`])
+  process.send(['stream-link', `http://localhost:3000/stream/${libraryData._id}`])
   app.get(`/stream/${libraryData._id}`, function (req, res) {
     // const filePath = path.join(process.cwd(), '..', '..', '..', '..', 'A.Streetcar.Named.Desire.1951.1080p.BluRay.x264-[YTS.AM].mp4')
     // console.log('filepath: ', libraryData.fullFilePath);
@@ -73,8 +74,9 @@ function openStream(libraryData) {
 function openPort() {
 
   app.listen(3000, function () {
-    DEBUG.log('listening from 3000...')
-  })
+    DEBUG.log('listening from 3000...');
+    isPortOpen = true;
+  });
 }
 
 function initialize() {

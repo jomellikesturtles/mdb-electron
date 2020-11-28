@@ -2,6 +2,6 @@
   <!-- 'd-inline-flex' or 'movie-cards-display-grid' -->
   <div id="results-panel" *ngFor="let movie of movieList">
     <app-movie-card [movie]='movie' [cardWidth]='cardWidth' [bookmark]='movie.bookmark' [watched]='movie.watched'
-      [video]='movie.video'></app-movie-card>
+      [library]='movie.library'></app-movie-card>
   </div>
 </div>

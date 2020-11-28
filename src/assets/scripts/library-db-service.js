@@ -1,12 +1,14 @@
 /**
  * Library db service. add comments on proccess functions to run as node js file
  */
+/*jshint esversion: 6 */
 let args = process.argv.slice(2);
 let command = args[0];
 let data1 = args[1];
 let data2 = args[2];
 const path = require('path');
 const DataStore = require('nedb')
+var { regexify } = require('./shared/util')
 var libraryDb = new DataStore({
   filename: path.join(process.cwd(), 'src', 'assets', 'db', 'libraryFiles.db'),
   // filename: path.join('../..', 'assets', 'db', 'libraryFiles.db'),
@@ -94,19 +96,6 @@ function getMovie(param1, param2) {
   console.log('end');
 }
 
-function regexify(text) {
-  text = text.trim().replace(/(\s+)/g, ' ');
-  const words = text.split(' ');
-  let final = '';
-  words.forEach((item) => {
-    final += '(' + escapeRegExp(item) + ')[.\\s-_=;,]?';
-  });
-  return final;
-}
-function escapeRegExp(text) {
-  return text.replace(/[-[\]{}()*+?.,\\/^$|#\s]/g, '\\$&');
-}
-
 /**
  * Gets list of all movies in library folders
  */
@@ -191,7 +180,7 @@ function getMoviesByPage(page) {
 // initializeDataAccess('insert-directory', 'tt2015381', 'C:\\Titanic.mp4')
 // initializeDataAccess('remove-directory', 'tt2015381', 'C:\\Titanic.mp4')
 // initializeDataAccess('find-directory', 'tt2015381', 'C:\\Titanic.mp4')
-// initializeDataAccess('find-collection', 1)
+// initializeDataAccess('get-by-page', 1)
 initializeDataAccess(command, data1, data2)
 
 /**
@@ -211,18 +200,11 @@ function initializeDataAccess(command, data1, data2) {
     case 'find':
       getMovie(data1)
       break;
-    case 'find-collection':
+    case 'get-by-page':
       getMoviesByPage(data1)
       break;
     case 'find-one':
       getMovie(data1, data2)
-      break;
-    case 'find-one-async':
-      getMovieAsync(data1, data2).then(function (result) {
-        console.log('f one async ', result)
-      }).catch(function (err) {
-        console.log('f one err ', err)
-      })
       break;
     case 'find-all':
       getAllMovies()

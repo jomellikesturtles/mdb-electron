@@ -813,7 +813,6 @@ export const DEFAULT_PREFERENCES: IPreferences = {
   frequencyUnit: 'day',
   frequencyValue: 3,
   isDarkMode: false,
-  isDirty: false,
   isEnableCache: true,
   libraryFolders: [],
   torrentSeedRatio: 1

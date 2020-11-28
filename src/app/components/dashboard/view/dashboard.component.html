@@ -5,7 +5,7 @@
     <div *ngFor="let list of dashboardLists">
       <h3>{{list.name}}</h3>
       <div class='container-fluid' style='overflow-y:hidden;overflow-x:scroll;'>
-        <app-card-list [movieList]='list.data' [cardWidth]='cardWidth' [displayMode]='"d-inline-flex"'>
+        <app-card-list [movieList]='list.data' [cardWidth]='cardWidth' [displayMode]='"d-inline-flex"' [listType]='"none"'>
         </app-card-list>
       </div>
     </div>

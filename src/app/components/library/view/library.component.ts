@@ -6,7 +6,7 @@ import { environment } from './../../../../environments/environment';
 import { Component, OnInit, Input } from '@angular/core';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data'
 import { STRING_REGEX_IMAGE_SIZE } from '../../../constants';
-import { IpcService, IpcCommand } from '../../../services/ipc.service';
+import { IpcService } from '../../../services/ipc.service';
 import { Observable } from 'rxjs'
 import { Select } from '@ngxs/store'
 
@@ -31,7 +31,7 @@ export class LibraryComponent implements OnInit {
   cardWidth = '130px'
   isFetchingData = false
   orderBy = 'tmdbId'
-  listType = 'video'
+  listType = 'library'
   lastVal = 0
   hasResults = false
   hasMoreResults = false
@@ -89,6 +89,6 @@ export class LibraryComponent implements OnInit {
   }
 
   onScanLibrary() {
-    this.ipcService.call(IpcCommand.ScanLibrary)
+    this.ipcService.startScanLibrary()
   }
 }

@@ -30,17 +30,6 @@
       </div>
     </div>
 
-    <!-- <div
-    [ngStyle]="{'height': 'calc(('+_cardWidth+' - 10px)*1.48)','background-image':'url(https://image.tmdb.org/t/p/w342'+_movie.poster_path+')'}"
-    class='movie-card-image-container' (click)='onPreview(movie)'> -->
-    <!-- <div
-    [ngStyle]="{'height': 'calc(('+_cardWidth+' - 10px)*1.48)','background-image':'url(./assets/test-assets/wall-e_poster.jpg)'}"
-    class='movie-card-image-container' (click)='onPreview(movie)'> -->
-
-    <!-- <div
-    [ngStyle]="{'height': 'calc(('+_cardWidth+' - 10px)*1.48)','background-image':'url(./assets/test-assets/wall-e_poster.jpg)'}"
-    class='movie-card-image-container' (click)='onHighlight(movie)'> -->
-
     <!-- alt image -->
     <!-- <div style=' text-align: center; color: white;' [ngStyle]="{'height': 'calc(1.45 * '+ _cardWidth + ')'}"
         class='movie-card-image-container'>
@@ -49,7 +38,7 @@
         </div>-->
     <!-- end of alt image -->
 
-    <div *ngIf="_movie.video && _movie.video.id" class='movie-available' data-toggle='tooltip' title='Available offline'>
+    <div *ngIf="_movie.library && _movie.library.id" class='movie-available' data-toggle='tooltip' title='Available offline'>
     </div>
 
     <div class='movie-mark-as-watched' *ngIf='!_movie.watched'>
@@ -62,7 +51,7 @@
       </div>
     </div>
 
-    <div *ngIf="_movie.watched && _movie.watched.id" [ngStyle]="{'width':_movie.watched.percentage}"
+    <div *ngIf="_movie.watched && _movie.watched.id" [ngStyle]="{'width': watchedPercentage}"
       id='watchedProgressBar' class='movie-progress-bar'>
     </div>
     <div class="overlay overlay-add" (click)='onPreview()'></div>

@@ -30,7 +30,6 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
       - [YTS](#yts)
       - [imdb offline database](#imdb-offline-database)
       - [Fanart.tv](#fanarttv)
-  - [Features](#features)
   - [Todo](#todo)
   - [Offline Assets](#offline-assets)
   - [Influenced by](#influenced-by)
@@ -56,14 +55,15 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ### Run as electron project
 
-1. type `electron .` to run as electron project
-2. type `npm run electron` to run as electron project
+2. type `npm run start:electron` to build angular project and run as electron project
+3. type `npm run start:electron2` to build angular project as prod and run as electron project
+4. type `npm run electron` to run a built angular ui in an electron **window**
+5. type `electron .` to run as electron project
 
 ### Run as angular project
 
-1. comment/remove ipcRenderer related lines to make it run for localhost:4200
-
-2. type `npm start` to start as angular project
+1. type `npm start` to start as angular project
+2. open localhost:4200 on browser
 
 ## Code scaffolding
 
@@ -203,25 +203,23 @@ Logos, Backgrounds, Posters and more forTV, Movie and Music collections
 http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
 ```
 
-## Features
+## Todo
 
-- Search by title, imdbId or keyword,
+- ~~Search by title, imdbId~~ or keyword,
 - 'advanced' filters by date, genre, isAvailable, etc.
 - has backup offline search by using torrent_dump and offline-imdb
 - must enable caching
-- electron project
-- Scan for movies in user-specified directory
-
-## Todo
-
-- torrents from online source
-- fix background image in movie-info
-- imdbId goes null/undefined if Tmdb doesn't have imdb id(especially on new movies)
-- mismatch number of search results because of filters(adults/non-movie)
-- add individual .js file for major functions
+- ~~electron project~~
+- ~~Scan for movies in user-specified directory~~
+- ~~add originaltitle AND/OR save metadata on identifyMovie script~~
+- ~~torrents from online source~~
+- ~~fix background image in movie-info~~
+- ~~imdbId goes null/undefined if Tmdb doesn't have imdb id(especially on new movies)~~
+- mismatch number of search results because of filters(adults/non-movie) -- omdb source only
+- ~~add individual .js file for major functions~~
   - update offline files
-  - torrent
-- add offline files into OneDrive
+  - ~~torrent~~
+- ~~add offline files into OneDrive~~
 
 > major
 
@@ -235,10 +233,19 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 - ipcRenderers subscriptions
   - preferences
   - library movies
-
+  - stats for nerds{
+  pieces
+  bufferhealth
+  connection speed
+  codec
+  hash/id
+  source
+  size
+  res
+}
 > minor
 
-- lazy loading
+- ~~lazy loading~~
 - subtitles apis
 - loading screen
 - shortcut keys
@@ -343,6 +350,7 @@ UI and functionalities are influenced by follows: (in descending order)
 - http://www.opensubtitles.org/en/downloads#exports
 - https://trac.opensubtitles.org/projects/opensubtitles/wiki/DevReadFirst
 - https://forum.opensubtitles.org/viewtopic.php?f=8&t=16453#p39771
+- https://trello.com/b/VjhTQ9BS/mdb
 
 ## notes
 
@@ -352,7 +360,6 @@ UI and functionalities are influenced by follows: (in descending order)
 - tmdb criteria: year,region, language, vote count, vote average.
 - snackbar/toast doesnt work
 - omdb and Imdb has same genre in movies
-- use releaseyear pipe in mdb moviecard
 
 https://api.themoviedb.org/3/movie/157336?api_key=a636ce7bd0c125045f4170644b4d3d25&append_to_response=videos,images,credits,changes,translations,similar,external_ids,ss
 
@@ -361,3 +368,7 @@ $env:debug=electron-packager . --overwrite --platform=win32 --arch=x64 --prune=t
 Possible fix to have oauth2 possible in electron project: C:\Users\Lenovo\AppData\Roaming\npm\node_modules\firebase-tools\lib\auth.js
 
 https://itnext.io/an-oauth-2-0-introduction-for-beginners-6e386b19f7a9
+RE-ADD Jquery
+
+http://javascriptobfuscator.com/javascript-Obfuscator.aspx
+https://www.daftlogic.com/projects-online-javascript-obfuscator.htm

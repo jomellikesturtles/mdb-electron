@@ -1,16 +1,10 @@
-import { environment } from './../../../../environments/environment';
-import {
-  AfterViewInit, Component, OnInit, ChangeDetectorRef, ElementRef, Input, ChangeDetectionStrategy, ViewChild, OnDestroy
-} from '@angular/core'
-import { Observable, Subject } from 'rxjs'
-import { takeUntil } from 'rxjs/operators'
+import { Component, OnInit } from '@angular/core'
 import { MovieService } from '../../../services/movie.service'
 import { DataService } from '../../../services/data.service'
 import { IpcService } from '../../../services/ipc.service'
 import { UtilsService } from '../../../services/utils.service'
 import { Router, ActivatedRoute } from '@angular/router'
-import { ITmdbResult, ILibraryInfo, TmdbParameters, GenreCodes } from '../../../interfaces'
-import { TMDB_SEARCH_RESULTS } from '../../../mock-data'
+import { TmdbParameters, } from '../../../interfaces'
 import { GENRES } from '../../../constants'
 import { Select, Store } from '@ngxs/store'
 import { DomSanitizer } from '@angular/platform-browser'
@@ -22,9 +16,8 @@ declare var $: any
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Default
 })
-export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+export class DashboardComponent implements OnInit {
   [x: string]: any
 
   constructor(
@@ -42,72 +35,22 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   hasAlreadySelected: any
 
   @Select(state => state.moviesList) moviesList$
-  // @ViewChild('player') thePlayer: ElementRef;
 
   browserConnection = navigator.onLine
   theLink = ''
   nameString = 'name'
   dataString = 'data'
-  selectedMovies = []
-  sampleListMovies: ITmdbResult[] = []
   topMoviesFromYear = []
   dashboardLists = []
-  selectedMovie: ITmdbResult = {
-    popularity: 0,
-    id: -1,
-    video: false,
-    vote_count: 0,
-    vote_average: -1,
-    title: '',
-    release_date: '',
-    original_language: '',
-    original_title: '',
-    genre_ids: [],
-    backdrop_path: '',
-    adult: false,
-    overview: '',
-    poster_path: '',
-    isAvailable: false
-  }
   selectedMovieBookmarkStatus = false
   isHighlighted = false
   cardWidth = '130px'
-  clipSrc = null
-  youtubeUrl = ''
   tag
-  done = false;
-  globalPlayerApiScript
-  private ngUnsubscribe = new Subject();
 
   ngOnInit() {
     this.getNowShowingMovies()
     this.getTopMoviesFromYear()
     this.getTopGenreMovie()
-    this.ipcService.libraryFolders.subscribe(value => {
-      console.log('dashboard libraryFolders', value)
-    })
-    // $('[data-toggle="popover"]').popover()
-    // $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
-  }
-
-  ngAfterViewInit(): void {
-  }
-
-  ngOnDestroy(): void {
-    this.ngUnsubscribe.next()
-    this.ngUnsubscribe.complete()
-  }
-
-  /**
-   * Gets the availability of movies in the dashboard.
-   */
-  async getAvailability() {
-    for (const element of this.sampleListMovies) {
-      const result = await this.ipcService.getMovieFromLibrary(element.id)
-      if (result) {
-        element.isAvailable = true
-      }
-    }
   }
 
   /**
@@ -119,11 +62,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     sDate.setDate(sDate.getDate() - 21)
     const threeWeeksAgo = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) +
       '-' + ('0' + sDate.getDate()).slice(-2)
-    const params = [
-      [TmdbParameters.PrimaryReleaseDateGreater, threeWeeksAgo],
-      [TmdbParameters.PrimaryReleaseDateLess, today]
-    ]
-    this.sendToMovieService(params, `New Releases`)
+    const paramMap = new Map<TmdbParameters, any>();
+    paramMap.set(TmdbParameters.PrimaryReleaseDateGreater, threeWeeksAgo);
+    paramMap.set(TmdbParameters.PrimaryReleaseDateLess, today);
+    this.sendToMovieService(paramMap, `New Releases`)
   }
 
   /**
@@ -135,8 +77,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const randYear = Math.round(
       Math.random() * ((sDate.getFullYear() - 1) - minimumYear) + minimumYear
     )
-    const params = [[TmdbParameters.PrimaryReleaseYear, randYear]]
-    this.sendToMovieService(params, `Top movies of ${randYear}`)
+    const paramMap = new Map<TmdbParameters, any>();
+    paramMap.set(TmdbParameters.PrimaryReleaseYear, randYear);
+    this.sendToMovieService(paramMap, `Top movies of ${randYear}`)
   }
 
   /**
@@ -146,10 +89,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const TMDB_GENRE_LENGTH = 19 // up to index 19 is valid tmdb genre
     const GENRE_INDEX = Math.floor(Math.random() * (TMDB_GENRE_LENGTH))
     const CHOSEN_GENRE = GENRES[GENRE_INDEX]
-    const params = [
-      [TmdbParameters.WithGenres, CHOSEN_GENRE.id]
-    ]
-    this.sendToMovieService(params, `Top ${CHOSEN_GENRE.name}`)
+    const paramMap = new Map<TmdbParameters, any>();
+    paramMap.set(TmdbParameters.WithGenres, CHOSEN_GENRE.id);
+    this.sendToMovieService(paramMap, `Top ${CHOSEN_GENRE.name}`)
   }
 
   /**
@@ -157,7 +99,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param params parameters to pass to the API
    * @param listName the name of the list
    */
-  async sendToMovieService(params: any, listName: string) {
+  async sendToMovieService(params: Map<TmdbParameters, any>, listName: string) {
     const data = await this.movieService.getMoviesDiscover(params).toPromise()
     const innerList = {
       name: listName,
@@ -172,7 +114,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   getMoviesFromLibrary() {
     console.log('getMoviesFromLibrary dashboard.component')
-    this.ipcService.getMoviesFromLibrary()
+    // this.ipcService.getMoviesFromLibrary()
   }
 
   /**
@@ -190,15 +132,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Converts genre code into its genre name equivalent.
-   * @param genreCode genre code origin
-   * @returns genre name
-   */
-  getGenre(genreCode: number) {
-    return GenreCodes[genreCode]
-  }
-
-  /**
    * Goes to detail of the selected movie.
    * @param movie the movie selected
    */
@@ -206,14 +139,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     const highlightedId = id;
     this.dataService.updateHighlightedMovie(highlightedId);
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
-  }
-
-  toggleBookmark(id: number) {
-    // if (this.selectedMovieBookmarkStatus === false) {
-    this.bookmarkService.saveBookmark(id)
-    // } else {
-    //   this.bookmarkService.removeBookmark(id)
-    // }
   }
 
   goToGenre(val) {

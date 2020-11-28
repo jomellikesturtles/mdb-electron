@@ -1,0 +1,7 @@
+{"tmdb":337401,"title":"Mulan","yr":2020,"pctg":100,"_id":"4xcPU29vCe51oPRk"}
+{"tmdb":420817,"_id":"GpOnjO72hEyFitQu","imdb":"","title":"Aladdin","yr":2019,"pcgt":23}
+{"tmdb":600,"_id":"Pw7iOHP9NvWBMKNM","imdb":"tt0093058","title":"Full Metal Jacket","yr":1987,"pcgt":100}
+{"tmdb":10674,"title":"Mulan","yr":1998,"pctg":100,"_id":"SBk67wvI6TBQJvEj"}
+{"tmdb":123,"imdb":"tt1234567","pctg":85,"_id":"aDzvLa5oYHjwxtLj"}
+{"tmdb":475557,"_id":"gc0VxJdd7GwD4DVt","imdb":"","title":"Joker","yr":2019,"pcgt":100}
+{"$$indexCreated":{"fieldName":"tmdb","unique":true,"sparse":true}}

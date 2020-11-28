@@ -6,7 +6,7 @@ import { MOVIES, MOVIEGENRES } from '../../mock-data';
 import { DECADES, GENRES, STRING_REGEX_IMDB_ID } from '../../constants';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
-import { IpcService, IpcCommand } from '../../services/ipc.service'
+import { IpcService } from '../../services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
 import { Store, Select } from '@ngxs/store'
@@ -42,7 +42,7 @@ export class TopNavigationComponent implements OnInit {
     private location: Location,
     private store: Store) { }
 
-  isElectron = environment.runConfig.electron
+  isElectron = environment.runConfig.electron != null ? true : false
   status = 'LOGIN'
   browserConnection = navigator.onLine;
   selectedMovie: IOmdbMovieDetail
@@ -88,7 +88,7 @@ export class TopNavigationComponent implements OnInit {
       this.status = ''
     }
     // })
-    this.ipcService.call(IpcCommand.GetSearchList)
+    this.ipcService.call(this.ipcService.IPCCommand.GetSearchList)
     this.ipcService.searchList.subscribe(data => {
       this.searchHistoryList = data
       console.log('DATA:', data)
@@ -102,7 +102,7 @@ export class TopNavigationComponent implements OnInit {
         value: index
       });
     }
-    for (let index = 1910; index <= (new Date).getFullYear(); index+=10) {
+    for (let index = 1910; index <= (new Date).getFullYear(); index += 10) {
       this.decadesList.push({
         display: `${index}s`,
         value: index
@@ -206,13 +206,13 @@ export class TopNavigationComponent implements OnInit {
   }
 
   onMinimize() {
-    this.ipcService.call(IpcCommand.MinimizeApp)
+    this.ipcService.call(this.ipcService.IPCCommand.MinimizeApp)
   }
   onRestore() {
-    this.ipcService.call(IpcCommand.RestoreApp)
+    this.ipcService.call(this.ipcService.IPCCommand.RestoreApp)
   }
   onExit() {
-    this.ipcService.call(IpcCommand.ExitApp)
+    this.ipcService.call(this.ipcService.IPCCommand.ExitApp)
   }
 }
 

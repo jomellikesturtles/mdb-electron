@@ -3,11 +3,10 @@
  */
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
-import { Observable, of, Subscriber, forkJoin } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
-import { MDBTorrent, IOmdbMovieDetail, IRating, TmdbParameters, OmdbParameters } from '../interfaces'
-// import { forEach } from '@angular/router/src/utils/collection';
+import { MDBTorrent, IOmdbMovieDetail, IRating, TmdbParameters, OmdbParameters, TmdbSearchMovieParameters } from '../interfaces'
 import { OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID, YOUTUBE_API_KEY } from '../constants';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -21,9 +20,6 @@ export class MovieService {
   ) { }
 
   httpParam = new HttpParams()
-  imdbId = 'tt0499549'
-  plot = 'full' // short
-  results = ''
 
   /**
    * Gets movie info. First it gets from offline source,
@@ -133,7 +129,6 @@ export class MovieService {
   getFindMovie(val: string | number): Observable<any> {
     const url = `${TMDB_URL}/find/${val}`
     let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
-    // &external_source=imdb_id
     myHttpParam = myHttpParam.append('external_source', 'imdb_id')
     const tmdbHttpOptions = {
       headers: JSON_CONTENT_TYPE_HEADER,
@@ -161,20 +156,15 @@ export class MovieService {
   /**
    * Gets movie details.
    * @param tmdbId the tmdb id.
-   * @param val list of key object pair.`[key,object]`
    * @param appendToResponse optional append to response
    */
-  getTmdbMovieDetails(tmdbId: number, val?: any[], appendToResponse?: string): Observable<any> {
+  getTmdbMovieDetails(tmdbId: number, appendToResponse?: string): Observable<any> {
     const url = `${TMDB_URL}/movie/${tmdbId}`
     let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
     // videos, images, credits, translations, similar, external_ids, alternative_titles,recommendations
     //   keywords, reviews
     if (appendToResponse) {
       myHttpParam = myHttpParam.append(TmdbParameters.AppendToResponse, appendToResponse)
-    }
-
-    if (val && val.length > 0) {
-      myHttpParam = this.appendParameters(val, myHttpParam)
     }
     const tmdbHttpOptions = {
       headers: JSON_CONTENT_TYPE_HEADER,
@@ -204,7 +194,7 @@ export class MovieService {
     }
 
     if (val && val.length > 0) {
-      myHttpParam = this.appendParameters(val, myHttpParam)
+      // myHttpParam = this.appendParameters(val, myHttpParam)
     }
     const tmdbHttpOptions = {
       headers: JSON_CONTENT_TYPE_HEADER,
@@ -216,12 +206,12 @@ export class MovieService {
 
   /**
    * Get movies discover by genre, year, etc.
-   * @param val [[key,value],[key,value]]
+   * @param val parameter map
    */
-  getMoviesDiscover(...val: any): Observable<any> {
+  getMoviesDiscover(val: Map<TmdbParameters, any>): Observable<any> {
     const url = `${TMDB_URL}/discover/movie`
     let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
-    myHttpParam = this.appendParameters(val, myHttpParam)
+    myHttpParam = this.appendMappedParameters(val, myHttpParam)
     const tmdbHttpOptions = {
       headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
@@ -232,12 +222,12 @@ export class MovieService {
 
   /**
    * Searches movie from TMDB api.
-   * @param val parameters key-value pair list
+   * @param val parameter map
    */
-  searchTmdbMovie(...val): Observable<any> {
+  searchTmdbMovie(val: Map<TmdbParameters | TmdbSearchMovieParameters, any>): Observable<any> {
     const url = `${TMDB_URL}/search/movie`
     let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
-    myHttpParam = this.appendParameters(val, myHttpParam)
+    myHttpParam = this.appendMappedParameters(val, myHttpParam)
     const tmdbHttpOptions = {
       headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
@@ -248,23 +238,14 @@ export class MovieService {
 
   /**
    * Appends parameters list into http param object.
-   * @param val parameters key-value pair list
+   * @param paramMap parameters key-value pair list
    * @param myHttpParam http param to append to
    */
-  private appendParameters(val: any[], myHttpParam: HttpParams) {
-    val[0].forEach(element => {
-      console.log(element);
-      myHttpParam = myHttpParam.append(element[0], element[1])
-    })
+  private appendMappedParameters(paramMap: Map<TmdbParameters | TmdbSearchMovieParameters, any>, myHttpParam: HttpParams) {
+    for (let entry of paramMap.entries()) {
+      myHttpParam = myHttpParam.append(entry[0], entry[1])
+    }
     return myHttpParam
-  }
-
-  /**
-   * !UNUSED
-   */
-  getBookmark(id) {
-    return this.http.get<any>(`http:\\\\localhost:3000\\getBookmark\\${id}`).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getBookmark')))
   }
 
   /**

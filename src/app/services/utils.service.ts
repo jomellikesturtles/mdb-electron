@@ -13,7 +13,7 @@ export class UtilsService {
   /**
    * Gets the year.
    * @param releaseDate release date with format YYYY-MM-DD or 15 October 1999
-   * @returns string value of year with YYYY format
+   * @returns string value of year with `YYYY` format
    */
   getYear(releaseDate: string) {
 
@@ -62,7 +62,7 @@ export class UtilsService {
 
 
   // Human readable bytes util
-  prettyBytes(num): string {
+  prettyBytes(num: number): string {
     let exponent,
       unit,
       neg = num < 0,

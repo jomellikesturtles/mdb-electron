@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DataService } from '../../../services/data.service'
 import { MovieService } from '../../../services/movie.service'
-import { TmdbParameters, GenreCodes, TmdbSearchMovieParameters } from '../../../interfaces';
+import { TmdbParameters, GenreCodes } from '../../../interfaces';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -22,7 +22,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   cardWidth = '130px'
   discoverTitle = ''
   hasMoreResults = false
-  currentParams = []
+  private paramMap = new Map<TmdbParameters, any>();
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -30,10 +30,10 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     private movieService: MovieService,
   ) { }
   ngOnInit(): void {
-      this.dataService.discoverQuery.pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
-        console.log('fromdataservice: ', data);
-        this.discoverQuery(data[0], data[1], data[2])
-      });
+    this.dataService.discoverQuery.pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
+      console.log('fromdataservice: ', data);
+      this.discoverQuery(data[0], data[1], data[2])
+    });
   }
 
   ngOnDestroy(): void {
@@ -48,32 +48,29 @@ export class DiscoverComponent implements OnInit, OnDestroy {
    * @param val1 (optional) additional context
    */
   discoverQuery(type: string, val: string | number, val2?: string): void {
-    // commented for TESTING
-    const params = []
     let tempTitle = ''
     // cert,year,genre,person
     switch (type) {
       case 'certification':
-        params.push([TmdbParameters.Certification, val])
+        this.paramMap.set(TmdbParameters.Certification, val)
         tempTitle = `Top ${val} movies`
         break;
       case 'genre':
-        params.push([TmdbParameters.WithGenres, val])
+        this.paramMap.set(TmdbParameters.WithGenres, val)
         tempTitle = `Top ${GenreCodes[val]} movies`
         break;
       case 'person':
-        params.push([TmdbParameters.WithPeople, val])
+        this.paramMap.set(TmdbParameters.WithPeople, val)
         tempTitle = `Top movies with ${val2}`
         break;
       case 'year':
-        params.push([TmdbParameters.PrimaryReleaseYear, val])
+        this.paramMap.set(TmdbParameters.PrimaryReleaseYear, val)
         tempTitle = `Top movies from ${val}`
         break;
       default:
         break;
     }
-    this.currentParams = params
-    this.movieService.getMoviesDiscover(params).subscribe(data => {
+    this.movieService.getMoviesDiscover(this.paramMap).subscribe(data => {
       if (data.results.length > 0) {
         this.discoverResults.push(...data.results)
         this.hasResults = true
@@ -86,18 +83,12 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   }
 
   getMoreResults() {
-    const params = this.currentParams
-
-    // [TmdbSearchMovieParameters.Query, this.searchQuery.query],
-    params.push([TmdbParameters.Page, ++this.currentPage])
-    // ]
-    // this.currentParams.push([TmdbParameters.Page, ++this.currentPage])
-    this.movieService.getMoviesDiscover(params).subscribe(data => {
+    this.paramMap.set(TmdbParameters.Page, ++this.currentPage)
+    this.movieService.getMoviesDiscover(this.paramMap).subscribe(data => {
       this.discoverResults.push(...data.results)
       if (data.total_pages <= this.currentPage) {
         this.hasMoreResults = false
       }
-      // this.setHighlights()
     })
   }
 

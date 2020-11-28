@@ -22,8 +22,9 @@
                 <span *ngIf="!isBookmarked">Add bookmark</span>
               </button>
 
-              <button [disabled]='procWatched' class='btn btn-small'
-                [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}" (click)='toggleWatched("100%")'>
+              <!-- <button [disabled]='procWatched' class='btn btn-small' -->
+              <button class='btn btn-small'
+                [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}" (click)='toggleWatched()'>
                 <span *ngIf="isWatched">Unmark as watched</span>
                 <span *ngIf="!isWatched">Mark as watched</span>
               </button>
@@ -32,7 +33,7 @@
           </div>
           <div class="col-sm-8">
 
-            <h6>{{movieDetails.voteAverage}}</h6>
+            <h3>{{movieDetails.voteAverage}}</h3>
             <div style='display: flex;'>
               <h2 id="movie-title">{{movieDetails.original_title}}</h2>&nbsp;
               <h2 id="movie-title">{{movieDetails.title}}</h2>&nbsp;
@@ -42,36 +43,24 @@
               </h2>
               <h2 (click)='goToDiscover("certification",movieCertification)'>{{movieCertification}}</h2>
 
-              <button *ngIf="isMovieAvailable" class="btn btn-primary" type="button" (click)='playVideo()'
-                [disabled]='procVideo || !isMovieAvailable'>
-                <div *ngIf="procVideo">
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  Loading...
-                </div>
-                <div *ngIf="!procVideo">
-                  <div *ngIf="isMovieAvailable">
-                    Play
-                  </div>
-                  <div *ngIf="!isMovieAvailable">
-                    Not available
-                  </div>
-                </div>
-              </button>
-
-              <!-- play options -->
-              <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+              <!-- unified play button -->
+              <div class="btn-group" *ngIf="playLinks.length > 0">
+                <button type="button" class="btn btn-danger" (click)='playBestPlayLink()'>Play</button>
+                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split"
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Play
+                  <span class="sr-only">Toggle Dropdown</span>
                 </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <div *ngFor="let torrent of torrents">
-                    <a class="dropdown-item" (click)='playTorrent(torrent.hash)'>{{torrent.name}} {{torrent.quality}}
-                      {{torrent.peers}}</a>
+                <div class="dropdown-menu">
+                  <div *ngFor="let playLink of playLinks">
+                    <a class="dropdown-item" (click)='playMovie(playLink)'>{{playLink.name}} {{playLink.type}}
+                      {{playLink.quality}}</a>
                   </div>
                 </div>
               </div>
 
+              <button class='btn btn-primary' (click)='continueWatching()' *ngIf='hasContinueWatching'>
+                Continue Watching
+              </button>
               <button class='btn btn-primary' (click)='playTrailer()' *ngIf='movieTrailer'>
                 Play Trailer
               </button>
@@ -94,7 +83,6 @@
                 {{director.name}}{{isLast ? '' : ', '}}
               </span>
             </p>
-
             <p *ngIf="movieDetailsWriters">Written by
               <span class='text-hyperlink' (click)='goToDiscover(writer.id)'
                 *ngFor="let writer of movieDetailsWriters; let isLast=last">
@@ -143,11 +131,8 @@
             </div>
           </div>
         </div>
-        <div *ngIf="movieDetails.isAvailable">
 
-        </div>
-
-        <div class="table-responsive-lg container">
+        <div class="table-responsive-lg container" *ngIf="false">
           <table class="table">
             <thead>
             </thead>
