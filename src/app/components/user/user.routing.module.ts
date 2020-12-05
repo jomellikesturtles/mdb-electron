@@ -14,7 +14,8 @@ const routes: Routes = [
     path: 'signin', component: SigninComponent
   },
   {
-    path: 'profile', component: ProfileComponent, canActivate: [MdbGuardGuard]
+    path: 'profile', component: ProfileComponent,
+    // path: 'profile', component: ProfileComponent, canActivate: [MdbGuardGuard]
   },
 
   // {

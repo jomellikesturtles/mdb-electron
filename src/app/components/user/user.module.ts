@@ -7,6 +7,8 @@ import { RepeatPasswordValidatorDirective } from '../../directives/repeat-passwo
 import { CredentialsDirective } from '../../directives/credentials.directive';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProfileComponent } from './profile/profile.component'
+import { MatTabsModule } from '@angular/material/tabs'
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -14,13 +16,15 @@ import { ProfileComponent } from './profile/profile.component'
     RepeatPasswordValidatorDirective,
     UsernameExistValidatorDirective,
     CredentialsDirective,
-    ProfileComponent
+    ProfileComponent,
   ],
   imports: [
     CommonModule,
     UserRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatTabsModule,
+    SharedModule
   ],
   entryComponents: [
     SigninComponent,

@@ -4,6 +4,7 @@ import { MovieService } from '../../../services/movie.service'
 import { TmdbParameters, GenreCodes } from '../../../interfaces';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-discover',
@@ -28,12 +29,18 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   constructor(
     private dataService: DataService,
     private movieService: MovieService,
+    private activatedRoute: ActivatedRoute,
   ) { }
   ngOnInit(): void {
+    // !TODO: WIP. change to queryParams
     this.dataService.discoverQuery.pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
       console.log('fromdataservice: ', data);
       this.discoverQuery(data[0], data[1], data[2])
     });
+    this.activatedRoute.queryParams.pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
+      console.log(data)
+      this.discoverQuery(data.type, data.value, data.name)
+    })
   }
 
   ngOnDestroy(): void {
@@ -67,7 +74,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
         this.paramMap.set(TmdbParameters.PrimaryReleaseYear, val)
         tempTitle = `Top movies from ${val}`
         break;
-      default:
+        default:
+          this.paramMap.set(val[0], val[1])
+          tempTitle = `Top movies with ${val}`
         break;
     }
     this.movieService.getMoviesDiscover(this.paramMap).subscribe(data => {

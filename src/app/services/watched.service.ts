@@ -40,18 +40,11 @@ export class WatchedService {
   }
 
   getWatched(id): Promise<any> {
-    return new Promise(resolve => {
-      if (environment.runConfig.firebaseMode) {
-        this.firebaseService.getFromFirestore(CollectionName.Watched, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
-          console.log('WATCHED: ', e)
-          resolve(e)
-        })
-      } else {
-        this.ipcService.getWatched(id).then(e => {
-          resolve(e)
-        })
-      }
-    })
+    if (environment.runConfig.firebaseMode) {
+      return this.firebaseService.getFromFirestore(CollectionName.Watched, FieldName.TmdbId, FirebaseOperator.Equal, id)
+    } else {
+      return this.ipcService.getWatched(id)
+    }
   }
 
   /**
@@ -59,33 +52,20 @@ export class WatchedService {
    * @param idList
    */
   getWatchedInList(idList: number[]): Promise<any> {
-    console.log('getWatchedInList...', idList);
-    return new Promise((resolve, reject) => {
 
-      const myFunction = environment.runConfig.firebaseMode ?
-        this.firebaseService.getFromFirestoreMultiple(CollectionName.Watched, FieldName.TmdbId, idList) :
-        this.ipcService.getWatchedInList(idList);
+    const myFunction = environment.runConfig.firebaseMode ?
+      this.firebaseService.getFromFirestoreMultiple(CollectionName.Watched, FieldName.TmdbId, idList) :
+      this.ipcService.getWatchedInList(idList);
 
-      myFunction.then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
-    })
+    return myFunction
   }
 
   saveWatched(data: IWatched): Promise<any> {
-    return new Promise(resolve => {
-      if (environment.runConfig.firebaseMode) {
-        this.firebaseService.insertIntoFirestore(CollectionName.Watched, data).then(e => {
-          resolve(e)
-        })
-      } else {
-        this.ipcService.saveWatched(data).then(e => {
-          resolve(e)
-        })
-      }
-    })
+    if (environment.runConfig.firebaseMode) {
+      return this.firebaseService.insertIntoFirestore(CollectionName.Watched, data)
+    } else {
+      return this.ipcService.saveWatched(data)
+    }
   }
 
   /**
@@ -94,17 +74,11 @@ export class WatchedService {
    * @param id watched id/_id/tmdbId to remove.
    */
   removeWatched(type: 'id' | 'tmdbId', id: string | number) {
-    return new Promise(resolve => {
-      if (environment.runConfig.firebaseMode) {
-        this.firebaseService.deleteFromFirestore(CollectionName.Watched, id).then(e => {
-          resolve(e)
-        })
-      } else {
-        this.ipcService.removeWatched(type, id).then(e => {
-          resolve(e)
-        })
-      }
-    })
+    if (environment.runConfig.firebaseMode) {
+      return this.firebaseService.deleteFromFirestore(CollectionName.Watched, id)
+    } else {
+      return this.ipcService.removeWatched(type, id)
+    }
   }
 
   saveWatchedMulti(data: object[]) {
@@ -123,21 +97,11 @@ export class WatchedService {
    * Gets first page of list.
    */
   getWatchedPaginatedFirstPage(): Promise<any> {
-    console.log('getting multiplewatched FirstPage(...');
-
-    return new Promise((resolve, reject) => {
-      if (environment.runConfig.firebaseMode) {
-        this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20).then(value => {
-          resolve(value)
-        }).catch(err => {
-          reject(err)
-        })
-      } else {
-        this.ipcService.getMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20).then(value => {
-          resolve(value)
-        })
-      }
-    })
+    if (environment.runConfig.firebaseMode) {
+      return this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20)
+    } else {
+      return this.ipcService.getMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20)
+    }
   }
 
   /**
@@ -146,13 +110,7 @@ export class WatchedService {
    */
   getWatchedPaginated(lastVal: string | number): Promise<any> {
     console.log('getting multiplewatched...', lastVal);
-    return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Watched, FieldName.TmdbId, 20, lastVal).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
-    })
+    return this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Watched, FieldName.TmdbId, 20, lastVal)
   }
 
   /**

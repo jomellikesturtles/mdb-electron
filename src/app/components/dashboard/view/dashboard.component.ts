@@ -96,14 +96,19 @@ export class DashboardComponent implements OnInit {
 
   /**
    * Sends parameter to the API.
-   * @param params parameters to pass to the API
+   * @param paramMap parameters map to pass to the API
    * @param listName the name of the list
    */
-  async sendToMovieService(params: Map<TmdbParameters, any>, listName: string) {
-    const data = await this.movieService.getMoviesDiscover(params).toPromise()
+  async sendToMovieService(paramMap: Map<TmdbParameters, any>, listName: string) {
+    const data = await this.movieService.getMoviesDiscover(paramMap).toPromise()
+    let myParam2: { [k: string]: any } = {};
+    for (let entry of paramMap.entries()) {
+      myParam2[entry[0]] = entry[1]
+    }
     const innerList = {
       name: listName,
-      data: data.results
+      data: data.results,
+      queryParams: myParam2
     }
     this.dashboardLists.push(innerList)
     this.dataService.addDashboardData(innerList.data)
@@ -141,10 +146,10 @@ export class DashboardComponent implements OnInit {
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
   }
 
-  goToGenre(val) {
-    this.dataService.updateDiscoverQuery(['genre', val])
-    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
-  }
+  // goToGenre(val) {
+  //   this.dataService.updateDiscoverQuery(['genre', val])
+  //   this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
+  // }
 
   scrollPrev() {
     const container = document.getElementById('topMoviesFromYearPanel')

@@ -2,7 +2,7 @@ import { Component, OnInit, Input, ChangeDetectorRef, Output, EventEmitter } fro
 import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
-import { LibraryService, IVideo } from '../../../services/library.service';
+import { LibraryService } from '../../../services/library.service';
 import { environment } from '../../../../environments/environment';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { IUserMovieData } from 'src/app/services/ipc.service';
@@ -17,7 +17,7 @@ export class CardListComponent implements OnInit {
 
   @Input() movieList: any[]
   @Input() cardWidth: string
-  @Input() displayMode: string
+  @Input() displayMode: string = 'd-inline-flex'
   @Input() listType: string
 
   constructor(
@@ -49,12 +49,14 @@ export class CardListComponent implements OnInit {
         this.userDataService.getMovieUserDataInList(idList).then(docs => {
           // !TODO: Add firebase/spring implementation
           const dataType = 'none'
-          docs.forEach(data => {
+          if (docs) {
+            docs.forEach(data => {
               const movie = this.movieList.find(e => e.id === data.tmdbId)
-                movie['watched'] = data.watched
-                movie['bookmark'] = data.bookmark
-                movie['library'] = data.library
+              movie['watched'] = data.watched
+              movie['bookmark'] = data.bookmark
+              movie['library'] = data.library
             });
+          }
         })
       } else {
         if (this.listType !== 'bookmark') {
@@ -82,7 +84,7 @@ export class CardListComponent implements OnInit {
   /**
    * Organizes user data and binds them into movie cards.
    */
-  curateUserData(dataType: string, docs: firebase.firestore.QuerySnapshot | IUserMovieData[] ): void {
+  curateUserData(dataType: string, docs: firebase.firestore.QuerySnapshot | IUserMovieData[]): void {
     const dataList = []
 
     docs.forEach(doc => {

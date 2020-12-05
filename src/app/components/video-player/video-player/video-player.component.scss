@@ -1,0 +1,31 @@
+.player-controls-icon {
+  height: 100%;
+  filter: invert(1) contrast(.5);
+  cursor: pointer;
+  display: inline-block;
+  width: 40px;
+  padding: 9px;
+}
+
+.player-controls-icon:hover {
+  filter: invert(1) contrast(1)
+}
+#progressBarContainer {
+  text-decoration:none;
+  position:relative;
+}
+#progressBarContainer #tooltipSpan {
+  display:none;
+}
+#progressBarContainer:hover #tooltipSpan {
+  display:block;
+  position:fixed;
+  overflow:hidden;
+}
+
+video::cue{
+  opacity: 1;
+  background-color: black;
+  font-size: 20px !important; color: red; margin-bottom: 50px;}
+
+// ::cue(.yellow){ color: yellow; }

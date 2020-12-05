@@ -14,9 +14,9 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es2015",
-    "types": ["node","karma"],
+    "types": ["node","karma","mocha","jest"],
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
     ],
     "lib": [
       "es2018",

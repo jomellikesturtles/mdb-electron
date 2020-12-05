@@ -163,7 +163,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.userDataService.getMovieUserData(this.movieDetails.tmdbId).then((userMovieData: IUserMovieData) => {
 
       if (userMovieData.library) {
-      // if (libraryList.length > 0) {
+        // if (libraryList.length > 0) {
         this.isMovieAvailable = true
         const libraryList = userMovieData.library.libraryList
         this.playLinks = [...this.playLinks, ...libraryList]
@@ -407,7 +407,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    */
   goToDiscover(type: string, id: string, name?: string) {
     this.dataService.updateDiscoverQuery([type, id, name])
-    this.router.navigate([`/discover`]);
+    this.router.navigate([`/discover`], { queryParams: { type: type, id: id, name: name } });
     // this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
   }
 

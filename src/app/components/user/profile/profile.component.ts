@@ -1,8 +1,11 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit,
+  // ChangeDetectorRef
+} from '@angular/core';
+// import { Observable } from 'rxjs';
 // import { UserState } from '../../../app.state';
-import { Select } from '@ngxs/store';
-import { FirebaseService } from 'src/app/services/firebase.service';
+// import { Select } from '@ngxs/store';
+// import { FirebaseService } from 'src/app/services/firebase.service';
+import { TMDB_SEARCH_RESULTS } from 'src/app/mock-data';
 
 @Component({
   selector: 'app-profile',
@@ -11,19 +14,23 @@ import { FirebaseService } from 'src/app/services/firebase.service';
 })
 export class ProfileComponent implements OnInit {
   // @Select(UserState) user$: Observable<any>
-
+  moviesList = TMDB_SEARCH_RESULTS.results
   userProfile: IProfile = {
     username: 'peterparker123',
     emailAddress: 'peterparker123@gmail.com',
     watchedCount: 90,
-    bookmarkedCount: 9
+    bookmarkedCount: 9,
+  }
+  photoUrl = ''
+  userStats: {
+    filmsNumber: 54
   }
   defaultUserProfile
   firebaseUser$
 
   constructor(
-    private cdr: ChangeDetectorRef,
-    private firebaseService: FirebaseService
+    // private cdr: ChangeDetectorRef,
+    // private firebaseService: FirebaseService
   ) { }
 
   ngOnInit() {
@@ -33,16 +40,16 @@ export class ProfileComponent implements OnInit {
   }
 
   treatAll() {
-    this.firebaseService.getEmpty()
+    // this.firebaseService.getEmpty()
   }
 
   getUser() {
-    this.firebaseService.getUser().then(e => {
-      console.log('fbuser', this.firebaseUser$);
-      this.firebaseUser$ = e
-      this.defaultUserProfile = e
-      this.cdr.detectChanges()
-    })
+    // this.firebaseService.getUser().then(e => {
+    //   console.log('fbuser', this.firebaseUser$);
+    //   this.firebaseUser$ = e
+    //   this.defaultUserProfile = e
+    //   this.cdr.detectChanges()
+    // })
   }
 
   changePassword() {
@@ -66,13 +73,16 @@ export class ProfileComponent implements OnInit {
   }
 
   async countBookmarks() {
-    const count = await this.firebaseService.countAll('bookmark')
-    console.log('count: ', count)
+    // const count = await this.firebaseService.countAll('bookmark')
+    // console.log('count: ', count)
   }
 
   uploadFile(data) {
     console.log(data)
-    this.firebaseService.uploadToStorage(data.item(0))
+    // this.firebaseService.uploadToStorage(data.item(0))
+  }
+  seeAll(val) {
+
   }
 }
 
