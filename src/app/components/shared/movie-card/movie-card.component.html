@@ -1,7 +1,7 @@
 <div class='movie-card' [ngStyle]="{'width': _cardWidth}" [ngClass]="{'movie-card-selected': _movie.isHighlighted}">
   <div
     [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w154'+_movie.poster_path+')'}"
-    class='movie-card-image-container'>
+    class='movie-card-image-container' data-toggle="tooltip" title="{{_movie.title}} ({{_movie.release_date|releaseYear}})">
     <!-- <div
     [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w342'+_movie.poster_path+')'}"
     class='movie-card-image-container' (click)='onHighlight(movie)'> -->
@@ -58,11 +58,11 @@
   </div>
   <div class="card-body movie-card-body">
     <div class="movie-card-text">
-      <h6 (click)="onOpenMovie()" class='text-primary movie-card-title card-title text-hyperlink' data-toggle="tooltip"
+      <h6 (click)="onOpenMovie()" class='text-primary movie-card-title card-title text-hyperlink' style='color:white' data-toggle="tooltip"
         title="{{_movie.title}}">{{_movie.title}}</h6>
-      <label class='text-hyperlink' style='float: left'
+      <label class='text-hyperlink' style='float: left; font-size: 11pt;color: darkgray;'
         (click)='goToYear(getYear(_movie.release_date))'>{{_movie.release_date|releaseYear}}</label>
-      <label *ngIf='_movie.vote_average>0' style='float: right' data-toggle='tooltip' title='{{_movie.vote_count}} votes'>
+      <label *ngIf='_movie.vote_average>0' style='float: right; padding-right: 5px;' data-toggle='tooltip' title='{{_movie.vote_count}} votes'>
         <img style='height:10px;
       filter: invert(1);margin-bottom: 4px;
       margin-right: 2px;' src='./assets/icons/star.svg' />{{_movie.vote_average}}</label>

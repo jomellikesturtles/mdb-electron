@@ -278,7 +278,7 @@ export class FirebaseService {
     })
   }
 
-  countAll(collectionName) {
+  countAll(collectionName): Promise<number> {
     return new Promise((resolve, reject) => {
       this.db.collection(collectionName).where('tmdbId', FirebaseOperator.GreaterThanEqual, 0).get().then(snapshot => {
         resolve(snapshot.size)
@@ -286,7 +286,7 @@ export class FirebaseService {
     })
   }
 
-  getUser() {
+  getUser(): Promise<any> {
     return new Promise(resolve => {
       this.auth.user.subscribe(e => {
         console.log('the user', e);

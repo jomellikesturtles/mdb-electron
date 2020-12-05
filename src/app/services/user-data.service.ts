@@ -94,10 +94,11 @@ export class UserDataService {
 
   /**
    * Gets watched, bookmark, library in list
-   *
+   * TODO: remove Promise.resolve(null) and add firebase implementation
    */
   getMovieUserDataInList(idList: any[]) {
-    return this.ipcService.getMovieUserDataInList(idList)
+    return Promise.resolve(null)
+    // return this.ipcService.getMovieUserDataInList(idList)
   }
 
   getUserDataMultiple(dataType: 'library' | 'bookmark' | 'watched', data: object) {

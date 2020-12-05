@@ -33,7 +33,7 @@ export class PersonService {
     }
     // const appendToResponse = 'movie_credits,tv_credits,combined_credits,external_ids,images,tagged_images'
     const appendToResponse = 'movie_credits,external_ids,images'
-    myHttpParam = myHttpParam.append('language', language)
+    myHttpParam = myHttpParam.append(TmdbParameters.Language, language)
     myHttpParam = myHttpParam.append(TmdbParameters.AppendToResponse, appendToResponse)
     const tmdbHttpOptions = {
       headers: jsonContentType,

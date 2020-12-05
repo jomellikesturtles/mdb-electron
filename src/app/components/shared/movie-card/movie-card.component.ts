@@ -1,5 +1,5 @@
 import { UserDataService } from './../../../services/user-data.service';
-import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { AddMovie, RemoveMovie } from '../../../movie.actions';
@@ -16,7 +16,7 @@ declare var $: any
 })
 export class MovieCardComponent implements OnInit {
 
-  _movie
+  _movie: any
   @Input()  // TODO: add an interface.
   set movie(inputMessage: any) {
     this._movie = inputMessage
@@ -25,7 +25,7 @@ export class MovieCardComponent implements OnInit {
     return this._movie;
   }
 
-  _cardWidth
+  _cardWidth = '130px'
   @Input()
   set cardWidth(inputMessage: any) {
     this._cardWidth = inputMessage
@@ -34,7 +34,7 @@ export class MovieCardComponent implements OnInit {
     return this._cardWidth;
   }
 
-  _bookmark
+  _bookmark: any
   @Input()
   set bookmark(inputBookmark: any) {
     if (inputBookmark) {
@@ -46,7 +46,7 @@ export class MovieCardComponent implements OnInit {
     return this._cardWidth;
   }
 
-  _watched
+  _watched: { percentage: string; }
   @Input()
   set watched(inputWatched: any) {
     if (inputWatched) {
@@ -59,7 +59,7 @@ export class MovieCardComponent implements OnInit {
     return this._watched;
   }
 
-  _library
+  _library: any
   @Input()
   set library(inputVideo: any) {
     this._library = inputVideo
@@ -131,7 +131,7 @@ export class MovieCardComponent implements OnInit {
 
   async onToggleBookmark(): Promise<any> {
     this.procBookmark = true
-    let bmDoc
+    let bmDoc: any
     bmDoc = await this.userDataService.toggleBookmark(this._movie)
     this.isWatched = !this.isWatched
     console.log('BOOKMARKADD/remove:', bmDoc)
@@ -140,7 +140,7 @@ export class MovieCardComponent implements OnInit {
 
   async onToggleWatched() {
     this.procWatched = true
-    let wDocId
+    let wDocId: any
     wDocId = await this.watchedService.toggleWatched(this._movie)
     this.isWatched = !this.isWatched
     this.procWatched = false
@@ -166,6 +166,8 @@ export class MovieCardComponent implements OnInit {
 
   goToYear(year: string): void {
     this.dataService.updateDiscoverQuery(['year', year])
-    this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
+    this.router.navigate([`/discover`], {
+      relativeTo: this.activatedRoute, queryParams: { type: 'year', year: year }
+    });
   }
 }

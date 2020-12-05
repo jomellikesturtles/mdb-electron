@@ -213,6 +213,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
 
   resetHotkeys() { }
   saveHotkeys() { }
+  changeCc() { this.ipcService.changeSubtitle() }
 }
 
 // @Pipe({ name: 'dataDisplay' })

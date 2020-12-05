@@ -12,19 +12,9 @@ const configDb = new Datastore({
 const path = require("path");
 const fs = require("fs");
 const { PROC_NAMES } = require("./src/assets/scripts/shared/constants");
-const {
-  app,
-  BrowserWindow,
-  ipcMain,
-  globalShortcut,
-  Menu,
-  Tray,
-  shell,
-} = electron;
+const {app, BrowserWindow, ipcMain,globalShortcut, Menu, Tray, shell, dialog} = electron;
 const IPCRendererChannel = require("./src/assets/IPCRendererChannel.json");
 const IPCMainChannel = require("./src/assets/IPCMainChannel.json");
-let procBookmark;
-let procWatched;
 let procLibraryDb;
 let procSearch;
 let procTorrentSearch;
@@ -430,15 +420,7 @@ ipcMain.on("get-torrents-title", function (event, data) {});
  * TODO: minify the param2 to just the basic movie metadata. Otherwise, it will an error: 'error spawn ENAMETOOLONG'
  */
 ipcMain.on("movie-metadata", function (event, data) {
-  // DEBUG.log('movies into movie-metadata-service..', data[0], data[1])
   let param2 = "";
-  // if (data[0] == 'set') {
-  //   param2 = JSON.stringify(data[1])
-  // } else {
-  //   param2 = data[1]
-  // }
-  // DEBUG.log(data[0])
-  // DEBUG.log(param2)
   offlineMovieDataService = forkChildProcess(
     "src/assets/scripts/offlineMetadataService.js",
     [data[0], param2],
@@ -528,9 +510,7 @@ ipcMain.on("bookmark", function (event, data) {
 
 // WATCHED
 ipcMain.on("watched", function (event, args) {
-  // if (!procWatched) {
   DEBUG.log("procWatched ", args);
-  // procWatched = forkChildProcess(
   args[0] = JSON.stringify(args[0]);
   args[1] = JSON.stringify(args[1]);
   let procWatched = forkChildProcess(
@@ -547,7 +527,25 @@ ipcMain.on("watched", function (event, args) {
     procWatched = null;
   });
   procWatched.on("message", (m) => sendContents(m[0], m[1]));
-  // }
+});
+
+ipcMain.on("subtitle", function (event, data) {
+  dialog.showOpenDialog({filters:[{name:'Subtitle', extensions:['srt','vtt']}]}).then(e => {
+    if (e.filePaths.length > 0 && !e.canceled) {
+      if (e.filePaths[0].toLowerCase().endsWith('.srt')) {
+        let procWatched = forkChildProcess(
+          "src/assets/scripts/subtitle-service.js",
+          args,
+          PROC_OPTION
+        );
+        procWatched.on("exit", function () { procWatched = null; });
+        procWatched.on("message", (m) => sendContents(m[0], m[1]));
+      }
+      if (e.filePaths[0].toLowerCase().endsWith('.vtt')) {
+        sendContents("destination-path", e.filePaths[0]);
+      }
+    }
+  });
 });
 
 /**

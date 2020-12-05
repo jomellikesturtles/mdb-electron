@@ -7,7 +7,12 @@ import { SelectedListComponent } from './selected-list/selected-list.component';
 import { MovieCardComponent } from './movie-card/movie-card.component';
 import { CardListComponent } from './card-list/card-list.component';
 import { ReleaseYearPipe } from 'src/app/mdb-pipes.pipe';
-import { VideoPlayerComponent } from '../video-player/video-player/video-player.component';
+import { HHMMSSPipe, VideoPlayerComponent } from '../video-player/video-player/video-player.component';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { HorizontalCardListComponent } from './horizontal-card-list/horizontal-card-list.component';
+import { MatDividerModule } from '@angular/material/divider';
+
 
 @NgModule({
   declarations: [
@@ -15,17 +20,24 @@ import { VideoPlayerComponent } from '../video-player/video-player/video-player.
     MovieCardComponent,
     CardListComponent,
     ReleaseYearPipe,
-    VideoPlayerComponent
+    VideoPlayerComponent,
+    HHMMSSPipe,
+    HorizontalCardListComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    MatSliderModule,
+    MatTooltipModule,
+    MatDividerModule
   ],
   exports: [
     SelectedListComponent,
     MovieCardComponent,
     CardListComponent,
     ReleaseYearPipe,
-    VideoPlayerComponent
+    VideoPlayerComponent,
+    HorizontalCardListComponent,
+    MatDividerModule
   ]
 })
 export class SharedModule { }

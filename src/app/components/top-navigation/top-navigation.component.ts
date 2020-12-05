@@ -34,7 +34,7 @@ export class TopNavigationComponent implements OnInit {
   @Select(state => state.UserState) user$: Observable<any>
   constructor(
     private dataService: DataService,
-    private firebaseService: FirebaseService,
+    // private firebaseService: FirebaseService,
     private ipcService: IpcService,
     private movieService: MovieService,
     private router: Router,
@@ -192,7 +192,7 @@ export class TopNavigationComponent implements OnInit {
   }
 
   signOut() {
-    this.firebaseService.signOut()
+    // this.firebaseService.signOut()
   }
 
   changeCredentialState(actionName: string) {

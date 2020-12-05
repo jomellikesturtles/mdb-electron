@@ -398,6 +398,15 @@ export class IpcService {
     // })
   }
 
+  changeSubtitle() {
+    this.sendToMain("subtitle")
+    return new Promise((resolve) => {
+      this.ipcRenderer.once('subtitle', (event,arg) => {
+        resolve(arg)
+      })
+    })
+  }
+
   removeListener(channel: string) {
     console.log('REMOVING LISTENER', channel)
     this.ipcRenderer.removeListener(channel, d => { })
@@ -408,7 +417,7 @@ export class IpcService {
     try {
       this.ipcRenderer.send(channel, [headers, body])
     } catch {
-      // console.log('failed to send Ipc: ', channel, [headers, body])
+      console.log('failed to send Ipc: ', channel, [headers, body])
     }
   }
 

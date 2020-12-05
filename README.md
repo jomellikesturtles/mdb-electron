@@ -324,6 +324,7 @@ UI and functionalities are influenced by follows: (in descending order)
 - [OfflineBay](https://github.com/techtacoriginal/offlinebay)
 - IMDB Mobile
 - Disney+
+- Letterboxd
 - Netflix
 - YTS
 - IMDB

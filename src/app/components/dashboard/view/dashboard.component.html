@@ -3,11 +3,14 @@
 <div class="container-fluid" style='padding-top: 10vh'>
   <div *ngIf="dashboardLists">
     <div *ngFor="let list of dashboardLists">
-      <h3>{{list.name}}</h3>
-      <div class='container-fluid' style='overflow-y:hidden;overflow-x:scroll;'>
+
+      <app-horizontal-card-list [title]='list.name' [moviesList]='list.data' [seeAllLink]='"/discover"' [queryParams]='list.queryParams'></app-horizontal-card-list>
+
+      <!-- <h3>{{list.name}}</h3>
+      <div class='container-fluid card-list-horizontal'>
         <app-card-list [movieList]='list.data' [cardWidth]='cardWidth' [displayMode]='"d-inline-flex"' [listType]='"none"'>
         </app-card-list>
-      </div>
+      </div> -->
     </div>
   </div>
 
