@@ -48,7 +48,7 @@
     "core-js": "^2.5.4",
     "electron-rebuild": "^1.11.0",
     "express": "^4.17.1",
-    "fast-csv": "^3.4.0",
+    "fast-csv": "^4.3.6",
     "fast-levenshtein": "^2.0.6",
     "firebase": "^7.5.2",
     "fluent-ffmpeg": "^2.1.2",
