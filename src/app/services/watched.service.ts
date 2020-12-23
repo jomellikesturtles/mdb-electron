@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './firebase.service';
 import { IUserSavedData } from '../interfaces';
-import { environment } from 'mdb-win32-x64/resources/app/src/environments/environment';
+import { environment } from './../../environments/environment';
 import { IpcService } from './ipc.service';
 import { UtilsService } from './utils.service';
 

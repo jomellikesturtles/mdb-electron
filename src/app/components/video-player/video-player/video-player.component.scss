@@ -10,22 +10,31 @@
 .player-controls-icon:hover {
   filter: invert(1) contrast(1)
 }
+
 #progressBarContainer {
-  text-decoration:none;
-  position:relative;
+  text-decoration: none;
+  position: relative;
 }
+
 #progressBarContainer #tooltipSpan {
-  display:none;
+  display: none;
 }
+
 #progressBarContainer:hover #tooltipSpan {
-  display:block;
-  position:fixed;
-  overflow:hidden;
+  display: block;
+  position: fixed;
+  overflow: hidden;
 }
 
-video::cue{
-  opacity: 1;
+.subtitle-span {
+  color: white;
   background-color: black;
-  font-size: 20px !important; color: red; margin-bottom: 50px;}
+}
 
-// ::cue(.yellow){ color: yellow; }
+.user-inactive {
+  cursor: none;
+
+  #playerControlsContainer {
+    display: none
+  }
+}

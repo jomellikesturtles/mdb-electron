@@ -88,7 +88,7 @@ export class DataService {
   }
 
   // updateDiscoverQuery(type: string, val: string | null | number) {
-  updateDiscoverQuery(val: string[]) {
+  updateDiscoverQuery(val: { type: string, value: any, name: string, paramMap?: any }) {
     // this.discoverQuery = val;
     this.discoverMoviesSource.next(val)
   }

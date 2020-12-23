@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of, Subscriber, forkJoin } from 'rxjs';
-// import 'rxjs/add/operator/retry';
-// import 'rxjs/add/operator/catch';
-import { catchError, map, tap, retry } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 // import { Test, Movie, Torrent } from '../subject'
 import { MDBTorrent, ITPBTorrent } from '../interfaces'
 import { IpcService } from '../services/ipc.service'
@@ -12,6 +10,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { STRING_REGEX_IMDB_ID } from '../constants';
 import { IYTSSingleQuery, YTSTorrent } from '../models/yts-torrent.model';
 import { UtilsService } from './utils.service';
+import { CacheService } from './cache.service';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -25,6 +24,7 @@ export class TorrentService {
   constructor(
     private http: HttpClient,
     private ipcService: IpcService,
+    private cacheService: CacheService,
     private sanitizer: DomSanitizer,
     private utilsService: UtilsService) { }
 
@@ -49,15 +49,9 @@ export class TorrentService {
   /**
    * Gets torrent from online.
    */
-  getTorrentsOnline(imdbId: String): Observable<IYTSSingleQuery | null> {
+  getTorrentsOnline(imdbId: string): Observable<IYTSSingleQuery | null> {
     // tt2015381 - guardians of the galaxy
-    let url = `${this.ytsUrl}?query_term=${imdbId}`
-    return this.http.get<IYTSSingleQuery>(url).pipe(
-      //   map(data => {
-      //   // return data.data.movies[0].torrents;
-      //   // return data;
-      // }
-    )
+    return this.cacheService.get(imdbId + '_YT', this.torrentsOnline(imdbId))
   }
   /**
    * Searches torrents offline
@@ -216,6 +210,11 @@ export class TorrentService {
 
     return this.http.get<string>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getStreamLink')))
+  }
+
+  private torrentsOnline(imdbId: string): Observable<IYTSSingleQuery | null>  {
+    let url = `${this.ytsUrl}?query_term=${imdbId}`
+    return this.http.get<IYTSSingleQuery>(url)
   }
 
   /**

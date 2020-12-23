@@ -5,7 +5,9 @@ import { IBookmark, BookmarkService } from './bookmark.service';
 import { MovieService } from './movie.service';
 import { WatchedService, IWatched } from './watched.service';
 import { UtilsService } from './utils.service';
-import { IpcService } from './ipc.service';
+import { IpcService, IUserMovieData } from './ipc.service';
+import { environment } from 'src/environments/environment';
+import { FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +16,7 @@ export class UserDataService {
 
   constructor(
     private bookmarkService: BookmarkService,
+    private firebaseService: FirebaseService,
     private movieService: MovieService,
     private watchedService: WatchedService,
     private libraryService: LibraryService,
@@ -89,16 +92,26 @@ export class UserDataService {
    *
    */
   getMovieUserData(id: number) {
-    return this.ipcService.getMovieUserData(id)
+    const myFunction = environment.runConfig.firebaseMode ?
+      this.firebaseService.getMovieUserData(id) :
+      this.ipcService.getMovieUserData(id)
+
+    return myFunction
   }
 
   /**
    * Gets watched, bookmark, library in list
    * TODO: remove Promise.resolve(null) and add firebase implementation
    */
-  getMovieUserDataInList(idList: any[]) {
-    return Promise.resolve(null)
+  getMovieUserDataInList(idList: any[]): Promise<any> {
+    // return Promise.resolve(null)
     // return this.ipcService.getMovieUserDataInList(idList)
+
+    const myFunction = environment.runConfig.firebaseMode ?
+      this.firebaseService.getUserDataMultiple(idList) :
+      this.ipcService.getMovieUserDataInList(idList)
+
+    return myFunction
   }
 
   getUserDataMultiple(dataType: 'library' | 'bookmark' | 'watched', data: object) {

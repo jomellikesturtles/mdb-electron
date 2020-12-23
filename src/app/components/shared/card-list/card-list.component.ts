@@ -6,6 +6,7 @@ import { LibraryService } from '../../../services/library.service';
 import { environment } from '../../../../environments/environment';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { IUserMovieData } from 'src/app/services/ipc.service';
+import { QueryDocumentSnapshot } from '@angular/fire/firestore/interfaces';
 
 @Component({
   selector: 'app-card-list',
@@ -45,17 +46,33 @@ export class CardListComponent implements OnInit {
     for (let index = 0; index < arr2.length; index++) {
       const queryList = arr2[index];
 
-      if (this.listType === 'none') {
-        this.userDataService.getMovieUserDataInList(idList).then(docs => {
-          // !TODO: Add firebase/spring implementation
-          const dataType = 'none'
-          if (docs) {
-            docs.forEach(data => {
-              const movie = this.movieList.find(e => e.id === data.tmdbId)
-              movie['watched'] = data.watched
-              movie['bookmark'] = data.bookmark
-              movie['library'] = data.library
-            });
+      if (this.listType === 'none') { // all types of user data.
+        this.userDataService.getMovieUserDataInList(queryList).then(docs => {
+          if (docs.isFirebaseData && docs.isFirebaseData === true) {
+            const localDocs: Array<QueryDocumentSnapshot<any>>[] = docs.data
+            if (localDocs[0].length > 0) {
+              localDocs[0].forEach(element => {
+                const movie = this.movieList.find(e => e.id === element.data().tmdbId)
+                movie['bookmark'] = element.data()
+                movie['bookmark'].id = element.id
+              })
+            }
+            if (localDocs[1].length > 0) {
+              localDocs[1].forEach(element => {
+                const movie = this.movieList.find(e => e.id === element.data().tmdbId)
+                movie['watched'] = element.data()
+                movie['watched'].id = element.id
+              })
+            }
+          } else {
+            if (docs) {
+              docs.forEach(data => {
+                const movie = this.movieList.find(e => e.id === data.tmdbId)
+                movie['watched'] = data.watched
+                movie['bookmark'] = data.bookmark
+                movie['library'] = data.library
+              });
+            }
           }
         })
       } else {

@@ -289,7 +289,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
    * @param id value to discover
    */
   goToDiscover(type: string, id: string, name?: string) {
-    this.dataService.updateDiscoverQuery([type, id, name])
+    this.dataService.updateDiscoverQuery({ type: type, value: id, name: name })
     this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
     this.isHide = true
     this.onHidePlayer()

@@ -30,7 +30,7 @@ import { Subject } from 'rxjs';
   selector: 'app-details',
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 
 /**
@@ -161,7 +161,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getUserMovieData() {
     this.procVideo, this.procBookmark, this.procWatched = true
     this.userDataService.getMovieUserData(this.movieDetails.tmdbId).then((userMovieData: IUserMovieData) => {
-
+      console.log('usermoviedata', userMovieData)
       if (userMovieData.library) {
         // if (libraryList.length > 0) {
         this.isMovieAvailable = true
@@ -406,9 +406,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param id value to discover
    */
   goToDiscover(type: string, id: string, name?: string) {
-    this.dataService.updateDiscoverQuery([type, id, name])
+
+    this.dataService.updateDiscoverQuery({ type: type, value: id, name: name })
     this.router.navigate([`/discover`], { queryParams: { type: type, id: id, name: name } });
-    // this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
   }
 
   goToMovie(val: string) {

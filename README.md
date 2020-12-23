@@ -167,7 +167,7 @@ https://www.googleapis.com/youtube/v3/videos?id=7lCDEYXw3mM&key=YOUR_API_KEY
 
 yts.ag or yts.am returns movie info with torrent links and youtube trailer url
 
-- [How to use](https://yts.am/api)
+- [How to use](https://yts.mx/api)
 - Examples
 
 ```

@@ -33,6 +33,10 @@
           <img class='side-nav-icon' src="./assets/icons/gear.svg" />
           <span *ngIf="isOpenNav">Preferences</span>
         </a>
+        <a routerLinkActive='router-active' routerLink="./video" class='sidenav-option'>
+          <img class='side-nav-icon' src="./assets/icons/gear.svg" />
+          <span *ngIf="isOpenNav">VIDEOTEST</span>
+        </a>
       </div>
       <div style='overflow: hidden; position: fixed; bottom: 0;' class='sidenav-option'>
         <a (click)="switchNav()">

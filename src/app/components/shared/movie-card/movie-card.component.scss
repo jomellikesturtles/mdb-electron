@@ -1,0 +1,147 @@
+.movie-card {
+  padding: 5px;
+  outline: none;
+  margin: auto;
+}
+
+.movie-card-body {
+  padding: 5px 0px 0px 0px !important;
+}
+
+.movie-card-selected .overlay-add {
+  opacity: 0.5;
+}
+
+.card-button {
+  text-align: center;
+  position: absolute;
+  cursor: pointer;
+  background-color: black;
+  height: 25px;
+  width: 40px;
+  display: none;
+  z-index: 3;
+}
+
+.card-button-interior {
+  height: 100%;
+  margin-bottom: 4px;
+  margin-right: 2px;
+  background-size: cover;
+  background-position: center;
+}
+
+.card-button-icon {
+  margin-bottom: 4px;
+  margin-right: 2px;
+  filter: invert(1);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  display: inline-block;
+  background-size: cover;
+}
+
+.movie-card-image-container:hover, :focus {
+  .card-button {
+    transition: 1s;
+    display: block;
+  }
+}
+
+.movie-card-title {
+  display: inline-block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  margin-bottom: 0px;
+}
+
+// bookmark
+.movie-bookmark {
+  top: 5%;
+  left: 0%;
+}
+
+// favorite
+.movie-mark-favorite {
+  top: 20%;
+  left: 0%;
+}
+
+.movie-mark-as-watched {
+  top: 35%;
+  left: 0%;
+}
+
+.movie-highlight {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  height: 15px;
+  width: 15px;
+  z-index: 3;
+}
+
+.movie-progress-bar {
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  height: 3px;
+  width: 100%;
+  background-color: rgb(255, 62, 4);
+  // border-radius: 50%;
+  // box-shadow: 0 0 10px #969696;
+  z-index: 3;
+}
+
+// the circle one
+.movie-available {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  height: 15px;
+  width: 15px;
+  background-color: rgb(8, 185, 8);
+  border-radius: 50%;
+  box-shadow: 0 0 10px #38ec14;
+  z-index: 3;
+}
+
+.bookmark-add {
+  background-image: url(~/assets/icons/bookmark-add.svg);
+  filter: invert(1)
+}
+
+.bookmark-remove {
+  background-image: url(~/assets/icons/bookmark-minus.svg);
+  filter: invert(1)
+}
+
+.favorite-add {
+  background-image: url(~/assets/icons/heart.svg);
+  filter: invert(1)
+}
+
+.button-added {
+  background-image: url(~/assets/icons/check.svg);
+}
+
+.bookmark-icon {
+  background-image: url(~/assets/icons/bookmark-add.svg);
+}
+
+.favorite-icon {
+  background-image: url(~/assets/icons/heart.svg);
+}
+
+.favorite-icon:hover,
+.favorite-icon:focus {
+  filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)
+}
+
+.bookmark-icon:hover,
+.bookmark-icon:focus {
+  filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(212deg) brightness(104%) contrast(97%)
+}
