@@ -1,4 +1,5 @@
 import { UserDataService } from './../../../services/user-data.service';
+import { PreferencesService } from './../../../services/preferences.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
@@ -7,6 +8,10 @@ import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { DataService } from '../../../services/data.service';
 import { UtilsService } from '../../../services/utils.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
+import { MovieService } from 'src/app/services/movie.service';
+import { TorrentService } from 'src/app/services/torrent.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 declare var $: any
 
 @Component({
@@ -20,6 +25,20 @@ export class MovieCardComponent implements OnInit {
   @Input()  // TODO: add an interface.
   set movie(inputMessage: any) {
     this._movie = inputMessage
+    if (this.preferencesService.isGetTorrentFromMovieCard) {
+      // UNCOMMENT BELOW to get external_id and torrent one by one
+      this.movieService.getExternalId(this._movie.id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(externalId => {
+        if (externalId && externalId.imdb_id) {
+          this.torrentService.getTorrentsOnline(externalId.imdb_id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
+            if (e.status === 'ok' && e.data.movie_count > 0) {
+              const firstTorrent = e.data.movies[0].torrents[0]
+              this._movie.library = firstTorrent
+              this._movie.library.id = firstTorrent.hash
+            }
+          })
+        }
+      })
+    }
   }
   get movie(): any {
     return this._movie;
@@ -59,15 +78,27 @@ export class MovieCardComponent implements OnInit {
     return this._watched;
   }
 
+  _favorite: any
+  @Input()
+  set favorite(favorite: any) {
+    if (favorite) {
+      this._favorite = favorite
+    }
+  }
+  get favorite(): any {
+    return this._favorite;
+  }
+
   _library: any
   @Input()
   set library(inputVideo: any) {
     this._library = inputVideo
   }
-  get video(): any {
+  get library(): any {
     return this._library;
   }
-
+  isAdminMode = false
+  procFavorite = false
   procBookmark = false
   procWatched = false
   procHighlight = false
@@ -75,11 +106,16 @@ export class MovieCardComponent implements OnInit {
   isBookmarked = false
   isAvailable = false
   watchedPercentage = '0%'
+  isSingleClick: any
+  private ngUnsubscribe = new Subject();
 
   constructor(
     private dataService: DataService,
-    private utilsService: UtilsService,
+    private movieService: MovieService,
+    private preferencesService: PreferencesService,
+    private torrentService: TorrentService,
     private userDataService: UserDataService,
+    private utilsService: UtilsService,
     private watchedService: WatchedService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -90,6 +126,11 @@ export class MovieCardComponent implements OnInit {
     $('[data-toggle="popover"]').popover()
     $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
     // console.log('MOVIECARD:', this.movie)
+  }
+
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next()
+    this.ngUnsubscribe.complete()
   }
 
   /**
@@ -126,7 +167,12 @@ export class MovieCardComponent implements OnInit {
   }
 
   onPreview(): void {
-    this.dataService.updatePreviewMovie(this._movie)
+    this.isSingleClick = true;
+    setTimeout(() => {
+      if (this.isSingleClick) {
+        this.dataService.updatePreviewMovie(this._movie)
+      }
+    }, 300)
   }
 
   async onToggleBookmark(): Promise<any> {
@@ -146,6 +192,9 @@ export class MovieCardComponent implements OnInit {
     this.procWatched = false
   }
 
+  toggleFavorites(): void {
+    this.isSingleClick = false
+  }
   /**
    * Gets the year.
    * @param releaseDate release date with format YYYY-MM-DD
@@ -165,7 +214,7 @@ export class MovieCardComponent implements OnInit {
   }
 
   goToYear(year: string): void {
-    this.dataService.updateDiscoverQuery(['year', year])
+    this.dataService.updateDiscoverQuery({ type: 'year', value: year, name: null })
     this.router.navigate([`/discover`], {
       relativeTo: this.activatedRoute, queryParams: { type: 'year', year: year }
     });

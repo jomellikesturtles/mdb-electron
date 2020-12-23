@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth'
 import { AngularFireModule } from '@angular/fire/'
 import { AngularFirestore, } from '@angular/fire/firestore'
+import { QueryDocumentSnapshot } from '@angular/fire/firestore/interfaces';
 import * as firebase from 'firebase';
 import { IpcService, BookmarkChanges } from './ipc.service';
 import { Store } from '@ngxs/store';
 import { RemoveUser } from '../app.actions';
+import { combineLatest } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
@@ -49,6 +51,14 @@ export class FirebaseService {
     })
   }
 
+  getMovieUserData(id: number) {
+    const bookmarkQuery = this.getFromFirestore(CollectionName.Bookmark, FieldName.TmdbId, FirebaseOperator.Equal, id)
+    const watchedQuery = this.getFromFirestore(CollectionName.Watched, FieldName.TmdbId, FirebaseOperator.Equal, id)
+    return new Promise<any>((resolve, reject) => {
+      combineLatest([bookmarkQuery, watchedQuery]).toPromise().then(([val, val2]) => { resolve([val, val2]) })
+    })
+  }
+
   /**
    * Gets item from firestore.
    * @param collection name of collection
@@ -73,10 +83,17 @@ export class FirebaseService {
     })
   }
 
+  getUserDataMultiple(idList: any[]): Promise<any> {
+    const bookmarkQuery = this.getFromFirestoreMultiple(CollectionName.Bookmark, FieldName.TmdbId, idList)
+    const watchedQuery = this.getFromFirestoreMultiple(CollectionName.Watched, FieldName.TmdbId, idList)
+    return new Promise<any>((resolve, reject) => {
+      combineLatest([bookmarkQuery, watchedQuery]).toPromise().then((val) => { resolve({ isFirebaseData: true, data: val }) })
+    })
+  }
 
-  getFromFirestoreMultiple(collectionName: CollectionName, fieldName: FieldName, list: any[]) {
+  getFromFirestoreMultiple(collectionName: CollectionName, fieldName: FieldName, list: any[]): Promise<Array<QueryDocumentSnapshot<any>>> {
     return new Promise((resolve, reject) => {
-      this.db.collection(collectionName).where(fieldName, FirebaseOperator.In, list).get().then((snapshot:firebase.firestore.QuerySnapshot) => {
+      this.db.collection(collectionName).where(fieldName, FirebaseOperator.In, list).get().then((snapshot: firebase.firestore.QuerySnapshot) => {
         resolve(snapshot.docs)
       }).catch(err => {
         reject(err)
@@ -162,7 +179,7 @@ export class FirebaseService {
     return new Promise(resolve => {
       // this.db.collection(collectionName).doc(docId).delete().then((e) => {
       //   console.error('DELETE DOC: ', e);
-        resolve(null)
+      resolve(null)
       // }).catch((error) => {
       //   console.error('Error removing document: ', error);
       // });
@@ -345,6 +362,11 @@ export interface IBookmark {
   createTs?: Date,
   updateTs?: Date,
   change: 'add' | 'delete' | 'update',
+}
+export interface FirebaseData {
+  data(): void
+  id: string
+  [x: string]: any
 }
 
 /**

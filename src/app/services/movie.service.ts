@@ -6,8 +6,10 @@ import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
-import { MDBTorrent, IOmdbMovieDetail, IRating, TmdbParameters, OmdbParameters, TmdbSearchMovieParameters } from '../interfaces'
+import { IOmdbMovieDetail, TmdbParameters, OmdbParameters, TmdbSearchMovieParameters } from '../interfaces'
 import { OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID, YOUTUBE_API_KEY } from '../constants';
+import { TMDB_External_Id } from '../models/tmdb-external-id.model';
+import { CacheService } from './cache.service';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
 
@@ -16,7 +18,8 @@ export class MovieService {
 
   constructor(
     private http: HttpClient,
-    private ipcService: IpcService
+    private cacheService: CacheService,
+    private ipcService: IpcService,
   ) { }
 
   httpParam = new HttpParams()
@@ -81,13 +84,11 @@ export class MovieService {
   /**
    * Gets IMDB id
    *
-   * @param val tmdbId
-   * @returns imdb id
+   * @param tmdbId tmdbId
+   * @returns external ids
    */
-  getExternalId(val: any) {
-    const url = `${TMDB_URL}/movie/${val}/external_ids?api_key=${TMDB_API_KEY}`
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getExternalId')))
+  getExternalId(tmdbId: number): Observable<TMDB_External_Id> {
+    return this.cacheService.get(tmdbId + '_EXTERNAL_ID', this.externalId(tmdbId))
   }
 
   getMovieBackdrop(val: string): Observable<any> {
@@ -139,18 +140,11 @@ export class MovieService {
   }
 
   /**
-   * Gets movie details.
+   * Gets related videos from TMDB.
    * @param tmdbId the tmdb id.
    */
   getTmdbVideos(tmdbId: number): Observable<any> {
-    const url = `${TMDB_URL}/movie/${tmdbId}/videos`
-    const myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
-    const tmdbHttpOptions = {
-      headers: JSON_CONTENT_TYPE_HEADER,
-      params: myHttpParam
-    };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getTmdbMovieDetails')))
+    return this.cacheService.get(tmdbId + '_TMDB_VIDEOS', this.tmdbVideos(tmdbId))
   }
 
   /**
@@ -159,19 +153,7 @@ export class MovieService {
    * @param appendToResponse optional append to response
    */
   getTmdbMovieDetails(tmdbId: number, appendToResponse?: string): Observable<any> {
-    const url = `${TMDB_URL}/movie/${tmdbId}`
-    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
-    // videos, images, credits, translations, similar, external_ids, alternative_titles,recommendations
-    //   keywords, reviews
-    if (appendToResponse) {
-      myHttpParam = myHttpParam.append(TmdbParameters.AppendToResponse, appendToResponse)
-    }
-    const tmdbHttpOptions = {
-      headers: JSON_CONTENT_TYPE_HEADER,
-      params: myHttpParam
-    };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getTmdbMovieDetails')))
+    return this.cacheService.get(tmdbId + '_TMDB_DETAILS', this.tmdbMovieDetails(tmdbId, appendToResponse))
   }
 
   /**
@@ -208,16 +190,12 @@ export class MovieService {
    * Get movies discover by genre, year, etc.
    * @param val parameter map
    */
-  getMoviesDiscover(val: Map<TmdbParameters, any>): Observable<any> {
-    const url = `${TMDB_URL}/discover/movie`
-    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
-    myHttpParam = this.appendMappedParameters(val, myHttpParam)
-    const tmdbHttpOptions = {
-      headers: JSON_CONTENT_TYPE_HEADER,
-      params: myHttpParam
-    };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesDiscover')))
+  getMoviesDiscover(paramMap: Map<TmdbParameters, any>): Observable<any> {
+    let key = ''
+    for (let entry of paramMap.entries()) {
+      key = entry[0] + '_' + entry[1]
+    }
+    return this.cacheService.get(key + '_TMDB_DISCOVER', this.movieDiscover(paramMap))
   }
 
   /**
@@ -245,6 +223,7 @@ export class MovieService {
     for (let entry of paramMap.entries()) {
       myHttpParam = myHttpParam.append(entry[0], entry[1])
     }
+    console.log('MYHTTPPARAM: ', myHttpParam.toString())
     return myHttpParam
   }
 
@@ -270,6 +249,58 @@ export class MovieService {
     return this.http.get<any>(baseUrl, httpOptions).pipe(map((e) => e.items))
   }
 
+  getSubtitleFile(filePath: string): Observable<any> {
+    return this.http.get<any>(filePath, { responseType: 'blob' as 'json' })
+  }
+
+  getSubtitleFileString(filePath: string): Observable<any> {
+    return this.http.get<any>(filePath, { responseType: 'text' as 'json' })
+  }
+
+  private externalId(tmdbId: number): Observable<TMDB_External_Id> {
+    const url = `${TMDB_URL}/movie/${tmdbId}/external_ids?api_key=${TMDB_API_KEY}`
+    return this.http.get<TMDB_External_Id>(url).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getExternalId')))
+  }
+
+  private tmdbVideos(tmdbId: number): Observable<any> {
+    const url = `${TMDB_URL}/movie/${tmdbId}/videos`
+    const myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getTmdbMovieDetails')))
+  }
+  private tmdbMovieDetails(tmdbId: number, appendToResponse?: string): Observable<any> {
+    const url = `${TMDB_URL}/movie/${tmdbId}`
+    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
+    // videos, images, credits, translations, similar, external_ids, alternative_titles,recommendations
+    //   keywords, reviews
+    if (appendToResponse) {
+      myHttpParam = myHttpParam.append(TmdbParameters.AppendToResponse, appendToResponse)
+    }
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getTmdbMovieDetails')))
+  }
+
+  private movieDiscover(paramMap: Map<TmdbParameters, any>) {
+
+    const url = `${TMDB_URL}/discover/movie`
+    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
+    myHttpParam = this.appendMappedParameters(paramMap, myHttpParam)
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getMoviesDiscover')))
+  }
   /**
    * Error handler.
    * @param operation the operation

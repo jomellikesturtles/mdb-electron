@@ -398,10 +398,10 @@ export class IpcService {
     // })
   }
 
-  changeSubtitle() {
-    this.sendToMain("subtitle")
+  changeSubtitle(): Promise<any> {
+    this.sendToMain("get-subtitle")
     return new Promise((resolve) => {
-      this.ipcRenderer.once('subtitle', (event,arg) => {
+      this.ipcRenderer.once('subtitle-path', (event,arg) => {
         resolve(arg)
       })
     })

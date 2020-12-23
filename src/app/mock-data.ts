@@ -282,10 +282,10 @@ export class StartTimeStamp {
 @Injectable()
 export class DisplayedTorrents {
   private myDisplayedTorrents: DisplayedTorrent[]
-  add(val: DisplayedTorrent) {
-    val = new DisplayedTorrent()
-    this.myDisplayedTorrents.push(val)
-  }
+  // add(val: DisplayedTorrent) {
+  //   val = new DisplayedTorrent()
+  //   this.myDisplayedTorrents.push(val)
+  // }
   getDisplayedTorrents() {
     return this.myDisplayedTorrents
   }
@@ -297,7 +297,7 @@ export class DisplayedTorrent {
   private hash: string
   private name: string
   private size: number
-  constructor(added?: string, hash?: string, name?: string, size?: number) {
+  constructor(added: string, hash: string, name?: string, size?: number) {
     this.added = added
     this.hash = hash
     this.name = name

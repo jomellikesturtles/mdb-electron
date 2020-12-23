@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DataService } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-horizontal-card-list',
@@ -21,13 +22,15 @@ export class HorizontalCardListComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private activatedRoute: ActivatedRoute
-    ) { }
+    private activatedRoute: ActivatedRoute,
+    private dataService: DataService,
+  ) { }
 
   ngOnInit() {
   }
 
   seeAll() {
+    this.dataService.updateDiscoverQuery({ type: null, value: null, name: this.title, paramMap: this.queryParams })
     this.router.navigate([this.seeAllLink], {
       relativeTo: this.activatedRoute, queryParams: this.queryParams,
     });

@@ -114,6 +114,10 @@ app.on("activate", function () {
     createWindow();
   }
 });
+const TEMP_FOLDER = path.join(process.cwd(), 'dist/mdb-electron/tmp');
+if (!fs.existsSync(TEMP_FOLDER)) {
+  fs.mkdirSync(TEMP_FOLDER);
+}
 
 function setSystemTray() {
   // let trayIcon = `${__dirname}/dist/mdb-electron/assets/icons/chevron.png`
@@ -529,21 +533,20 @@ ipcMain.on("watched", function (event, args) {
   procWatched.on("message", (m) => sendContents(m[0], m[1]));
 });
 
-ipcMain.on("subtitle", function (event, data) {
-  dialog.showOpenDialog({filters:[{name:'Subtitle', extensions:['srt','vtt']}]}).then(e => {
+// TODO: check if destination file already exists & equal
+ipcMain.on("get-subtitle", function (event, data) {
+  dialog.showOpenDialog({filters:[{name:'Subtitle', extensions:['srt','vtt']}]}).then((e) => {
     if (e.filePaths.length > 0 && !e.canceled) {
-      if (e.filePaths[0].toLowerCase().endsWith('.srt')) {
-        let procWatched = forkChildProcess(
-          "src/assets/scripts/subtitle-service.js",
-          args,
-          PROC_OPTION
-        );
-        procWatched.on("exit", function () { procWatched = null; });
-        procWatched.on("message", (m) => sendContents(m[0], m[1]));
-      }
-      if (e.filePaths[0].toLowerCase().endsWith('.vtt')) {
-        sendContents("destination-path", e.filePaths[0]);
-      }
+      const subtitlePath = path.join(TEMP_FOLDER, path.basename(e.filePaths[0]));
+      const data = new Uint8Array(Buffer.from(fs.readFileSync(e.filePaths[0])));
+      // fs.copyFile(e.filePaths[0], subtitlePath, (err) => {
+      fs.writeFile(subtitlePath, data, (err) => {
+        if (err) throw err;
+        console.log('The file has been saved!');
+        if (err) { console.log(err); }
+        console.log("subtitle-path", subtitlePath);
+        sendContents("subtitle-path", path.basename(e.filePaths[0]));
+      });
     }
   });
 });

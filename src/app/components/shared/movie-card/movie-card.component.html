@@ -2,23 +2,25 @@
   <div
     [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w154'+_movie.poster_path+')'}"
     class='movie-card-image-container' data-toggle="tooltip" title="{{_movie.title}} ({{_movie.release_date|releaseYear}})">
+    <!-- w342 w154, w185 -->
     <!-- <div
     [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w342'+_movie.poster_path+')'}"
     class='movie-card-image-container' (click)='onHighlight(movie)'> -->
-    <!-- 'w154', 'w185' -->
-    <div class='movie-bookmark'>
-      <div *ngIf="!procBookmark" (click)='onToggleBookmark()'>
+
+    <div class='card-button movie-bookmark' data-toggle='tooltip' title='Toggle Bookmark'>
+      <span class='card-button-icon bookmark-icon' (click)="onToggleBookmark()" *ngIf="!procBookmark" ></span>
+      <!-- <div *ngIf="!procBookmark" (click)='onToggleBookmark()'>
         <img *ngIf="!(_movie.bookmark && _movie.bookmark.id)" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
           src='./assets/icons/bookmark-add.svg' data-toggle='tooltip' title='Add Bookmark' />
         <img *ngIf="_movie.bookmark && _movie.bookmark.id" style='height:20px; margin-bottom: 4px;
-    margin-right: 2px;' src='./assets/icons/bookmark-minus.png' data-toggle='tooltip' title='Remove Bookmark' />
-      </div>
+    margin-right: 2px;' src='./assets/icons/bookmark-minus.png' />
+      </div> -->
       <div *ngIf="procBookmark" class="spinner-border spinner-border-sm" role="status">
         <span class="sr-only">Loading...</span>
       </div>
     </div>
 
-    <div class='movie-highlight'>
+    <div class='movie-highlight' *ngIf="isAdminMode" >
       <div *ngIf="!procHighlight" (click)='onHighlight(movie)'>
         <img *ngIf="!_movie.isHighlighted" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
           src='./assets/icons/check.svg' data-toggle='tooltip' title='Highlight' />
@@ -38,13 +40,19 @@
         </div>-->
     <!-- end of alt image -->
 
-    <div *ngIf="_movie.library && _movie.library.id" class='movie-available' data-toggle='tooltip' title='Available offline'>
+    <div *ngIf="_movie.library && _movie.library.id" class='movie-available' data-toggle='tooltip' title='Available'>
     </div>
 
-    <div class='movie-mark-as-watched' *ngIf='!_movie.watched'>
+    <div class="card-button movie-mark-favorite" data-toggle="tooltip" title="Toggle Favorite">
+      <span class="card-button-icon favorite-icon" (click)="toggleFavorites()" *ngIf="!procFavorite"></span>
+      <div *ngIf='procFavorite' class='spinner-border spinner-border-sm' role='status'>
+        <span class='sr-only'>Loading...</span>
+      </div>
+    </div>
+
+    <div class='card-button movie-mark-as-watched' *ngIf='!_movie.watched'>
       <div (click)='onToggleWatched()' *ngIf='!procWatched'>
-        <img style='height:20px; margin-bottom: 4px;
-      margin-right: 2px;' src='./assets/icons/check.svg' data-toggle='tooltip' title='Mark as watched' />
+        <img class='card-button-icon' src='./assets/icons/check.svg' data-toggle='tooltip' title='Mark as watched' />
       </div>
       <div *ngIf='procWatched' class='spinner-border spinner-border-sm' role='status'>
         <span class='sr-only'>Loading...</span>

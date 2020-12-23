@@ -32,6 +32,9 @@ import { RouterModule } from '@angular/router';
 import { FloatingPlayerComponent } from './components/floating-player/floating-player.component';
 import { SharedModule } from './components/shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -62,7 +65,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     RouterModule.forRoot([]),
     NgxsModule.forRoot([CountState, SelectedMoviesState, AppRunState]),
     SharedModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [MdbGuardGuard, backendProvider],

@@ -12,6 +12,8 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HorizontalCardListComponent } from './horizontal-card-list/horizontal-card-list.component';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
+import { UserIdleModule } from 'angular-user-idle';
 
 
 @NgModule({
@@ -28,7 +30,9 @@ import { MatDividerModule } from '@angular/material/divider';
     CommonModule,
     MatSliderModule,
     MatTooltipModule,
-    MatDividerModule
+    MatDividerModule,
+    MatMenuModule,
+    UserIdleModule.forRoot({ idle: 5, timeout: 5, ping: 5 })
   ],
   exports: [
     SelectedListComponent,

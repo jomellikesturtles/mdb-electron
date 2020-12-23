@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core'
 import { MovieService } from '../../../services/movie.service'
 import { DataService } from '../../../services/data.service'
-import { IpcService } from '../../../services/ipc.service'
 import { UtilsService } from '../../../services/utils.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { TmdbParameters, } from '../../../interfaces'
 import { GENRES } from '../../../constants'
 import { Select, Store } from '@ngxs/store'
 import { DomSanitizer } from '@angular/platform-browser'
-import { BookmarkService, IBookmark } from '../../../services/bookmark.service'
 
 declare var $: any
 
@@ -18,13 +16,10 @@ declare var $: any
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  [x: string]: any
 
   constructor(
-    private bookmarkService: BookmarkService,
     private dataService: DataService,
     private movieService: MovieService,
-    private ipcService: IpcService,
     private utilsService: UtilsService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -48,8 +43,8 @@ export class DashboardComponent implements OnInit {
   tag
 
   ngOnInit() {
-    this.getNowShowingMovies()
-    this.getTopMoviesFromYear()
+    // this.getNowShowingMovies()
+    // this.getTopMoviesFromYear()
     this.getTopGenreMovie()
   }
 
@@ -108,7 +103,7 @@ export class DashboardComponent implements OnInit {
     const innerList = {
       name: listName,
       data: data.results,
-      queryParams: myParam2
+      queryParams: paramMap
     }
     this.dashboardLists.push(innerList)
     this.dataService.addDashboardData(innerList.data)
@@ -123,20 +118,6 @@ export class DashboardComponent implements OnInit {
   }
 
   /**
-   * Gets the bookmark status of the selected movie.
-   * @param id tmdb id to get the bookmark status
-   */
-  getBookmarkStatus(id: number) {
-    this.bookmarkService.getBookmark(id).then(e => {
-      if (e !== null) {
-        this.selectedMovieBookmarkStatus = true
-      } else {
-        this.selectedMovieBookmarkStatus = false
-      }
-    })
-  }
-
-  /**
    * Goes to detail of the selected movie.
    * @param movie the movie selected
    */
@@ -145,11 +126,6 @@ export class DashboardComponent implements OnInit {
     this.dataService.updateHighlightedMovie(highlightedId);
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
   }
-
-  // goToGenre(val) {
-  //   this.dataService.updateDiscoverQuery(['genre', val])
-  //   this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
-  // }
 
   scrollPrev() {
     const container = document.getElementById('topMoviesFromYearPanel')

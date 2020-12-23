@@ -5,6 +5,11 @@ import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
 import { STRING_REGEX_PREFIX } from '../../constants';
 import { takeUntil } from 'rxjs/operators';
+import { Subtitle } from 'src/app/models/subtitle.model';
+import { MovieService } from 'src/app/services/movie.service';
+import SubtitlesUtil from 'src/app/utils/subtitles.utils';
+import chardet from "chardet";
+import jschardet from "jschardet";
 // declare var $: any;
 @Component({
   selector: 'app-preferences',
@@ -31,6 +36,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   constructor(
     private ipcService: IpcService,
+    private movieService: MovieService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -213,7 +219,38 @@ export class PreferencesComponent implements OnInit, OnDestroy {
 
   resetHotkeys() { }
   saveHotkeys() { }
-  changeCc() { this.ipcService.changeSubtitle() }
+  subtitleMap = new Map<number, Subtitle>();
+
+  // test only
+  async changeCc() {
+
+
+    let filePath = ''
+
+    filePath = await this.ipcService.changeSubtitle()
+    filePath = 'tmp/' + filePath
+    console.log('filePath', filePath)
+
+    const fileStr = await this.movieService.getSubtitleFileString(filePath).toPromise()
+    const encodingAlt = chardet.analyse(fileStr)
+    const encoding = jschardet.detect(fileStr, { minimumThreshold: 0 }).encoding
+
+    const file = await this.movieService.getSubtitleFile(filePath).toPromise()
+
+    let resultFileStr
+    const fileReader = new FileReader()
+
+    fileReader.readAsText(file, encoding);
+    const root = this
+    fileReader.onloadend = function (x) {
+      resultFileStr = fileReader.result
+      console.log(resultFileStr)
+      resultFileStr = resultFileStr.replace(/[\r]+/g, '')
+      root.subtitleMap = SubtitlesUtil.mapSubtitle(resultFileStr)
+      console.log("subtitleMap!", root.subtitleMap)
+    };
+
+  }
 }
 
 // @Pipe({ name: 'dataDisplay' })

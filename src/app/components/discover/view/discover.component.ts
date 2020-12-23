@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DataService } from '../../../services/data.service'
 import { MovieService } from '../../../services/movie.service'
 import { TmdbParameters, GenreCodes } from '../../../interfaces';
-import { Subject } from 'rxjs';
+import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 
@@ -32,14 +32,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
   ) { }
   ngOnInit(): void {
-    // !TODO: WIP. change to queryParams
-    this.dataService.discoverQuery.pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
-      console.log('fromdataservice: ', data);
-      this.discoverQuery(data[0], data[1], data[2])
-    });
-    this.activatedRoute.queryParams.pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
-      console.log(data)
-      this.discoverQuery(data.type, data.value, data.name)
+    this.dataService.discoverQuery.subscribe((discoverData) => {
+      this.discoverQuery(discoverData.type, discoverData.value, discoverData.name, discoverData)
     })
   }
 
@@ -54,7 +48,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
    * @param val type value
    * @param val1 (optional) additional context
    */
-  discoverQuery(type: string, val: string | number, val2?: string): void {
+  discoverQuery(type: string, val: string | number, val2?: string, discoverData?): void {
     let tempTitle = ''
     // cert,year,genre,person
     switch (type) {
@@ -74,11 +68,12 @@ export class DiscoverComponent implements OnInit, OnDestroy {
         this.paramMap.set(TmdbParameters.PrimaryReleaseYear, val)
         tempTitle = `Top movies from ${val}`
         break;
-        default:
-          this.paramMap.set(val[0], val[1])
-          tempTitle = `Top movies with ${val}`
+      default:
+        this.paramMap = discoverData.paramMap
+        tempTitle = discoverData.name
         break;
     }
+
     this.movieService.getMoviesDiscover(this.paramMap).subscribe(data => {
       if (data.results.length > 0) {
         this.discoverResults.push(...data.results)

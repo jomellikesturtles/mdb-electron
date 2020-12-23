@@ -1,0 +1,12 @@
+.see-more-label {
+  display: none;
+}
+
+.card-list-container:hover {
+  transition: 0.5s;
+  background-color: #333333;
+
+  .see-more-label {
+    display: block;
+  }
+}

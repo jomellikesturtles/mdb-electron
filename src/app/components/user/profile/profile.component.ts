@@ -1,6 +1,8 @@
-import { Component, OnInit,
+import {
+  Component, OnInit,
   // ChangeDetectorRef
 } from '@angular/core';
+import { ThemePalette } from '@angular/material/core';
 // import { Observable } from 'rxjs';
 // import { UserState } from '../../../app.state';
 // import { Select } from '@ngxs/store';
@@ -20,6 +22,7 @@ export class ProfileComponent implements OnInit {
     emailAddress: 'peterparker123@gmail.com',
     watchedCount: 90,
     bookmarkedCount: 9,
+    bio: 'movies... I like'
   }
   photoUrl = ''
   userStats: {
@@ -27,7 +30,7 @@ export class ProfileComponent implements OnInit {
   }
   defaultUserProfile
   firebaseUser$
-
+  background: ThemePalette = undefined
   constructor(
     // private cdr: ChangeDetectorRef,
     // private firebaseService: FirebaseService
@@ -39,6 +42,9 @@ export class ProfileComponent implements OnInit {
     this.treatAll()
   }
 
+  ngAfterViewInit(): void {
+    this.background = this.background ? undefined : 'primary'
+  }
   treatAll() {
     // this.firebaseService.getEmpty()
   }
@@ -81,7 +87,8 @@ export class ProfileComponent implements OnInit {
     console.log(data)
     // this.firebaseService.uploadToStorage(data.item(0))
   }
-  seeAll(val) {
+
+  exportUserData() {
 
   }
 }
@@ -91,4 +98,5 @@ export interface IProfile {
   watchedCount: number | 0,
   bookmarkedCount: number | 0,
   emailAddress: string,
+  bio: string
 }

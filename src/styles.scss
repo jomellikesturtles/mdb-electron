@@ -28,7 +28,7 @@ $mdb-electron-theme: mat-light-theme($mdb-electron-primary, $mdb-electron-accent
 
 // https://coolors.co/ff3e04-007bff-e3c0d3-f1c40f-343330
 /* You can add global styles to this file, and also import other style files */
-@import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap/dist/css/bootstrap.min.css';
 
 *::-webkit-scrollbar {
   width: 8px;
@@ -176,12 +176,6 @@ body {
   flex-wrap: wrap;
 }
 
-.movie-card {
-  padding: 5px;
-  outline: none;
-  margin: auto;
-}
-
 .overlay {
   position: absolute;
   top: 0;
@@ -202,18 +196,6 @@ body {
   background-color: #fc0000;
 }
 
-.movie-card-selected .overlay-add {
-  opacity: .5;
-}
-
-.movie-card-body {
-  padding: 5px 0px 0px 0px !important;
-}
-
-.movie-card-selected .overlay-add {
-  opacity: .5;
-}
-
 .movie-card-image-container {
   background-color: white;
   box-shadow: 0 0 10px black;
@@ -229,79 +211,6 @@ body {
 
 .overlay:hover {
   opacity: .5;
-}
-
-.movie-card-title {
-  display: inline-block;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
-  margin-bottom: 0px;
-}
-
-// the circle one
-.movie-available {
-  position: absolute;
-  top: 5%;
-  right: 5%;
-  height: 15px;
-  width: 15px;
-  background-color: rgb(8, 185, 8);
-  border-radius: 50%;
-  box-shadow: 0 0 10px #38ec14;
-  z-index: 3;
-}
-
-
-// bookmark
-.movie-highlight {
-  position: absolute;
-  top: 5%;
-  right: 5%;
-  height: 15px;
-  width: 15px;
-  z-index: 3;
-}
-
-// bookmark
-.movie-bookmark {
-  position: absolute;
-  top: 5%;
-  left: 5%;
-  height: 15px;
-  width: 15px;
-  z-index: 3;
-}
-
-.movie-bookmark:hover {
-  cursor: pointer;
-  filter: invert(1)
-}
-
-.movie-mark-as-watched {
-  position: absolute;
-  bottom: 5%;
-  left: 5%;
-  // height: 15px;
-  // width: 15px;
-  z-index: 3;
-}
-
-.movie-mark-as-watched:hover {
-  filter: invert(1)
-}
-
-.movie-progress-bar {
-  position: absolute;
-  bottom: 0%;
-  left: 0%;
-  height: 3px;
-  width: 100%;
-  background-color: rgb(255, 62, 4);
-  // border-radius: 50%;
-  // box-shadow: 0 0 10px #969696;
-  z-index: 3;
 }
 
 .selected-movie-card-image-container {

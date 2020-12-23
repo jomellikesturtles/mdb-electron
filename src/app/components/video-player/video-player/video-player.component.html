@@ -1,4 +1,4 @@
-<div (keypress)='onKeyPress($event)'>
+<div (keypress)='onKeyPress($event)' [ngClass]="{'user-inactive':isUserInactive}">
   <!-- <div style='background-color: black;width: 100%;height: calc(100vh - 50px);'> -->
   <!-- <video *ngIf="showVideo" src="https://www.radiantmediaplayer.com/media/bbb-360p.mp4 -->
   <!-- " id="videoPlayer" controls style="width: 100%;height:100%;"> -->
@@ -15,26 +15,31 @@
   <!-- </video> -->
   <!-- </div> -->
 
-  <div id='videoPlayerOuter' style='position: relative;background-color: black;width: 100%;height: calc(100vh - 50px);'>
-    <div id='videoContainer' style='position:absolute;width:100%; height:100%;z-index: 20;' (click)='togglePlay()'
-      (dblclick)='toggleFullScreen()'>
-      <!-- <img *ngIf="!videoPlayerElement.paused" class='player-controls-icon' src='../../../../assets/icons/pause.svg'> -->
+  <div id='videoPlayerOuter' (mousemove)='onNotIdle()'
+    style='position: relative; background-color: black; width: 100%; height: calc(100vh - 50px);'>
+    <div id='videoContainer' style='position:absolute; width:100%; height:100%; text-align:center; z-index: 20;'
+      (click)='togglePlay()' (dblclick)='toggleFullScreen()'>
       <!-- animation: ytp-bezel-fadeout .5s linear 1 normal forwards; -->
       <video #videoPlayer1 id='videoPlayer' style="width:100%; height:100%;" poster="" preload="none" autoplay
         muted="true">
-        <!-- <source [src]='streamLink' controlsList="nodownload" type="video/mp4"> -->
-        <source src="https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4" type="video/mp4">
-        <track label="English subtitles" kind="subtitles" srclang="en" src="./assets/sample-subtitles.vtt" default>
+
+        <source [src]='streamLink' controlsList="nodownload" type="video/mp4">
+        <!-- <source src="https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4" type="video/mp4"> -->
+
       </video>
+      <div style='position: relative; bottom: 100px'>
+        <span class='subtitle-span'>{{currentDisplay1}}</span><br />
+        <span class='subtitle-span'>{{currentDisplay2}}</span>
+      </div>
     </div>
 
-    <div id='playerControlsContainer' style='width: 100%; height: 40px; left: 0; bottom:0;  position:absolute'>
+    <div id='playerControlsContainer' style='width: 100%; height: 6%; left: 0; bottom:0;  position:absolute'>
       <div id='progressBarContainer' #progressBar (mousemove)='mouseMove($event)' (click)='seek($event)'
         style="width: 100%; height: 5px; position: relative; cursor: pointer; z-index: 30;">
         <span #tooltipSpan id='tooltipSpan' style='z-index: 9999;'>00:00</span>
         <!-- played -->
         <div [ngStyle]="{'width': played}"
-          style="height: 100%; background-color: red; z-index:21; left:0;position: absolute">
+          style="height: 100%; background-color: red; z-index:21; left:0; position: absolute">
         </div>
         <!-- scrubber -->
         <!-- <div [ngStyle]="{'width': played}"  style="height: 100%; background-color: red; ">
@@ -48,32 +53,58 @@
         </div>
       </div>
       <div id='controlsContainer'
-        style="width: 100%; height: 40px; background-color: black; z-index: 20; left: 0; position: relative; display:flex; ">
+        style="width: 100%; height: 40px; background-color: black; z-index: 20; left: 0; position: relative; display:flex;">
         <div style='float:left; display: flex; flex: 1; white-space: nowrap; overflow: hidden; padding-left: 5px;'>
-          <div *ngIf="afterView && videoPlayerElement" (click)='togglePlay()'>
-            <img *ngIf="videoPlayerElement.paused" class='player-controls-icon'
-              src='../../../../assets/icons/play-solid.svg'>
-            <img *ngIf="!videoPlayerElement.paused" class='player-controls-icon'
-              src='../../../../assets/icons/pause.svg'>
+          <div (click)='togglePlay()'>
+            <img *ngIf="videoPlayer1.paused" class='player-controls-icon' src='./assets/icons/play-solid.svg'>
+            <img *ngIf="!videoPlayer1.paused" class='player-controls-icon' src='./assets/icons/pause.svg'>
           </div>
           <div (click)='toggleMute()'>
-            <img *ngIf="(videoPlayerElement && videoPlayerElement.muted) " class='player-controls-icon'
+            <!-- <img *ngIf="(videoPlayerElement && videoPlayerElement.muted) " class='player-controls-icon'
               class='player-controls-icon' src='../../../../assets/icons/mute.svg'>
             <img *ngIf="(videoPlayerElement && !videoPlayerElement.muted) || volume<=0" class='player-controls-icon'
-              class='player-controls-icon' src='../../../../assets/icons/volume.svg'>
+              class='player-controls-icon' src='../../../../assets/icons/volume.svg'> -->
           </div>
           <mat-slider (input)="volumeChange($event.value)" [(value)]="volume" min="0" max="100" step="1"></mat-slider>
         </div>
         <div style='float:right; padding-right: 5px;'>
-          <span *ngIf="videoPlayerElement">{{videoPlayerElement.currentTime|toHHMMSS}}</span>/
+          <span *ngIf="videoPlayer1">{{player.currentTime|toHHMMSS}}</span>/
+          <span *ngIf="videoPlayer1">{{currentTime|toHHMMSS}}</span>/
+          <!-- <span *ngIf="videoPlayer1">{{videoPlayer1.currentTime|toHHMMSS}}</span>/ -->
           <span>{{videoTime.duration|toHHMMSS}}</span>
-          <img (click)='changeCc()' class='player-controls-icon' src='../../../../assets/icons/subtitle.svg'>
-          <img (click)='toggleFullScreen()' class='player-controls-icon' src='../../../../assets/icons/fullscreen.svg'>
+
+          <img class='player-controls-icon' src='./assets/icons/subtitle.svg' [matMenuTriggerFor]="subtitlesMenu">
+          <mat-menu #subtitlesMenu="matMenu" yPosition="above">
+            <button mat-menu-item [matMenuTriggerFor]="subtitlesAppearanceMenu">Appearance</button>
+            <button mat-menu-item>Off</button>
+            <button mat-menu-item (click)="changeCc()">Select from file...</button>
+          </mat-menu>
+          <mat-menu #subtitlesAppearanceMenu="matMenu" yPosition="above">
+            <button mat-menu-item [matMenuTriggerFor]="subtitlesAppearanceFontColorMenu">Font Color</button>
+            <button mat-menu-item [matMenuTriggerFor]="subtitlesAppearanceFontSizeMenu">Font Size</button>
+            <button mat-menu-item [matMenuTriggerFor]="subtitlesAppearanceBackgroundColorMenu">Background Color</button>
+          </mat-menu>
+          <mat-menu #subtitlesAppearanceFontColorMenu="matMenu" yPosition="above">
+            <span *ngFor="let color of fontColorsList">
+              <button mat-menu-item (click)="changeFontColor(color)">{{color}}</button>
+            </span>
+          </mat-menu>
+          <mat-menu #subtitlesAppearanceFontSizeMenu="matMenu" yPosition="above">
+            <span *ngFor="let fontSize of fontSizeList">
+              <button mat-menu-item (click)="changeFontSize(fontSize.value)">{{fontSize.label}}</button>
+            </span>
+          </mat-menu>
+          <mat-menu #subtitlesAppearanceBackgroundColorMenu="matMenu" yPosition="above">
+            <span *ngFor="let color of fontColorsList">
+              <button mat-menu-item (click)="changeBackgroundColor(color)">{{color}}</button>
+            </span>
+          </mat-menu>
+
+          <img (click)='toggleFullScreen()' class='player-controls-icon' src='./assets/icons/fullscreen.svg'>
         </div>
       </div>
     </div>
   </div>
-
 
   <div [hidden]='false'>
     <!-- <button class='btn btn-primary'>Close</button> -->
