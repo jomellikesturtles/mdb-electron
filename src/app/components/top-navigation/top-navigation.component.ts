@@ -14,8 +14,6 @@ import { Add, CountState, UserState } from '../../app.state'
 import { FirebaseService } from '../../services/firebase.service';
 import { SetUser } from '../../app.actions';
 import { delay } from 'rxjs/operators';
-declare var jquery: any
-declare var $: any
 import { environment } from '../../../environments/environment';
 
 enum STATUS {

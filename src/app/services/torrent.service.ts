@@ -59,16 +59,7 @@ export class TorrentService {
    * @param year year
    */
   async getTorrentsOffline(val: string, year: string | number) {
-    console.log('in getTorrentsOffline...; to be removed, jquery will handle instead')
-
     this.ipcService.call(this.ipcService.IPCCommand.SearchTorrent, [val, year])
-    // return new Promise<any>((resolve, reject) => {
-    //   this.ipcRenderer.once('library-movies', (event, arg) => {
-    //     console.log('library-movies', arg);
-    //     resolve(arg);
-    //   });
-    // });
-
   }
 
   /**

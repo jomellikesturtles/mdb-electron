@@ -10,7 +10,6 @@ import { MovieService } from 'src/app/services/movie.service';
 import SubtitlesUtil from 'src/app/utils/subtitles.utils';
 import chardet from "chardet";
 import jschardet from "jschardet";
-// declare var $: any;
 @Component({
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
@@ -41,8 +40,6 @@ export class PreferencesComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // $('.title').slideToggle();
-    //// var $j = $.noConflict();
 
     // this.onGetLibraryFolders()
     // this.onGetLibraryMovies()
@@ -51,8 +48,6 @@ export class PreferencesComponent implements OnInit, OnDestroy {
       this.libraryMovies = value
       this.cdr.detectChanges()
     })
-    // $('[data-toggle="popover"]').popover();
-    // $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
     this.ipcService.getFiles().then(value => {
       console.log('getFiles', value);
     }).catch(e => {
@@ -78,7 +73,6 @@ export class PreferencesComponent implements OnInit, OnDestroy {
   }
 
   toggleTitle() {
-    // $('.title').slideToggle(); // test only
   }
 
   setFoldersList() {

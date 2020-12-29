@@ -3,17 +3,19 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 let args = process.argv.slice(2);
-let tmdbIdArg = args[0];
+let idArg = args[0];
 var http = require('http');
 
 isPortOpen = false;
-// let tmdbIdArg = args[1];
-// let imdbIdArg = args[2];
 const app = express();
 const DataStore = require('nedb');
 const libraryDbService = require('./library-db-service-2');
 process.on('uncaughtException', function (error) {
   console.log('ERROR!!!!!!!!!!!!!!!!!!!!!!!!!', error);
+  process.send(['operation-failed', 'general']);
+});
+process.on('warning', function (error) {
+  console.log('warning!!!!!!!!!!!!!!!!!!!!!!!!!', error);
   process.send(['operation-failed', 'general']);
 });
 process.send = process.send || function (...args) { DEBUG.log('SIMULATING process.send', ...args) };
@@ -80,7 +82,8 @@ function openPort() {
 }
 
 function initialize() {
-  libraryDbService.getLibraryFilesByTmdbId(parseInt(tmdbIdArg)).then(libraryData => {
+  libraryDbService.getLibraryFileById(idArg).then(libraryData => {
+  // libraryDbService.getLibraryFilesByTmdbId(parseInt(tmdbIdArg)).then(libraryData => {
     DEBUG.log('FOUND ONE DATA: ', libraryData);
     openStream(libraryData[0])
   })

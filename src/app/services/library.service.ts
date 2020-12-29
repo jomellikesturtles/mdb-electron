@@ -25,7 +25,6 @@ export class LibraryService {
     // return new Promise((resolve, reject) => {
     //   if (environment.runConfig.firebaseMode) {
     //     this.firebaseService.getFromFirestore(CollectionName.Library, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
-    //       console.log('BOOKMARK: ', e)
     //       resolve(e)
     //     }).catch(e => {
     //       reject(e)
@@ -40,76 +39,35 @@ export class LibraryService {
   }
 
   /**
-   * Gets movie video.
-   * !TODO: change to open movie./streamlink
+   * Gets movie library.
    * @param id - tmdbId or imdbId
    */
   getMovieFromLibrary(id: number | string): Promise<any> {
-    // this.ipcService.call(this.ipcService.IPCCommand.OpenVideo) // commented to make way for torrent-play
-    return new Promise((resolve, reject) => {
-      if (environment.runConfig.firebaseMode) {
-        this.firebaseService.getFromFirestore(CollectionName.Library, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
-          console.log('BOOKMARK: ', e)
-          resolve(e)
-        }).catch(e => {
-          reject(e)
-        })
-      } else {
-        this.ipcService.getMovieFromLibrary(id).then((e: IRawLibrary) => {
-          resolve(e)
-        })
-      }
-    })
+    const myFunction = environment.runConfig.firebaseMode ?
+      this.firebaseService.getFromFirestore(CollectionName.Library, FieldName.TmdbId, FirebaseOperator.Equal, id) :
+      this.ipcService.getMovieFromLibrary(id)
+    return myFunction
   }
 
   /**
-   * Gets multiple videos using list. Movie(s) eventually becomes available in status.
+   * Gets multiple library using list. Movie(s) eventually becomes available in status.
    * @param idList
    */
   getMoviesFromLibraryInList(idList: number[]): Promise<any> {
     console.log('getting multiplevideos...', idList);
-    return new Promise((resolve, reject) => {
-      if (environment.runConfig.firebaseMode) {
-        this.firebaseService.getFromFirestoreMultiple(CollectionName.Library, FieldName.TmdbId, idList).then(value => {
-          resolve(value)
-        }).catch(err => {
-          reject(err)
-        })
-      } else {
-        this.ipcService.getMoviesFromLibraryInList(idList).then(value => {
-          resolve(value)
-        }).catch(err => {
-          reject(err)
-        })
-      }
-    })
+    const myFunction = environment.runConfig.firebaseMode ?
+      this.firebaseService.getFromFirestoreMultiple(CollectionName.Library, FieldName.TmdbId, idList) :
+      this.ipcService.getMoviesFromLibraryInList(idList)
+    return myFunction
   }
 
   /**
-   * Gets multiple videos. Movie(s) eventually becomes available in status.
+   * Gets first page of list. Gets multiple videos. Movie(s) eventually becomes available in status.
    */
-  getVideos(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
-    })
-  }
-
-  /**
-   * Gets first page of list.
-   */
-  getVideoPaginatedFirstPage(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.ipcService.getMultiplePaginatedFirst(CollectionName.Library, FieldName.TmdbId, 20).then(value => {
-        // this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Library, FieldName.TmdbId, 20).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
-    })
+  getLibraryPaginatedFirstPage(): Promise<any> {
+    const myFunction = environment.runConfig.firebaseMode ? null : this.ipcService.getMultiplePaginatedFirst(CollectionName.Library, FieldName.TmdbId, 20)
+    // this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20)
+    return myFunction
   }
 
   /**
@@ -118,14 +76,10 @@ export class LibraryService {
    */
   getLibraryPaginated(lastVal: string | number): Promise<any> {
     console.log('getVideoPaginated...', lastVal);
-    return new Promise((resolve, reject) => {
-      this.ipcService.getMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20, lastVal).then(value => {
-        // this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20, lastVal).then(value => {
-        resolve(value)
-      }).catch(err => {
-        reject(err)
-      })
-    })
+    const myFunction = environment.runConfig.firebaseMode ?
+      this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20, lastVal) :
+      this.ipcService.getMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20, lastVal)
+    return myFunction
   }
 
 }

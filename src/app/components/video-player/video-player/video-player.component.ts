@@ -147,12 +147,13 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
 
   ngOnDestroy(): void {
-    // this.ipcService.stopStream()
+    this.ipcService.stopStream()
   }
 
   ngAfterViewInit(): void {
     this.afterView = true
     this.subtitleSpanElementsList = this.elementRef.nativeElement.querySelectorAll('.subtitle-span')
+
     if (environment.runConfig.electron) {
       // this.ipcService.statsForNerdsSubscribable.subscribe(stats => {
       //   console.log(stats)
@@ -168,7 +169,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
 
     this.videoPlayerElement = this.elementRef.nativeElement.querySelector('#videoPlayer')
-    this.videoPlayerElement.muted = true
+    // this.videoPlayerElement.volume = 1
+    // this.videoPlayerElement.muted = true
     this.videoPlayerElement.addEventListener('canplay', (e) => {
       console.log('canplay', e)
       this.videoTime.duration = this.videoPlayerElement.duration

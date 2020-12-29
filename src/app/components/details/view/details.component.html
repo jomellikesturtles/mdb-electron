@@ -7,7 +7,7 @@
   style='background-size: cover;background-repeat: no-repeat;background-position: center;
   background-attachment: fixed;'>
   <div style='padding-top: 70px; padding-bottom: 100px'>
-    <div style="color:white; text-shadow: 3px 3px 5px black;">
+    <div style="color:white; text-shadow: 3px 3px 5px rgb(44, 27, 27);">
       <div class="container">
 
         <div class="row">
@@ -24,8 +24,8 @@
               </button>
 
               <!-- <button [disabled]='procWatched' class='btn btn-small' -->
-              <button class='btn btn-small'
-                [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}" (click)='toggleWatched()'>
+              <button class='btn btn-small' [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}"
+                (click)='toggleWatched()'>
                 <span *ngIf="isWatched">Unmark as watched</span>
                 <span *ngIf="!isWatched">Mark as watched</span>
               </button>
@@ -48,15 +48,15 @@
               <div class="btn-group" *ngIf="playLinks.length > 0">
                 <button type="button" class="btn btn-danger" (click)='playBestPlayLink()'>Play</button>
                 <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split"
-                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="sr-only">Toggle Dropdown</span>
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
-                <div class="dropdown-menu">
-                  <div *ngFor="let playLink of playLinks">
-                    <a class="dropdown-item" (click)='playMovie(playLink)'>{{playLink.name}} {{playLink.type}}
+                <ul class="dropdown-menu">
+                  <li *ngFor="let playLink of playLinks">
+                    <a class="dropdown-item" (click)='playMovie(playLink)'> {{playLink.type}} | {{playLink.name}}
                       {{playLink.quality}}</a>
-                  </div>
-                </div>
+                  </li>
+                </ul>
               </div>
 
               <button class='btn btn-primary' (click)='continueWatching()' *ngIf='hasContinueWatching'>

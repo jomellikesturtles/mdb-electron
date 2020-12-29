@@ -16,11 +16,11 @@ export class BookmarkService {
     private ipcService: IpcService) { }
 
   getBookmark(id) {
-      if (environment.runConfig.firebaseMode) {
-        return this.firebaseService.getFromFirestore(CollectionName.Bookmark, FieldName.TmdbId, FirebaseOperator.Equal, id)
-      } else {
-        // this.ipcService.call(IPCCommand.)
-      }
+    if (environment.runConfig.firebaseMode) {
+      return this.firebaseService.getFromFirestore(CollectionName.Bookmark, FieldName.TmdbId, FirebaseOperator.Equal, id)
+    } else {
+      // this.ipcService.call(IPCCommand.)
+    }
   }
 
   saveBookmark(data: IBookmark): Promise<any> {
@@ -59,6 +59,14 @@ export class BookmarkService {
     return myFunction
   }
 
+  getBookmarksPaginatedFirstPage(): Promise<any> {
+    if (environment.runConfig.firebaseMode) {
+      return this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20)
+    } else {
+
+    }
+  }
+
   /**
    * Gets multiple bookmarks.
    */
@@ -69,13 +77,6 @@ export class BookmarkService {
     }
   }
 
-  getBookmarksPaginatedFirstPage(): Promise<any> {
-    if (environment.runConfig.firebaseMode) {
-      return this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20)
-    } else {
-
-    }
-  }
 }
 
 export interface IBookmark extends IUserSavedData {

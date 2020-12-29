@@ -306,7 +306,7 @@ export enum Department {
 }
 
 export class MDBTorrent {
-  id?: number
+  id?: string
   name?: string
   size?: string
   hash: string

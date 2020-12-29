@@ -193,7 +193,7 @@ export class MovieService {
   getMoviesDiscover(paramMap: Map<TmdbParameters, any>): Observable<any> {
     let key = ''
     for (let entry of paramMap.entries()) {
-      key = entry[0] + '_' + entry[1]
+      key += entry[0] + '_' + entry[1]
     }
     return this.cacheService.get(key + '_TMDB_DISCOVER', this.movieDiscover(paramMap))
   }
@@ -203,15 +203,12 @@ export class MovieService {
    * @param val parameter map
    */
   searchTmdbMovie(val: Map<TmdbParameters | TmdbSearchMovieParameters, any>): Observable<any> {
-    const url = `${TMDB_URL}/search/movie`
-    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
-    myHttpParam = this.appendMappedParameters(val, myHttpParam)
-    const tmdbHttpOptions = {
-      headers: JSON_CONTENT_TYPE_HEADER,
-      params: myHttpParam
-    };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('searchTmdbMovie')))
+
+    let key = ''
+    for (let entry of val.entries()) {
+      key += entry[0] + '_' + entry[1]
+    }
+    return this.cacheService.get(key + '_TMDB_SEARCH', this.searchTmdb(val))
   }
 
   /**
@@ -223,7 +220,6 @@ export class MovieService {
     for (let entry of paramMap.entries()) {
       myHttpParam = myHttpParam.append(entry[0], entry[1])
     }
-    console.log('MYHTTPPARAM: ', myHttpParam.toString())
     return myHttpParam
   }
 
@@ -300,6 +296,18 @@ export class MovieService {
     };
     return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getMoviesDiscover')))
+  }
+
+  private searchTmdb(val: Map<TmdbParameters | TmdbSearchMovieParameters, any>): Observable<any> {
+    const url = `${TMDB_URL}/search/movie`
+    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
+    myHttpParam = this.appendMappedParameters(val, myHttpParam)
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('searchTmdbMovie')))
   }
   /**
    * Error handler.

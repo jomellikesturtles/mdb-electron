@@ -8,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from './../../../../environments/environment';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { Select } from '@ngxs/store';
+import { CollectionName } from 'src/app/services/firebase.service';
 
 @Component({
   selector: 'app-watched',
@@ -19,7 +20,7 @@ export class WatchedComponent implements OnInit {
   @Select(state => state.moviesList) moviesList$
 
   procSync = false
-  listType = 'watched'
+  private readonly listType = CollectionName.Watched
   moviesDisplayList = []
   watchedList
   hasResults = false

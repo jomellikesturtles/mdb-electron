@@ -123,8 +123,6 @@ export class MovieCardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    $('[data-toggle="popover"]').popover()
-    $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
     // console.log('MOVIECARD:', this.movie)
   }
 

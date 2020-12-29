@@ -11,7 +11,6 @@ const configDb = new Datastore({
 });
 const path = require("path");
 const fs = require("fs");
-const { PROC_NAMES } = require("./src/assets/scripts/shared/constants");
 const {app, BrowserWindow, ipcMain,globalShortcut, Menu, Tray, shell, dialog} = electron;
 const IPCRendererChannel = require("./src/assets/IPCRendererChannel.json");
 const IPCMainChannel = require("./src/assets/IPCMainChannel.json");
@@ -160,6 +159,9 @@ function playTorrentSample2() {
 
 ipcMain.on(IPCRendererChannel.STOP_STREAM, function (event, args) {
   procWebTorrent.send("stop-stream");
+  if (procVideoService) {
+    procVideoService.kill()
+  }
 });
 ipcMain.on(IPCRendererChannel.PLAY_TORRENT, function (event, args) {
   DEBUG.log("playtorrentArgs: ", args);
@@ -383,9 +385,12 @@ ipcMain.on(IPCRendererChannel.PREFERENCES_SET, function (event, data) {
 /**
  * Gets all movies from libraryFiles.db
  */
-ipcMain.on("get-library-movies", function (event, data) {
+ipcMain.on("library", function (event, data) {
   DEBUG.log("get movies from library..", data);
   // if (!procLibraryDb) {
+
+  data[0] = JSON.stringify(data[0]);
+  data[1] = JSON.stringify(data[1]);
   let localProcLibraryDb = forkChildProcess(
     "src/assets/scripts/library-db-service-2.js",
     data,
@@ -559,9 +564,14 @@ ipcMain.on("play-offline-video-stream", function (event, data) {
   procVideoService = forkChildProcess(
     "src/assets/scripts/video-service.js",
     [data],
-    PROC_OPTION
+    // PROC_OPTION
+    {
+      cwd: __dirname,
+      silent: false,
+    }
   );
   // procVideoService.stdout.on("data", (data) => printData(data));
+  procVideoService.on("error", (e) => printError("play-offline-video-stream", e));
   procVideoService.on("exit", function () {
     DEBUG.log("video service process ended");
     procVideoService = null;

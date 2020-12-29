@@ -2,8 +2,6 @@ import { GenreCodes } from './../../../interfaces';
 import { IRawLibrary, LibraryService } from '../../../services/library.service';
 import {
   Component, OnInit,
-  ChangeDetectorRef,
-  ChangeDetectionStrategy,
   OnDestroy
 } from '@angular/core';
 import { MDBTorrent } from '../../../interfaces';
@@ -22,15 +20,13 @@ import { TMDB_FULL_MOVIE_DETAILS } from '../../../mock-data-movie-details';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { environment } from 'src/environments/environment';
 import { WatchedService, IWatched } from 'src/app/services/watched.service';
-declare var $: any
 import { takeUntil } from 'rxjs/operators'
 import { Subject } from 'rxjs';
-
+import { basename } from 'path'
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Default
 })
 
 /**
@@ -46,7 +42,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
   rawData = null
   testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
   isAvailable = false
-  isMovieAvailable = false
   hasData = false
   streamLink = ''
   troubleQuote
@@ -81,23 +76,18 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private libraryService: LibraryService,
     private watchedService: WatchedService,
     private router: Router,
-    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
     if (!environment.runConfig.useTestData) {
       this.activatedRoute.params.subscribe(val => {
-        console.log(val)
         this.getMovieOnline(val['id'])
       })
     } else {
       this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
       this.loadVideoData()
-      this.cdr.detectChanges();
     }
 
-    $('[data-toggle="popover"]').popover()
-    $('[data-toggle="tooltip"]').tooltip({ placement: 'top' })
   }
 
   ngOnDestroy(): void {
@@ -114,7 +104,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.movieDetailsProducers = this.getProducers()
     // this.movieCertification = this.getMovieCertification()
     this.getUserMovieData()
-    this.getTorrents()
+    this.getLibrary()
     this.displayBackdrop()
     this.getTrailer()
 
@@ -136,21 +126,20 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Plays the best possible stream. Offline copy is prioritized first.
    * @param val hash or id
    */
-  playMovie(val: any) {
-    if (val) { // is torrent
+  playMovie(val: PlayLink) {
+    if (val.type === "torrent") { // is torrent
       this.playTorrent(val.hash);
     } else {
-      this.playOfflineLibrary(val);
+      this.playOfflineLibrary(val.id);
     }
   }
 
   playOfflineLibrary(val) {
-    this.libraryService.openVideoStream(this.movieDetails.tmdbId).then(e => {
+    this.libraryService.openVideoStream(val).then(e => {
       console.log('streamlink1:', e)
       if (e != 0 && e != [] && e != '' && e.length > 0) {
         this.streamLink = e
         this.showVideo = true
-        this.cdr.detectChanges()
       }
     })
   }
@@ -162,13 +151,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.procVideo, this.procBookmark, this.procWatched = true
     this.userDataService.getMovieUserData(this.movieDetails.tmdbId).then((userMovieData: IUserMovieData) => {
       console.log('usermoviedata', userMovieData)
-      if (userMovieData.library) {
-        // if (libraryList.length > 0) {
-        this.isMovieAvailable = true
-        const libraryList = userMovieData.library.libraryList
-        this.playLinks = [...this.playLinks, ...libraryList]
-        this.bestPlayLink = libraryList[0]
-      }
+      // if (userMovieData.library) {
+      // }
       if (userMovieData.bookmark) {
         this.movieDetails.bookmark = userMovieData.bookmark
         this.isBookmarked = true
@@ -180,7 +164,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }).catch(e => {
     }).finally(() => {
       this.procVideo, this.procBookmark, this.procWatched = false
-      this.cdr.detectChanges()
     })
   }
 
@@ -195,7 +178,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.isBookmarked = !this.isBookmarked
     console.log('BOOKMARKADD/remove:', bmDoc)
     this.procBookmark = false
-    this.cdr.detectChanges()
   }
 
   async toggleWatched() {
@@ -206,7 +188,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.isWatched = !this.isWatched
     console.log('WATCHEDADD/remove:', wDoc)
     this.procWatched = false
-    this.cdr.detectChanges()
   }
 
   /**
@@ -231,7 +212,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
     // this.movieService.getTmdbMovieDetails(val, [], 'videos,images,credits,similar,external_ids,recommendations').pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
     this.movieService.getTmdbMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
-      console.log('got from getMovieOnline ', data)
       this.selectedMovie = data;
       const myObject = this.selectedMovie
       this.movieDetails.convertToMdbObject(myObject)
@@ -304,24 +284,28 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Gets torrents from online and offline
+   * Gets movie availability. From user library, torrent, etc.
    * @param val name
-   * @returns Torrent object
    */
-  getTorrents() {
-    const releaseYear = this.getYear(this.movieDetails.releaseDate)
+  getLibrary() {
+
+    this.libraryService.getMovieFromLibrary(this.movieDetails.tmdbId).then((libraryList: IRawLibrary[]) => {
+      console.log("libraryList", libraryList)
+      if (libraryList) {
+        this.bestPlayLink = this.mapPlayLink(libraryList[0])
+        this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(libraryList)]
+      }
+    })
+
     let query
-    // let query = [this.movieDetails.title, releaseYear]
-    // console.log('getTorrents initializing... with val ', query);
     query = this.movieDetails.external_ids.imdb_id
     this.torrentService.getTorrents(query).subscribe(data => {
       if (data) {
         this.torrents = this.torrentService.mapTorrentsList(data);
         this.torrents.sort(function (a, b) { return b.peers - a.peers }); // sort by seeders
-        this.playLinks = [...this.playLinks, ...this.torrents]
-        if (!this.bestPlayLink) this.bestPlayLink = this.torrents[0]; // TODO: add sorting by preferred quality
+        this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(this.torrents)]
+        if (!this.bestPlayLink) this.bestPlayLink = this.mapPlayLink(this.torrents[0]); // TODO: add sorting by preferred quality
       }
-      this.cdr.detectChanges()
     });
   }
 
@@ -340,17 +324,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
       if (e != 0 && e != [] && e != '' && e.length > 0) {
         console.log('streamlink2:', e)
         this.streamLink = e
+        // this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4'
         this.showVideo = true
-        this.cdr.detectChanges()
       }
     })
-    // this.torrentService.getStreamLink(hash).subscribe(e => {
-    //   if (e) {
-    //     this.streamLink = e.url
-    //     this.showVideo = true
-    //   }
-    //   this.cdr.detectChanges()
-    // })
   }
 
   /**
@@ -412,16 +389,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   goToMovie(val: string) {
-
-    // const highlightedId = this._movie.id;
-    // this.dataService.updateHighlightedMovie(highlightedId);
     // // this.navigationService.goToPage()
     // this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
 
     const highlightedId = val
     this.dataService.updateHighlightedMovie(highlightedId);
     // this.router.navigate([`./details/${highlightedId}`]);
-    this.cdr.detectChanges()
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
   }
 
@@ -506,28 +479,33 @@ export class DetailsComponent implements OnInit, OnDestroy {
     document.body.removeChild(selBox);
   }
 
-  mapPlayLinkList(val: []): PlayLink[] {
-    let playLinkList: PlayLink[];
-    val.forEach(playlink => {
-      playLinkList.push(this.mapPlayLink(playlink));
+  /**
+   * @param rawLibraryList torrent list or library list
+   */
+  mapPlayLinkList(rawLibraryList: any[]): PlayLink[] {
+    let playLinkList: PlayLink[] = [];
+    rawLibraryList.forEach(rawLibrary => {
+      playLinkList.push(this.mapPlayLink(rawLibrary));
     })
     return playLinkList;
   }
 
   mapPlayLink(arg: IRawLibrary | MDBTorrent): PlayLink {
-    let playLink: PlayLink
+    let playLink = new PlayLink()
     playLink.id = arg.hasOwnProperty('_id') ? arg['_id'] : null
     playLink.hash = arg.hasOwnProperty('hash') ? arg['hash'] : null
-    playLink.name = arg.hasOwnProperty('name') ? arg['name'] : arg['title']
+    playLink.name = arg.hasOwnProperty('name') ? arg['name'] : basename(arg['fullFilePath'])
+    playLink.quality = arg.hasOwnProperty('quality') ? arg['quality'] : ''
     playLink.type = arg.hasOwnProperty('hash') ? 'torrent' : 'offline'
     return playLink
   }
 }
 
-interface PlayLink {
+class PlayLink {
 
-  id?: number
+  id?: string
   name?: string
+  type: "torrent" | "offline"
   [x: string]: any
   // size?: string
   hash?: string
