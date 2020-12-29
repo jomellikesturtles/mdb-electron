@@ -36,8 +36,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('inResutlts')
-    $('[data-toggle="popover"]').popover();
-    $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
     if (environment.runConfig.useTestData === true) {
       this.searchResults = TMDB_SEARCH_RESULTS.results
     } else {

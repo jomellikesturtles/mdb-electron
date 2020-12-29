@@ -15,8 +15,17 @@ process.send =
   function (...args) {
     console.log("SIMULATING process.send", ...args);
   };
+let DEBUG = (() => {
+  let timestamp = () => {};
+  timestamp.toString = () => {
+    return "[DEBUG " + new Date().toLocaleString() + "]";
+  };
+  return {
+    log: console.log.bind(console, "%s", timestamp),
+  };
+})();
 
-const count = function () {
+const countLibrary = function () {
   return new Promise(function (resolve, reject) {
     libraryFilesDb.count({}, function (err, data) {
       if (err) {
@@ -66,35 +75,37 @@ function insertTmdbId(id, libraryId) {
 /**
  * Gets files of movie with imdb id or imdbId.
  * Returns library objects.
- * @param {number} uuid
  * @param {string} param1 imdbId/tmdbId/title
  * @param {number} param2 year
  */
-function getMovie(uuid, param1, param2) {
+function findLibrary(param1, param2) {
+  param1 = param1.toString();
   const imdbIdRegex = new RegExp(`(^tt[0-9]{0,7})$`, `g`);
   const tmdbIdRegex = new RegExp(`([0-9])`, `g`);
   const titleRegex = new RegExp('^' + regexify(param1) + '$', `gi`);
   console.log('param1', param1, 'param2', param2);
-  if (param1.trim().match(imdbIdRegex)) {
-    libraryFilesDb.find({ imdbId: param1 }, function (err, result) {
-      if (!err) {
-        process.send([`library-movie-${uuid}`, result]);
-      }
-    });
-  }
-  else if (param1.match(tmdbIdRegex)) {
-    libraryFilesDb.find({ tmdbId: parseInt(param1) }, function (err, result) {
-      if (!err) {
-        process.send([`library-movie-${uuid}`, result]);
-      }
-    });
-  } else {
-    libraryFilesDb.find({ title: titleRegex, year: parseInt(param2) }, function (err, result) {
-      if (!err) {
-        process.send([`library-movie-${uuid}`, result]);
-      }
-    });
-  }
+  return new Promise(function (resolve, reject) {
+    if (param1.trim().match(imdbIdRegex)) {
+      libraryFilesDb.find({ imdbId: param1 }, function (err, result) {
+        if (!err) {
+          resolve(result);
+        }
+      });
+    }
+    else if (param1.match(tmdbIdRegex)) {
+      libraryFilesDb.find({ tmdbId: parseInt(param1) }, function (err, result) {
+        if (!err) {
+          resolve(result);
+        }
+      });
+    } else {
+      libraryFilesDb.find({ title: titleRegex, year: parseInt(param2) }, function (err, result) {
+        if (!err) {
+          resolve(result);
+        }
+      });
+    }
+  });
 }
 
 /**
@@ -191,6 +202,46 @@ function getLibraryFilesByStep(skip, step, sort) {
     });
   });
 }
+
+/**
+ * In paginated list.
+ * @param {number} page page to get
+ * @param {number} size num of items
+ * @param {*} sort {year:1} ascending year, {year:-1} descending year
+ */
+async function getLibraryPaginated(page, size, sort) {
+
+  const count = await countLibrary({});
+  const skip = size > count ? 0 : (size * page) + -1;
+  sort = sort != null || sort != undefined ? {[sort]: 1} : {};
+  const libraryList = await getLibraryFilesByStep(skip, size, sort);
+
+  return new Promise(function (resolve, reject) {
+    if (libraryList.length > 0) {
+      let newData = [];
+      const totalPages = count / size;
+      DEBUG.log(libraryList)
+      // libraryList.forEach(e => { newData.push(convertToFEWatched(e)); });
+      // const toReturn = {
+      //   page: page,
+      //   totalPages: totalPages,
+      //   totalResults: count,
+      //   results: newData
+      // };
+      // resolve(toReturn);
+      resolve(libraryList);
+    } else {
+      const toReturn = {
+        page: page,
+        totalPages: 0,
+        totalResults: 0,
+        results: []
+      };
+      resolve(toReturn);
+    }
+  });
+}
+
 // getLibraryFilesByStep(0,2, null)
 // getLibraryFilesByStep(1,2,{})
 // getLibraryFilesByStep(2,2,{})
@@ -250,69 +301,67 @@ function getLibraryFileById(id) {
 
 let args = process.argv.slice(2);
 let command = args[0];
-let data1 = args[1];
-let data2 = args[2];
-let data3 = args[3];
-let data4 = args[4];
-// console.log(process)
-// console.log(process.argv)
-// console.log(process.argv0)
-// console.log(args)
-// command = 'find-list'
+let data1 = 'args[1]';
+let data2 = 'args[2]';
+let headers = args[0];
+let body = args[1];
 // data1=[516486,9441,718867,9444,400535]
-
-if (command) {
-  initializeDataAccess(command, data1, data2);
-} else {
-  console.log('noCommand');
+if (body) {
+  initializeDataAccess();
 }
 
 /**
  * Starts db service.
- * @param {string} command name of commend
- * @param {*} data1
- * @param {*} data2
  */
-function initializeDataAccess(command, data1, data2) {
-  console.log('command', command, 'data1', data1, 'data2', data2)
-  libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) {
-    if (err) {
-      console.log(err);
-    }
-  });
+function initializeDataAccess() {
+
+
+  const myHeaders = JSON.parse(headers);
+  const dataArgs = JSON.parse(body);
+  const uuid = myHeaders.uuid;
+  const command = myHeaders.operation;
+  DEBUG.log('myHeaders', myHeaders);
+  DEBUG.log('dataArgs', dataArgs);
+
+  // libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) {
+  //   if (err) {
+  //     console.log(err);
+  //   }
+  // });
   switch (command) {
-    case 'find':
-      getMovie(data1, data2);
-      break;
     case 'get-by-page':
-      getLibraryFilesByStep(data4, data3, data2).then(value => {
-        process.send([`library-movies-${data1}`, value]);
+      getLibraryPaginated(dataArgs.page, dataArgs.size, dataArgs.sort).then(value => {
+        process.send([`library-${uuid}`, value]);
       });
-      // getMoviesByPage(data1);
       break;
-    case 'find-in-list':
-      getLibrayMovieInList(data1, data2);
+  //   case 'find-in-list':
+  //     getLibrayMovieInList(data1, data2);
+  //     break;
+    case 'find':
+      findLibrary(dataArgs.tmdbId).then(doc => {
+        process.send([`library-${uuid}`, doc]);
+      });
       break;
-    case 'find-one':
-      getMovie(data1, data2);
-      break;
-    case 'find-all':
-      getAllMovies();
-      break;
-    case 'delete':
-      deleteMovie(data1);
-      break;
-    case 'insert':
-      addMovie(data1);
-      break;
-    case 'insert-directory':
-      addDirectoryToMovie(data1, data2);
-      break;
-    case 'remove-directory':
-      removeDirectoryFromMovie(data1, data2);
-      break;
-    case 'count':
-      break;
+    // case 'find-one':
+    //   getMovie(data1, data2);
+    //   break;
+    // case 'find-all':
+    //   getAllMovies();
+    //   break;
+  //   case 'delete':
+  //     deleteMovie(data1);
+  //     break;
+  //   case 'insert':
+  //     addMovie(data1);
+  //     break;
+  //   case 'insert-directory':
+  //     addDirectoryToMovie(data1, data2);
+  //     break;
+  //   case 'remove-directory':
+  //     removeDirectoryFromMovie(data1, data2);
+  //     break;
+  //   case 'count':
+  //     break;
     default:
       break;
   }
@@ -322,12 +371,35 @@ function initializeDataAccess(command, data1, data2) {
 // updateFields('RdmTLWXNNlkVY5JX', { tmdbId: 10681, title: 'WALL·E', year: '2008' })
 
 module.exports = {
-  count: count,
+  count: countLibrary,
   insertLibraryFiles: insertLibraryFiles,
   insertTmdbId: insertTmdbId,
   getLibraryFilesMulti: getLibraryFilesMulti,
   removeLibraryFile: removeLibraryFile,
   getLibraryFilesByStep: getLibraryFilesByStep,
   updateFields,
-  getLibraryFilesByTmdbId
+  getLibraryFilesByTmdbId: getLibraryFilesByTmdbId,
+  getLibraryFileById: getLibraryFileById
 };
+
+function convertToDbLibrary(arg) {
+  return {
+    _id: arg.id,
+    tmdb: arg.tmdbId,
+    imdb: arg.imdbId,
+    title: arg.title,
+    yr: arg.year,
+    fPath: arg.fullFilePath,
+  };
+}
+
+function convertToFELibrary(arg) {
+  return {
+    id: arg._id,
+    tmdbId: arg.tmdb,
+    imdbId: arg.imdb,
+    title: arg.title,
+    year: arg.yr,
+    fullFilePath: arg.fPath,
+  };
+}

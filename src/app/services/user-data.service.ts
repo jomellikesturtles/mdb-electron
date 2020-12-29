@@ -7,7 +7,7 @@ import { WatchedService, IWatched } from './watched.service';
 import { UtilsService } from './utils.service';
 import { IpcService, IUserMovieData } from './ipc.service';
 import { environment } from 'src/environments/environment';
-import { FirebaseService } from './firebase.service';
+import { CollectionName, FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root'
@@ -142,7 +142,7 @@ export class UserDataService {
         dataList = watchedList
         break;
       case 'library':
-        const videoList = await this.libraryService.getVideoPaginatedFirstPage()
+        const videoList = await this.libraryService.getLibraryPaginatedFirstPage()
         dataList = videoList
         break;
       default:
@@ -155,7 +155,7 @@ export class UserDataService {
     })
   }
 
-  async getUserDataPagination(dataType: string, lastValue: any): Promise<any> {
+  async getUserDataPagination(dataType: CollectionName, lastValue: any): Promise<any> {
     console.log('get firstpage: ', dataType);
     let dataList = []
     switch (dataType) {
@@ -202,7 +202,7 @@ export class UserDataService {
         dataDoc = (typeof dataDoc.data === "function") ? dataDoc.data() : dataDoc // firebaseData or offlineData
         index++
         if (dataDoc.tmdbId > 0) {
-          this.movieService.getTmdbMovieDetails(dataDoc.tmdbId, '').pipe().subscribe(movie => {
+          this.movieService.getTmdbMovieDetails(dataDoc.tmdbId, 'videos,images,credits,similar,external_ids,recommendations').pipe().subscribe(movie => {
             const userData = this.setDataObject(dataType, dataDoc)
             movie[dataType] = userData
             moviesDisplayList.push(movie)

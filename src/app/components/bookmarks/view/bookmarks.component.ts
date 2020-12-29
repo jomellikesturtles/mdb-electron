@@ -7,6 +7,7 @@ import { environment } from './../../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { Select } from '@ngxs/store';
+import { CollectionName } from 'src/app/services/firebase.service';
 
 @Component({
   selector: 'app-bookmarks',
@@ -26,7 +27,7 @@ export class BookmarksComponent implements OnInit {
   lastVal = 0
   hasMoreResults = false
   orderBy = 'tmdbId'
-  private listType = 'bookmark'
+  private listType = CollectionName.Bookmark
 
   constructor(
     private userDataService: UserDataService,

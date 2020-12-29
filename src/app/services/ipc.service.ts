@@ -137,10 +137,10 @@ export class IpcService {
    */
   getMoviesFromLibraryInList(idList: number[]): Promise<any> {
     const theUuid = uuidv4()
-    this.sendToMain('get-library-movies', { operation: IpcOperations.FIND_IN_LIST, uuid: theUuid },
+    this.sendToMain('library', { operation: IpcOperations.FIND_IN_LIST, uuid: theUuid },
       { idList: idList });
     return new Promise<any>((resolve, reject) => {
-      this.ipcRenderer.once(`library-movies-${theUuid}`, (event, arg) => {
+      this.ipcRenderer.once(`library-${theUuid}`, (event, arg) => {
         console.log(`libraryMovies ${theUuid}`)
         resolve(arg);
       });
@@ -151,14 +151,14 @@ export class IpcService {
    * Paginated, first page.
    * @param collectionName
    * @param order
-   * @param limit
+   * @param size
    */
-  getMultiplePaginatedFirst(collectionName: string, order: string, limit?: number): Promise<PageinatedObject> {
+  getMultiplePaginatedFirst(collectionName: string, sort: string, size?: number): Promise<PageinatedObject> {
     const theUuid = uuidv4()
-    this.sendToMain('get-library-movies', { operation: IpcOperations.GET_BY_PAGE, uuid: theUuid },
-      { order: order, limit: limit, lastVal: 0 });
+    this.sendToMain(collectionName, { operation: IpcOperations.GET_BY_PAGE, uuid: theUuid },
+      { sort: sort, size: size, lastVal: 0 });
     return new Promise<any>((resolve, reject) => {
-      this.ipcRenderer.once(`library-movies-${theUuid}`, (event, arg) => {
+      this.ipcRenderer.once(`library-${theUuid}`, (event, arg) => {
         console.log(`libraryMovies ${theUuid}`)
         resolve(arg);
       });
@@ -172,12 +172,12 @@ export class IpcService {
    * @param limit
    * @param lastVal
    */
-  getMultiplePaginated(collectionName: string, order: string, limit?: number, lastVal?: string | number): Promise<PageinatedObject> {
+  getMultiplePaginated(collectionName: string, sort: string, limit?: number, lastVal?: string | number): Promise<PageinatedObject> {
     const theUuid = uuidv4()
-    this.sendToMain('get-library-movies', { operation: IpcOperations.GET_BY_PAGE, uuid: theUuid },
-      { order: order, limit: limit, lastVal: lastVal });
+    this.sendToMain(collectionName, { operation: IpcOperations.GET_BY_PAGE, uuid: theUuid },
+      { sort: sort, limit: limit, lastVal: lastVal });
     return new Promise<any>((resolve, reject) => {
-      this.ipcRenderer.once(`library-movies-${theUuid}`, (event, arg) => {
+      this.ipcRenderer.once(`library-${theUuid}`, (event, arg) => {
         console.log(`libraryMovies ${theUuid}`)
         resolve(arg);
       });
@@ -189,12 +189,12 @@ export class IpcService {
    * Replies offline library object(s).
    * @param arg imdb id or movie title and release year or tmdb id
    */
-  getMovieFromLibrary(arg) {
+  getMovieFromLibrary(arg): Promise<IRawLibrary> {
     const theUuid = uuidv4()
-    this.sendToMain('get-library-movies', { operation: IpcOperations.FIND, uuid: theUuid },
+    this.sendToMain('library', { operation: IpcOperations.FIND, uuid: theUuid },
       { tmdbId: arg });
     return new Promise<any>((resolve, reject) => {
-      this.ipcRenderer.once(`library-movie-${theUuid}`, (event, arg) => {
+      this.ipcRenderer.once(`library-${theUuid}`, (event, arg) => {
         console.log(`getMovieFromLibrary ${theUuid}`)
         resolve(arg);
       });
@@ -367,8 +367,8 @@ export class IpcService {
     this.ipcRenderer.send(IPCRendererChannel.STOP_STREAM)
   }
 
-  playOfflineVideo(tmdbId): Promise<any> {
-    this.ipcRenderer.send(IPCRendererChannel.PLAY_OFFLINE_VIDEO_STREAM, tmdbId);
+  playOfflineVideo(docId): Promise<any> {
+    this.ipcRenderer.send(IPCRendererChannel.PLAY_OFFLINE_VIDEO_STREAM, docId);
     return new Promise<any>((resolve, reject) => {
       this.ipcRenderer.once(`stream-link`, (event, arg) => {
         resolve(arg);
@@ -401,7 +401,7 @@ export class IpcService {
   changeSubtitle(): Promise<any> {
     this.sendToMain("get-subtitle")
     return new Promise((resolve) => {
-      this.ipcRenderer.once('subtitle-path', (event,arg) => {
+      this.ipcRenderer.once('subtitle-path', (event, arg) => {
         resolve(arg)
       })
     })
@@ -500,4 +500,8 @@ interface PageinatedObject {
   totalResults: number,
   page: number,
   results: any[],
+}
+
+interface SortObject {
+  [x: string]: 1 | -1
 }

@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-// import { Torrent, Movie, Test } from '../../subject'
-import { MDBTorrent } from '../../interfaces'
 import { IpcService } from '../../services/ipc.service'
 import { DISPLAYEDMOVIES, MOVIEGENRES } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '../../services/data.service'
 import { TorrentService } from '../../services/torrent.service'
-declare var $: any
 
 @Component({
   selector: 'app-bulk-download',
@@ -27,7 +24,6 @@ export class BulkDownloadComponent implements OnInit {
 
   constructor(
     private ipcService: IpcService,
-    private torrentService: TorrentService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private dataService: DataService) {
@@ -35,17 +31,12 @@ export class BulkDownloadComponent implements OnInit {
 
   ngOnInit() {
 
-    $('[data-toggle="popover"]').popover();
-    $('[data-toggle="tooltip"]').tooltip({ placement: 'top' });
     this.dataService.selectedMovies.subscribe(data => {
       data.forEach(element => {
         element.year = element.release_date.slice(0, element.release_date.indexOf('-'));
         this.displayedMovies = data;
       });
     })
-    // this.getTorrentFromFile();
-    // this.getTorrents();
-    // this.getTorrentFromFile()
   }
   // getTorrent
 

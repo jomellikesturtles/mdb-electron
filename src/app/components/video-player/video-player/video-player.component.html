@@ -60,17 +60,15 @@
             <img *ngIf="!videoPlayer1.paused" class='player-controls-icon' src='./assets/icons/pause.svg'>
           </div>
           <div (click)='toggleMute()'>
-            <!-- <img *ngIf="(videoPlayerElement && videoPlayerElement.muted) " class='player-controls-icon'
-              class='player-controls-icon' src='../../../../assets/icons/mute.svg'>
-            <img *ngIf="(videoPlayerElement && !videoPlayerElement.muted) || volume<=0" class='player-controls-icon'
-              class='player-controls-icon' src='../../../../assets/icons/volume.svg'> -->
+            <img *ngIf="(videoPlayer1 && videoPlayer1.muted) " class='player-controls-icon'
+              class='player-controls-icon' src='./assets/icons/mute.svg'>
+            <img *ngIf="(videoPlayer1 && !videoPlayer1.muted) || volume <= 0" class='player-controls-icon'
+              class='player-controls-icon' src='./assets/icons/volume.svg'>
           </div>
           <mat-slider (input)="volumeChange($event.value)" [(value)]="volume" min="0" max="100" step="1"></mat-slider>
         </div>
         <div style='float:right; padding-right: 5px;'>
-          <span *ngIf="videoPlayer1">{{player.currentTime|toHHMMSS}}</span>/
           <span *ngIf="videoPlayer1">{{currentTime|toHHMMSS}}</span>/
-          <!-- <span *ngIf="videoPlayer1">{{videoPlayer1.currentTime|toHHMMSS}}</span>/ -->
           <span>{{videoTime.duration|toHHMMSS}}</span>
 
           <img class='player-controls-icon' src='./assets/icons/subtitle.svg' [matMenuTriggerFor]="subtitlesMenu">
