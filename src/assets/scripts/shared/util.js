@@ -80,9 +80,17 @@ function escapeRegExp(text) {
   return text.replace(/[-[\]{}()*+?.,\\/^$|#\s]/g, "\\$&");
 }
 
+function getNumberOfPages(count, size) {
+  let totalPages = count / size;
+  const modulo = count % size;
+  if (modulo > 0 && totalPages > 0) totalPages++;
+  return Math.floor(totalPages);
+}
+
 module.exports = {
   sayHello: sayHello,
   getReleaseYear: getReleaseYear,
   prettyBytes: prettyBytes,
   regexify: regexify,
+  getNumberOfPages: getNumberOfPages
 };

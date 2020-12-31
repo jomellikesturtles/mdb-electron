@@ -5,6 +5,7 @@
 let args = process.argv.slice(2);
 let headers = args[0];
 let body = args[1];
+const { getNumberOfPages }= require('./shared/util');
 
 const path = require('path');
 const DataStore = require('nedb');
@@ -86,6 +87,74 @@ function getBookmarkInList(idList) {
   });
 }
 
+/**
+ *  // Count all planets in the solar system
+ *  // db.count({ system: 'solar' }, function (err, count) {
+ * // // count equals to 3
+ * // });
+ * @param {object} option
+ */
+function countBookmarks(option) {
+  return new Promise(function (resolve, reject) {
+    bookmarkDb.count(option, function (err, data) { resolve(data);});
+  });
+}
+
+/**
+ * ... can be used in paginated list.
+ * @param {number} skip
+ * @param {number} step
+ * @param {*} sort // {year:1} ascending year, {year:-1} descending year
+ */
+function getBookmarksByStep(skip, step, sort) {
+  return new Promise(function (resolve, reject) {
+    bookmarkDb.find({}).sort(sort).skip(skip).limit(step).exec(function (err, data) {
+      if (!err) {
+        DEBUG.log('data:', data);
+        resolve(data);
+      } else {
+        // reject()
+      }
+    });
+  });
+}
+
+/**
+ * In paginated list.
+ * @param {number} page page to get
+ * @param {number} size num of items
+ * @param {*} sort {year:1} ascending year, {year:-1} descending year
+ */
+async function getBookmarksPaginated(page, size, sort) {
+
+  const count = await countBookmarks({});
+  const skip = size > count ? 0 : (size * page) + -1;
+  const bookmarksList = await getBookmarksByStep(skip, size, sort);
+
+  return new Promise(function (resolve, reject) {
+    if (bookmarksList.length > 0) {
+      let newData = [];
+      const totalPages = getNumberOfPages(count, size);
+      bookmarksList.forEach(e => { newData.push(convertToFEBookmark(e)); });
+      const toReturn = {
+        page: page,
+        totalPages: totalPages,
+        totalResults: count,
+        results: newData
+      };
+      resolve(toReturn);
+    } else {
+      const toReturn = {
+        page: page,
+        totalPages: 0,
+        totalResults: 0,
+        results: []
+      };
+      resolve(toReturn);
+    }
+  });
+}
+
 function saveBookmark(args) {
   return new Promise(function (resolve, reject) {
     // bookmarkDb.ensureIndex({ fieldName: 'tmdb', unique: true, sparse: true }, function (err) {
@@ -152,6 +221,10 @@ function initializeService() {
       });
       break;
     case 'find-in-list': getBookmarkInList(dataArgs.idList).then(value=>{
+        process.send([`bookmark-${uuid}`, value]);
+      });
+      break;
+    case 'get-by-page': getBookmarksPaginated(dataArgs.page, dataArgs.size, dataArgs.sort).then(value => {
         process.send([`bookmark-${uuid}`, value]);
       });
       break;

@@ -181,6 +181,7 @@ function startTorrentClient() {
   // procWebTorrent.stdout.on("data", function (data) {
   //   DEBUG.log(data.toString().slice(0, -1));
   // });
+  procWebTorrent.on("error", (e) => printError("procWebTorrent", e));
   procWebTorrent.on("exit", function () {
     DEBUG.log("procWebTorrent ended");
   });

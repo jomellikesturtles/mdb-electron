@@ -2,7 +2,7 @@ import { GenreCodes } from './../../../interfaces';
 import { IRawLibrary, LibraryService } from '../../../services/library.service';
 import {
   Component, OnInit,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { MDBTorrent } from '../../../interfaces';
 import { MdbMovieDetails } from '../../../classes';
@@ -81,6 +81,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (!environment.runConfig.useTestData) {
       this.activatedRoute.params.subscribe(val => {
+        this.showVideo = false
         this.getMovieOnline(val['id'])
       })
     } else {
@@ -138,8 +139,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.libraryService.openVideoStream(val).then(e => {
       console.log('streamlink1:', e)
       if (e != 0 && e != [] && e != '' && e.length > 0) {
-        this.streamLink = e
         this.showVideo = true
+        this.streamLink = e
       }
     })
   }
@@ -291,7 +292,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
     this.libraryService.getMovieFromLibrary(this.movieDetails.tmdbId).then((libraryList: IRawLibrary[]) => {
       console.log("libraryList", libraryList)
-      if (libraryList) {
+      if (libraryList.length > 0) {
         this.bestPlayLink = this.mapPlayLink(libraryList[0])
         this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(libraryList)]
       }
@@ -323,9 +324,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
       console.log('streamlink1:', e)
       if (e != 0 && e != [] && e != '' && e.length > 0) {
         console.log('streamlink2:', e)
+        this.showVideo = true
         this.streamLink = e
         // this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4'
-        this.showVideo = true
       }
     })
   }

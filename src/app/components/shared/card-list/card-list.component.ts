@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input} from '@angular/core';
 import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';

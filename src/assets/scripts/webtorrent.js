@@ -236,6 +236,24 @@ process.on("uncaughtException", function (error) {
   // process.send(['operation-failed', 'general']);
 });
 
+process.on('unhandledRejection', function (error) {
+  DEBUG.log(error);
+  process.send(['operation-failed', 'general']);
+});
+process.on('exit', function (error) {
+  DEBUG.log('exiting...', error);
+  process.send(['operation-failed', 'general']);
+});
+process.on('beforeExit', function (error) {
+  DEBUG.log('beforeExit...', error);
+  process.send(['operation-failed', 'general']);
+});
+process.on('warning', function (error) {
+  DEBUG.log('warning...', error);
+  process.send(['operation-failed', 'general']);
+});
+
+
 process.on("message", (m) => {
   console.log("onMessage ipcChild", m);
   if (m[0] == "play-torrent") {

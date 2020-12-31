@@ -1,5 +1,5 @@
 /**
- * service for user's data, watchlist, watched; for happy path, we will use TMDB for now.
+ * service for user's data, favorites; for happy path, we will use TMDB for now.
  */
 /*jshint esversion: 8 */
 let args = process.argv.slice(2);
@@ -10,9 +10,9 @@ const path = require('path');
 const DataStore = require('nedb');
 const { getNumberOfPages }= require('./shared/util');
 
-var watchedDb = new DataStore({
-  // filename: path.join(__dirname, '..', 'db', 'watched.db'), // node
-  filename: path.join(process.cwd(), 'src', 'assets', 'db', 'watched.db'),
+var favoritesDb = new DataStore({
+  // filename: path.join(__dirname, '..', 'db', 'favorites.db'), // node
+  filename: path.join(process.cwd(), 'src', 'assets', 'db', 'favorites.db'),
   autoload: true
 })
 
@@ -41,7 +41,7 @@ process.on('uncaughtException', function (error) {
 // ----------WATCHED
 function findWatched(args) {
   return new Promise(function (resolve, reject) {
-    watchedDb.findOne({ tmdb: parseInt(args, 10) }, function (err, doc) {
+    favoritesDb.findOne({ tmdb: parseInt(args, 10) }, function (err, doc) {
       if (!err) {
         DEBUG.log('watched found', doc);
         if (doc) {
@@ -67,7 +67,7 @@ function getWatchedInList(idList) {
 
   console.log('getWatchedInList idList2: ',idList)
   return new Promise(function (resolve, reject) {
-    watchedDb.find({ tmdb: { $in: idList }}, function (err, docs) {
+    favoritesDb.find({ tmdb: { $in: idList }}, function (err, docs) {
       if (!err) {
         let toList = [];
         docs.forEach((element) => {
@@ -93,7 +93,7 @@ function getWatchedInList(idList) {
 function getWatchedByStep(skip, step, sort) {
   // DEBUG.log(`index, step: ${index}, ${step}`)
   return new Promise(function (resolve, reject) {
-    watchedDb.find({}).sort(sort).skip(skip).limit(step).exec(function (err, data) {
+    favoritesDb.find({}).sort(sort).skip(skip).limit(step).exec(function (err, data) {
       if (!err) {
         DEBUG.log('data:', data);
         resolve(data);
@@ -113,7 +113,7 @@ function getWatchedByStep(skip, step, sort) {
  */
 function countWatched(option) {
   return new Promise(function (resolve, reject) {
-    watchedDb.count(option, function (err, data) { resolve(data);});
+    favoritesDb.count(option, function (err, data) { resolve(data);});
   });
 }
 
@@ -155,11 +155,11 @@ async function getWatchedPaginated(page, size, sort) {
 
 function saveWatched(args) {
   return new Promise(function (resolve, reject) {
-    // watchedDb.ensureIndex({ fieldName: 'tmdbId', unique: true, sparse: true }, function (err) {
+    // favoritesDb.ensureIndex({ fieldName: 'tmdbId', unique: true, sparse: true }, function (err) {
       DEBUG.log('args.tmdbId: ', args.tmdbId);
       if (args.tmdbId) {
         const dbObj = convertToDbWatched(args);
-        watchedDb.update({ tmdb: parseInt(args.tmdbId, 10) }, { $set: dbObj }, { upsert: true }, function (err, numAffected, upsert) {
+        favoritesDb.update({ tmdb: parseInt(args.tmdbId, 10) }, { $set: dbObj }, { upsert: true }, function (err, numAffected, upsert) {
           if (!err) {
             DEBUG.log('numAffected: ', numAffected);
             resolve(numAffected);
@@ -180,11 +180,11 @@ function saveWatched(args) {
 function removeWatched(type, id) {
   return new Promise(function (resolve, reject) {
     if (type === 'id') {
-      watchedDb.remove({ _id: id}, {}, (err, numAffected) => {removedCallback(err,numAffected).then(e => {
+      favoritesDb.remove({ _id: id}, {}, (err, numAffected) => {removedCallback(err,numAffected).then(e => {
         resolve(e);
       })});
     } else if (type === 'tmdbId') {
-      watchedDb.remove({ tmdb: parseInt(id, 10) }, {}, (err, numAffected) => {removedCallback(err,numAffected).then(e => {
+      favoritesDb.remove({ tmdb: parseInt(id, 10) }, {}, (err, numAffected) => {removedCallback(err,numAffected).then(e => {
         resolve(e);
       })});
     }
@@ -248,24 +248,22 @@ module.exports = {
   getWatchedInList: getWatchedInList
 }
 
-function convertToDbWatched(arg) {
+function convertToDbFavorites(arg) {
   return {
     _id: arg.id,
     tmdb: arg.tmdbId,
     imdb: arg.imdbId,
     title: arg.title,
     yr: arg.year,
-    pctg: arg.percentage,
   };
 }
 
-function convertToFEWatched(arg) {
+function convertToFEFavorites(arg) {
   return {
     id: arg._id,
     tmdbId: arg.tmdb,
     imdbId: arg.imdb,
     title: arg.title,
     year: arg.yr,
-    percentage: arg.pctg,
   };
 }

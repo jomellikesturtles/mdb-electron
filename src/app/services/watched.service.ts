@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './firebase.service';
 import { IUserSavedData } from '../interfaces';
 import { environment } from './../../environments/environment';
-import { IpcService } from './ipc.service';
+import { IpcService, IUserDataPaginated } from './ipc.service';
 import { UtilsService } from './utils.service';
 
 @Injectable({
@@ -96,7 +96,7 @@ export class WatchedService {
   /**
    * Gets first page of list.
    */
-  getWatchedPaginatedFirstPage(): Promise<any> {
+  getWatchedPaginatedFirstPage(): Promise<IUserDataPaginated | any> {
     if (environment.runConfig.firebaseMode) {
       return this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20)
     } else {
@@ -108,7 +108,7 @@ export class WatchedService {
    * Gets multiple watched.
    * @param lastVal the last value to start with.
    */
-  getWatchedPaginated(lastVal: string | number): Promise<any> {
+  getWatchedPaginated(lastVal: string | number): Promise<IUserDataPaginated | any> {
     console.log('getting multiplewatched...', lastVal);
     return this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Watched, FieldName.TmdbId, 20, lastVal)
   }

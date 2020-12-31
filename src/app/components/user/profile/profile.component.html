@@ -26,8 +26,8 @@
 
   <ng-template #overviewTemplate>
 
-    <app-horizontal-card-list [title]='"Watchlist"' [totalCount]='13' [moviesList]='moviesList'></app-horizontal-card-list>
-    <app-horizontal-card-list [title]='"Favorites"' [totalCount]='23' [moviesList]='moviesList'></app-horizontal-card-list>
+    <app-horizontal-card-list [title]='"Watched"' [totalCount]='moviesWatchedList.count' [moviesList]='moviesWatchedList.data'></app-horizontal-card-list>
+    <app-horizontal-card-list [title]='"Bookmarks"' [totalCount]='moviesBookmarksList.count' [moviesList]='moviesBookmarksList.data'></app-horizontal-card-list>
 
     <div>
       <h3>My Stats</h3>
