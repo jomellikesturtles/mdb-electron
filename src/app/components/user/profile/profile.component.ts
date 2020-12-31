@@ -1,6 +1,5 @@
 import {
   Component, OnInit,
-  // ChangeDetectorRef
 } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 // import { Observable } from 'rxjs';
@@ -8,6 +7,7 @@ import { ThemePalette } from '@angular/material/core';
 // import { Select } from '@ngxs/store';
 // import { FirebaseService } from 'src/app/services/firebase.service';
 import { TMDB_SEARCH_RESULTS } from 'src/app/mock-data';
+import { UserDataService } from 'src/app/services/user-data.service';
 
 @Component({
   selector: 'app-profile',
@@ -16,7 +16,8 @@ import { TMDB_SEARCH_RESULTS } from 'src/app/mock-data';
 })
 export class ProfileComponent implements OnInit {
   // @Select(UserState) user$: Observable<any>
-  moviesList = TMDB_SEARCH_RESULTS.results
+  // moviesList = TMDB_SEARCH_RESULTS.results
+  moviesList = []
   userProfile: IProfile = {
     username: 'peterparker123',
     emailAddress: 'peterparker123@gmail.com',
@@ -30,16 +31,24 @@ export class ProfileComponent implements OnInit {
   }
   defaultUserProfile
   firebaseUser$
+  moviesWatchedList = {
+    count: 0,
+    data: []
+  }
+  moviesBookmarksList = {
+    count: 0,
+    data: []
+  }
   background: ThemePalette = undefined
   constructor(
-    // private cdr: ChangeDetectorRef,
-    // private firebaseService: FirebaseService
+    private userDataService: UserDataService
   ) { }
 
   ngOnInit() {
     // this.countBookmarks()
     this.getUser()
     this.treatAll()
+    this.getUserData()
   }
 
   ngAfterViewInit(): void {
@@ -90,6 +99,19 @@ export class ProfileComponent implements OnInit {
 
   exportUserData() {
 
+  }
+
+  getUserData() {
+    this.userDataService.getUserDataFirstPage('watched').then(e => {
+      console.log('getuserdata watched', e)
+      this.moviesWatchedList.count = e.totalResults
+      this.moviesWatchedList.data = e.results
+    })
+    this.userDataService.getUserDataFirstPage('bookmark').then(e => {
+      console.log('getuserdata bookmark', e)
+      this.moviesBookmarksList.count = e.totalResults
+      this.moviesBookmarksList.data = e.results
+    })
   }
 }
 

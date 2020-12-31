@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, OnDestroy, AfterViewInit, ElementRef, OnChanges, SimpleChanges, ViewChild, PipeTransform, Pipe, NgZone } from '@angular/core';
-import { fromEvent, Observable } from 'rxjs';
+import { Component, OnInit, Input, OnDestroy, AfterViewInit, ElementRef, OnChanges, SimpleChanges, ViewChild, PipeTransform, Pipe } from '@angular/core';
+import { Subject } from 'rxjs';
 import { IpcService } from 'src/app/services/ipc.service';
 import { MovieService } from 'src/app/services/movie.service';
 import { WatchedService } from 'src/app/services/watched.service';
@@ -9,6 +9,7 @@ import { UserIdleService } from "angular-user-idle";
 import chardet from "chardet";
 import jschardet from "jschardet";
 import { environment } from 'src/environments/environment';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-video-player',
@@ -29,8 +30,20 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   volume = this.DEFAULT_VOLUME
   previousVolumeValue = 0
   videoPlayerElement;
-  statsForNerds: Stats
-  subtitles
+  isShowStatus = false
+  statsForNerds: Stats = {
+    bufferhealth: '',
+    connectionSpeed: '',
+    downloadedPieces: 0,
+    downSpeed: '',
+    upSpeed: '',
+    ratio: '',
+    // codec
+    id: '',
+    source: '',
+    size: '',
+    resolution: ''
+  }
   played = '0%'
   buffered = '0%'
   videoTime = {
@@ -38,11 +51,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     duration: 0,
     remaining: 0
   }
-  afterView: boolean;
-  src: 'src/assets/sample-subtitles.vtt'
   caption: {
     language: 'EN',
-    // src: './assets/sample-subtitles.vtt'
     src: 'src/assets/sample-subtitles.vtt'
     color: 'blue'
   }
@@ -58,7 +68,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     fontSize: 'black',
     textShadow: '3px 3px 5px black'
   }
-  fontColorsList = ['White', 'Black', 'Red', '"blue"', '"green"', '"gray"']
+  fontColorsList = ['white', 'black', 'red', 'blue', 'green', 'gray']
   subtitleSpanElementsList: any;
   fontSizeList = [
     { value: '1em', label: 'Juts' },
@@ -69,11 +79,12 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     currentTime: 0
   }
   currentTime
+  private ngUnsubscribe = new Subject();
+
   constructor(
     private ipcService: IpcService,
     private watchedService: WatchedService,
     private movieService: MovieService,
-    private ngZone: NgZone,
     private elementRef: ElementRef,
     private userIdleService: UserIdleService
   ) { }
@@ -84,59 +95,17 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
 
   ngOnInit() {
+    // this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4' // 320p sample
+    // this.streamLink = 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4' // 1080p sample
     this.userIdleService.startWatching()
-    this.userIdleService.onTimerStart().subscribe((_count) => { console.log('start! ', _count) });
-    this.userIdleService.onIdleStatusChanged().subscribe(e => {
+    this.userIdleService.onTimerStart().pipe(takeUntil(this.ngUnsubscribe)).subscribe((_count) => { console.log('start! ', _count) });
+    this.userIdleService.onIdleStatusChanged().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
       console.log("changed!", e)
     })
-    this.userIdleService.onTimeout().subscribe(e => {
+    this.userIdleService.onTimeout().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
       console.log("TIMEOUT!OUT!", e)
       this.isUserInactive = true;
     })
-
-    // var buf = new TextEncoder().encode('Hello world').buffer;
-    // console.log(buf);
-    // create a dataView
-    // var view = new DataView(buf);
-    // console.log(view.getUint8(0));
-    // // now you can iterate and modify your arrayBuffer from this view.
-    // view.setUint8(0, 23);
-    // console.log(new Uint8Array(buf)[0]);
-
-    // chardet.detectFile('assets/Cinema Paradiso-English.srt').then(encoding => { console.log('encoding'.toUpperCase(), encoding) });
-
-    // ------------------------------------------
-    // this.movieService.getSubtitleFileString('assets/Cinema Paradiso-English.srt').subscribe((resultFileStr) => {
-
-    //   console.log(jschardet.detect(resultFileStr, { minimumThreshold: 0 }))
-
-    //   resultFileStr = resultFileStr.replace(/[\r]+/g, '')
-    //   console.log(jschardet.detect(resultFileStr))
-    //   console.log('match: ', chardet.analyse(Buffer.from(resultFileStr)))
-
-    //   // chardet.detectFile('file:///C:\\Users\\jomme\\Downloads\\Cinema Paradiso (1988) [BluRay] [1080p] [YTS.AM]\\cinema-paradiso-1988-english-yify-131744\\Cinema Paradiso-English.srt').then(encoding => console.log('encoding', encoding));
-    // })
-    // this.movieService.getSubtitleFile('assets/Cinema Paradiso-English.srt').subscribe((resultFile) => {
-    //   let resultFileStr
-    //   const fileReader = new FileReader()
-    //   const encoding = jschardet.detect(resultFileStr, { minimumThreshold: 0 }).encoding
-    //   fileReader.readAsText(resultFile, encoding);
-    //   const root = this
-    //   fileReader.onloadend = function (x) {
-    //     resultFileStr = fileReader.result
-    //     console.log(resultFileStr)
-    //     resultFileStr = resultFileStr.replace(/[\r]+/g, '')
-    //     root.subtitleMap = SubtitlesUtil.mapSubtitle(resultFileStr)
-    //     console.log("subtitleMap!", root.subtitleMap)
-    //   };
-    //   // resultFile = resultFile.replace(/[\r]+/g, '')
-    //   // const buf = Buffer.from(resultFile, 'ucs2')
-    //   // const buf = Buffer.from(resultFileStr, 'iso88592')
-    //   //  * Valid string encodings in Node 0.12: 'ascii'|'utf8'|'utf16le'|'ucs2'(alias of 'utf16le')|'base64'|'binary'(deprecated)|'hex'
-    //   // console.log('BUF', buf)
-    // }
-    // )
-    // ------------------------------------------
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -148,28 +117,32 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   ngOnDestroy(): void {
     this.ipcService.stopStream()
+    this.ngUnsubscribe.next()
+    this.ngUnsubscribe.complete()
   }
 
   ngAfterViewInit(): void {
-    this.afterView = true
     this.subtitleSpanElementsList = this.elementRef.nativeElement.querySelectorAll('.subtitle-span')
 
     if (environment.runConfig.electron) {
-      // this.ipcService.statsForNerdsSubscribable.subscribe(stats => {
-      //   console.log(stats)
-      //   if (stats) {
-      //     // this.statsForNerds.downSpeed = stats.downSpeed
-      //     // this.statsForNerds.upSpeed = stats.upSpeed
-      //     // this.statsForNerds.downloadedPieces= stats.downloadedPieces
-      //     // this.statsForNerds.ratio = stats.ratio
-      //   }
-      // })
+      this.ipcService.statsForNerdsSubscribable.pipe(takeUntil(this.ngUnsubscribe)).subscribe(stats => {
+        console.log(stats)
+        if (stats) {
+          this.statsForNerds.downSpeed = stats.downSpeed
+          this.statsForNerds.upSpeed = stats.upSpeed
+          this.statsForNerds.downloadedPieces = stats.downloadedPieces
+          this.statsForNerds.ratio = stats.ratio
+        }
+      })
     }
 
     //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
 
     this.videoPlayerElement = this.elementRef.nativeElement.querySelector('#videoPlayer')
-    // this.videoPlayerElement.volume = 1
+
+    this.togglePlay();
+
+    // Mute/Unmute
     // this.videoPlayerElement.muted = true
     this.videoPlayerElement.addEventListener('canplay', (e) => {
       console.log('canplay', e)
@@ -229,19 +202,15 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
           break;
         } else {
           this.updateDisplaySubtitle('', '')
-          // this.updateDisplaySubtitle('\uD83D\uDE00', '\uD83D\uDE00')
+          // this.updateDisplaySubtitle('\uD83D\uDE00', '\uD83D\uDE00') // emoji test
         }
       }
     })
     this.videoPlayerElement.addEventListener('loadedmetadata', (e) => {
-      console.log('loadedmetadata')
-      this.subtitleMap.forEach(e => {
-        // this.videoPlayerElement.addCue(new VTTCue(e.))
-        // e.
-      })
-      // const a = new
+      this.statsForNerds.resolution = this.videoPlayerElement.videoWidth + 'x' + this.videoPlayerElement.videoHeight
+
+      // this.videoPlayer1.nativeElement.play()
     })
-    // this.ngZone.runOutsideAngular(() => {
     const root = this
     setInterval((e) => {
       root.updateProgressBar()
@@ -249,61 +218,44 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
         // this.updateWatchedStatus(e)
       }
     }, 500)
-    // })
   }
 
   onKeyPress(val: KeyboardEvent) {
-    // videoHeight: 360
-    // videoWidth: 640
     const key = val.key.toLowerCase()
     console.log(key)
     if (!val.shiftKey && !val.altKey && !val.ctrlKey && !val.metaKey) {
 
-      // const REGEX_OMDB_RELEASE_DATE = new RegExp('^[0-9]$', `gi`);
-
-      // if ((new RegExp('^[0-9]$', `gi`)).test(key)) {
-
-      //   if (key == '1') { this.videoPlayerElement.currentTime = '0' }
-      //   if (key == '0') { this.videoPlayerElement.currentTime = this.videoPlayerElement.duration }
-
-      // }
-
       switch (key) {
         case 'm':
-          this.videoPlayerElement.muted = !this.videoPlayerElement.muted
           // toggle mute
+          this.toggleMute()
           break;
         case 'f':
           this.toggleFullScreen()
-          // toggle fullscreen
           break;
         case 'k':
           // toggle pause/play
-          // this.togglePlay()
-          this.isPlaying ? this.videoPlayer1.nativeElement.play() : this.videoPlayer1.nativeElement.pause()
-          // this.isPlaying ? this.videoPlayerElement.playVideo() : this.videoPlayerElement.pauseVideo()
-          // this.isPlaying = !this.isPlaying
+          this.togglePlay()
           break;
         case 'arrowup':
-          // if (this.volume >= 1) return
-          // this.volume += .2
+          // TODO: add maxvolume limit
           this.videoPlayerElement.volume += .2
           // keyCode: 38
           break;
         case 'arrowdown':
-          // if (this.volume <= 0) return
-          // this.volume -= .2
-          // this.videoPlayerElement.volume = this.volume
+          // TODO: add min volume limit
           this.videoPlayerElement.volume -= .2
           // keyCode: 40
           break;
         case 'arrowleft':
-          this.videoPlayerElement.currentTime = '10'
+          // TODO: add limiter for min allowable timestamp
+          // this.videoPlayerElement.currentTime = '10'
           // keyCode: 37
           // toggl2e fullscreen
           break;
         case 'arrowright':
-          this.videoPlayerElement.currentTime = '20'
+          // TODO: add limiter for max allowable timestamp
+          // this.videoPlayerElement.currentTime = '20'
           // keyCode: 39
           break;
         case 'pageup':
@@ -321,16 +273,20 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
         case '7':
         case '8':
         case '9':
+          // duration selector, 1 for 10% of duration, 2 20%, etc.
           this.videoPlayerElement.currentTime = parseFloat('.' + key) * this.videoPlayerElement.duration
           break;
         case '0':
         case 'home':
+          // start of the video
           this.videoPlayerElement.currentTime = '0'
           break;
         case 'end':
+          // end of the video
           this.videoPlayerElement.currentTime = this.videoPlayerElement.duration
           break;
         default:
+          console.log('no hotkey')
           break;
       }
     }
@@ -361,9 +317,21 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
 
   togglePlay() {
-    this.videoPlayer1.nativeElement.paused ? this.videoPlayer1.nativeElement.play() : this.videoPlayer1.nativeElement.pause()
+    const isPlaying = this.videoPlayer1.nativeElement.currentTime > 0 && !this.videoPlayer1.nativeElement.paused && !this.videoPlayer1.nativeElement.ended
+      && this.videoPlayer1.nativeElement.readyState > 2;
+    // safely autoplay
+    if (!isPlaying) {
+      this.videoPlayer1.nativeElement.play();
+    } else {
+      this.videoPlayer1.nativeElement.pause();
+    }
+    // this.videoPlayer1.nativeElement.paused ? this.videoPlayer1.nativeElement.play() : this.videoPlayer1.nativeElement.pause()
   }
 
+  /**
+   * Toggles fullscreen for #videoPlayerOuter.
+   * TODO: exit fullscreen functionality.
+   */
   toggleFullScreen() {
 
     const playerOuter = this.elementRef.nativeElement.querySelector('#videoPlayerOuter')
@@ -382,6 +350,10 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       }
     }
   }
+
+  /**
+   * Event for video player scrubber tooltip
+   */
   mouseMove(e) {
     // console.log(e.offsetX)
     var x = e.clientX
@@ -399,11 +371,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   /**
    * Open file selector from electron side and return fullfilepath.
-   *
    */
   async changeCc() {
-
-    console.log('=======================================')
 
     // let filePath = 'Aliens.Directors.Cut.1986.1080p.BRrip.x264.GAZ.YIFY.srt'
     let filePath = 'Cinema Paradiso-English.srt'
@@ -439,21 +408,33 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       console.log("subtitleMap!", root.subtitleMap)
     };
   }
+
   volumeChange(source: number) {
     this.volume = source
     this.videoPlayerElement.volume = this.volume * 0.01
-    // this.volume
   }
+
   toggleMute() {
     this.videoPlayerElement.muted = !this.videoPlayerElement.muted
-    // this.videoPlayerElement.muted ? this.volume:
-    // this.previousVolumeValue = this.videoPlayerElement.volume
   }
+
   updateProgressBar() {
-    const duration = this.videoPlayerElement.duration
-    this.played = this.watchedService.getPercentage(this.videoPlayerElement.currentTime, duration) + '%'
-    if (this.videoPlayer1.nativeElement.buffered.length > 0) {
-      this.buffered = this.watchedService.getPercentage(this.videoPlayer1.nativeElement.buffered.end(0), duration) + '%'
+    const DURATION = this.videoPlayerElement.duration
+    const PLAYER1_BUFFERED = this.videoPlayer1.nativeElement.buffered
+
+    this.played = this.watchedService.getPercentage(this.videoPlayerElement.currentTime, DURATION) + '%'
+
+    if (PLAYER1_BUFFERED.length > 0) {
+      PLAYER1_BUFFERED
+      this.buffered = this.watchedService.getPercentage(PLAYER1_BUFFERED.end(0), DURATION) + '%'
+      let currentBufferHealth = 0
+      for (let index = 0; index < PLAYER1_BUFFERED.length; index++) {
+        const bufferStart = PLAYER1_BUFFERED.start(index);
+        const bufferEnd = PLAYER1_BUFFERED.end(index);
+        currentBufferHealth += bufferEnd - bufferStart;
+      }
+      this.statsForNerds.bufferhealth = currentBufferHealth + 's | ' +
+        this.watchedService.getPercentage(currentBufferHealth, DURATION) + '%'
     }
   }
 
@@ -462,6 +443,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     this.currentDisplay2 = val2
   }
 
+  /**
+   * converts HH:mm:ss format to seconds float.
+   * @param hms time in HH:mm:ss format
+   * @returns seconds equivalent
+   */
   convertToSeconds(hms: string) {
     hms = hms.replace(',', '.');
     const a = hms.split(':'); // split it at the colons
@@ -492,8 +478,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
 interface Stats {
   bufferhealth: string // in seconds
-  connectionSpeed: string
-  downloadedPieces: string // (pieces have.)
+  connectionSpeed: string // might remove
+  downloadedPieces: number // (pieces have.)
   downSpeed: string // leech speed
   upSpeed: string // seed speed
   ratio: string // downloaded/uploaded ratio

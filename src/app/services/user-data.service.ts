@@ -5,7 +5,7 @@ import { IBookmark, BookmarkService } from './bookmark.service';
 import { MovieService } from './movie.service';
 import { WatchedService, IWatched } from './watched.service';
 import { UtilsService } from './utils.service';
-import { IpcService, IUserMovieData } from './ipc.service';
+import { IpcService, IUserDataPaginated, IUserMovieData } from './ipc.service';
 import { environment } from 'src/environments/environment';
 import { CollectionName, FirebaseService } from './firebase.service';
 
@@ -131,27 +131,29 @@ export class UserDataService {
   async getUserDataFirstPage(dataType: string): Promise<any> {
     console.log('get firstpage: ', dataType);
 
-    let dataList = []
+    let data: IUserDataPaginated | any = []
     switch (dataType) {
       case 'bookmark':
         const bookmarksList = await this.bookmarkService.getBookmarksPaginatedFirstPage()
-        dataList = bookmarksList
+        data = bookmarksList
         break;
       case 'watched':
         const watchedList = await this.watchedService.getWatchedPaginatedFirstPage()
-        dataList = watchedList
+        data = watchedList
         break;
       case 'library':
         const videoList = await this.libraryService.getLibraryPaginatedFirstPage()
-        dataList = videoList
+        data = videoList
         break;
       default:
         break;
     }
     return new Promise(async (resolve, reject) => {
-      const e = await this.getMovieListDetails(dataType, dataList)
-      console.log('e:', e)
-      resolve(e)
+      const moviesList = await this.getMovieListDetails(dataType, data)
+      console.log('moviesList paginated:', moviesList)
+      let data2: IUserDataPaginated = data
+      data2.results = moviesList
+      resolve(data2)
     })
   }
 
@@ -174,6 +176,13 @@ export class UserDataService {
     return new Promise(async (resolve, reject) => {
       const e = await this.getMovieListDetails(dataType, dataList)
       console.log('e:', e)
+      // IUserDataPaginated {
+      //   totalPages: number,
+      //     totalResults: number,
+      //       page: number,
+      //         results: any[]
+      // }
+
       resolve(e)
     })
   }
@@ -181,7 +190,7 @@ export class UserDataService {
   /**
    * TODO: include libraryFile/libaryObj to the list even if not identified.
    */
-  private getMovieListDetails(dataType: string, dataDocList: any[]): Observable<any> | any {
+  private getMovieListDetails(dataType: string, data: IUserDataPaginated | any): Observable<any> | any {
     // ----------------------------
     // const fj = forkJoin(obsList)
     // fj.pipe().subscribe(
@@ -196,10 +205,12 @@ export class UserDataService {
     // ----------------------------
     return new Promise(resolve => {
       const moviesDisplayList = []
+      const isFirebase = data.results ? false : true
+      const dataDocList = isFirebase ? data : data.results
       const len = dataDocList.length
       let index = 0
       dataDocList.forEach(dataDoc => {
-        dataDoc = (typeof dataDoc.data === "function") ? dataDoc.data() : dataDoc // firebaseData or offlineData
+        dataDoc = isFirebase ? dataDoc.data() : dataDoc // firebaseData or offlineData
         index++
         if (dataDoc.tmdbId > 0) {
           this.movieService.getTmdbMovieDetails(dataDoc.tmdbId, 'videos,images,credits,similar,external_ids,recommendations').pipe().subscribe(movie => {
@@ -208,7 +219,6 @@ export class UserDataService {
             moviesDisplayList.push(movie)
             if (len === index) {
               resolve(moviesDisplayList)
-              // return moviesDisplayList
             }
           })
         }
@@ -223,6 +233,7 @@ export class UserDataService {
    */
   private setDataObject(dataType: string, dataDoc) {
     let userData = null
+    const isFirebaseData = (typeof dataDoc.data === "function")
     const docData = (typeof dataDoc.data === "function") ? dataDoc.data() : dataDoc // firebaseData or offlineData
     const docDataId = dataDoc.id ? dataDoc.id : dataDoc._id;
     switch (dataType) {
@@ -241,8 +252,9 @@ export class UserDataService {
           title: docData.title,
           year: docData.year,
           tmdbId: docData.tmdbId,
-          percentage: docData.percentage ? dataDoc.data().percentage : 100,
         }
+        w.percentage = isFirebaseData && docData.percentage ? dataDoc.data().percentage : 100
+        w.percentage = !isFirebaseData && docData.percentage ? docData.percentage : 100
         userData = w
         break;
       case 'library':
@@ -258,3 +270,4 @@ export class UserDataService {
     return userData
   }
 }
+

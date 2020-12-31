@@ -60,11 +60,10 @@ export class BookmarkService {
   }
 
   getBookmarksPaginatedFirstPage(): Promise<any> {
-    if (environment.runConfig.firebaseMode) {
-      return this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20)
-    } else {
-
-    }
+    const myFunction = environment.runConfig.firebaseMode ?
+      this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20) :
+      this.ipcService.getMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20)
+    return myFunction
   }
 
   /**

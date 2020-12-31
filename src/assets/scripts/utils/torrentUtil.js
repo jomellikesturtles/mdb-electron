@@ -112,7 +112,7 @@ function getDesiredFile(torrentFiles) {
   let startSize = 0;
   let endSize = 0;
   let accumulatedTorrentSize = 0;
-  const validFormatsList = [".mp4", ".webm", ".flv", ".avi", ".wmv"];
+  const validFormatsList = [".mp4", ".webm", ".flv", ".avi", ".wmv", ".mkv"];
   for (let index = 0; index < torrentFiles.length; index++) {
     const file = torrentFiles[index];
     const fileName = file.name;

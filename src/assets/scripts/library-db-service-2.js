@@ -9,6 +9,7 @@ var libraryFilesDb = new DataStore(
     filename: path.join(process.cwd(), 'src', 'assets', 'db', 'libraryFiles2.db'),
     autoload: true
   });
+const { getNumberOfPages }= require('./shared/util');
 
 process.send =
   process.send ||
@@ -219,17 +220,15 @@ async function getLibraryPaginated(page, size, sort) {
   return new Promise(function (resolve, reject) {
     if (libraryList.length > 0) {
       let newData = [];
-      const totalPages = count / size;
+      const totalPages = getNumberOfPages(count, size);
       DEBUG.log(libraryList)
-      // libraryList.forEach(e => { newData.push(convertToFEWatched(e)); });
-      // const toReturn = {
-      //   page: page,
-      //   totalPages: totalPages,
-      //   totalResults: count,
-      //   results: newData
-      // };
-      // resolve(toReturn);
-      resolve(libraryList);
+      const toReturn = {
+        page: page,
+        totalPages: totalPages,
+        totalResults: count,
+        results: libraryList
+      };
+      resolve(toReturn);
     } else {
       const toReturn = {
         page: page,
@@ -300,9 +299,6 @@ function getLibraryFileById(id) {
 }
 
 let args = process.argv.slice(2);
-let command = args[0];
-let data1 = 'args[1]';
-let data2 = 'args[2]';
 let headers = args[0];
 let body = args[1];
 // data1=[516486,9441,718867,9444,400535]
@@ -314,7 +310,6 @@ if (body) {
  * Starts db service.
  */
 function initializeDataAccess() {
-
 
   const myHeaders = JSON.parse(headers);
   const dataArgs = JSON.parse(body);

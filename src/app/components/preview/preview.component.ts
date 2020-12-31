@@ -1,5 +1,5 @@
 /**
- * TODO: Compatibility for details component.
+ * Preview for movie details.
  */
 import { Component, OnInit, OnDestroy, Pipe, PipeTransform, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';

@@ -1,5 +1,5 @@
 import { environment } from './../../../../environments/environment';
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core'
+import { Component, OnInit, OnDestroy } from '@angular/core'
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../../interfaces'
 import { DataService } from '../../../services/data.service'
@@ -31,8 +31,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   constructor(
     private dataService: DataService,
-    private movieService: MovieService,
-    private cdr: ChangeDetectorRef) { }
+    private movieService: MovieService) { }
 
   ngOnInit(): void {
     console.log('inResutlts')
@@ -70,7 +69,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
         this.hasMoreResults = true
       }
       this.isProcSearching = false;
-      this.cdr.detectChanges()
     })
   }
 

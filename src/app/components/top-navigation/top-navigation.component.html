@@ -33,6 +33,12 @@
       Search</button>
   </div>
 
+  <!-- <img style='cursor: pointer;height:80%;width: 80%; transform: translate(13%,12%);' title='Profile options'
+    id='dropdownMenuButton' class='icon-img' data-toggle='dropdown' aria-haspopup="true" aria-expanded="false" href='#'> -->
+  <div class='image-container' style='border-radius: 50%;height:40px;width:40px; background-image: url("./assets/offline-image/clint-eastwood.jfif"); position: absolute;
+    right: 170px; cursor: pointer; z-index: 3000;
+    -webkit-app-region: no-drag;' routerLink='./user/profile' data-toggle='tooltip' title='View profile'>
+  </div>
   <div *ngIf="!isSignedIn">Sign in</div>
   <div *ngIf="isSignedIn" class='dropdown' data-toggle='tooltip' style='z-index: 3000;
   margin-left: auto;
@@ -41,8 +47,8 @@
   height: 40px;
   width: 40px; -webkit-app-region: no-drag;'>
     <img style='cursor: pointer;height:80%;width: 80%; transform: translate(13%,12%);' title='Profile options'
-      id='dropdownMenuButton' class='icon-img' src='./assets/icons/human.svg' data-toggle='dropdown'
-      aria-haspopup="true" aria-expanded="false" href='#'>
+      id='dropdownMenuButton' class='icon-img' src='..svg' data-toggle='dropdown' aria-haspopup="true"
+      aria-expanded="false" href='#'>
 
     <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
       <a class='dropdown-item' routerLink='./user/profile' href='#'>Profile</a>
@@ -106,7 +112,7 @@
       value="{{decade.value}}">
     <label class="form-check-label" for="{{decade.value}}">{{decade.display}}</label>
   </div> -->
-  <!--<button (click)='clearAdvancedSearch()'>Clear</button>
+<!--<button (click)='clearAdvancedSearch()'>Clear</button>
   <button (click)='goAdvancedSearch()'>Search</button>
 </div>-->
 
