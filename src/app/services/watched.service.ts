@@ -30,10 +30,8 @@ export class WatchedService {
       movie.watched = wDocId
     } else {
       const type = movie.watched && movie.watched.id ? 'id' : 'tmdbId'
-      if (type === 'id')
-        wDocId = await this.removeWatched(type, movie.watched.id)
-      else
-        wDocId = await this.removeWatched(type, movie.tmdbId)
+      const id = type === 'id' ? movie.watched.id : movie.tmdbId
+      wDocId = await this.removeWatched(type, id)
       movie.watched.id = ''
     }
     return wDocId;

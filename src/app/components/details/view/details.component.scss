@@ -7,3 +7,16 @@ p {
 .dropdown-item {
   text-shadow: none;
 }
+
+.favorite-add {
+  background-image: url('/../../../../assets/icons/heart.svg');
+  filter: invert(1)
+}
+
+.bookmark-icon {
+  background-image: url('/../../../../assets/icons/bookmark-add.svg');
+}
+
+.favorite-icon {
+  background-image: url('/../../../../assets/icons/heart.svg');
+}

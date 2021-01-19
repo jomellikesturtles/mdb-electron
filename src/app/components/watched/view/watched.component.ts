@@ -20,7 +20,7 @@ export class WatchedComponent implements OnInit {
   @Select(state => state.moviesList) moviesList$
 
   procSync = false
-  private readonly listType = CollectionName.Watched
+  readonly listType = CollectionName.Watched
   moviesDisplayList = []
   watchedList
   hasResults = false

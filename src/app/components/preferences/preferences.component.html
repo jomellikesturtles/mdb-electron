@@ -1,116 +1,118 @@
-<button (click)='changeCc()'>CC</button>
-<div class='grid-container'>
-  <div class='grid-item'>
-    <label>Action</label>
+<div id='hotkeysSettings'>
+
+  <div class='grid-container'>
+    <div class='grid-item'>
+      <label>Action</label>
+    </div>
+    <div class='grid-item'>
+      <label>Shortcut</label>
+    </div>
+    <div class='grid-item'>
+      <label>Toggle Pause/Play</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.fullscreen" disabled />
+    </div>
+    <div class='grid-item'>
+      <label>Toggle Fullscreen</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.fullscreen" />
+    </div>
+    <div class='grid-item'>
+      <label>Toggle Mute</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Go Back 5 Seconds</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Go Back 10 Seconds</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Go Forward 5 Seconds</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Go Forward 10 Seconds</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Exit menu</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Increase Volume 5%</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Decrease Volume 5%</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Increase Playback Speed</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Decrease Playback Speed</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Toggle Captions</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Go To Beginning of the Movie</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Skip To x% Of The Movie</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Go To Previous Page</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
+    <div class='grid-item'>
+      <label>Print</label>
+    </div>
+    <div class='grid-item'>
+      <input [(ngModel)]="HOTKEYS.mute" />
+    </div>
   </div>
-  <div class='grid-item'>
-    <label>Shortcut</label>
-  </div>
-  <div class='grid-item'>
-    <label>Toggle Pause/Play</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.fullscreen" disabled />
-  </div>
-  <div class='grid-item'>
-    <label>Toggle Fullscreen</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.fullscreen" />
-  </div>
-  <div class='grid-item'>
-    <label>Toggle Mute</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Go Back 5 Seconds</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Go Back 10 Seconds</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Go Forward 5 Seconds</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Go Forward 10 Seconds</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Exit menu</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Increase Volume 5%</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Decrease Volume 5%</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Increase Playback Speed</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Decrease Playback Speed</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Toggle Captions</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Go To Beginning of the Movie</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Skip To x% Of The Movie</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Go To Previous Page</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
-  <div class='grid-item'>
-    <label>Print</label>
-  </div>
-  <div class='grid-item'>
-    <input [(ngModel)]="HOTKEYS.mute" />
-  </div>
+  <button (click)='resetHotkeys()'>Reset</button>
+  <button (click)='saveHotkeys()'>Save</button>
 </div>
-<button (click)='resetHotkeys()'>Reset</button>
-<button (click)='saveHotkeys()'>Save</button>
 
 <div class="container-fluid">
   <div class="form-check" style="position:relative;left:15px;top:25px;z-index: 2">
@@ -123,6 +125,7 @@
   </div> -->
   <div class='form-inline'>
     <h2>General Settings </h2>
+    <mat-divider [inset]="false"></mat-divider>
     <i class='icon-question-mark' data-toggle="tooltip" title="Enter the folders where your movie files are"></i>
 
     <p>Language</p>
@@ -281,12 +284,3 @@
   </div>
 </div>
 
-<!-- limit the size of title length in card -->
-<!-- display: inline-block;
-    width: 180px;
-    white-space: nowrap;
-    overflow: hidden !important;
-    text-overflow: ellipsis; -->
-
-<!-- <h1 class="title" style="display:none">{{title}}</h1>
-  <button (click)="toggleTitle()"> clickhere </button> -->

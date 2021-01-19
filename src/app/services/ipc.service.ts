@@ -285,6 +285,16 @@ export class IpcService {
     return this.listenOnce('subtitle-path')
   }
 
+  minimizeWindow() {
+    this.sendToMain(this.IPCCommand.MinimizeApp)
+  }
+  minimizeRestoreWindow() {
+    this.sendToMain(this.IPCCommand.RestoreApp)
+  }
+  exitApp() {
+    this.sendToMain(this.IPCCommand.ExitApp)
+  }
+
   private removeListener(channel: string) {
     console.log('REMOVING LISTENER', channel)
     this.ipcRenderer.removeListener(channel, d => { })

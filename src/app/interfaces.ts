@@ -270,7 +270,7 @@ export interface Credits {
   crew: Crew[];
 }
 
-export interface CastElement {
+interface CastElement {
   cast_id: number;
   character: string;
   credit_id: string;
@@ -281,7 +281,7 @@ export interface CastElement {
   profile_path: null | string;
 }
 
-export interface Crew {
+interface Crew {
   credit_id: string;
   department: Department;
   gender: number;

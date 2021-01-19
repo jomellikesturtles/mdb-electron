@@ -281,9 +281,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   - recommended
   - watch again
   - now showing
-
-> todo in office
-
 - browse/explore indexing
 - file explorer
 - preferences

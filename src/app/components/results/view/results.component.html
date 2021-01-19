@@ -23,8 +23,11 @@
   <h1 *ngIf="searchResults.length>0">Search results for "{{currentSearchQuery}}"</h1>
   <div *ngIf='searchResults.length>0'>
     <app-card-list [movieList]='searchResults' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"' [listType]='"none"'></app-card-list>
-    <div *ngIf='currentSearchQuery' style='width: 100%; text-align: center; height: 80px;'>
+    <div *ngIf='currentSearchQuery && !procLoadMoreResults' style='width: 100%; text-align: center; height: 80px;'>
       <h5 class='text-hyperlink' *ngIf="hasMoreResults" (click)='getMoreResults()'>Load more results...</h5>
+    </div>
+    <div *ngIf='procLoadMoreResults'>
+      <mat-spinner [diameter]='20'></mat-spinner>
     </div>
   </div>
 </div>

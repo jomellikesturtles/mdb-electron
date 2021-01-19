@@ -28,6 +28,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   displaySnackbar = false
   currentPage = 1
   isProcSearching = true
+  procLoadMoreResults = false
 
   constructor(
     private dataService: DataService,

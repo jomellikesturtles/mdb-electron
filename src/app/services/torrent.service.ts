@@ -59,7 +59,7 @@ export class TorrentService {
    * @param year year
    */
   async getTorrentsOffline(val: string, year: string | number) {
-    this.ipcService.call(this.ipcService.IPCCommand.SearchTorrent, [val, year])
+    // this.ipcService.call(this.ipcService.IPCCommand.SearchTorrent, [val, year])
   }
 
   /**

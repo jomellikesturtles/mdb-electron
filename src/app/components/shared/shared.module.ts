@@ -14,6 +14,7 @@ import { HorizontalCardListComponent } from './horizontal-card-list/horizontal-c
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { UserIdleModule } from 'angular-user-idle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import { UserIdleModule } from 'angular-user-idle';
     MatSliderModule,
     MatTooltipModule,
     MatDividerModule,
+    MatProgressSpinnerModule,
     MatMenuModule,
     UserIdleModule.forRoot({ idle: 5, timeout: 5, ping: 5 })
   ],
@@ -41,7 +43,8 @@ import { UserIdleModule } from 'angular-user-idle';
     ReleaseYearPipe,
     VideoPlayerComponent,
     HorizontalCardListComponent,
-    MatDividerModule
+    MatDividerModule,
+    MatProgressSpinnerModule
   ]
 })
 export class SharedModule { }

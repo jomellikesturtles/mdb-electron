@@ -38,7 +38,7 @@ export class FirebaseService {
    * Syncs bookmarks to and from cloud then executing batch commit.
    */
   synchronizeBookmarks() {
-    this.ipcService.call(this.ipcService.IPCCommand.GetBookmarkChanges)
+    // this.ipcService.call(this.ipcService.IPCCommand.GetBookmarkChanges)
     this.batch = this.db.batch()
     this.ipcService.bookmarkChanges.subscribe(e => {
       this.bookmarkInsertList = e.filter((v) => v.change === BookmarkChanges.INSERT)
@@ -345,7 +345,8 @@ export enum CollectionName {
   User = 'user',
   Config = 'config',
   Video = 'video',
-  Library = 'library'
+  Library = 'library',
+  Favorite = 'favorite'
 }
 
 export enum FieldName {

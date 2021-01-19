@@ -44,8 +44,8 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.getNowShowingMovies()
-    this.getTopMoviesFromYear()
-    this.getTopGenreMovie()
+    // this.getTopMoviesFromYear()
+    // this.getTopGenreMovie()
   }
 
   /**
