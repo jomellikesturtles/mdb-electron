@@ -14,10 +14,11 @@ export const environment = {
     appId: '1:24146436081:web:78f0dd1c699e12514eae50'
   },
   runConfig: {
+    desktopMode: location.protocol === "http:" || location.protocol === "https:" ? false : true,
     firebaseMode: false,
     springMode: false,
     electron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
-    useTestData: false,
+    useTestData: true,
     environment: location.protocol
   },
 };

@@ -16,7 +16,8 @@
     <app-card-list [movieList]='discoverResults' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"' [listType]='"none"'>
     </app-card-list>
     <div style='width: 100%; text-align: center; height: 80px;'>
-      <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
+      <h5 *ngIf='!procLoadMoreResults' class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
+      <mat-spinner *ngIf='procLoadMoreResults' [diameter]='50' style='margin: auto;'></mat-spinner>
     </div>
   </div>
 </div>

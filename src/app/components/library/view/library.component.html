@@ -6,7 +6,7 @@
   </div>
   <div *ngIf='hasResults' class='movie-cards-display-grid'>
     <app-card-list [movieList]='moviesDisplayList' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'
-      [listType]='listType'>
+      [listType]='LIST_TYPE'>
     </app-card-list>
     <div *ngIf="hasMoreResults" style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
       <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>

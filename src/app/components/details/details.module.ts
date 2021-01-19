@@ -5,6 +5,7 @@ import { CreditsComponent } from './credits/credits.component';
 import { DetailsComponent } from './view/details.component';
 import { RuntimeDisplayPipe } from '../../mdb-pipes.pipe';
 import { SharedModule } from '../shared/shared.module';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { SharedModule } from '../shared/shared.module';
   ],
   imports: [
     CommonModule,
+    MatTabsModule,
     DetailsRoutingModule,
     SharedModule,
   ],

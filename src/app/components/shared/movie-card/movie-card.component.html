@@ -15,9 +15,13 @@
         <img *ngIf="_movie.bookmark && _movie.bookmark.id" style='height:20px; margin-bottom: 4px;
     margin-right: 2px;' src='./assets/icons/bookmark-minus.png' />
       </div> -->
-      <div *ngIf="procBookmark" class="spinner-border spinner-border-sm" role="status">
-        <span class="sr-only">Loading...</span>
+
+      <div *ngIf='procBookmark'>
+        <mat-spinner [diameter]='20'></mat-spinner>
       </div>
+      <!-- <div *ngIf="procBookmark" class="spinner-border spinner-border-sm" role="status">
+        <span class="sr-only">Loading...</span>
+      </div> -->
     </div>
 
     <div class='movie-highlight' *ngIf="isAdminMode" >
@@ -54,9 +58,12 @@
       <div (click)='onToggleWatched()' *ngIf='!procWatched'>
         <img class='card-button-icon' src='./assets/icons/check.svg' data-toggle='tooltip' title='Mark as watched' />
       </div>
-      <div *ngIf='procWatched' class='spinner-border spinner-border-sm' role='status'>
-        <span class='sr-only'>Loading...</span>
+      <div *ngIf='procWatched'>
+        <mat-spinner [diameter]='20'></mat-spinner>
       </div>
+      <!-- <div *ngIf='procWatched' class='spinner-border spinner-border-sm' role='status'>
+        <span class='sr-only'>Loading...</span>
+      </div> -->
     </div>
 
     <div *ngIf="_movie.watched && _movie.watched.id" [ngStyle]="{'width': watchedPercentage}"

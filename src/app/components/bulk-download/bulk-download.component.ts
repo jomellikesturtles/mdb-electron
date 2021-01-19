@@ -48,10 +48,6 @@ export class BulkDownloadComponent implements OnInit {
     // });
   }
 
-  getTorrentsByTitleAlgorithm(value) {
-    this.ipcService.call(this.ipcService.IPCCommand.GetTorrentsTitle, value)
-  }
-
   getTorrentByTitle(movie) {
     const title = movie.title;
     const year = movie.year;

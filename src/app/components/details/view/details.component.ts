@@ -48,6 +48,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   movieDetailsDirectors
   movieDetailsWriters
   movieDetailsProducers
+  movieDetailsCast
   movieCertification
   movieDetails = new MdbMovieDetails()
   userLocation = 'US'
@@ -61,6 +62,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   hasContinueWatching: boolean
   playLinks = []
   bestPlayLink: PlayLink;
+  certification: 'PG'
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -103,6 +105,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.movieDetailsDirectors = this.getDirectors()
     this.movieDetailsWriters = this.getWriters()
     this.movieDetailsProducers = this.getProducers()
+    this.movieDetailsCast = this.getCast()
     // this.movieCertification = this.getMovieCertification()
     this.getUserMovieData()
     this.getLibrary()
@@ -196,11 +199,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param val imdb id
    */
   getMovieDataOffline(val: any) {
-    this.ipcService.call(this.ipcService.IPCCommand.MovieMetadata, [this.ipcService.IPCCommand.Get, val])
+    // this.ipcService.call(this.ipcService.IPCCommand.MovieMetadata, [this.ipcService.IPCCommand.Get, val])
   }
 
   saveMovieDataOffline(val: any) {
-    this.ipcService.call(this.ipcService.IPCCommand.MovieMetadata, [this.ipcService.IPCCommand.Set, val])
+    // this.ipcService.call(this.ipcService.IPCCommand.MovieMetadata, [this.ipcService.IPCCommand.Set, val])
   }
 
   /**
@@ -239,7 +242,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets the movie poster
    */
   getMoviePoster() {
-    this.ipcService.call(this.ipcService.IPCCommand.GetImage, [this.selectedMovie.Poster, this.selectedMovie.imdbID, 'poster'])
+    // this.ipcService.call(this.ipcService.IPCCommand.GetImage, [this.selectedMovie.Poster, this.selectedMovie.imdbID, 'poster'])
     return this.selectedMovie.Poster
   }
 
@@ -372,7 +375,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
     const env = this.utilsService.getEnvironment()
     if (env === 'desktop') {
-      this.ipcService.call(this.ipcService.IPCCommand.OpenLinkExternal, url)
+      // this.ipcService.call(this.ipcService.IPCCommand.OpenLinkExternal, url)
     } else if (env === 'web') {
       window.open(url)
     }
@@ -435,6 +438,14 @@ export class DetailsComponent implements OnInit, OnDestroy {
     const toReturn = []
     this.movieDetails.credits.crew.forEach(crew => {
       if (crew.job.toLowerCase().includes('producer')) { toReturn.push(crew) }
+    });
+    return toReturn
+  }
+
+  getCast() {
+    const toReturn = []
+    this.movieDetails.credits.cast.forEach(crew => {
+      toReturn.push(crew)
     });
     return toReturn
   }

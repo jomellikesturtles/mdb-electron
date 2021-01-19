@@ -175,19 +175,29 @@ export class MovieCardComponent implements OnInit {
 
   async onToggleBookmark(): Promise<any> {
     this.procBookmark = true
-    let bmDoc: any
-    bmDoc = await this.userDataService.toggleBookmark(this._movie)
-    this.isWatched = !this.isWatched
-    console.log('BOOKMARKADD/remove:', bmDoc)
-    this.procBookmark = false
+    setTimeout(() => {
+      this.isBookmarked = !this.isBookmarked
+      this.procBookmark = false
+    }, 500);
+    // this.procBookmark = true
+    // let bmDoc: any
+    // bmDoc = await this.userDataService.toggleBookmark(this._movie)
+    // this.isBookmarked = !this.isBookmarked
+    // console.log('BOOKMARKADD/remove:', bmDoc)
+    // this.procBookmark = false
   }
 
   async onToggleWatched() {
     this.procWatched = true
-    let wDocId: any
-    wDocId = await this.watchedService.toggleWatched(this._movie)
-    this.isWatched = !this.isWatched
-    this.procWatched = false
+    setTimeout(() => {
+      this.isWatched = !this.isWatched
+      this.procWatched = false
+    }, 500);
+    // this.procWatched = true
+    // let wDocId: any
+    // wDocId = await this.watchedService.toggleWatched(this._movie)
+    // this.isWatched = !this.isWatched
+    // this.procWatched = false
   }
 
   toggleFavorites(): void {

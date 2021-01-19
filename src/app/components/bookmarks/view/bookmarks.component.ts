@@ -27,7 +27,7 @@ export class BookmarksComponent implements OnInit {
   lastVal = 0
   hasMoreResults = false
   orderBy = 'tmdbId'
-  private listType = CollectionName.Bookmark
+  listType = CollectionName.Bookmark
 
   constructor(
     private userDataService: UserDataService,

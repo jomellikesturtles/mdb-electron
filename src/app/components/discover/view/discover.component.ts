@@ -23,6 +23,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   cardWidth = '130px'
   discoverTitle = ''
   hasMoreResults = false
+  procLoadMoreResults = false
   private paramMap = new Map<TmdbParameters, any>();
   private ngUnsubscribe = new Subject();
 
@@ -87,12 +88,14 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   }
 
   getMoreResults() {
+    this.procLoadMoreResults = true
     this.paramMap.set(TmdbParameters.Page, ++this.currentPage)
     this.movieService.getMoviesDiscover(this.paramMap).subscribe(data => {
       this.discoverResults.push(...data.results)
       if (data.total_pages <= this.currentPage) {
         this.hasMoreResults = false
       }
+      this.procLoadMoreResults = false
     })
   }
 

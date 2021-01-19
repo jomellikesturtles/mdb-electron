@@ -86,7 +86,7 @@ export class TopNavigationComponent implements OnInit {
       this.status = ''
     }
     // })
-    this.ipcService.call(this.ipcService.IPCCommand.GetSearchList)
+    // this.ipcService.call(this.ipcService.IPCCommand.GetSearchList)
     this.ipcService.searchList.subscribe(data => {
       this.searchHistoryList = data
       console.log('DATA:', data)
@@ -204,13 +204,13 @@ export class TopNavigationComponent implements OnInit {
   }
 
   onMinimize() {
-    this.ipcService.call(this.ipcService.IPCCommand.MinimizeApp)
+    this.ipcService.minimizeWindow()
   }
   onRestore() {
-    this.ipcService.call(this.ipcService.IPCCommand.RestoreApp)
+    this.ipcService.minimizeRestoreWindow()
   }
   onExit() {
-    this.ipcService.call(this.ipcService.IPCCommand.ExitApp)
+    this.ipcService.exitApp()
   }
 }
 

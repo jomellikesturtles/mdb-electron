@@ -5,11 +5,8 @@ import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
 import { STRING_REGEX_PREFIX } from '../../constants';
 import { takeUntil } from 'rxjs/operators';
-import { Subtitle } from 'src/app/models/subtitle.model';
 import { MovieService } from 'src/app/services/movie.service';
-import SubtitlesUtil from 'src/app/utils/subtitles.utils';
-import chardet from "chardet";
-import jschardet from "jschardet";
+
 @Component({
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
@@ -83,7 +80,6 @@ export class PreferencesComponent implements OnInit, OnDestroy {
    * Get list of library folders
    */
   onGetLibraryFolders() {
-    this.ipcService.call(this.ipcService.IPCCommand.RetrieveLibraryFolders)
   }
 
   /**
@@ -120,13 +116,11 @@ export class PreferencesComponent implements OnInit, OnDestroy {
    * Updates thepiratebay torrent dump
    */
   onUpdateTorrentDump() {
-    this.ipcService.call(this.ipcService.IPCCommand.UpdateTorrentDump)
   }
   /**
    * Updates imdb files
    */
   onUpdateOfflineMetadata() {
-    this.ipcService.call(this.ipcService.IPCCommand.UpdateTorrentDump)
   }
 
   onSyncUserData() {
@@ -184,7 +178,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     } else {
       folderToOpen = folder
     }
-    this.ipcService.call(this.ipcService.IPCCommand.OpenInFileExplorer, folderToOpen)
+    // this.ipcService.call(this.ipcService.IPCCommand.OpenInFileExplorer, folderToOpen)
   }
 
   // modal file explorer
@@ -202,7 +196,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     } else {
       this.previousFolder = this.currentFolder
     }
-    this.ipcService.call(this.ipcService.IPCCommand.GoToFolder, [this.ipcService.IPCCommand.Up, this.currentFolder])
+    // this.ipcService.call(this.ipcService.IPCCommand.GoToFolder, [this.ipcService.IPCCommand.Up, this.currentFolder])
   }
 
   onGoToFolder(folder: string) {
@@ -213,38 +207,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
 
   resetHotkeys() { }
   saveHotkeys() { }
-  subtitleMap = new Map<number, Subtitle>();
 
-  // test only
-  async changeCc() {
-
-
-    let filePath = ''
-
-    filePath = await this.ipcService.changeSubtitle()
-    filePath = 'tmp/' + filePath
-    console.log('filePath', filePath)
-
-    const fileStr = await this.movieService.getSubtitleFileString(filePath).toPromise()
-    const encodingAlt = chardet.analyse(fileStr)
-    const encoding = jschardet.detect(fileStr, { minimumThreshold: 0 }).encoding
-
-    const file = await this.movieService.getSubtitleFile(filePath).toPromise()
-
-    let resultFileStr
-    const fileReader = new FileReader()
-
-    fileReader.readAsText(file, encoding);
-    const root = this
-    fileReader.onloadend = function (x) {
-      resultFileStr = fileReader.result
-      console.log(resultFileStr)
-      resultFileStr = resultFileStr.replace(/[\r]+/g, '')
-      root.subtitleMap = SubtitlesUtil.mapSubtitle(resultFileStr)
-      console.log("subtitleMap!", root.subtitleMap)
-    };
-
-  }
 }
 
 // @Pipe({ name: 'dataDisplay' })
