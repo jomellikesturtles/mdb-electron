@@ -1,10 +1,9 @@
 <div *ngIf="showVideo">
   <app-video-player [streamLink]='streamLink'></app-video-player>
 </div>
-<!-- <app-video-player [streamLink]='streamLink'></app-video-player> -->
 <div
-  [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(https://image.tmdb.org/t/p/original' + movieBackdrop + ')'}"
-  style='background-size: cover;background-repeat: no-repeat;background-position: center;
+  [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(https://image.tmdb.org/t/p/original/x7O7oJO7BeXWvqXpLa5YoJd8ZD5.jpg)'}"
+  style='background-size: cover;background-repeat: no-repeat;background-position: center;height: 100%;
   background-attachment: fixed;'>
   <div style='padding-top: 70px; padding-bottom: 100px'>
     <div style="color:white; text-shadow: 3px 3px 5px rgb(44, 27, 27);">
@@ -37,7 +36,13 @@
                 <span *ngIf="isWatched">Unmark as watched</span>
                 <span *ngIf="!isWatched">Mark as watched</span>
               </button>
-              <button class='btn btn-small favorite-icon'  data-toggle='tooltip' title='Add to Favorites'>Favorite</button>
+
+              <button class='btn btn-small'
+                [ngClass]="{'btn-success': !userData.favorite,'btn-danger':userData.favorite}"
+                (click)='toggleFavorite()' data-toggle='tooltip' title='Toggle Favorite'>
+                <span *ngIf="userData.favorite">Unmark as Favorite</span>
+                <span *ngIf="!userData.favorite">Mark as Favorite</span>
+              </button>
             </div>
           </div>
           <div class="col-sm-8">
@@ -45,10 +50,12 @@
             <div style='display: flex;'>
               <!-- <h2 id="movie-title">{{movieDetails.original_title}}</h2>&nbsp; -->
               <h2 id="movie-title">{{movieDetails.title}}</h2>&nbsp;
+
               <h2 *ngIf="movieDetails.releaseDate" class='text-hyperlink'
                 (click)='goToDiscover("year",getYear(movieDetails.releaseDate))'>
                 ({{movieDetails.releaseDate|releaseYear}})
               </h2>
+              <h3>{{movieDetails.vote.voteAverage}}</h3>
             </div>
 
             <mat-tab-group>
@@ -67,7 +74,6 @@
             </mat-tab-group>
 
             <ng-template #overviewTemplate>
-              <h3>{{movieDetails.voteAverage}}</h3>
               <div style='display: flex;'>
               </div>
               <p id="movie-runtime" class="">{{movieDetails.runtime|runtimeDisplay}}</p>
@@ -78,7 +84,7 @@
 
               <p id="movie-plot" style='overflow-wrap: break-word !important;
             word-wrap: break-word !important;
-            white-space: pre-line;'>{{movieDetails.plot}}</p>
+            white-space: pre-line;'>{{movieDetails.overview}}</p>
 
 
               <!-- unified play button -->
@@ -129,8 +135,6 @@
                 </span>
               </div>
 
-              <div *ngIf="movieDetails.isAvailable">
-              </div>
               <div>
                 <!-- external links -->
                 <!-- <div class='row'>
@@ -202,7 +206,7 @@
               <div *ngFor="let cast of movieDetails.credits.cast" style='margin-right: 20px;'>
                 <div (click)='goToPerson(cast.id)' class='image-container'
                   style='height: 200px; width: 185px; border-radius: 50%; cursor: pointer;'
-                  [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+cast.profile_path+')'}">
+                  [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+cast.profilePath+')'}">
                 </div>
                 <div>
                   <h6 class='text-hyperlink' (click)='goToPerson(cast.id)'>{{cast.name}}</h6>
@@ -218,7 +222,7 @@
               <div *ngFor="let crew of movieDetails.credits.crew" style='margin-right: 20px;'>
                 <div (click)='goToPerson(crew.id)' class='image-container'
                   style='height: 200px; width: 185px; border-radius: 50%; cursor: pointer;'
-                  [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+crew.profile_path+')'}">
+                  [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+crew.profilePath+')'}">
                 </div>
                 <div>
                   <h6 class='text-hyperlink' (click)='goToPerson(crew.id)'>{{crew.name}}</h6>

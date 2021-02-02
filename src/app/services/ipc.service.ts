@@ -14,6 +14,9 @@ import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
 import { ipcRenderer } from 'electron'
 import { ILibraryInfo } from '../interfaces'
 import { IRawLibrary } from './library.service';
+import { IWatched } from './watched.service';
+import { Review } from '../models/review.model';
+import { IUserData, ListLinkMovie } from '../models/user-data.model';
 
 
 @Injectable({
@@ -198,6 +201,9 @@ export class IpcService {
     this.ipcRenderer.send('', val)
   }
 
+  /**
+   * TODO: remove type
+   */
   removeWatched(type: string, id: string | number) {
     const theUuid = uuidv4()
     this.sendToMain('watched', { operation: IpcOperations.REMOVE, uuid: theUuid }, { type: type, id: id });
@@ -210,7 +216,7 @@ export class IpcService {
    *
    * @param id tmdb id
    */
-  getMovieUserData(id: number): Promise<IUserMovieData> {
+  getMovieUserData(id: number): Promise<IUserData> {
     const theUuid = uuidv4()
     this.sendToMain('user-data', {
       operation: IpcOperations.FIND,
@@ -219,13 +225,19 @@ export class IpcService {
     return this.listenOnce(`user-data-${theUuid}`);
   }
 
-  getMovieUserDataInList(idList: number[]): Promise<IUserMovieData[]> {
+  getMovieUserDataInList(idList: number[]): Promise<IUserData[]> {
     const theUuid = uuidv4()
     this.sendToMain('user-data', {
       operation: IpcOperations.FIND_IN_LIST,
       uuid: theUuid
     }, { idList: idList });
     return this.listenOnce(`user-data-${theUuid}`)
+  }
+
+  saveFavorite(data) {
+    const theUuid = uuidv4()
+    this.sendToMain('favorite', { operation: IpcOperations.SAVE, uuid: theUuid }, data);
+    return this.listenOnce(`favorite-${theUuid}`);
   }
 
   // ----- END OF USER DATA
@@ -364,25 +376,7 @@ export interface IBookmark {
   id: string
 }
 
-export interface IWatched {
-  tmdbId: number,
-  imdbId: string,
-  id: string
-  timestamp?: number,
-}
-// browse folder
-// export interface IUserMovieData {
-//   bookmark: IBookmark,
-//   watched: IWatched,
-//   library: ILibrary
-// }
 
-export interface IUserMovieData {
-  tmdbId?: number,
-  bookmark: IBookmark,
-  watched: IWatched,
-  library: ILibrary
-}
 
 interface ILibrary {
   title?: string,

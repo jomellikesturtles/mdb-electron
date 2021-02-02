@@ -1,12 +1,13 @@
-import { Component, OnInit, Input} from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
 import { LibraryService } from '../../../services/library.service';
 import { environment } from '../../../../environments/environment';
 import { UserDataService } from 'src/app/services/user-data.service';
-import { IUserMovieData } from 'src/app/services/ipc.service';
-import { QueryDocumentSnapshot } from '@angular/fire/firestore/interfaces';
+import { IUserData } from 'src/app/models/user-data.model';
+import { MDBMovie } from 'src/app/models/mdb-movie.model';
+import ObjectUtil from 'src/app/utils/object.utils';
 
 @Component({
   selector: 'app-card-list',
@@ -16,10 +17,23 @@ import { QueryDocumentSnapshot } from '@angular/fire/firestore/interfaces';
 export class CardListComponent implements OnInit {
   @Select(state => state.moviesList) moviesList$
 
-  @Input() movieList: any[]
+  _movieList: MDBMovie[]
+  @Input()
+  set movieList(inputMessage: any[]) {
+    inputMessage.forEach(inputMovie => {
+      this.movieAndUserDataList.push({ movie: new MDBMovie(inputMovie), userData: null })
+    })
+    this._movieList = inputMessage
+  }
+  get movieList(): any[] {
+    return this._movieList;
+  }
+
   @Input() cardWidth: string
   @Input() displayMode: string = 'd-inline-flex'
   @Input() listType: string
+
+  movieAndUserDataList: IMovieAndUserData[] = []
 
   constructor(
     private bookmarkService: BookmarkService,
@@ -47,30 +61,39 @@ export class CardListComponent implements OnInit {
       const queryList = arr2[index];
 
       if (this.listType === 'none') { // all types of user data.
-        this.userDataService.getMovieUserDataInList(queryList).then(docs => {
-          if (docs.isFirebaseData && docs.isFirebaseData === true) {
-            const localDocs: Array<QueryDocumentSnapshot<any>>[] = docs.data
-            if (localDocs[0].length > 0) {
-              localDocs[0].forEach(element => {
-                const movie = this.movieList.find(e => e.id === element.data().tmdbId)
-                movie['bookmark'] = element.data()
-                movie['bookmark'].id = element.id
+        this.userDataService.getMovieUserDataInList(queryList).then((docsList: IUserData[]) => {
+          // if (docs.isFirebaseData && docs.isFirebaseData === true) {
+          //   const localDocs: Array<QueryDocumentSnapshot<any>>[] = docs.data
+          //   if (localDocs[0].length > 0) {
+          //     localDocs[0].forEach(element => {
+          //       const movie = this.movieList.find(e => e.id === element.data().tmdbId)
+          //       movie['bookmark'] = element.data()
+          //       movie['bookmark'].id = element.id
+          //     })
+          //   }
+          //   if (localDocs[1].length > 0) {
+          //     localDocs[1].forEach(element => {
+          //       const movie = this.movieList.find(e => e.id === element.data().tmdbId)
+          //       movie['watched'] = element.data()
+          //       movie['watched'].id = element.id
+          //     })
+          //   }
+          // }
+
+          if (!ObjectUtil.isEmpty(docsList)) {
+            if (environment.runConfig.springMode) {
+              this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
+                const doc = docsList.find((doc: IUserData) => movieAndUserData.movie.tmdbId === doc.tmdbId)
+                movieAndUserData.userData = doc
               })
-            }
-            if (localDocs[1].length > 0) {
-              localDocs[1].forEach(element => {
-                const movie = this.movieList.find(e => e.id === element.data().tmdbId)
-                movie['watched'] = element.data()
-                movie['watched'].id = element.id
-              })
-            }
-          } else {
-            if (docs) {
-              docs.forEach(data => {
-                const movie = this.movieList.find(e => e.id === data.tmdbId)
-                movie['watched'] = data.watched
-                movie['bookmark'] = data.bookmark
-                movie['library'] = data.library
+            } else {
+              docsList.forEach(data => {
+
+                // validate if works with IPC
+                this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
+                  const doc = docsList.find((doc: IUserData) => movieAndUserData.movie.tmdbId === doc.tmdbId)
+                  movieAndUserData.userData = doc
+                })
               });
             }
           }
@@ -101,7 +124,7 @@ export class CardListComponent implements OnInit {
   /**
    * Organizes user data and binds them into movie cards.
    */
-  curateUserData(dataType: string, docs: firebase.firestore.QuerySnapshot | IUserMovieData[]): void {
+  curateUserData(dataType: string, docs: firebase.firestore.QuerySnapshot | IUserData[]): void {
     const dataList = []
 
     docs.forEach(doc => {
@@ -223,4 +246,9 @@ export class CardListComponent implements OnInit {
     return toReturn
   }
 
+}
+
+interface IMovieAndUserData {
+  movie: MDBMovie;
+  userData?: IUserData
 }

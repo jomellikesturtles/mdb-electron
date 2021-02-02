@@ -1,7 +1,7 @@
 import { environment } from './../../../../environments/environment';
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
-import { ITmdbResult, TmdbParameters, TmdbSearchMovieParameters } from '../../../interfaces'
+import { TmdbParameters, TmdbSearchMovieParameters } from '../../../interfaces'
 import { DataService } from '../../../services/data.service'
 import { MovieService } from '../../../services/movie.service'
 import { ISearchQuery } from '../../top-navigation/top-navigation.component'

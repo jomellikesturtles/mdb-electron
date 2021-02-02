@@ -5,6 +5,7 @@
 import { ITmdbResultObject, ILibraryMovie, IPreferences, IGenre, MDBTorrent, IOmdbMovieDetail } from './interfaces'
 import { Injectable } from '@angular/core'
 import { IYTSSingleQuery } from './models/yts-torrent.model'
+import { IUserData } from './models/user-data.model'
 
 export const TEST_LIBRARY_MOVIES: ILibraryMovie[] = [
   {
@@ -327,10 +328,10 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       popularity: 47.572,
       vote_count: 13899,
       video: false,
-      poster_path: '/uvMjNLot0dG7CX4HZPme2WDkMmE.jpg',
+      poster_path: '/hbhFnRzzg6ZDmm8YAmxBnQpQIPh.jpg',
       id: 278,
       adult: false,
-      backdrop_path: '/j9XKiZrVeViAixVRzCta7h1VU9W.jpg',
+      backdrop_path: '/x7O7oJO7BeXWvqXpLa5YoJd8ZD5.jpg',
       original_language: 'en',
       original_title: 'The Shawshank Redemption',
       genre_ids: [80, 18],
@@ -904,3 +905,46 @@ export const YTS_TORRENT_SINGLE_RESULT: IYTSSingleQuery = {
     "execution_time": "0 ms"
   }
 }
+
+export const MOCK_USER_DATA_LIST: IUserData[] = [
+  {
+    tmdbId: 597, //titanic
+    isFavorite: true,
+    watched: {
+      percentage: 100
+    }
+  },
+  {
+    tmdbId: 857, // svpr
+    isFavorite: true,
+    watched: {
+      percentage: 100
+    }
+  },
+  {
+    tmdbId: 24428, // avengers
+    isBookmark: true,
+  },
+  {
+    tmdbId: 579, // jaws
+    isBookmark: true
+  },
+  {
+    tmdbId: 769, // goodfellas
+    isBookmark: true,
+    watched: {
+      percentage: 51
+    }
+  },
+  {
+    tmdbId: 775996, // goodfellas
+    watched: {
+      percentage: 75
+    },
+    review: {
+      content: 'confusing',
+      rating: 3,
+      id: 213
+    }
+  },
+]

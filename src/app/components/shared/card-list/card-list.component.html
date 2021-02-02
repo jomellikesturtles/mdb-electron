@@ -1,7 +1,8 @@
 <div [ngClass]="displayMode">
   <!-- 'd-inline-flex' or 'movie-cards-display-grid' -->
-  <div id="results-panel" *ngFor="let movie of movieList">
-    <app-movie-card [movie]='movie' [cardWidth]='cardWidth' [bookmark]='movie.bookmark' [watched]='movie.watched'
-      [library]='movie.library'></app-movie-card>
+  <div id="results-panel" *ngFor="let movieAndUserData of movieAndUserDataList">
+    <app-movie-card [movie]='movieAndUserData.movie' [cardWidth]='cardWidth' [library]='null'
+      [userData]='movieAndUserData.userData'>
+    </app-movie-card>
   </div>
 </div>

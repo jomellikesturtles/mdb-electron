@@ -4,15 +4,16 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { AddMovie, RemoveMovie } from '../../../movie.actions';
-import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { DataService } from '../../../services/data.service';
 import { UtilsService } from '../../../services/utils.service';
-import { WatchedService, IWatched } from '../../../services/watched.service';
+import { WatchedService } from '../../../services/watched.service';
 import { MovieService } from 'src/app/services/movie.service';
 import { TorrentService } from 'src/app/services/torrent.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-declare var $: any
+import { MDBMovie } from 'src/app/models/mdb-movie.model';
+import { IUserData } from 'src/app/models/user-data.model';
+import ObjectUtil from 'src/app/utils/object.utils';
 
 @Component({
   selector: 'app-movie-card',
@@ -21,26 +22,27 @@ declare var $: any
 })
 export class MovieCardComponent implements OnInit {
 
-  _movie: any
+  _movie: MDBMovie
   @Input()  // TODO: add an interface.
-  set movie(inputMessage: any) {
+  set movie(inputMessage: MDBMovie) {
     this._movie = inputMessage
+
     if (this.preferencesService.isGetTorrentFromMovieCard) {
       // UNCOMMENT BELOW to get external_id and torrent one by one
-      this.movieService.getExternalId(this._movie.id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(externalId => {
+      this.movieService.getExternalId(this._movie.tmdbId).pipe(takeUntil(this.ngUnsubscribe)).subscribe(externalId => {
         if (externalId && externalId.imdb_id) {
           this.torrentService.getTorrentsOnline(externalId.imdb_id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
             if (e.status === 'ok' && e.data.movie_count > 0) {
               const firstTorrent = e.data.movies[0].torrents[0]
-              this._movie.library = firstTorrent
-              this._movie.library.id = firstTorrent.hash
+              // this._movie.library = firstTorrent
+              // this._movie.library.id = firstTorrent.hash
             }
           })
         }
       })
     }
   }
-  get movie(): any {
+  get movie(): MDBMovie {
     return this._movie;
   }
 
@@ -53,42 +55,6 @@ export class MovieCardComponent implements OnInit {
     return this._cardWidth;
   }
 
-  _bookmark: any
-  @Input()
-  set bookmark(inputBookmark: any) {
-    if (inputBookmark) {
-      this._bookmark = inputBookmark
-      this.isBookmarked = true
-    }
-  }
-  get bookmark(): any {
-    return this._cardWidth;
-  }
-
-  _watched: { percentage: string; }
-  @Input()
-  set watched(inputWatched: any) {
-    if (inputWatched) {
-      this._watched = inputWatched
-      this.watchedPercentage = this._watched.percentage + '%'
-      this.isWatched = true
-    }
-  }
-  get watched(): any {
-    return this._watched;
-  }
-
-  _favorite: any
-  @Input()
-  set favorite(favorite: any) {
-    if (favorite) {
-      this._favorite = favorite
-    }
-  }
-  get favorite(): any {
-    return this._favorite;
-  }
-
   _library: any
   @Input()
   set library(inputVideo: any) {
@@ -97,6 +63,23 @@ export class MovieCardComponent implements OnInit {
   get library(): any {
     return this._library;
   }
+
+  _userData: IUserData
+  @Input()
+  set userData(inputData: IUserData) {
+    console.log("USERDATA", inputData)
+    this._userData = inputData
+    if (!ObjectUtil.isEmpty(inputData)) {
+      if (inputData.watched) {
+        this.watchedPercentage = inputData.watched.percentage + '%'
+      }
+    }
+  }
+  get userData(): IUserData {
+    return this._userData;
+  }
+
+
   isAdminMode = false
   procFavorite = false
   procBookmark = false
@@ -123,7 +106,6 @@ export class MovieCardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // console.log('MOVIECARD:', this.movie)
   }
 
   ngOnDestroy(): void {
@@ -137,12 +119,12 @@ export class MovieCardComponent implements OnInit {
    */
   onHighlight(): void {
     this.procHighlight = true
-    this._movie.isHighlighted = !this._movie.isHighlighted
-    if (this._movie.isHighlighted) {
-      this.store.dispatch(new AddMovie(this._movie))
-    } else {
-      this.store.dispatch(new RemoveMovie(this._movie))
-    }
+    // this._movie.isHighlighted = !this._movie.isHighlighted
+    // if (this._movie.isHighlighted) {
+    //   this.store.dispatch(new AddMovie(this._movie))
+    // } else {
+    //   this.store.dispatch(new RemoveMovie(this._movie))
+    // }
     this.procHighlight = false
   }
 
@@ -150,7 +132,7 @@ export class MovieCardComponent implements OnInit {
    * Opens the movie's details page.
    */
   onOpenMovie(): void {
-    const highlightedId = this._movie.id;
+    const highlightedId = this._movie.tmdbId;
     this.dataService.updateHighlightedMovie(highlightedId);
     // this.navigationService.goToPage()
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
@@ -191,6 +173,8 @@ export class MovieCardComponent implements OnInit {
     this.procWatched = true
     setTimeout(() => {
       this.isWatched = !this.isWatched
+      // this.userData.watched.percentage = 100
+      // this.watchedPercentage = 100 + '%'
       this.procWatched = false
     }, 500);
     // this.procWatched = true
@@ -217,7 +201,6 @@ export class MovieCardComponent implements OnInit {
    * TODO: Fetch from offline or generate canvass.
    */
   getPoster(poster: string): string {
-    // return poster;
     return ''
   }
 

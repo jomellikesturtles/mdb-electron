@@ -5,12 +5,12 @@ import { Component, OnInit, OnDestroy, Pipe, PipeTransform, ChangeDetectionStrat
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data.service';
 import { UtilsService } from 'src/app/services/utils.service';
-import { GenreCodes, ITmdbResult } from 'src/app/interfaces';
+import { GenreCodes } from 'src/app/interfaces';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MovieService } from 'src/app/services/movie.service';
 import { UserDataService } from 'src/app/services/user-data.service';
 import { WatchedService } from 'src/app/services/watched.service';
-declare var $: any
+import { MDBMovie } from 'src/app/models/mdb-movie.model';
 
 @Component({
   selector: 'app-preview',
@@ -32,10 +32,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
     private domSanitizer: DomSanitizer,
   ) { }
 
-  previewMovie: { [key: string]: any } = {
-    id: 0,
-    title: null,
-  }
+  previewMovie: MDBMovie
   clipSrc = null
   youtubeUrl = ''
   tag
@@ -61,8 +58,9 @@ export class PreviewComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.frameReady()
-    this.dataService.previewMovie.subscribe(e => {
+    this.dataService.previewMovie.subscribe((e: MDBMovie) => {
       console.log('PREVIEWMOVIE:', e)
+      // const mov = new MDBMovie(e)
       this.getVideoClip(e)
       this.showPreviewOverlayContext = this.router.url.includes('/details/') ? false : true
       this.cdr.detectChanges()
@@ -145,23 +143,21 @@ export class PreviewComponent implements OnInit, OnDestroy {
    * Performs actions for selected movie.
    * @param movie the selected movie
    */
-  async getVideoClip(movie) {
+  async getVideoClip(movie: MDBMovie) {
     this.previewMovie = movie
     this.isHide = false
-    if (movie.id === this.playedTmdbId) {
+    if (movie.tmdbId === this.playedTmdbId) {
       return
     }
-    console.log('PREVIEW MOVIE: ', movie)
-    this.playedTmdbId = this.previewMovie.id
+    this.playedTmdbId = this.previewMovie.tmdbId
     this.hasInitialSelected = true
     let videoId = ''
     const results = []
-    // this.selectedMovie = this.previe1wMovie
     let title = this.previewMovie.title.toLowerCase()
-    const query = `${this.previewMovie.title} ${this.getYear(this.previewMovie.release_date)}`
+    const query = `${this.previewMovie.title} ${this.getYear(this.previewMovie.releaseDate)}`
     title = title.replace(/[.…]+/g, '')
 
-    let theRes = await this.movieService.getTmdbVideos(this.previewMovie.id).toPromise()
+    let theRes = await this.movieService.getTmdbVideos(this.previewMovie.tmdbId).toPromise()
 
     if (theRes.results.length === 0) {
       this.clipSrc = null
