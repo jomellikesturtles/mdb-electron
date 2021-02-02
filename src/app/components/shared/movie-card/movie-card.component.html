@@ -1,14 +1,16 @@
-<div class='movie-card' [ngStyle]="{'width': _cardWidth}" [ngClass]="{'movie-card-selected': _movie.isHighlighted}">
+<div class='movie-card' [ngStyle]="{'width': _cardWidth}">
+  <!-- <div class='movie-card' [ngStyle]="{'width': _cardWidth}" [ngClass]="{'movie-card-selected': _movie.isHighlighted}"> -->
   <div
-    [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w154'+_movie.poster_path+')'}"
-    class='movie-card-image-container' data-toggle="tooltip" title="{{_movie.title}} ({{_movie.release_date|releaseYear}})">
+    [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w154'+_movie.posterPath+')'}"
+    class='movie-card-image-container' data-toggle="tooltip"
+    title="{{movie.title}} ({{movie.releaseDate|releaseYear}})">
     <!-- w342 w154, w185 -->
     <!-- <div
     [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w342'+_movie.poster_path+')'}"
     class='movie-card-image-container' (click)='onHighlight(movie)'> -->
 
     <div class='card-button movie-bookmark' data-toggle='tooltip' title='Toggle Bookmark'>
-      <span class='card-button-icon bookmark-icon' (click)="onToggleBookmark()" *ngIf="!procBookmark" ></span>
+      <span class='card-button-icon bookmark-icon' (click)="onToggleBookmark()" *ngIf="!procBookmark"></span>
       <!-- <div *ngIf="!procBookmark" (click)='onToggleBookmark()'>
         <img *ngIf="!(_movie.bookmark && _movie.bookmark.id)" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
           src='./assets/icons/bookmark-add.svg' data-toggle='tooltip' title='Add Bookmark' />
@@ -23,8 +25,8 @@
         <span class="sr-only">Loading...</span>
       </div> -->
     </div>
-
-    <div class='movie-highlight' *ngIf="isAdminMode" >
+    <!-- ISADMINMODE on Hold
+    <div class='movie-highlight' *ngIf="isAdminMode">
       <div *ngIf="!procHighlight" (click)='onHighlight(movie)'>
         <img *ngIf="!_movie.isHighlighted" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
           src='./assets/icons/check.svg' data-toggle='tooltip' title='Highlight' />
@@ -34,7 +36,7 @@
       <div *ngIf="procHighlight" class="spinner-border spinner-border-sm" role="status">
         <span class="sr-only">Loading...</span>
       </div>
-    </div>
+    </div> -->
 
     <!-- alt image -->
     <!-- <div style=' text-align: center; color: white;' [ngStyle]="{'height': 'calc(1.45 * '+ _cardWidth + ')'}"
@@ -44,7 +46,7 @@
         </div>-->
     <!-- end of alt image -->
 
-    <div *ngIf="_movie.library && _movie.library.id" class='movie-available' data-toggle='tooltip' title='Available'>
+    <div *ngIf="_library && _library.id" class='movie-available' data-toggle='tooltip' title='Available'>
     </div>
 
     <div class="card-button movie-mark-favorite" data-toggle="tooltip" title="Toggle Favorite">
@@ -54,33 +56,33 @@
       </div>
     </div>
 
-    <div class='card-button movie-mark-as-watched' *ngIf='!_movie.watched'>
+    <div class='card-button movie-mark-as-watched' *ngIf='!_userData?.watched'>
       <div (click)='onToggleWatched()' *ngIf='!procWatched'>
         <img class='card-button-icon' src='./assets/icons/check.svg' data-toggle='tooltip' title='Mark as watched' />
       </div>
       <div *ngIf='procWatched'>
         <mat-spinner [diameter]='20'></mat-spinner>
       </div>
-      <!-- <div *ngIf='procWatched' class='spinner-border spinner-border-sm' role='status'>
-        <span class='sr-only'>Loading...</span>
-      </div> -->
+    </div>
+    {{watchedPercentage}}
+    <!-- watched Progress bar -->
+    <div *ngIf="_userData?.watched" [ngStyle]="{'width': watchedPercentage +'%'}" id='watchedProgressBar'
+      class='movie-progress-bar'>
     </div>
 
-    <div *ngIf="_movie.watched && _movie.watched.id" [ngStyle]="{'width': watchedPercentage}"
-      id='watchedProgressBar' class='movie-progress-bar'>
-    </div>
     <div class="overlay overlay-add" (click)='onPreview()'></div>
   </div>
   <div class="card-body movie-card-body">
     <div class="movie-card-text">
-      <h6 (click)="onOpenMovie()" class='text-primary movie-card-title card-title text-hyperlink' style='color:white' data-toggle="tooltip"
-        title="{{_movie.title}}">{{_movie.title}}</h6>
+      <h6 (click)="onOpenMovie()" class='text-primary movie-card-title card-title text-hyperlink' style='color:white'
+        data-toggle="tooltip" title="{{_movie.title}}">{{_movie.title}}</h6>
       <label class='text-hyperlink' style='float: left; font-size: 11pt;color: darkgray;'
-        (click)='goToYear(getYear(_movie.release_date))'>{{_movie.release_date|releaseYear}}</label>
-      <label *ngIf='_movie.vote_average>0' style='float: right; padding-right: 5px;' data-toggle='tooltip' title='{{_movie.vote_count}} votes'>
+        (click)='goToYear(getYear(_movie.releaseDate))'>{{_movie.releaseDate|releaseYear}}</label>
+      <label *ngIf='_movie.vote.voteAverage>0' style='float: right; padding-right: 5px;' data-toggle='tooltip'
+        title='{{_movie.vote.voteCount}} votes'>
         <img style='height:10px;
       filter: invert(1);margin-bottom: 4px;
-      margin-right: 2px;' src='./assets/icons/star.svg' />{{_movie.vote_average}}</label>
+      margin-right: 2px;' src='./assets/icons/star.svg' />{{_movie.vote.voteAverage}}</label>
     </div>
   </div>
 </div>

@@ -223,6 +223,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 
 > major
 
+- ~/.dotfiles
 - api search
 - upload offline files
 - handle large http: chunking, pagination, (filter)

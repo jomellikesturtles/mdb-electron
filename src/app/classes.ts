@@ -1,6 +1,7 @@
+// UNUSED
+
 import { IMdbMovieDetails, IRating, ILibraryInfo, IGenre, ISpokenLanguage } from './interfaces'
 import { MONTHS, STRING_REGEX_OMDB_RELEASE_DATE, STRING_REGEX_OMDB_BOX_OFFICE } from './constants'
-import { UtilsService } from './services/utils.service';
 
 /**
  * The main class.
@@ -16,7 +17,6 @@ export class MdbMovieDetails implements IMdbMovieDetails {
   country?: string
   director?: string
   dvd?: string // dvd release
-  // private _genres?: string[]
   genres: []
   imdbId?: string
   imdbRating?: string

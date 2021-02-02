@@ -5,9 +5,11 @@ import { IBookmark, BookmarkService } from './bookmark.service';
 import { MovieService } from './movie.service';
 import { WatchedService, IWatched } from './watched.service';
 import { UtilsService } from './utils.service';
-import { IpcService, IUserDataPaginated, IUserMovieData } from './ipc.service';
+import { IpcService, IUserDataPaginated } from './ipc.service';
 import { environment } from 'src/environments/environment';
 import { CollectionName, FirebaseService } from './firebase.service';
+import { MdbApiService } from './mdb-api.service';
+import { IUserData } from '../models/user-data.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +23,8 @@ export class UserDataService {
     private watchedService: WatchedService,
     private libraryService: LibraryService,
     private utilsService: UtilsService,
-    private ipcService: IpcService
+    private ipcService: IpcService,
+    private mdbApiService: MdbApiService
   ) { }
 
   /**
@@ -91,10 +94,13 @@ export class UserDataService {
    * Gets watched, bookmark, library
    *
    */
-  getMovieUserData(id: number) {
-    const myFunction = environment.runConfig.firebaseMode ?
-      this.firebaseService.getMovieUserData(id) :
-      this.ipcService.getMovieUserData(id)
+  getMovieUserData(tmdbId: number) {
+    const myFunction = environment.runConfig.springMode ?
+      this.mdbApiService.getUserDataByTmdbId(tmdbId).toPromise() :
+      this.ipcService.getMovieUserData(tmdbId)
+    // const myFunction = environment.runConfig.firebaseMode ?
+    //   this.firebaseService.getMovieUserData(tmdbId) :
+    //   this.ipcService.getMovieUserData(tmdbId)
 
     return myFunction
   }
@@ -104,14 +110,14 @@ export class UserDataService {
    * TODO: remove Promise.resolve(null) and add firebase implementation
    */
   getMovieUserDataInList(idList: any[]): Promise<any> {
-    // return Promise.resolve(null)
-    // return this.ipcService.getMovieUserDataInList(idList)
 
-    const myFunction = environment.runConfig.firebaseMode ?
-      this.firebaseService.getUserDataMultiple(idList) :
+    // const myFunction = environment.runConfig.firebaseMode ?
+    //   this.firebaseService.getUserDataMultiple(idList) :
+    const myFunction = environment.runConfig.springMode ?
+      this.mdbApiService.getUserDataByTmdbIdList(idList).toPromise() :
       this.ipcService.getMovieUserDataInList(idList)
 
-    return myFunction
+      return myFunction
   }
 
   getUserDataMultiple(dataType: 'library' | 'bookmark' | 'watched', data: object) {

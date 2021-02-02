@@ -1,7 +1,7 @@
 import { HttpRequest, HttpHandler, HttpResponse, HttpEvent } from '@angular/common/http';
 import { TMDB_URL } from '../constants';
 import { Observable } from 'rxjs';
-import { TMDB_SEARCH_RESULTS } from '../mock-data';
+import { MOCK_USER_DATA_LIST, TMDB_SEARCH_RESULTS } from '../mock-data';
 import { TMDB_FULL_MOVIE_DETAILS } from '../mock-data-movie-details';
 
 export function mockDataFactory(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> | any {
@@ -20,6 +20,11 @@ export function mockDataFactory(request: HttpRequest<any>, next: HttpHandler): O
   else if (url.includes('/search/movie')) {
     toReturn.body = TMDB_SEARCH_RESULTS
   }
+  // USERDATA
+  else if (url.includes('userData/media/list')) {
+    toReturn.body = MOCK_USER_DATA_LIST
+  }
+
   else {
     return next.handle(request)
   }
@@ -27,7 +32,7 @@ export function mockDataFactory(request: HttpRequest<any>, next: HttpHandler): O
   return new Observable((res) => {
     res.next(new HttpResponse({
       status: 200,
-      body: toReturn
+      body: toReturn.body
     }))
     res.complete()
   })

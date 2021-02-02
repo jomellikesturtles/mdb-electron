@@ -3,7 +3,7 @@
  */
 export const TMDB_FULL_MOVIE_DETAILS = {
   "adult": false,
-  "backdrop_path": "/2nFyTvssbtJMLC6eyYwwZ88gALD.jpg",
+  "backdrop_path": "/x7O7oJO7BeXWvqXpLa5YoJd8ZD5.jpg",
   "belongs_to_collection": null,
   "budget": 180000000,
   "genres": [
@@ -27,7 +27,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
   "original_title": "WALL·E",
   "overview": "WALL·E is the last robot left on an Earth that has been overrun with garbage and all humans have fled to outer space. For 700 years he has continued to try and clean up the mess, but has developed some rather interesting human-like qualities. When a ship arrives with a sleek new type of robot, WALL·E thinks he's finally found a friend and stows away on the ship when it leaves.",
   "popularity": 25.606,
-  "poster_path": "/9cJETuLMc6R0bTWRA5i7ctY9bxk.jpg",
+  "poster_path": "/hbhFnRzzg6ZDmm8YAmxBnQpQIPh.jpg",
   "production_companies": [
     {
       "id": 3,

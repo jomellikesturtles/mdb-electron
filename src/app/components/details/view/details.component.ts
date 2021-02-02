@@ -5,7 +5,6 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { MDBTorrent } from '../../../interfaces';
-import { MdbMovieDetails } from '../../../classes';
 import { TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
 import { BookmarkService } from '../../../services/bookmark.service'
@@ -13,16 +12,19 @@ import { DataService } from '../../../services/data.service';
 import { MovieService } from '../../../services/movie.service';
 import { TorrentService } from '../../../services/torrent.service';
 import { UtilsService } from '../../../services/utils.service';
-import { IpcService, IUserMovieData } from '../../../services/ipc.service';
+import { IpcService } from '../../../services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TROUBLE_QUOTES } from '../../../constants';
 import { TMDB_FULL_MOVIE_DETAILS } from '../../../mock-data-movie-details';
 import { UserDataService } from 'src/app/services/user-data.service';
-import { environment } from 'src/environments/environment';
 import { WatchedService, IWatched } from 'src/app/services/watched.service';
 import { takeUntil } from 'rxjs/operators'
 import { Subject } from 'rxjs';
 import { basename } from 'path'
+import { FavoriteService } from 'src/app/services/favorite.service';
+import { IUserData } from 'src/app/models/user-data.model';
+import { MdbApiService } from 'src/app/services/mdb-api.service';
+import { MDBMovie } from 'src/app/models/mdb-movie.model';
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -35,7 +37,6 @@ import { basename } from 'path'
 export class DetailsComponent implements OnInit, OnDestroy {
 
   selectedMovie;
-  currentMovie: MdbMovieDetails;
   movieBackdrop;
   torrents: MDBTorrent[] = [];
   testSelectedMovie = TEST_TMDB_MOVIE_DETAILS
@@ -50,19 +51,23 @@ export class DetailsComponent implements OnInit, OnDestroy {
   movieDetailsProducers
   movieDetailsCast
   movieCertification
-  movieDetails = new MdbMovieDetails()
+  movieDetails = new MDBMovie()
   userLocation = 'US'
   procBookmark = false
   procWatched = false
+  procFavorite = false
   procVideo = false
   showVideo = false
   isBookmarked = false
   isWatched = false
+  isFavorite = false
   movieTrailer: string
   hasContinueWatching: boolean
   playLinks = []
   bestPlayLink: PlayLink;
   certification: 'PG'
+  userData: IUserData = new IUserData()
+  MDBMovie = new MDBMovie()
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -77,19 +82,16 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private userDataService: UserDataService,
     private libraryService: LibraryService,
     private watchedService: WatchedService,
+    private favoriteService: FavoriteService,
     private router: Router,
+    private mdbApiService: MdbApiService
   ) { }
 
   ngOnInit() {
-    if (!environment.runConfig.useTestData) {
-      this.activatedRoute.params.subscribe(val => {
-        this.showVideo = false
-        this.getMovieOnline(val['id'])
-      })
-    } else {
-      this.movieDetails.convertToMdbObject(TMDB_FULL_MOVIE_DETAILS)
-      this.loadVideoData()
-    }
+    this.activatedRoute.params.subscribe(val => {
+      this.showVideo = false
+      this.getMovieOnline(val['id'])
+    })
 
   }
 
@@ -153,21 +155,29 @@ export class DetailsComponent implements OnInit, OnDestroy {
    */
   getUserMovieData() {
     this.procVideo, this.procBookmark, this.procWatched = true
-    this.userDataService.getMovieUserData(this.movieDetails.tmdbId).then((userMovieData: IUserMovieData) => {
+
+    this.mdbApiService.getUserDataByTmdbId(this.movieDetails.tmdbId).subscribe(userMovieData => {
       console.log('usermoviedata', userMovieData)
-      // if (userMovieData.library) {
-      // }
       if (userMovieData.bookmark) {
-        this.movieDetails.bookmark = userMovieData.bookmark
+        this.userData.bookmark = userMovieData.bookmark
         this.isBookmarked = true
       }
       if (userMovieData.watched) {
-        this.movieDetails.watched = userMovieData.watched
+        this.userData.watched = userMovieData.watched
         this.isWatched = true
       }
-    }).catch(e => {
-    }).finally(() => {
-      this.procVideo, this.procBookmark, this.procWatched = false
+      if (userMovieData.favorite) {
+        this.userData.favorite = userMovieData.favorite
+        this.isFavorite = true
+      }
+      if (userMovieData.listLinkMovie) {
+        this.isFavorite = true
+      }
+      if (userMovieData.review) {
+        // this.movieDetails.review = userMovieData.review
+
+        // this.isFavorite = true
+      }
     })
   }
 
@@ -194,6 +204,16 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.procWatched = false
   }
 
+  async toggleFavorite() {
+    this.procFavorite = true
+    let fDoc
+    fDoc = await this.favoriteService.toggleFavorite(this.movieDetails)
+    this.userData.favorite = fDoc
+    // this.isWatched = !this.isWatched
+    console.log('WATCHEDADD/remove:', fDoc)
+    this.procFavorite = false
+  }
+
   /**
    * Gets movie offline
    * @param val imdb id
@@ -218,7 +238,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.movieService.getTmdbMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
       this.selectedMovie = data;
       const myObject = this.selectedMovie
-      this.movieDetails.convertToMdbObject(myObject)
+      this.movieDetails = new MDBMovie(myObject);
       this.loadVideoData()
       this.rawData = data
       this.hasData = true
@@ -231,7 +251,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets the movie's certification based on user' location.
    */
   getMovieCertification() {
-    const myLoc = this.movieDetails.release_dates.results.find((e) => e.iso_3166_1 === this.userLocation)
+    const myLoc = this.movieDetails.releaseDates.results.find((e) => e.iso_3166_1 === this.userLocation)
     const toReturn = myLoc.release_dates[0].certification
     // let toReturn = myLoc.release_dates.find((e) => { return e.type === 3 })
     // toReturn = toReturn.certification
@@ -242,7 +262,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets the movie poster
    */
   getMoviePoster() {
-    // this.ipcService.call(this.ipcService.IPCCommand.GetImage, [this.selectedMovie.Poster, this.selectedMovie.imdbID, 'poster'])
+    // implement offline movie poster
     return this.selectedMovie.Poster
   }
 
@@ -302,7 +322,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     })
 
     let query
-    query = this.movieDetails.external_ids.imdb_id
+    query = this.movieDetails.externalIds.imdb_id
     this.torrentService.getTorrents(query).subscribe(data => {
       if (data) {
         this.torrents = this.torrentService.mapTorrentsList(data);
@@ -344,12 +364,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     console.log('1:', param1, ' 2:', param2);
     switch (param1) {
       case 'google':
-        let releaseYear
-        if (!this.movieDetails.releaseYear) {
-          releaseYear = this.getYear(this.movieDetails.releaseDate);
-        } else {
-          releaseYear = this.movieDetails.releaseYear
-        }
+        let releaseYear = this.getYear(this.movieDetails.releaseDate)
         url = `https://www.google.com/search?q=${this.movieDetails.title} ${releaseYear}`
         break;
       case 'imdb':
@@ -359,13 +374,13 @@ export class DetailsComponent implements OnInit, OnDestroy {
         url = `https://www.themoviedb.org/movie/${this.movieDetails.tmdbId}`
         break;
       case 'facebook':
-        url = `https://www.facebook.com/${this.movieDetails.external_ids.facebook_id}`
+        url = `https://www.facebook.com/${this.movieDetails.externalIds.facebook_id}`
         break;
       case 'twitter':
-        url = `https://twitter.com/${this.movieDetails.external_ids.twitter_id}`
+        url = `https://twitter.com/${this.movieDetails.externalIds.twitter_id}`
         break;
       case 'instagram':
-        url = `https://instagram.com/${this.movieDetails.external_ids.instagram_id}`
+        url = `https://instagram.com/${this.movieDetails.externalIds.instagram_id}`
         break;
       case 'website':
         url = `${this.movieDetails.website}`
@@ -452,7 +467,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   playTrailer() {
     this.dataService.updatePreviewMovie(this.rawData)
-    // this.dataService.updatePreviewMovie()
   }
 
   getTroubleQuote() {

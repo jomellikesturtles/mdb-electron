@@ -3,11 +3,11 @@
  */
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
-import { Observable, of, Subscriber, forkJoin } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
-import { MDBTorrent, IOmdbMovieDetail, IRating, TmdbParameters, OmdbParameters } from '../interfaces'
 import { STRING_REGEX_IMDB_ID, MDB_API_URL } from '../constants';
+import { IUserData } from '../models/user-data.model';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
 
@@ -15,32 +15,66 @@ const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/
 export class MdbApiService {
 
   constructor(
-    private http: HttpClient,
-    // private ipcService: IpcService
+    private http: HttpClient
   ) { }
 
   httpParam = new HttpParams()
 
-  /**
-   * Gets video by id or doc id.
-   */
-  getVideo(tmdbId) {
-    const url = `${MDB_API_URL}/video/${tmdbId}`
-    // let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
-    // myHttpParam = this.appendParameters(val, myHttpParam)
-    // const tmdbHttpOptions = {
-    //   headers: JSON_CONTENT_TYPE_HEADER,
-    //   params: myHttpParam
-    // };
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('searchTmdbMovie')))
+  saveBookmark(bookmarkBody: any): Observable<any> {
+    return this.http.post<any>(`${MDB_API_URL}\\userData\\bookmark`, bookmarkBody).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('saveFavorite')))
   }
 
+  deleteBookmark(bookmarkId: any): Observable<any> {
+    let httpParams = new HttpParams().set('id', bookmarkId);
+    return this.http.delete<any>(`${MDB_API_URL}\\userData\\bookmark`, { params: httpParams }).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('deleteFavorite')))
+  }
+  saveFavorite(favBody: any): Observable<any> {
+    return this.http.post<any>(`${MDB_API_URL}\\userData\\favorite`, favBody).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('saveFavorite')))
+  }
+  deleteFavorite(favId: any): Observable<any> {
+    let httpParams = new HttpParams().set('id', favId);
+    return this.http.delete<any>(`${MDB_API_URL}\\userData\\favorite`, { params: httpParams }).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('deleteFavorite')))
+  }
+  saveToList(listLinkMovie: any): Observable<any> {
+    return this.http.post<any>(`${MDB_API_URL}\\userData\\list\\add`, listLinkMovie).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('saveFavorite')))
+  }
+  removeFromList(listLinkMovie: any): Observable<any> {
+    return this.http.post<any>(`${MDB_API_URL}\\userData\\list\\remove`, listLinkMovie).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('saveFavorite')))
+  }
+  saveList(listBody: any): Observable<any> {
+    return this.http.post<any>(`${MDB_API_URL}\\userData\\list`, listBody).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('saveFavorite')))
+  }
+  deleteList(listId: any): Observable<any> {
+    let httpParams = new HttpParams().set('id', listId);
+    return this.http.delete<any>(`${MDB_API_URL}\\userData\\list`, { params: httpParams }).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('deleteFavorite')))
+  }
+  saveWatched(watchedBody: any): Observable<any> {
+    return this.http.post<any>(`${MDB_API_URL}\\userData\\watched`, watchedBody).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('saveFavorite')))
+  }
+  deleteWatched(watchedBody: any): Observable<any> {
+    return this.http.delete<any>(`${MDB_API_URL}\\userData\\watched`, watchedBody).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('deleteFavorite')))
+  }
 
-  getBookmark(id) {
+  getUserDataByTmdbId(tmdbId: number): Observable<IUserData> {
 
-    return this.http.get<any>(`http:\\\\localhost:3000\\getBookmark\\${id}`).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getBookmark')))
+    return this.http.get<any>(`${MDB_API_URL}\\userData\\media\\${tmdbId}`).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getUserDataByTmdbId')))
+  }
+
+  getUserDataByTmdbIdList(tmdbIdList: number[]): Observable<IUserData[]> {
+
+    return this.http.get<any>(`${MDB_API_URL}\\userData\\media\\list\\${tmdbIdList}`).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getUserDataByTmdbIdList')))
   }
 
   /**

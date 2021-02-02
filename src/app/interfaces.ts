@@ -237,8 +237,6 @@ export interface ITmdbResult {
   release_date: string
   isAvailable?: boolean
   isHighlighted?: boolean
-  isWatched?: boolean
-  isInWatchList?: boolean
 }
 
 export interface ILibraryMovie {
