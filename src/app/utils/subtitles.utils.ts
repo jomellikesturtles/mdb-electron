@@ -1,5 +1,5 @@
 
-import { Subtitle } from 'src/app/models/subtitle.model';
+import { Subtitle } from '@models/subtitle.model';
 
 export default class SubtitlesUtil {
 

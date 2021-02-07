@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { STRING_REGEX_TMDB_RUNTIME } from './constants';
-import { UtilsService } from './services/utils.service';
+import { STRING_REGEX_TMDB_RUNTIME } from './shared/constants';
+import GeneralUtil from '@utils/general.util';
 
 /**
  * Gets the release year from string with format `00 Month 0000`.
@@ -9,10 +9,9 @@ import { UtilsService } from './services/utils.service';
  */
 @Pipe({ name: 'releaseYear' })
 export class ReleaseYearPipe implements PipeTransform {
-  constructor(
-    private utilsService: UtilsService) { }
+  constructor() { }
   transform(value: string): string {
-    return this.utilsService.getYear(value)
+    return GeneralUtil.getYear(value)
   }
 }
 

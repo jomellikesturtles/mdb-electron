@@ -6,7 +6,7 @@ import { UtilsService } from '../../services/utils.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { PERSON_DETAILS, PERSON_DETAILS_FULL, PERSON_COMBINED_CREDITS } from '../../mock-data-person-details';
-import { environment } from 'src/environments/environment';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-person-details',

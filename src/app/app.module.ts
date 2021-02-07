@@ -1,5 +1,5 @@
 import {
-  CommaSpacePipe, ReleaseYearPipe
+  CommaSpacePipe, ReleaseYearPipe,
 } from './mdb-pipes.pipe';
 import { SimplifySizePipe, MagnetPipe } from './services/torrent.service';
 import { SearchComponent } from './components/search/search.component';
@@ -50,9 +50,10 @@ import { MatInputModule } from '@angular/material/input';
     CommaSpacePipe,
     PreviewComponent,
     FloatingPlayerComponent,
-    GenrePipe
+    GenrePipe,
     // ReleaseYearPipe/
     // UsernameExistValidatorDirective
+    // RuntimeDisplayPipe
   ],
   imports: [
     BrowserModule,

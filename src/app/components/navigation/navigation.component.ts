@@ -12,11 +12,15 @@ export class NavigationComponent implements OnInit {
     // private navigationService: NavigationService
   ) { }
 
-  isOpenNav = true
+  isOpenNav = false
   sideNavWidth;
   // navigation = new NavigationService(this, this.location)
   ngOnInit() {
-    this.openNav()
+    if (this.isOpenNav) {
+      this.openNav()
+    } else {
+      this.closeNav()
+    }
   }
 
   /**

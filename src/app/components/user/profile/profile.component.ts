@@ -6,8 +6,7 @@ import { ThemePalette } from '@angular/material/core';
 // import { UserState } from '../../../app.state';
 // import { Select } from '@ngxs/store';
 // import { FirebaseService } from 'src/app/services/firebase.service';
-import { TMDB_SEARCH_RESULTS } from 'src/app/mock-data';
-import { UserDataService } from 'src/app/services/user-data.service';
+import { UserDataService } from '@services/user-data.service';
 
 @Component({
   selector: 'app-profile',

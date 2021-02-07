@@ -1,7 +1,150 @@
-<p>floating-player works!</p>
-<div id='queue'>
-  <div>
-    <label></label>
-    <button></button>
+<div class='image-cover' style='
+background-repeat: no-repeat;
+height: 100%;
+background-attachment: fixed;'
+  [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.backropPath+')'}">
+
+  <div class='container' style='padding-top:.75rem'>
+    <div class='row'>
+
+      <div class='col-lg-4'>
+        <div style='background-color: aqua;height:100%'>
+          <div class='img-container mdb-poster image-cover'
+            style='  background-color: white; margin:auto; height: 70vh; width: calc(70vh*.65); max-width: 420px;'
+            [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.posterPath+')'}">
+          </div>
+          <div class='container'>
+            <div id='userDataControlsContainer'
+              style=' margin-left:auto; margin-right: auto; margin-top:1em; width:300px'>
+              <div class='row'>
+                <div class='col-4' style="text-align: center;">
+
+                  <button mat-fab color="accent" aria-label="Toggle bookmark" style='cursor: pointer;'
+                    data-toggle='tooltip' title='Toggle Bookmark'>
+                    <img style='filter: invert(1); height: 1.3em; cursor: pointer'
+                      src='../../../assets/icons/bookmark-add.svg' />
+                  </button>
+                </div>
+                <div class='col-4' style="text-align: center;">
+                  <button mat-fab aria-label="Toggle watched" style='cursor: pointer;background-color:orange'
+                    data-toggle='tooltip' title='Toggle watched'>
+                    <img style='filter: invert(1); height: 1.3em; cursor: pointer'
+                      src='../../../assets/icons/eye.svg' />
+                  </button>
+                </div>
+                <div class='col-4' style="text-align: center;">
+                  <button mat-fab color="warn" aria-label="Toggle favorite" style='cursor: pointer;'
+                    data-toggle='tooltip' title='Toggle Bookmark'>
+                    <img style='filter: invert(1); height: 1.3em; cursor: pointer'
+                      src='../../../assets/icons/heart.svg' />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-8'>
+        <div style='background-color: #020202; height:100%'>
+          <div style='display: flex;'>
+            <!-- <h2 id="movie-title">{{movieDetails.original_title}}</h2>&nbsp; -->
+            <h2 id="movieTitle" class='movie-title'>{{movieDetails.title}}</h2>&nbsp;
+
+            <h2 *ngIf="movieDetails.releaseDate" class='text-hyperlink color-secondary'
+              style='padding-top: 1.5rem; padding-left: .5rem;font-size: 2rem'
+              (click)='goToDiscover("year",getYear(movieDetails.releaseDate))'>
+              {{movieDetails.releaseDate|releaseYear}}
+            </h2>
+            <h3>{{movieDetails.vote.voteAverage}}</h3>
+          </div>
+
+          <p id="movie-runtime" class="color-secondary">{{movieDetails.runtime|runtimeDisplay}}</p>
+          <span *ngFor="let item of movieDetails.genres; let isLast=last">
+            <span class='text-hyperlink color-secondary' (click)='goToDiscover("genre",item.id)'
+              style='text-decoration: underline;'>
+              {{item.name}}{{isLast ? '' : ', '}}
+            </span>
+          </span>
+
+          <p id="movie-plot" style='overflow-wrap: break-word !important;
+          word-wrap: break-word !important; text-align: justify;
+          white-space: pre-line; padding-top: .75em;'>{{movieDetails.overview}}</p>
+
+          <!-- unified play button -->
+          <div class="btn-group" *ngIf="playLinks.length > 0">
+            <button type="button" class="btn btn-danger mdb-primary" (click)='playBestPlayLink()'>Play</button>
+            <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+              <li *ngFor="let playLink of playLinks">
+                <a class="dropdown-item" (click)='playMovie(playLink)'> {{playLink.type}} | {{playLink.name}}
+                  {{playLink.quality}}</a>
+              </li>
+            </ul>
+          </div>
+
+          <button class='btn btn-primary' (click)='continueWatching()' *ngIf='hasContinueWatching'>
+            Continue Watching
+          </button>
+          <button class='btn btn-primary primary' (click)='playTrailer()' *ngIf='movieTrailer'>
+            Play Trailer
+          </button>
+
+
+          <div *ngIf="movieDetailsDirectors" class='credit-overview-container row'>
+            <span class='col-2 color-secondary font-emphasize'>Directed by </span>
+            <span class='credit-list-wrap col-10'>
+              <span *ngFor="let director of movieDetailsDirectors; let isLast=last">
+                <span class='text-hyperlink' (click)='goToDiscover("person",director.id,director.name)'>
+                  {{director.name}}{{isLast ? '' : ', '}}
+                </span>
+              </span>
+            </span>
+          </div>
+          <div *ngIf="movieDetailsWriters" class='credit-overview-container'>
+            <!-- </div> -->
+            <span class='row'>
+              <span class='col-2 color-secondary font-emphasize'>Written by </span>
+              <span class='credit-list-wrap col-10'>
+                <span *ngFor="let writer of movieDetailsWriters; let isLast=last">
+                  <span class='text-hyperlink' (click)='goToDiscover(writer.id)'>
+                    {{writer.name}}{{isLast ? '' : ', '}}
+                  </span>
+                </span>
+              </span>
+            </span>
+          </div>
+          <div *ngIf="movieDetailsProducers" class='credit-overview-container'>
+            <span class='row'>
+              <span class='col-2 color-secondary font-emphasize'>Produced by</span>
+              <span class='credit-list-wrap col-10'>
+                <span *ngFor="let producer of movieDetailsProducers; let isLast=last">
+                  <span class='text-hyperlink' (click)='goToDiscover(producer.id)'>{{producer.name}}{{isLast ? ''
+                    :', '}}</span>
+                </span>
+              </span>
+            </span>
+          </div>
+          <div *ngIf="movieDetailsCast" class='credit-overview-container'>
+            <span class='row'>
+              <span class='col-2 color-secondary font-emphasize'>Cast</span>
+              <span class='credit-list-wrap col-10'>
+                <span *ngFor="let cast of movieDetailsCast; let isLast=last">
+                  <span class='text-hyperlink' (click)='goToDiscover(cast.id)'>
+                    {{cast.name}}{{isLast ? '' : ', '}}
+                  </span>
+                </span>
+              </span>
+            </span>
+
+            <!-- <span>See more</span> -->
+          </div>
+        </div>
+      </div>
+
+
+    </div>
   </div>
 </div>

@@ -3,7 +3,7 @@
   "compilerOptions": {
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "baseUrl": "./",
+    "baseUrl": "src",
     "downlevelIteration": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
@@ -21,6 +21,35 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@components/*": [
+        "app/components/*"
+      ],
+      "@constants/*": [
+        "app/constants/*"
+      ],
+      "@directives/*": [
+        "app/directives/*"
+      ],
+      "@guards/*": [
+        "app/guards/*"
+      ],
+      "@mock/*": [
+        "app/mock/*"
+      ],
+      "@models/*": [
+        "app/models/*"
+      ],
+      "@services/*": [
+        "app/services/*"
+      ],
+      "@shared/*": [
+        "app/shared/*"
+      ],
+      "@utils/*": [
+        "app/utils/*"
+      ],
+    }
   }
 }

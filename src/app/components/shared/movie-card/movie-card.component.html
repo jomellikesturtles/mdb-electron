@@ -74,7 +74,7 @@
   </div>
   <div class="card-body movie-card-body">
     <div class="movie-card-text">
-      <h6 (click)="onOpenMovie()" class='text-primary movie-card-title card-title text-hyperlink' style='color:white'
+      <h6 (click)="onOpenMovie()" class='text-primary movie-card-title text-hyperlink' style='color:white'
         data-toggle="tooltip" title="{{_movie.title}}">{{_movie.title}}</h6>
       <label class='text-hyperlink' style='float: left; font-size: 11pt;color: darkgray;'
         (click)='goToYear(getYear(_movie.releaseDate))'>{{_movie.releaseDate|releaseYear}}</label>

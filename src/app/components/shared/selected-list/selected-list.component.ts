@@ -1,16 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router'
-import { DataService } from '../../../services/data.service'
-import { IpcService } from '../../../services/ipc.service'
-import { UtilsService } from '../../../services/utils.service'
+import { DataService } from '@services/data.service'
 import { Select, Store } from '@ngxs/store';
 import { ClearList, AddWatched, AddBookmark } from '../../../movie.actions'
 import { RemoveMovie } from '../../../movie.actions';
 import { Observable, Subscription } from 'rxjs';
 import { MovieList } from '../../../movie.state';
-import { BookmarkService } from '../../../services/bookmark.service';
-import { WatchedService } from '../../../services/watched.service';
-declare var $: any
 
 @Component({
   selector: 'app-selected-list',
@@ -27,7 +22,6 @@ export class SelectedListComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dataService: DataService,
-    private ipcService: IpcService,
     private store: Store) { }
 
   ngOnInit() {

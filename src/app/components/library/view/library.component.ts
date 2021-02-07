@@ -1,15 +1,15 @@
 /**
  * Gets available movies.
  */
-import { UserDataService } from './../../../services/user-data.service';
+import { UserDataService } from '@services/user-data.service';
 import { environment } from './../../../../environments/environment';
 import { Component, OnInit, Input } from '@angular/core';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data'
-import { STRING_REGEX_IMAGE_SIZE } from '../../../constants';
-import { IpcService, IUserDataPaginated } from '../../../services/ipc.service';
+import { STRING_REGEX_IMAGE_SIZE } from '@shared/constants';
+import { IpcService, IUserDataPaginated } from '@services/ipc.service';
 import { Observable } from 'rxjs'
 import { Select } from '@ngxs/store'
-import { CollectionName } from 'src/app/services/firebase.service';
+import { CollectionName } from '@services/firebase.service';
 
 @Component({
   selector: 'app-library',

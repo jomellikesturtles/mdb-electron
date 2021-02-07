@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { FirebaseService, CollectionName, FieldName } from './firebase.service';
 import { environment } from './../../environments/environment';
 import { IpcService, IUserDataPaginated } from './ipc.service';
-import { UtilsService } from './utils.service';
 import { MdbApiService } from './mdb-api.service';
+import GeneralUtil from '@utils/general.util';
 
 @Injectable({
   providedIn: 'root'
@@ -12,14 +12,13 @@ export class FavoriteService {
 
   constructor(
     private ipcService: IpcService,
-    private utilsService: UtilsService,
     private mdbApiService: MdbApiService) { }
 
   async toggleFavorite(movie) {
     let fDocId
     if (!movie.favorite || !movie.favorite.id) {
       const rDate = movie.release_date ? movie.release_date : movie.releaseDate
-      const releaseYear = parseInt(this.utilsService.getYear(rDate), 10)
+      const releaseYear = parseInt(GeneralUtil.getYear(rDate), 10)
       const data = {
         title: movie.title,
         tmdbId: movie.id ? movie.id : movie.tmdbId,

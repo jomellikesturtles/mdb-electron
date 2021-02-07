@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs'
 import { IOmdbMovieDetail, MovieGenre, IGenre } from '../../interfaces';
 import { MOVIES, MOVIEGENRES } from '../../mock-data';
-import { DECADES, GENRES, STRING_REGEX_IMDB_ID } from '../../constants';
+import { DECADES, GENRES, STRING_REGEX_IMDB_ID } from '../../shared/constants';
 import { DataService } from '../../services/data.service'
 import { MovieService } from '../../services/movie.service'
 import { IpcService } from '../../services/ipc.service'
@@ -11,9 +11,6 @@ import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
 import { Store, Select } from '@ngxs/store'
 import { Add, CountState, UserState } from '../../app.state'
-import { FirebaseService } from '../../services/firebase.service';
-import { SetUser } from '../../app.actions';
-import { delay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 enum STATUS {
@@ -40,7 +37,7 @@ export class TopNavigationComponent implements OnInit {
     private location: Location,
     private store: Store) { }
 
-  isElectron = environment.runConfig.electron != null ? true : false
+  isElectron = environment.runConfig.electron
   status = 'LOGIN'
   browserConnection = navigator.onLine;
   selectedMovie: IOmdbMovieDetail

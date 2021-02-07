@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, OnDestroy, AfterViewInit, ElementRef, OnChanges, SimpleChanges, ViewChild, PipeTransform, Pipe } from '@angular/core';
 import { Subject } from 'rxjs';
-import { IpcService } from 'src/app/services/ipc.service';
-import { MovieService } from 'src/app/services/movie.service';
-import { WatchedService } from 'src/app/services/watched.service';
-import SubtitlesUtil from 'src/app/utils/subtitles.utils';
-import { Subtitle } from 'src/app/models/subtitle.model';
+import { IpcService } from '@services/ipc.service';
+import { MovieService } from '@services/movie.service';
+import { WatchedService } from '@services/watched.service';
+import SubtitlesUtil from '@utils/subtitles.utils';
+import { Subtitle } from '@models/subtitle.model';
 import { UserIdleService } from "angular-user-idle";
 import chardet from "chardet";
 import jschardet from "jschardet";
-import { environment } from 'src/environments/environment';
+import { environment } from 'environments/environment';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({

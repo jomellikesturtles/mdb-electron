@@ -1,11 +1,11 @@
 import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs'
-import { IpcService } from '../../services/ipc.service';
+import { IpcService } from '@services/ipc.service';
 import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
-import { STRING_REGEX_PREFIX } from '../../constants';
+import { STRING_REGEX_PREFIX } from '@shared/constants';
 import { takeUntil } from 'rxjs/operators';
-import { MovieService } from 'src/app/services/movie.service';
+import { MovieService } from '@services/movie.service';
 
 @Component({
   selector: 'app-preferences',

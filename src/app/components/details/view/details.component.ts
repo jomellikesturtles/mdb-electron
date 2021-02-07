@@ -1,5 +1,5 @@
 import { GenreCodes } from './../../../interfaces';
-import { IRawLibrary, LibraryService } from '../../../services/library.service';
+import { IRawLibrary, LibraryService } from '@services/library.service';
 import {
   Component, OnInit,
   OnDestroy,
@@ -7,24 +7,24 @@ import {
 import { MDBTorrent } from '../../../interfaces';
 import { TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
-import { BookmarkService } from '../../../services/bookmark.service'
-import { DataService } from '../../../services/data.service';
-import { MovieService } from '../../../services/movie.service';
-import { TorrentService } from '../../../services/torrent.service';
-import { UtilsService } from '../../../services/utils.service';
-import { IpcService } from '../../../services/ipc.service';
+import { BookmarkService } from '@services/bookmark.service'
+import { DataService } from '@services/data.service';
+import { MovieService } from '@services/movie.service';
+import { TorrentService } from '@services/torrent.service';
+import { UtilsService } from '@services/utils.service';
+import { IpcService } from '@services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TROUBLE_QUOTES } from '../../../constants';
-import { TMDB_FULL_MOVIE_DETAILS } from '../../../mock-data-movie-details';
-import { UserDataService } from 'src/app/services/user-data.service';
-import { WatchedService, IWatched } from 'src/app/services/watched.service';
+import { TROUBLE_QUOTES } from '@shared/constants';
+import { UserDataService } from '@services/user-data.service';
+import { WatchedService, IWatched } from '@services/watched.service';
 import { takeUntil } from 'rxjs/operators'
 import { Subject } from 'rxjs';
 import { basename } from 'path'
-import { FavoriteService } from 'src/app/services/favorite.service';
-import { IUserData } from 'src/app/models/user-data.model';
-import { MdbApiService } from 'src/app/services/mdb-api.service';
-import { MDBMovie } from 'src/app/models/mdb-movie.model';
+import { FavoriteService } from '@services/favorite.service';
+import { IUserData } from '@models/user-data.model';
+import { MdbApiService } from '@services/mdb-api.service';
+import { MDBMovie } from '@models/mdb-movie.model';
+import GeneralUtil from '@utils/general.util'
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -430,7 +430,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Get year from date.
    */
   getYear(val: string) {
-    return this.utilsService.getYear(val)
+    return GeneralUtil.getYear(val)
   }
 
   getDirectors() {

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { SelectedListComponent } from './selected-list/selected-list.component';
 import { MovieCardComponent } from './movie-card/movie-card.component';
 import { CardListComponent } from './card-list/card-list.component';
-import { ReleaseYearPipe } from 'src/app/mdb-pipes.pipe';
+import { ReleaseYearPipe, RuntimeDisplayPipe } from 'app/mdb-pipes.pipe';
 import { HHMMSSPipe, VideoPlayerComponent } from '../video-player/video-player/video-player.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -15,6 +15,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { UserIdleModule } from 'angular-user-idle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @NgModule({
@@ -25,7 +27,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     ReleaseYearPipe,
     VideoPlayerComponent,
     HHMMSSPipe,
-    HorizontalCardListComponent
+    HorizontalCardListComponent,
+    RuntimeDisplayPipe
   ],
   imports: [
     CommonModule,
@@ -33,7 +36,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatTooltipModule,
     MatDividerModule,
     MatProgressSpinnerModule,
-    MatMenuModule,
+    MatMenuModule, MatButtonModule, MatIconModule,
     UserIdleModule.forRoot({ idle: 5, timeout: 5, ping: 5 })
   ],
   exports: [
@@ -44,7 +47,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     VideoPlayerComponent,
     HorizontalCardListComponent,
     MatDividerModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule, MatButtonModule, MatIconModule,
+    RuntimeDisplayPipe
   ]
 })
 export class SharedModule { }

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DataService } from 'src/app/services/data.service';
+import { DataService } from '@services/data.service';
 
 @Component({
   selector: 'app-horizontal-card-list',

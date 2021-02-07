@@ -3,7 +3,7 @@ import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './
 import { IUserSavedData } from '../interfaces';
 import { environment } from './../../environments/environment';
 import { IpcService, IUserDataPaginated } from './ipc.service';
-import { UtilsService } from './utils.service';
+import GeneralUtil from '@utils/general.util';
 
 @Injectable({
   providedIn: 'root'
@@ -11,14 +11,14 @@ import { UtilsService } from './utils.service';
 export class WatchedService {
 
   constructor(private firebaseService: FirebaseService,
-    private ipcService: IpcService,
-    private utilsService: UtilsService) { }
+    private ipcService: IpcService
+  ) { }
 
   async toggleWatched(movie) {
     let wDocId
     if (!movie.watched || !movie.watched.id) {
       const rDate = movie.release_date ? movie.release_date : movie.releaseDate
-      const releaseYear = parseInt(this.utilsService.getYear(rDate), 10)
+      const releaseYear = parseInt(GeneralUtil.getYear(rDate), 10)
       const data: IWatched = {
         title: movie.title,
         tmdbId: movie.id ? movie.id : movie.tmdbId,

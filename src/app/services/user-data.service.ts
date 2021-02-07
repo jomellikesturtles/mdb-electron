@@ -4,12 +4,12 @@ import { Observable } from 'rxjs';
 import { IBookmark, BookmarkService } from './bookmark.service';
 import { MovieService } from './movie.service';
 import { WatchedService, IWatched } from './watched.service';
-import { UtilsService } from './utils.service';
 import { IpcService, IUserDataPaginated } from './ipc.service';
-import { environment } from 'src/environments/environment';
+import { environment } from 'environments/environment';
 import { CollectionName, FirebaseService } from './firebase.service';
 import { MdbApiService } from './mdb-api.service';
 import { IUserData } from '../models/user-data.model';
+import GeneralUtil from '@utils/general.util';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,6 @@ export class UserDataService {
     private movieService: MovieService,
     private watchedService: WatchedService,
     private libraryService: LibraryService,
-    private utilsService: UtilsService,
     private ipcService: IpcService,
     private mdbApiService: MdbApiService
   ) { }
@@ -53,7 +52,7 @@ export class UserDataService {
    */
   async saveUserData(dataType: string, movie: any): Promise<any> {
     const rDate = movie.release_date ? movie.release_date : movie.releaseDate
-    const releaseYear = parseInt(this.utilsService.getYear(rDate), 10)
+    const releaseYear = parseInt(GeneralUtil.getYear(rDate), 10)
     const tmdbId = movie.id ? movie.id : movie.tmdbId
     const title = movie.title
     const year = releaseYear ? releaseYear : 0
