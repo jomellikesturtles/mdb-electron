@@ -10,6 +10,12 @@ export const environment = {
     appId: '1:24146436081:web:78f0dd1c699e12514eae50'
   },
   runConfig: {
+
+    // firebaseMode: false,
+    springMode: true,
+    // electron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
+    // useTestData: true,
+    environment: location.protocol,
     firebaseMode: true,
     electron: false,
     useTestData: false

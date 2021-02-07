@@ -6,7 +6,7 @@ import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
-import { STRING_REGEX_IMDB_ID, MDB_API_URL } from '../constants';
+import { STRING_REGEX_IMDB_ID, MDB_API_URL } from '../shared/constants';
 import { IUserData } from '../models/user-data.model';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })

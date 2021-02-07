@@ -3,14 +3,14 @@
  */
 import { Component, OnInit, OnDestroy, Pipe, PipeTransform, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { DataService } from 'src/app/services/data.service';
-import { UtilsService } from 'src/app/services/utils.service';
-import { GenreCodes } from 'src/app/interfaces';
+import { DataService } from '@services/data.service';
+import { GenreCodes } from '../../../app/interfaces';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MovieService } from 'src/app/services/movie.service';
-import { UserDataService } from 'src/app/services/user-data.service';
-import { WatchedService } from 'src/app/services/watched.service';
-import { MDBMovie } from 'src/app/models/mdb-movie.model';
+import { MovieService } from '@services/movie.service';
+import { UserDataService } from '@services/user-data.service';
+import { WatchedService } from '@services/watched.service';
+import { MDBMovie } from '@models/mdb-movie.model';
+import GeneralUtil from '@utils/general.util';
 
 @Component({
   selector: 'app-preview',
@@ -28,7 +28,6 @@ export class PreviewComponent implements OnInit, OnDestroy {
     private userDataService: UserDataService,
     private cdr: ChangeDetectorRef,
     private movieService: MovieService,
-    private utilsService: UtilsService,
     private domSanitizer: DomSanitizer,
   ) { }
 
@@ -276,7 +275,7 @@ export class PreviewComponent implements OnInit, OnDestroy {
    * @param releaseDate release date with format YYYY-MM-DD
    */
   getYear(releaseDate: string) {
-    return this.utilsService.getYear(releaseDate)
+    return GeneralUtil.getYear(releaseDate)
   }
 
   /**

@@ -1,5 +1,5 @@
 import { HttpRequest, HttpHandler, HttpResponse, HttpEvent } from '@angular/common/http';
-import { TMDB_URL } from '../constants';
+import { TMDB_URL } from '../shared/constants';
 import { Observable } from 'rxjs';
 import { MOCK_USER_DATA_LIST, TMDB_SEARCH_RESULTS } from '../mock-data';
 import { TMDB_FULL_MOVIE_DETAILS } from '../mock-data-movie-details';
@@ -8,6 +8,7 @@ export function mockDataFactory(request: HttpRequest<any>, next: HttpHandler): O
   const url = request.url;
   const method = request.method
   let toReturn = { status: 200, body: null }
+
   if (url.startsWith(TMDB_URL) && url.includes('/discover/movie')) {
     toReturn.body = TMDB_SEARCH_RESULTS
   } else if (new RegExp(`/movie/+\\d+`, `gi`).exec(url) != null) {

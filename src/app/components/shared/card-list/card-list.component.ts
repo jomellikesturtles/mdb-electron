@@ -4,10 +4,10 @@ import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
 import { WatchedService, IWatched } from '../../../services/watched.service';
 import { LibraryService } from '../../../services/library.service';
 import { environment } from '../../../../environments/environment';
-import { UserDataService } from 'src/app/services/user-data.service';
-import { IUserData } from 'src/app/models/user-data.model';
-import { MDBMovie } from 'src/app/models/mdb-movie.model';
-import ObjectUtil from 'src/app/utils/object.utils';
+import { UserDataService } from '@services/user-data.service';
+import { IUserData } from '@models/user-data.model';
+import { MDBMovie } from '@models/mdb-movie.model';
+import ObjectUtil from '@utils/object.utils';
 
 @Component({
   selector: 'app-card-list',

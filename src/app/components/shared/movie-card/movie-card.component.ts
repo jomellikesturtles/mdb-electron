@@ -1,19 +1,18 @@
-import { UserDataService } from './../../../services/user-data.service';
-import { PreferencesService } from './../../../services/preferences.service';
+import { UserDataService } from '@services/user-data.service';
+import { PreferencesService } from '@services/preferences.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { AddMovie, RemoveMovie } from '../../../movie.actions';
-import { DataService } from '../../../services/data.service';
-import { UtilsService } from '../../../services/utils.service';
-import { WatchedService } from '../../../services/watched.service';
-import { MovieService } from 'src/app/services/movie.service';
-import { TorrentService } from 'src/app/services/torrent.service';
+import { DataService } from '@services/data.service';
+import { MovieService } from '@services/movie.service';
+import { TorrentService } from '@services/torrent.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MDBMovie } from 'src/app/models/mdb-movie.model';
-import { IUserData } from 'src/app/models/user-data.model';
-import ObjectUtil from 'src/app/utils/object.utils';
+import { MDBMovie } from '@models/mdb-movie.model';
+import { IUserData } from '@models/user-data.model';
+import ObjectUtil from '@utils/object.utils';
+import GeneralUtil from '@utils/general.util';
 
 @Component({
   selector: 'app-movie-card',
@@ -98,8 +97,6 @@ export class MovieCardComponent implements OnInit {
     private preferencesService: PreferencesService,
     private torrentService: TorrentService,
     private userDataService: UserDataService,
-    private utilsService: UtilsService,
-    private watchedService: WatchedService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private store: Store,
@@ -192,7 +189,7 @@ export class MovieCardComponent implements OnInit {
    * @param releaseDate release date with format YYYY-MM-DD
    */
   getYear(releaseDate: string): string {
-    return this.utilsService.getYear(releaseDate)
+    return GeneralUtil.getYear(releaseDate)
   }
 
   /**

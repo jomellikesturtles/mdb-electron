@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from './../../../../environments/environment';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { Select } from '@ngxs/store';
-import { CollectionName } from 'src/app/services/firebase.service';
+import { CollectionName } from '@services/firebase.service';
 
 @Component({
   selector: 'app-watched',

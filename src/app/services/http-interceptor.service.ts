@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HTTP_INTERCEPTORS, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { environment } from 'environments/environment';
 import { mockDataFactory } from './mock-data.factory';
 
 @Injectable({

@@ -7,8 +7,6 @@ import { MovieService } from '../../../services/movie.service'
 import { ISearchQuery } from '../../top-navigation/top-navigation.component'
 import { Select, Store } from '@ngxs/store'
 
-declare var $: any
-
 @Component({
   selector: 'app-results',
   templateUrl: './results.component.html',

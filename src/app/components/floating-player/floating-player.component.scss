@@ -1,0 +1,75 @@
+@import '../../variables.scss';
+
+* {
+  font-size: 1.3rem;
+}
+
+.credit-list-wrap {
+
+  display: inline-block;
+  // width: 100%;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  margin-bottom: 0px;
+}
+
+.mdb-primary {
+  background-color: $mdb-primary;
+}
+
+.icon-button {
+  // border-radius: ;
+  text-align: center;
+  cursor: pointer;
+}
+
+.mdb-button {
+  border-radius: 8px; // or .35em
+}
+
+
+@media only screen and (min-width: 765px) and (max-width: 1449px),
+only screen and (min-width: 1450px) {
+  // p {
+  //   font-size: 4rem;
+  // }
+
+  .movie-title {
+    font-size: 3.25rem;
+  }
+}
+
+@media only screen and (min-width: 400px) and (max-width: 549px),
+only screen and (min-width: 350px) and (max-width: 399px),
+only screen and (max-width: 349px) {
+
+  .movie-title {
+    font-size: 1.625rem;
+  }
+}
+
+.credit-overview-container {
+  padding-top: .5em;
+}
+.image-cover {
+  background-size: cover;
+}
+
+.mdb-poster {
+  min-width: calc(280px*.67);
+  min-height: 280px;
+}
+
+.mdb-poster:hover {
+  box-shadow: 0 0 10px black;
+  cursor: pointer;
+}
+
+.color-secondary {
+  color: #b1b1b1;
+}
+
+.font-emphasize {
+  font-weight: 600;
+}

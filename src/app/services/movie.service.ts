@@ -7,7 +7,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
 import { IOmdbMovieDetail, TmdbParameters, OmdbParameters, TmdbSearchMovieParameters } from '../interfaces'
-import { OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID, YOUTUBE_API_KEY } from '../constants';
+import { OMDB_API_KEY, TMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, TMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID, YOUTUBE_API_KEY } from '../shared/constants';
 import { TMDB_External_Id } from '../models/tmdb-external-id.model';
 import { CacheService } from './cache.service';
 
