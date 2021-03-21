@@ -116,3 +116,67 @@ export const YOUTUBE_API_KEY = 'AIzaSyAC1kcZu_DoO7mbrMxMuCpO57iaDByGKV0'
 // https://api.themoviedb.org/3/movie/550?api_key=a636ce7bd0c125045f4170644b4d3d25
 // http://www.myapifilms.com/imdb/idIMDB?title=matrix&token=c7e516ed-d9fe-4f3f-b1d9-fde33f63c816
 // http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
+
+
+export const SORT_BY = [
+  {
+    label: 'None',
+    value: 'none'
+  },
+  {
+    label: 'Popularity Ascending',
+    value: 'popularity.asc'
+  },
+  {
+    label: 'Popularity Descending',
+    value: 'popularity.desc'
+  },
+  {
+    label: 'Release Date Ascending',
+    value: 'release_date.asc'
+  },
+  {
+    label: 'Release Date Descending',
+    value: 'release_date.desc'
+  },
+  {
+    label: 'Revenue Ascending',
+    value: 'revenue.asc'
+  },
+  {
+    label: 'Revenue Descending',
+    value: 'revenue.desc'
+  },
+  {
+    label: 'Primary Release Date Ascending',
+    value: 'primary_release_date.asc'
+  },
+  {
+    label: 'Primary Release Date Descending',
+    value: 'primary_release_date.desc'
+  },
+  {
+    label: 'Original Title Ascending',
+    value: 'original_title.asc'
+  },
+  {
+    label: 'Original Title Descending',
+    value: 'original_title.desc'
+  },
+  {
+    label: 'Vote Average Ascending',
+    value: 'vote_average.asc'
+  },
+  {
+    label: 'Vote Average Descending',
+    value: 'vote_average.desc'
+  },
+  {
+    label: 'Vote Count Ascending',
+    value: 'vote_count.asc'
+  },
+  {
+    label: 'Vote Count Descending',
+    value: 'vote_count.desc'
+  },
+]

@@ -243,7 +243,7 @@ export class IpcService {
   // ----- END OF USER DATA
   startScanLibrary() {
 
-    this.ipcRenderer.send(IPCRendererChannel.SCAN_LIBRARY_START)
+    this.sendToMain(IPCRendererChannel.SCAN_LIBRARY_START)
     this.ipcRenderer.on(IPCMainChannel.ScanLibraryResult, e => {
       console.log(IPCMainChannel.ScanLibraryResult, e)
     })
@@ -254,25 +254,25 @@ export class IpcService {
   }
 
   stopScanLibrary() {
-    this.ipcRenderer.send(IPCRendererChannel.SCAN_LIBRARY_STOP)
+    this.sendToMain(IPCRendererChannel.SCAN_LIBRARY_STOP)
   }
 
   getPlayTorrent(hash: string) {
-    this.ipcRenderer.send(IPCRendererChannel.PLAY_TORRENT, hash)
+    this.sendToMain(IPCRendererChannel.PLAY_TORRENT, hash)
   }
 
   stopStream() {
-    this.ipcRenderer.send(IPCRendererChannel.STOP_STREAM)
+    this.sendToMain(IPCRendererChannel.STOP_STREAM)
   }
 
   playOfflineVideo(docId): Promise<any> {
-    this.ipcRenderer.send(IPCRendererChannel.PLAY_OFFLINE_VIDEO_STREAM, docId);
+    this.sendToMain(IPCRendererChannel.PLAY_OFFLINE_VIDEO_STREAM, docId);
     return this.listenOnce(`stream-link`);
   }
 
   getPreferences() {
 
-    this.ipcRenderer.send(IPCRendererChannel.PREFERENCES_GET)
+    this.sendToMain(IPCRendererChannel.PREFERENCES_GET)
     // this.ipcRenderer.addListener(IPCMainChannel.PREFERENCES_GET_COMPLETE, this.pref)
 
     // (event, data: any) => {
@@ -284,7 +284,7 @@ export class IpcService {
   }
 
   savePreferences(val) {
-    this.ipcRenderer.send(IPCRendererChannel.PREFERENCES_SET, val)
+    this.sendToMain(IPCRendererChannel.PREFERENCES_SET, val)
     // this.ipcRenderer.on(IPCMainChannel.PREFERENCES_SET_COMPLETE, (event, data: any) => {
     //   console.log('IPCMainChannel.PREFERENCES_SET_COMPLETE ', data)
     //   this.preferences.next(data)
@@ -312,7 +312,7 @@ export class IpcService {
     this.ipcRenderer.removeListener(channel, d => { })
   }
 
-  private sendToMain(channel: string, headers?: Headers, body?: Body) {
+  private sendToMain(channel: string, headers?: Headers | string, body?: Body) {
     try {
       this.ipcRenderer.send(channel, [headers, body])
       console.log('sent to ipc... ', channel, [headers, body])

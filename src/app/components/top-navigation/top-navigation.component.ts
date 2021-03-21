@@ -3,10 +3,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs'
 import { IOmdbMovieDetail, MovieGenre, IGenre } from '../../interfaces';
 import { MOVIES, MOVIEGENRES } from '../../mock-data';
-import { DECADES, GENRES, STRING_REGEX_IMDB_ID } from '../../shared/constants';
-import { DataService } from '../../services/data.service'
-import { MovieService } from '../../services/movie.service'
-import { IpcService } from '../../services/ipc.service'
+import { STRING_REGEX_IMDB_ID } from '../../shared/constants';
+import { DataService } from '@services/data.service'
+import { MovieService } from '@services/movie.service'
+import { IpcService } from '@services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
 import { Store, Select } from '@ngxs/store'
@@ -48,11 +48,13 @@ export class TopNavigationComponent implements OnInit {
   types = ['TV Series', 'Movie', 'Short'];
   searchQuery: ISearchQuery = {
     query: '',
-    startYear: 1969,
-    endYear: 2018,
+    fromYear: 1969,
+    toYear: 2018,
     genres: this.movieGenres,
     type: 'TV Series',
-    isAvailable: 'true'
+    isAvailable: 'true',
+    availability: '',
+    sortBy: ''
   };
   movies = MOVIES;
   selectedMovies = []
@@ -63,10 +65,9 @@ export class TopNavigationComponent implements OnInit {
   currentSearchQuery = ''
   hasSearchResults = false
   isSearchDirty = false
-  searchHistoryList = []
+  searchHistoryList = ['titanic', 'asdlkajsd', 'terminator']
   searchHistoryMaxLength = 8
   decadesList = []
-  genresList = GENRES
   voteCountList = VOTE_COUNT
   voteAverageList = []
   isSignedIn = false
@@ -90,21 +91,6 @@ export class TopNavigationComponent implements OnInit {
     })
   }
 
-  initializeAdvancedSearchCriteria() {
-    for (let index = 1; index <= 10; index++) {
-      this.voteAverageList.push({
-        label: `+${index}`,
-        value: index
-      });
-    }
-    for (let index = 1910; index <= (new Date).getFullYear(); index += 10) {
-      this.decadesList.push({
-        display: `${index}s`,
-        value: index
-      });
-    }
-  }
-
   /**
    * Go to previous location
    */
@@ -116,11 +102,6 @@ export class TopNavigationComponent implements OnInit {
    * Opens advanced search options.
    */
   onAdvancedSearch() {
-
-  }
-  goAdvancedSearch() { }
-
-  clearAdvancedSearch() {
 
   }
   /**
@@ -213,17 +194,21 @@ export class TopNavigationComponent implements OnInit {
 
 export interface ISearchQuery {
   query: string,
-  startYear: number,
-  endYear: number,
+  fromYear: number,
+  toYear: number,
   genres: MovieGenre[],
   type: string,
-  isAvailable: string
+  isAvailable: string,
+  availability: string, // all, offline, netflix
+  ratingCount?: number,
+  ratingAverage?: number,
+  sortBy: string,
 }
 
 export interface ITmdbSearchQuery {
   keywords: string,
   decade: number
-  endYear: number,
+  toYear: number,
   genres: IGenre[],
 }
 

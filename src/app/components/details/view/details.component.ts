@@ -25,6 +25,7 @@ import { IUserData } from '@models/user-data.model';
 import { MdbApiService } from '@services/mdb-api.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util'
+import { environment } from 'environments/environment';
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -96,6 +97,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    console.log('DETAILS DESTROY')
     this.ngUnsubscribe.next()
     this.ngUnsubscribe.complete()
   }
@@ -121,10 +123,17 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   playBestPlayLink() {
-    if (this.bestPlayLink.hash) { // is torrent
-      this.playTorrent(this.bestPlayLink.hash)
+    if (environment.runConfig.useTestData) {
+      this.showVideo = true
+      this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4'
+      console.log('playingbestplaylink')
     } else {
-      this.playOfflineLibrary(this.bestPlayLink.id);
+      if (this.bestPlayLink.hash) { // is torrent
+        this.playTorrent(this.bestPlayLink.hash)
+      } else {
+        this.playOfflineLibrary(this.bestPlayLink.id);
+      }
+      console.log('playingbestplaylink')
     }
   }
 
@@ -349,7 +358,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
         console.log('streamlink2:', e)
         this.showVideo = true
         this.streamLink = e
-        // this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4'
       }
     })
   }
