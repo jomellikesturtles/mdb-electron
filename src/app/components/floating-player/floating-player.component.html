@@ -18,23 +18,22 @@ background-attachment: fixed;'
               style=' margin-left:auto; margin-right: auto; margin-top:1em; width:300px'>
               <div class='row'>
                 <div class='col-4' style="text-align: center;">
-
-                  <button mat-fab color="accent" aria-label="Toggle bookmark" style='cursor: pointer;'
+                  <button mat-fab color="accent" aria-label="Toggle bookmark" class='details-button'
                     data-toggle='tooltip' title='Toggle Bookmark'>
                     <img style='filter: invert(1); height: 1.3em; cursor: pointer'
                       src='../../../assets/icons/bookmark-add.svg' />
                   </button>
                 </div>
                 <div class='col-4' style="text-align: center;">
-                  <button mat-fab aria-label="Toggle watched" style='cursor: pointer;background-color:orange'
+                  <button mat-fab aria-label="Toggle watched" style='background-color:orange' class='details-button'
                     data-toggle='tooltip' title='Toggle watched'>
                     <img style='filter: invert(1); height: 1.3em; cursor: pointer'
                       src='../../../assets/icons/eye.svg' />
                   </button>
                 </div>
                 <div class='col-4' style="text-align: center;">
-                  <button mat-fab color="warn" aria-label="Toggle favorite" style='cursor: pointer;'
-                    data-toggle='tooltip' title='Toggle Bookmark'>
+                  <button mat-fab color="warn" aria-label="Toggle favorite" class='details-button' data-toggle='tooltip'
+                    title='Toggle Bookmark'>
                     <img style='filter: invert(1); height: 1.3em; cursor: pointer'
                       src='../../../assets/icons/heart.svg' />
                   </button>
@@ -46,7 +45,7 @@ background-attachment: fixed;'
       </div>
       <div class='col-md-8'>
         <div style='background-color: #020202; height:100%'>
-          <div style='display: flex;'>
+          <div style='display: flex; position:relative'>
             <!-- <h2 id="movie-title">{{movieDetails.original_title}}</h2>&nbsp; -->
             <h2 id="movieTitle" class='movie-title'>{{movieDetails.title}}</h2>&nbsp;
 
@@ -55,15 +54,20 @@ background-attachment: fixed;'
               (click)='goToDiscover("year",getYear(movieDetails.releaseDate))'>
               {{movieDetails.releaseDate|releaseYear}}
             </h2>
-            <h3>{{movieDetails.vote.voteAverage}}</h3>
+
+            <div style="position: absolute;top: 0;right: 0; margin-left: auto;">
+              <h3>{{movieDetails.vote.voteAverage}}</h3>
+              <img style='filter: invert(1); height: 3em; cursor: pointer' src='../../../assets/icons/star.svg' />
+            </div>
           </div>
 
           <p id="movie-runtime" class="color-secondary">{{movieDetails.runtime|runtimeDisplay}}</p>
           <span *ngFor="let item of movieDetails.genres; let isLast=last">
             <span class='text-hyperlink color-secondary' (click)='goToDiscover("genre",item.id)'
               style='text-decoration: underline;'>
-              {{item.name}}{{isLast ? '' : ', '}}
+              {{item.name}}{{isLast ? '' : ','}}
             </span>
+            &nbsp;
           </span>
 
           <p id="movie-plot" style='overflow-wrap: break-word !important;
@@ -72,14 +76,15 @@ background-attachment: fixed;'
 
           <!-- unified play button -->
           <div class="btn-group" *ngIf="playLinks.length > 0">
-            <button type="button" class="btn btn-danger mdb-primary" (click)='playBestPlayLink()'>Play</button>
-            <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-danger mdb-primary play-btn" (click)='playBestPlayLink()'>Play</button>
+            <button class="btn btn-danger dropdown-toggle dropdown-toggle-split play-btn-dropdown-toggle"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="visually-hidden">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu">
               <li *ngFor="let playLink of playLinks">
-                <a class="dropdown-item" (click)='playMovie(playLink)'> {{playLink.type}} | {{playLink.name}}
+                <a class="dropdown-item" style='cursor: pointer' (click)='playMovie(playLink)'> {{playLink.type}} |
+                  {{playLink.name}}
                   {{playLink.quality}}</a>
               </li>
             </ul>
@@ -88,7 +93,7 @@ background-attachment: fixed;'
           <button class='btn btn-primary' (click)='continueWatching()' *ngIf='hasContinueWatching'>
             Continue Watching
           </button>
-          <button class='btn btn-primary primary' (click)='playTrailer()' *ngIf='movieTrailer'>
+          <button class='btn btn-primary primary play-trailer-btn' (click)='playTrailer()' *ngIf='movieTrailer'>
             Play Trailer
           </button>
 
@@ -130,12 +135,19 @@ background-attachment: fixed;'
           <div *ngIf="movieDetailsCast" class='credit-overview-container'>
             <span class='row'>
               <span class='col-2 color-secondary font-emphasize'>Cast</span>
-              <span class='credit-list-wrap col-10'>
-                <span *ngFor="let cast of movieDetailsCast; let isLast=last">
-                  <span class='text-hyperlink' (click)='goToDiscover(cast.id)'>
-                    {{cast.name}}{{isLast ? '' : ', '}}
+              <span class='col-10'>
+                <div class='row'>
+                  <span class='credit-list-wrap  col-8'>
+                    <span *ngFor="let cast of movieDetailsCast; let isLast=last">
+                      <span class='text-hyperlink' (click)='goToDiscover(cast.id)'>
+                        {{cast.name}}{{isLast ? '' : ', '}}
+                      </span>
+                    </span>
                   </span>
-                </span>
+                  <span class='col-4'>
+                    <p>show more</p>
+                  </span>
+                </div>
               </span>
             </span>
 

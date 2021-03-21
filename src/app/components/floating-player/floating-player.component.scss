@@ -52,6 +52,7 @@ only screen and (max-width: 349px) {
 .credit-overview-container {
   padding-top: .5em;
 }
+
 .image-cover {
   background-size: cover;
 }
@@ -72,4 +73,32 @@ only screen and (max-width: 349px) {
 
 .font-emphasize {
   font-weight: 600;
+}
+
+.details-button {
+  outline: none;
+  cursor: pointer;
+}
+
+.play-trailer-btn {
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  padding-top: .5em;
+  padding-bottom: .5em;
+  margin-left: 20px;
+  border-radius: 12px;
+}
+
+
+.play-btn {
+  padding: 2em;
+  padding-top: .5em;
+  padding-bottom: .5em;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.play-btn-dropdown-toggle {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }

@@ -79,6 +79,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     currentTime: 0
   }
   currentTime
+  canPlay = false
+  isMetadataLoaded = false
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -87,7 +89,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     private movieService: MovieService,
     private elementRef: ElementRef,
     private userIdleService: UserIdleService
-  ) { }
+  ) { console.log('VIDEOPLAYER CONSTRUCTOR') }
 
   onNotIdle() {
     this.userIdleService.resetTimer()
@@ -106,6 +108,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       console.log("TIMEOUT!OUT!", e)
       this.isUserInactive = true;
     })
+    console.log('VIDEOPLAYER ngOnInit')
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -146,6 +149,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     // this.videoPlayerElement.muted = true
     this.videoPlayerElement.addEventListener('canplay', (e) => {
       console.log('canplay', e)
+      this.canPlay = true
       this.videoTime.duration = this.videoPlayerElement.duration
     })
     this.videoPlayerElement.addEventListener('durationchange', (e) => {
@@ -207,9 +211,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       }
     })
     this.videoPlayerElement.addEventListener('loadedmetadata', (e) => {
+      this.isMetadataLoaded = true
       this.statsForNerds.resolution = this.videoPlayerElement.videoWidth + 'x' + this.videoPlayerElement.videoHeight
-
-      // this.videoPlayer1.nativeElement.play()
     })
     const root = this
     setInterval((e) => {

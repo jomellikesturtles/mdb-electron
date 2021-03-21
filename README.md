@@ -21,6 +21,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
   - [Build](#build)
   - [Running unit tests](#running-unit-tests)
   - [Running end-to-end tests](#running-end-to-end-tests)
+  - [Build](#build-1)
   - [Project Structure](#project-structure)
   - [Development Notes](#development-notes)
     - [APIs](#apis)
@@ -59,7 +60,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 3. type `npm run start:electron2` to build angular project as prod and run as electron project
 4. type `npm run electron` to run a built angular ui in an electron **window**
 5. type `electron .` to run as electron project
-
+6. type `electron-packager .` to build as electron app based on current system
 ### Run as angular project
 
 1. type `npm start` to start as angular project
@@ -80,6 +81,9 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 ## Running end-to-end tests
 
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+
+## Build
+``electron-packager .``
 
 ## Project Structure
 

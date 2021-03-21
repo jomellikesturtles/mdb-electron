@@ -123,9 +123,10 @@ function setSystemTray() {
   let trayIcon = appIcon;
   mdbTray = new Tray(trayIcon);
   const trayMnu = Menu.buildFromTemplate([
-    { label: "Preferences", icon: trayIcon, enabled: false },
-    { label: "Torrent1", click: playTorrentSample },
-    { label: "Torrent2", click: playTorrentSample2 },
+    // { label: "Preferences", icon: trayIcon, enabled: false },
+    // { label: "Torrent1", click: playTorrentSample },
+    // { label: "Torrent2", click: playTorrentSample2 },
+    { label: "MDB", click: app.focus },
     { label: "Quit", click: app.quit },
   ]);
   mdbTray.setToolTip("Media Database");

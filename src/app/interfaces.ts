@@ -380,6 +380,8 @@ export enum TmdbParameters {
   WithRuntimeGreater = 'with_runtime.gte',
   WithRuntimeLess = 'with_runtime.lte',
   WithOriginalLanguage = 'with_original_language',
+  WithWatchProviders = 'with_watch_providers',
+  WatchRegion = 'watch_region'
 }
 
 export enum TmdbSearchMovieParameters {
