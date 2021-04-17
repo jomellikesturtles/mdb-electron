@@ -16,7 +16,7 @@ import { ILibraryInfo } from '../interfaces'
 import { IRawLibrary } from './library.service';
 import { IWatched } from './watched.service';
 import { Review } from '../models/review.model';
-import { IUserData, ListLinkMovie } from '../models/user-data.model';
+import { IProfileData, ListLinkMovie } from '../models/profile-data.model';
 
 
 @Injectable({
@@ -216,7 +216,7 @@ export class IpcService {
    *
    * @param id tmdb id
    */
-  getMovieUserData(id: number): Promise<IUserData> {
+  getMovieUserData(id: number): Promise<IProfileData> {
     const theUuid = uuidv4()
     this.sendToMain('user-data', {
       operation: IpcOperations.FIND,
@@ -225,7 +225,7 @@ export class IpcService {
     return this.listenOnce(`user-data-${theUuid}`);
   }
 
-  getMovieUserDataInList(idList: number[]): Promise<IUserData[]> {
+  getMovieUserDataInList(idList: number[]): Promise<IProfileData[]> {
     const theUuid = uuidv4()
     this.sendToMain('user-data', {
       operation: IpcOperations.FIND_IN_LIST,

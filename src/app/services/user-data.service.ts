@@ -8,7 +8,6 @@ import { IpcService, IUserDataPaginated } from './ipc.service';
 import { environment } from 'environments/environment';
 import { CollectionName, FirebaseService } from './firebase.service';
 import { MdbApiService } from './mdb-api.service';
-import { IUserData } from '../models/user-data.model';
 import GeneralUtil from '@utils/general.util';
 
 @Injectable({
@@ -95,7 +94,7 @@ export class UserDataService {
    */
   getMovieUserData(tmdbId: number) {
     const myFunction = environment.runConfig.springMode ?
-      this.mdbApiService.getUserDataByTmdbId(tmdbId).toPromise() :
+      this.mdbApiService.getProfileDataByTmdbId(tmdbId).toPromise() :
       this.ipcService.getMovieUserData(tmdbId)
     // const myFunction = environment.runConfig.firebaseMode ?
     //   this.firebaseService.getMovieUserData(tmdbId) :
@@ -113,7 +112,7 @@ export class UserDataService {
     // const myFunction = environment.runConfig.firebaseMode ?
     //   this.firebaseService.getUserDataMultiple(idList) :
     const myFunction = environment.runConfig.springMode ?
-      this.mdbApiService.getUserDataByTmdbIdList(idList).toPromise() :
+      this.mdbApiService.getProfileDataByTmdbIdList(idList).toPromise() :
       this.ipcService.getMovieUserDataInList(idList)
 
       return myFunction

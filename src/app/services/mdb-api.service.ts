@@ -7,7 +7,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { IpcService } from '../services/ipc.service';
 import { STRING_REGEX_IMDB_ID, MDB_API_URL } from '../shared/constants';
-import { IUserData } from '../models/user-data.model';
+import { IProfileData } from '../models/profile-data.model';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
 
@@ -21,60 +21,75 @@ export class MdbApiService {
   httpParam = new HttpParams()
 
   saveBookmark(bookmarkBody: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}\\userData\\bookmark`, bookmarkBody).pipe(tap(_ => this.log('')),
+    return this.http.post<any>(`${MDB_API_URL}\\profileData\\bookmark`, bookmarkBody).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('saveFavorite')))
   }
 
   deleteBookmark(bookmarkId: any): Observable<any> {
     let httpParams = new HttpParams().set('id', bookmarkId);
-    return this.http.delete<any>(`${MDB_API_URL}\\userData\\bookmark`, { params: httpParams }).pipe(tap(_ => this.log('')),
+    return this.http.delete<any>(`${MDB_API_URL}\\profileData\\bookmark`, { params: httpParams }).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('deleteFavorite')))
   }
   saveFavorite(favBody: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}\\userData\\favorite`, favBody).pipe(tap(_ => this.log('')),
+    return this.http.post<any>(`${MDB_API_URL}\\profileData\\favorite`, favBody).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('saveFavorite')))
   }
   deleteFavorite(favId: any): Observable<any> {
     let httpParams = new HttpParams().set('id', favId);
-    return this.http.delete<any>(`${MDB_API_URL}\\userData\\favorite`, { params: httpParams }).pipe(tap(_ => this.log('')),
+    return this.http.delete<any>(`${MDB_API_URL}\\profileData\\favorite`, { params: httpParams }).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('deleteFavorite')))
   }
   saveToList(listLinkMovie: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}\\userData\\list\\add`, listLinkMovie).pipe(tap(_ => this.log('')),
+    return this.http.post<any>(`${MDB_API_URL}\\profileData\\list\\add`, listLinkMovie).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('saveFavorite')))
   }
   removeFromList(listLinkMovie: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}\\userData\\list\\remove`, listLinkMovie).pipe(tap(_ => this.log('')),
+    return this.http.post<any>(`${MDB_API_URL}\\profileData\\list\\remove`, listLinkMovie).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('saveFavorite')))
   }
   saveList(listBody: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}\\userData\\list`, listBody).pipe(tap(_ => this.log('')),
+    return this.http.post<any>(`${MDB_API_URL}\\profileData\\list`, listBody).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('saveFavorite')))
   }
   deleteList(listId: any): Observable<any> {
     let httpParams = new HttpParams().set('id', listId);
-    return this.http.delete<any>(`${MDB_API_URL}\\userData\\list`, { params: httpParams }).pipe(tap(_ => this.log('')),
+    return this.http.delete<any>(`${MDB_API_URL}\\profileData\\list`, { params: httpParams }).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('deleteFavorite')))
   }
   saveWatched(watchedBody: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}\\userData\\watched`, watchedBody).pipe(tap(_ => this.log('')),
+    return this.http.post<any>(`${MDB_API_URL}\\profileData\\watched`, watchedBody).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('saveFavorite')))
   }
   deleteWatched(watchedBody: any): Observable<any> {
-    return this.http.delete<any>(`${MDB_API_URL}\\userData\\watched`, watchedBody).pipe(tap(_ => this.log('')),
+    return this.http.delete<any>(`${MDB_API_URL}\\profileData\\watched`, watchedBody).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('deleteFavorite')))
   }
 
-  getUserDataByTmdbId(tmdbId: number): Observable<IUserData> {
+  getProfileDataByTmdbId(tmdbId: number): Observable<IProfileData> {
 
-    return this.http.get<any>(`${MDB_API_URL}\\userData\\media\\${tmdbId}`).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getUserDataByTmdbId')))
+    return this.http.get<any>(`${MDB_API_URL}\\profileData\\media\\${tmdbId}`).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getProfileDataByTmdbId')))
   }
 
-  getUserDataByTmdbIdList(tmdbIdList: number[]): Observable<IUserData[]> {
+  getProfileDataByTmdbIdList(tmdbIdList: number[]): Observable<IProfileData[]> {
 
-    return this.http.get<any>(`${MDB_API_URL}\\userData\\media\\list\\${tmdbIdList}`).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getUserDataByTmdbIdList')))
+    return this.http.get<any>(`${MDB_API_URL}\\profileData\\media\\list\\${tmdbIdList}`).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getProfileDataByTmdbIdList')))
+  }
+
+  registerUser(payload: RegisterUser) {
+    return this.http.post<any>(`mdb/user/register`, payload).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('registerUser')))
+  }
+
+  logout() {
+    return this.http.post<any>(`mdb/user/logout`, {}).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('logout')))
+  }
+
+  login(payload: LoginUser) {
+    return this.http.post<any>(`mdb/user/login`, payload).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('logout')))
   }
 
   /**
@@ -94,4 +109,20 @@ export class MdbApiService {
   private log(message: string) {
     console.log(`MovieService: ${message} `);
   }
+}
+
+export interface LoginUser {
+  userName: string;
+  password: string;
+  type?: string;
+  token?: string;
+}
+export interface RegisterUser {
+  password: string;
+  userName: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  contactNumber?: string;
 }

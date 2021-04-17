@@ -21,7 +21,7 @@ import { takeUntil } from 'rxjs/operators'
 import { Subject } from 'rxjs';
 import { basename } from 'path'
 import { FavoriteService } from '@services/favorite.service';
-import { IUserData } from '@models/user-data.model';
+import { IProfileData } from '@models/profile-data.model';
 import { MdbApiService } from '@services/mdb-api.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util'
@@ -67,7 +67,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   playLinks = []
   bestPlayLink: PlayLink;
   certification: 'PG'
-  userData: IUserData = new IUserData()
+  userData: IProfileData = new IProfileData()
   MDBMovie = new MDBMovie()
   private ngUnsubscribe = new Subject();
 
@@ -165,7 +165,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getUserMovieData() {
     this.procVideo, this.procBookmark, this.procWatched = true
 
-    this.mdbApiService.getUserDataByTmdbId(this.movieDetails.tmdbId).subscribe(userMovieData => {
+    this.mdbApiService.getProfileDataByTmdbId(this.movieDetails.tmdbId).subscribe(userMovieData => {
       console.log('usermoviedata', userMovieData)
       if (userMovieData.bookmark) {
         this.userData.bookmark = userMovieData.bookmark

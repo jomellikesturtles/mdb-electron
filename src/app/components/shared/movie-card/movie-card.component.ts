@@ -10,7 +10,7 @@ import { TorrentService } from '@services/torrent.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MDBMovie } from '@models/mdb-movie.model';
-import { IUserData } from '@models/user-data.model';
+import { IProfileData } from '@models/profile-data.model';
 import ObjectUtil from '@utils/object.utils';
 import GeneralUtil from '@utils/general.util';
 
@@ -63,9 +63,9 @@ export class MovieCardComponent implements OnInit {
     return this._library;
   }
 
-  _userData: IUserData
+  _userData: IProfileData
   @Input()
-  set userData(inputData: IUserData) {
+  set userData(inputData: IProfileData) {
     console.log("USERDATA", inputData)
     this._userData = inputData
     if (!ObjectUtil.isEmpty(inputData)) {
@@ -74,7 +74,7 @@ export class MovieCardComponent implements OnInit {
       }
     }
   }
-  get userData(): IUserData {
+  get userData(): IProfileData {
     return this._userData;
   }
 

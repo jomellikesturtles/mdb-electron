@@ -35,7 +35,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { AdvancedFindComponent, RangePipe } from '@components/advanced-find/advanced-find.component';
+import { AdvancedFindComponent } from '@components/advanced-find/advanced-find.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
@@ -54,7 +54,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     CommaSpacePipe,
     PreviewComponent,
     FloatingPlayerComponent,
-    GenrePipe, RangePipe,
+    GenrePipe,
     AdvancedFindComponent
     // ReleaseYearPipe/
     // UsernameExistValidatorDirective

@@ -3,7 +3,10 @@
 * {
   font-size: 1.3rem;
 }
-
+.credit-label {
+  overflow: hidden;
+  white-space: nowrap;
+}
 .credit-list-wrap {
 
   display: inline-block;
@@ -86,7 +89,7 @@ only screen and (max-width: 349px) {
   padding-top: .5em;
   padding-bottom: .5em;
   margin-left: 20px;
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
 
@@ -94,11 +97,11 @@ only screen and (max-width: 349px) {
   padding: 2em;
   padding-top: .5em;
   padding-bottom: .5em;
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
 
 .play-btn-dropdown-toggle {
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
 }

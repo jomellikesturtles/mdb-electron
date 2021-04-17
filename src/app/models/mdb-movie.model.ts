@@ -1,6 +1,6 @@
 import { Department, IRating } from "../interfaces"
 import { TMDB_External_Id } from "./tmdb-external-id.model"
-import { IUserData } from "./user-data.model"
+import { IProfileData } from "./profile-data.model"
 
 export class MDBMovie {
   mdbId: string
@@ -12,7 +12,7 @@ export class MDBMovie {
   overview: string
   popularity: number
   posterPath: string
-  userData: IUserData
+  userData: IProfileData
   backropPath: string
   credits: ICredits
   rating: IRating

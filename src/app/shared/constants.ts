@@ -94,7 +94,7 @@ export const STRING_REGEX_YEAR_ONLY = `^([0-9]{4})$`
 
 export const OMDB_URL = 'http://www.omdbapi.com'
 export const TMDB_URL = 'https://api.themoviedb.org/3'
-export const MDB_API_URL = 'http://localhost:8080'
+export const MDB_API_URL = 'mdb'
 export const FANART_TV_URL = 'http://webservice.fanart.tv/v3/movies'
 export const YTS_URL = 'https://yts.am/api/v2/list_movies.json'
 export const MY_API_FILMS_URL = 'http://www.myapifilms.com/imdb/'
