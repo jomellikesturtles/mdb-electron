@@ -253,6 +253,31 @@ export class MovieService {
     return this.http.get<any>(filePath, { responseType: 'text' as 'json' })
   }
 
+  proxyTest() {
+
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      // params: myHttpParam
+
+    };
+    // return this.http.get<any>("/mdb/media/1234", tmdbHttpOptions).pipe(tap(_ => this.log('')),
+    //   catchError(this.handleError<any>('proxyTest')))
+
+
+    // "userName   ": "myusername2",
+    // "password": "Password!123",
+    // "email": "asdasd@gmail.com",
+    // "firstName": "abraham",
+    // "lastName": "lincoln"
+  // saveBookmark(bookmarkBody: any): Observable<any> {
+    return this.http.post<any>(`mdb\\profileData\\bookmark`, {
+      "tmdbId   ": 123,
+      "imdbId": "Password!123",
+  }).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('saveFavorite')))
+  // }
+  }
+
   private externalId(tmdbId: number): Observable<TMDB_External_Id> {
     const url = `${TMDB_URL}/movie/${tmdbId}/external_ids?api_key=${TMDB_API_KEY}`
     return this.http.get<TMDB_External_Id>(url).pipe(tap(_ => this.log('')),

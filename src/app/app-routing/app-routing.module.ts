@@ -6,6 +6,7 @@ import { PersonDetailsComponent } from '../components/person-details/person-deta
 import { PreviewComponent } from '../components/preview/preview.component';
 import { MdbGuardGuard } from '../mdb-guard.guard';
 import { VideoPlayerComponent } from '../components/video-player/video-player/video-player.component';
+import { AdvancedFindComponent } from '@components/advanced-find/advanced-find.component';
 
 const routes: Routes = [
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // homepage
@@ -30,11 +31,12 @@ const routes: Routes = [
   { path: 'results', loadChildren: () => import('../components/results/results.module').then(m => m.ResultsModule) },
   { path: 'details/:id', loadChildren: () => import('../components/details/details.module').then(m => m.DetailsModule) },
   { path: 'user', loadChildren: () => import('../components/user/user.module').then(m => m.UserModule) },
+  { path: 'advanced-find', component: AdvancedFindComponent },
   { path: '**', redirectTo: '/dashboard', pathMatch: 'full' }, // not found
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes,{enableTracing:true})],
+  imports: [RouterModule.forRoot(routes, { enableTracing: true })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

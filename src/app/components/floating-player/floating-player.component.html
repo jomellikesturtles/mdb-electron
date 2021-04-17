@@ -97,38 +97,46 @@ background-attachment: fixed;'
             Play Trailer
           </button>
 
-
           <div *ngIf="movieDetailsDirectors" class='credit-overview-container row'>
-            <span class='col-2 color-secondary font-emphasize'>Directed by </span>
-            <span class='credit-list-wrap col-10'>
+            <span class='col-2 color-secondary font-emphasize credit-label'>Directed by </span>
+            <span class='credit-list-wrap col-8'>
               <span *ngFor="let director of movieDetailsDirectors; let isLast=last">
                 <span class='text-hyperlink' (click)='goToDiscover("person",director.id,director.name)'>
                   {{director.name}}{{isLast ? '' : ', '}}
                 </span>
               </span>
             </span>
+            <span class='col-4'>
+              <p>show more</p>
+            </span>
           </div>
           <div *ngIf="movieDetailsWriters" class='credit-overview-container'>
             <!-- </div> -->
             <span class='row'>
-              <span class='col-2 color-secondary font-emphasize'>Written by </span>
-              <span class='credit-list-wrap col-10'>
+              <span class='col-2 color-secondary font-emphasize credit-label'>Written by </span>
+              <span class='credit-list-wrap col-8'>
                 <span *ngFor="let writer of movieDetailsWriters; let isLast=last">
                   <span class='text-hyperlink' (click)='goToDiscover(writer.id)'>
                     {{writer.name}}{{isLast ? '' : ', '}}
                   </span>
                 </span>
               </span>
+              <span class='col-4'>
+                <p>show more</p>
+              </span>
             </span>
           </div>
           <div *ngIf="movieDetailsProducers" class='credit-overview-container'>
             <span class='row'>
-              <span class='col-2 color-secondary font-emphasize'>Produced by</span>
-              <span class='credit-list-wrap col-10'>
+              <span class='col-2 color-secondary font-emphasize credit-label'>Produced by</span>
+              <span class='credit-list-wrap col-'>
                 <span *ngFor="let producer of movieDetailsProducers; let isLast=last">
                   <span class='text-hyperlink' (click)='goToDiscover(producer.id)'>{{producer.name}}{{isLast ? ''
                     :', '}}</span>
                 </span>
+              </span>
+              <span class='col-4'>
+                <p>show more</p>
               </span>
             </span>
           </div>
@@ -137,7 +145,7 @@ background-attachment: fixed;'
               <span class='col-2 color-secondary font-emphasize'>Cast</span>
               <span class='col-10'>
                 <div class='row'>
-                  <span class='credit-list-wrap  col-8'>
+                  <span class='credit-list-wrap col-8'>
                     <span *ngFor="let cast of movieDetailsCast; let isLast=last">
                       <span class='text-hyperlink' (click)='goToDiscover(cast.id)'>
                         {{cast.name}}{{isLast ? '' : ', '}}
@@ -150,12 +158,9 @@ background-attachment: fixed;'
                 </div>
               </span>
             </span>
-
-            <!-- <span>See more</span> -->
           </div>
         </div>
       </div>
-
 
     </div>
   </div>

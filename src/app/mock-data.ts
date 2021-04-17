@@ -5,7 +5,7 @@
 import { ITmdbResultObject, ILibraryMovie, IPreferences, IGenre, MDBTorrent, IOmdbMovieDetail } from './interfaces'
 import { Injectable } from '@angular/core'
 import { IYTSSingleQuery } from './models/yts-torrent.model'
-import { IUserData } from './models/user-data.model'
+import { IProfileData } from './models/profile-data.model'
 
 export const TEST_LIBRARY_MOVIES: ILibraryMovie[] = [
   {
@@ -906,7 +906,7 @@ export const YTS_TORRENT_SINGLE_RESULT: IYTSSingleQuery = {
   }
 }
 
-export const MOCK_USER_DATA_LIST: IUserData[] = [
+export const MOCK_USER_DATA_LIST: IProfileData[] = [
   {
     tmdbId: 597, //titanic
     isFavorite: true,

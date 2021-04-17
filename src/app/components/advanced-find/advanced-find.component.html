@@ -1,91 +1,90 @@
 <!-- advanced find -->
-<!-- <div style='margin-top: 30px;display:none'> -->
+
+<!-- TODO: region, language -->
 <div style='margin-top: 30px;z-index: 55;'>
+  <div id='closeIcon' (click)="closeAdvancedSearch()" data-toggle='tooltip' title='Close Advanced Search'></div>
   <div style='margin-left: auto;margin-right: auto; width: 75%;'>
-    <!-- <h4>Region</h4>
-    <button class='btn'></button> -->
     <form [formGroup]="searchForm" #formDir='ngForm'>
 
       <h4>Query</h4>
       <mat-form-field class="example-form-field">
-        <!-- <mat-label>Query</mat-label> -->
-        <input matInput type="text" formControlName='query' />
+        <input matInput type="text" formControlName='query' style='color:white' />
         <button mat-button *ngIf="searchForm.controls.query.value" matSuffix mat-icon-button aria-label="Clear"
-          (click)="searchForm.controls.query.value=''">
+          (click)="value=''">
           <mat-icon>close</mat-icon>
         </button>
       </mat-form-field>
 
       <h4>Genre</h4>
 
+      <mat-checkbox class="example-margin" (change)="changeGenreAndOr($event.checked)">AND
+      </mat-checkbox>
       <div>
-        <section class="example-section" *ngFor="let genre of genresList">
-          <mat-checkbox class="example-margin" (change)="onCheckboxChange(genre.id, $event.checked)">{{genre.name}}
-          </mat-checkbox>
-        </section>
+        <div style='width: 100%; display: flex; flex-wrap: wrap;'>
+          <section class="genre-selection" *ngFor="let genre of genresList">
+            <mat-checkbox class="genre-selection" [(ngModel)]="genreListVal[genre.name]"
+              [ngModelOptions]="{standalone: true}" (change)="onCheckboxChange(genre.id, $event.checked)">
+              {{genre.name}}
+            </mat-checkbox>
+          </section>
+        </div>
       </div>
 
       <h4>Release Year</h4>
-      <h1 #testClass id='test-class'>From</h1>
-      <div class="form-check form-check-inline list-criteria-container">
 
-        <mat-form-field appearance="fill">
-          <mat-label></mat-label>
-          <mat-select #releaseYearStart formControlName='fromYear'>
-            <mat-option *ngFor="let i of releaseYearsFromList" (onSelectionChange)="onYearChange('from', $event)"
-              [value]="i">
-              {{i}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>From</mat-label>
+        <mat-select #releaseYearStartSelect formControlName='yearFrom'>
+          <mat-option *ngFor="let year of releaseYearsFromList" (onSelectionChange)="onYearChange('from', $event)"
+            [value]="year">
+            {{year}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-        <mat-form-field appearance="fill">
-          <mat-label></mat-label>
-          <mat-select #releaseYearEnd formControlName='toYear'>
-            <mat-option *ngFor="let i of releaseYearsToList" [value]="i"
-              (onSelectionChange)="onYearChange('to', $event)">
-              {{i}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>To</mat-label>
+        <mat-select #releaseYearEndSelect formControlName='yearTo'>
+          <mat-option *ngFor="let year of releaseYearsToList" [value]="year"
+            (onSelectionChange)="onYearChange('to', $event)">
+            {{year}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-        <mat-form-field appearance="fill">
-          <mat-label></mat-label>
-          <mat-select #releaseYearEnd formControlName='sortBy'>
-            <mat-option *ngFor="let i of sortByList" [value]="i.value"
-              (onSelectionChange)='myEvent("onSelectionChange")' (dirChange)='myEvent("dirChange")'
-              (ngModelChange)='myEvent("ngModelChange")'>
-              {{i.label}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+      <h4>Rating Average</h4>
+      <mat-form-field appearance="fill">
+        <mat-label>Rating From</mat-label>
+        <mat-select #ratingsFromSelect formControlName='averageRatingFrom'>
+          <mat-option *ngFor="let rating of averageRatingsFromList" [value]="rating.value"
+            (onSelectionChange)='onAverageRatingChange("from", $event)'>
+            {{rating.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Rating To</mat-label>
+        <mat-select #ratingsToSelect formControlName='averageRatingTo'>
+          <mat-option *ngFor="let rating of averageRatingsToList" [value]="rating.value"
+            (onSelectionChange)='onAverageRatingChange("to", $event)'>
+            {{rating.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-      </div>
+      <h4>Sort By</h4>
+      <mat-form-field appearance="fill">
+        <mat-label></mat-label>
+        <mat-select #sortBySelect formControlName='sortBy'>
+          <mat-option *ngFor="let i of sortByList" [value]="i.value">
+            {{i.label}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
     </form>
-    <!-- <input class="form-check-input" type="radio" id="{{decade.value}}" name="inlineRadioOptions"
-      value="{{decade.value}}">
-    <label class="form-check-label" for="{{decade.value}}">{{decade.display}}</label> -->
-    <!-- <h4>Vote average</h4>
-    <div class="form-check form-check-inline list-criteria-container" *ngFor="let decade of decadesList">
-      <input class="form-check-input" type="radio" id="{{decade.value}}" name="inlineRadioOptions"
-        value="{{decade.value}}">
-      <label class="form-check-label" for="{{decade.value}}">{{decade.display}}</label>
-    </div>
-    <h4>Vote count</h4>
-    <div class="form-check form-check-inline list-criteria-container" *ngFor="let vote of voteCountList">
-      <input class="form-check-input" type="radio" id="{{vote.value}}" name="inlineRadioOptions" value="{{vote.value}}">
-      <label class="form-check-label" for="{{vote.value}}">{{vote.label}}</label>
-    </div>
-    <h4>Language</h4>
-    <div class="form-check form-check-inline list-criteria-container" *ngFor="let decade of decadesList">
-      <input class="form-check-input" type="radio" id="{{decade.value}}" name="inlineRadioOptions"
-        value="{{decade.value}}">
-      <label class="form-check-label" for="{{decade.value}}">{{decade.display}}</label>
-    </div> -->
-    <h4>Sort by</h4>
 
-    <button (click)='clearAdvancedSearch()'>Clear</button>
-    <button (click)='goAdvancedSearch()'>Search</button>
+    <button class="accent-color" mat-flat-button color="mdb-primary" (click)='clearAdvancedSearch()'>Clear</button>
+    <button mat-flat-button color="warn" (click)='goAdvancedSearch()'>Search</button>
   </div>
 </div>

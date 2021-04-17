@@ -1,6 +1,6 @@
 import { Review } from "./review.model";
 
-export class IUserData {
+export class IProfileData {
 
   tmdbId?: number;
   bookmark?: Bookmark;

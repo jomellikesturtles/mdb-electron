@@ -5,7 +5,7 @@ import { WatchedService, IWatched } from '../../../services/watched.service';
 import { LibraryService } from '../../../services/library.service';
 import { environment } from '../../../../environments/environment';
 import { UserDataService } from '@services/user-data.service';
-import { IUserData } from '@models/user-data.model';
+import { IProfileData } from '@models/profile-data.model';
 import { MDBMovie } from '@models/mdb-movie.model';
 import ObjectUtil from '@utils/object.utils';
 
@@ -61,7 +61,7 @@ export class CardListComponent implements OnInit {
       const queryList = arr2[index];
 
       if (this.listType === 'none') { // all types of user data.
-        this.userDataService.getMovieUserDataInList(queryList).then((docsList: IUserData[]) => {
+        this.userDataService.getMovieUserDataInList(queryList).then((docsList: IProfileData[]) => {
           // if (docs.isFirebaseData && docs.isFirebaseData === true) {
           //   const localDocs: Array<QueryDocumentSnapshot<any>>[] = docs.data
           //   if (localDocs[0].length > 0) {
@@ -83,7 +83,7 @@ export class CardListComponent implements OnInit {
           if (!ObjectUtil.isEmpty(docsList)) {
             if (environment.runConfig.springMode) {
               this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
-                const doc = docsList.find((doc: IUserData) => movieAndUserData.movie.tmdbId === doc.tmdbId)
+                const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId)
                 movieAndUserData.userData = doc
               })
             } else {
@@ -91,7 +91,7 @@ export class CardListComponent implements OnInit {
 
                 // validate if works with IPC
                 this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
-                  const doc = docsList.find((doc: IUserData) => movieAndUserData.movie.tmdbId === doc.tmdbId)
+                  const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId)
                   movieAndUserData.userData = doc
                 })
               });
@@ -124,7 +124,7 @@ export class CardListComponent implements OnInit {
   /**
    * Organizes user data and binds them into movie cards.
    */
-  curateUserData(dataType: string, docs: firebase.firestore.QuerySnapshot | IUserData[]): void {
+  curateUserData(dataType: string, docs: firebase.firestore.QuerySnapshot | IProfileData[]): void {
     const dataList = []
 
     docs.forEach(doc => {
@@ -250,5 +250,5 @@ export class CardListComponent implements OnInit {
 
 interface IMovieAndUserData {
   movie: MDBMovie;
-  userData?: IUserData
+  userData?: IProfileData
 }

@@ -48,8 +48,8 @@ export class TopNavigationComponent implements OnInit {
   types = ['TV Series', 'Movie', 'Short'];
   searchQuery: ISearchQuery = {
     query: '',
-    fromYear: 1969,
-    toYear: 2018,
+    yearFrom: 1969,
+    yearTo: 2018,
     genres: this.movieGenres,
     type: 'TV Series',
     isAvailable: 'true',
@@ -68,7 +68,6 @@ export class TopNavigationComponent implements OnInit {
   searchHistoryList = ['titanic', 'asdlkajsd', 'terminator']
   searchHistoryMaxLength = 8
   decadesList = []
-  voteCountList = VOTE_COUNT
   voteAverageList = []
   isSignedIn = false
   lastQuery = ''
@@ -102,8 +101,9 @@ export class TopNavigationComponent implements OnInit {
    * Opens advanced search options.
    */
   onAdvancedSearch() {
-
+    this.router.navigate([`/advanced-find`], { relativeTo: this.activatedRoute });
   }
+
   /**
    * Initialize search
    */
@@ -194,47 +194,22 @@ export class TopNavigationComponent implements OnInit {
 
 export interface ISearchQuery {
   query: string,
-  fromYear: number,
-  toYear: number,
+  yearFrom: number,
+  yearTo: number,
   genres: MovieGenre[],
   type: string,
   isAvailable: string,
   availability: string, // all, offline, netflix
   ratingCount?: number,
   ratingAverage?: number,
+  ratingAverageFrom?: number,
+  ratingAverageTo?: number,
   sortBy: string,
 }
 
 export interface ITmdbSearchQuery {
   keywords: string,
   decade: number
-  toYear: number,
+  yearTo: number,
   genres: IGenre[],
 }
-
-const VOTE_COUNT = [
-  {
-    label: '100',
-    value: 100
-  },
-  {
-    label: '+1,000',
-    value: 1000
-  },
-  {
-    label: '+10,000',
-    value: 10000
-  },
-  {
-    label: '+100,000',
-    value: 100000
-  },
-  {
-    label: '+1,000,000',
-    value: 1000000
-  },
-  {
-    label: '+10,000,000',
-    value: 10000000
-  },
-]
