@@ -5,7 +5,6 @@ import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
 import { STRING_REGEX_PREFIX } from '@shared/constants';
 import { takeUntil } from 'rxjs/operators';
-import { MovieService } from '@services/movie.service';
 
 @Component({
   selector: 'app-preferences',
@@ -28,11 +27,14 @@ export class PreferencesComponent implements OnInit, OnDestroy {
   isDirty
   preferencesObject: IPreferences = DEFAULT_PREFERENCES
   language = 'en'
-  HOTKEYS = HOTKEYS
+  languagesOptions = [
+    { value: 'en', label: 'English' },
+    { value: 'en', label: 'Deutsch' },
+    { value: 'es', label: 'Spanish' },
+  ]
   private ngUnsubscribe = new Subject();
   constructor(
     private ipcService: IpcService,
-    private movieService: MovieService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -205,9 +207,6 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     this.ipcService.openFolder(folder)
   }
 
-  resetHotkeys() { }
-  saveHotkeys() { }
-
 }
 
 // @Pipe({ name: 'dataDisplay' })
@@ -217,9 +216,3 @@ export class PreferencesComponent implements OnInit, OnDestroy {
 //       return 'noData'
 //   }
 // }
-
-const HOTKEYS = {
-  // ToggleFULL
-  mute: 'm',
-  fullscreen: 'f'
-}

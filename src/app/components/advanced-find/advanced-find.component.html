@@ -19,7 +19,7 @@
 
       <mat-checkbox class="example-margin" (change)="changeGenreAndOr($event.checked)">AND
       </mat-checkbox>
-      <div>
+      <div style='padding:1.3em'>
         <div style='width: 100%; display: flex; flex-wrap: wrap;'>
           <section class="genre-selection" *ngFor="let genre of genresList">
             <mat-checkbox class="genre-selection" [(ngModel)]="genreListVal[genre.name]"
@@ -73,7 +73,7 @@
       </mat-form-field>
 
       <h4>Sort By</h4>
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="fill" style='width:30ch'>
         <mat-label></mat-label>
         <mat-select #sortBySelect formControlName='sortBy'>
           <mat-option *ngFor="let i of sortByList" [value]="i.value">
@@ -84,7 +84,7 @@
 
     </form>
 
-    <button class="accent-color" mat-flat-button color="mdb-primary" (click)='clearAdvancedSearch()'>Clear</button>
+    <button id='clearButton' class="accent-color" mat-flat-button (click)='clearAdvancedSearch()'>Clear</button>
     <button mat-flat-button color="warn" (click)='goAdvancedSearch()'>Search</button>
   </div>
 </div>

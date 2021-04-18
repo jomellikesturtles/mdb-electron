@@ -1,16 +1,19 @@
-<div style='-webkit-user-select: none; -webkit-app-region: drag;height: 50px; background-color:black;'>
+<div style='user-select: none; -webkit-app-region: drag;height: 55px; background-color:black;
+flex-direction: row;
+flex-grow: 1;
+display: flex;
+position: relative;
+justify-content: space-between;
+align-items: center;padding-bottom: 6px;'>
   <!-- <div id='title-drag-region'
     style='z-index: -1;-webkit-app-region: drag;top: 0;left: 0;display: block;position: absolute;width: 100%;height: 100%;'>
   </div> -->
-  <div id='app-logo' routerLink='/dashboard'
-    style='position: absolute;z-index: 3000;left: 0; -webkit-app-region: no-drag;'>
+  <div id='app-logo' routerLink='/dashboard' class='nav-items-group' style='margin-left: 10px;'>
     <h1 style='cursor: pointer'>LOGO</h1>
   </div>
-  <div class='search-controls-container' style='margin-left: 260px;z-index: 3000;
-  position: absolute;
-  transform: translate(0%,12%);'>
+  <div class='search-controls-container nav-items-group'>
 
-    <div class='btn-group'>
+    <!-- <div class='btn-group'>
 
       <input data-toggle='tooltip' title='Search title or IMDb id' #searchBar name="searchBar" class="form-control"
         [(ngModel)]="searchQuery.query"
@@ -23,46 +26,73 @@
       <div id='searchClear' [style.visibility]="searchBar.value===''? 'hidden': 'visible'" (click)="searchBar.value=''"
         data-toggle='tooltip' title='Clear' style='
     background-image: url("./assets/icons/close.svg");'></div>
-    </div>
+    </div> -->
+
+    <!-- <mat-form-field class="example-full-width"> -->
+    <!-- <mat-label>Title or IMDb id</mat-label> -->
+    <!-- <input type="text" placeholder="Search title or IMDb id" aria-label="Search" matInput [matAutocomplete]="auto"
+      [formControl]="myControl"> -->
+    <form class="example-form">
+      <input data-toggle='tooltip' title='Search title or IMDb id' #searchBar name="searchBar" class="form-control"
+        [(ngModel)]="searchQuery.query"
+        style='padding-right: 2rem;width:400px;margin-right: 10px; min-width: 50px; margin-top:2px; color:black'
+        placeholder="Search" (keyup.enter)="onSearch(searchQuery.query);" list='searchHistory'
+        [matAutocomplete]="auto" />
+      <!-- <button mat-button *ngIf="searchQuery.query" matSuffix mat-icon-button aria-label="Clear"
+        (click)="searchQuery.query=''">
+        <mat-icon>close</mat-icon>
+      </button> -->
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-autocomplete>
+
+    </form>
 
     <div id='searchEnter' style='background-image: url("./assets/icons/magnifiying-glass.svg");'
       (click)="onSearch(searchQuery.query);" data-toggle='tooltip' title='Search'></div>
 
-    <button class="btn btn-outline-light input-group-btn" style='width: 300px;' id="advanced-search-button"
-      data-toggle="collapse" title='Opens advanced search' data-target="#demo" (click)='onAdvancedSearch()'>Advanced
-      Search</button>
+    <button id='advancedFindButton' class="accent-color" style='margin-left:3px; cursor: pointer;' mat-flat-button
+      color="mdb-primary" (click)='onAdvancedSearch()'>
+      Advanced Search</button>
   </div>
 
-  <!-- <img style='cursor: pointer;height:80%;width: 80%; transform: translate(13%,12%);' title='Profile options'
+  <div class='nav-items-group'>
+    <!-- <img style='cursor: pointer;height:80%;width: 80%; transform: translate(13%,12%);' title='Profile options'
     id='dropdownMenuButton' class='icon-img' data-toggle='dropdown' aria-haspopup="true" aria-expanded="false" href='#'> -->
-  <div class='image-container' style='border-radius: 50%;height:40px;width:40px; background-image: url("./assets/offline-image/clint-eastwood.jfif"); position: absolute;
-    right: 170px; cursor: pointer; z-index: 3000;
-    -webkit-app-region: no-drag;' routerLink='./user/profile' data-toggle='tooltip' title='View profile'>
+    <div class='image-container'
+      style='border-radius: 50%;height:40px;width:40px;     margin-right: 10px; background-image: url("./assets/offline-image/clint-eastwood.jfif"); cursor: pointer;'
+      routerLink='./user/profile' data-toggle='tooltip' title='View profile'>
+    </div>
   </div>
-  <div *ngIf="!isSignedIn">Sign in</div>
-  <div *ngIf="isSignedIn" class='dropdown' data-toggle='tooltip' style='z-index: 3000;
+
+  <!-- <div>
+    <div *ngIf="!isSignedIn">Sign in</div>
+    <div *ngIf="isSignedIn" class='dropdown' data-toggle='tooltip' style='z-index: 3000;
   margin-left: auto;
   position: absolute;
   right: 138px;
   height: 40px;
   width: 40px; -webkit-app-region: no-drag;'>
-    <img style='cursor: pointer;height:80%;width: 80%; transform: translate(13%,12%);' title='Profile options'
-      id='dropdownMenuButton' class='icon-img' src='..svg' data-toggle='dropdown' aria-haspopup="true"
-      aria-expanded="false" href='#'>
+      <img style='cursor: pointer;height:80%;width: 80%; transform: translate(13%,12%);' title='Profile options'
+        id='dropdownMenuButton' class='icon-img' src='..svg' data-toggle='dropdown' aria-haspopup="true"
+        aria-expanded="false" href='#'>
 
-    <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
-      <a class='dropdown-item' routerLink='./user/profile' href='#'>Profile</a>
-      <a class='dropdown-item' routerLink='./profile' href='#'>Account Settings</a>
-      <a class='dropdown-item' routerLink='./bookmarks' href='#'>Bookmarks</a>
-      <a class='dropdown-item' routerLink='./watched' href='#'>Watched</a>
-      <div class='dropdown-divider'></div>
-      <a class='dropdown-item' style='cursor: pointer;' (click)='signOut()'>Sign out</a>
-      <!-- <a *ngIf="isSignedIn" class='dropdown-item' style='cursor: pointer;' (click)='signOut()'>Sign out</a> -->
-      <a class='dropdown-item' style='cursor: pointer;' routerLink='./user' href='#'>Sign in</a>
-      <!-- <a *ngIf="!isSignedIn" class='dropdown-item' style='cursor: pointer;' routerLink='./user' href='#'>Sign in</a> -->
-    </div>
-  </div>
+      <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
+        <a class='dropdown-item' routerLink='./user/profile' href='#'>Profile</a>
+        <a class='dropdown-item' routerLink='./profile' href='#'>Account Settings</a>
+        <a class='dropdown-item' routerLink='./bookmarks' href='#'>Bookmarks</a>
+        <a class='dropdown-item' routerLink='./watched' href='#'>Watched</a>
+        <div class='dropdown-divider'></div>
+        <a class='dropdown-item' style='cursor: pointer;' (click)='signOut()'>Sign out</a>
+        <!-- <a *ngIf="isSignedIn" class='dropdown-item' style='cursor: pointer;' (click)='signOut()'>Sign out</a> -->
+  <!-- <a class='dropdown-item' style='cursor: pointer;' routerLink='./user' href='#'>Sign in</a> -->
+  <!-- <a *ngIf="!isSignedIn" class='dropdown-item' style='cursor: pointer;' routerLink='./user' href='#'>Sign in</a> -->
+  <!-- </div> -->
+  <!-- </div> -->
 
+  <!-- </div> -->
   <div *ngIf="isElectron" class='window-controls-container'>
     <div class='window-icon-bg' (click)="onMinimize()">
       <img class='icon-img' src='./assets/icons/minimize.svg'>
@@ -75,9 +105,3 @@
     </div>
   </div>
 </div>
-
-
-<!-- <div> -->
-<!-- search queries: {{searchQuery.keywords}}, {{searchQuery.fromYear}}, {{searchQuery.yearTo}},
-    {{searchQuery.genres.description}}, {{searchQuery.type}}, {{searchQuery.isAvailable}} -->
-<!-- </div> -->

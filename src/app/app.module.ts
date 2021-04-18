@@ -38,6 +38,11 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { AdvancedFindComponent } from '@components/advanced-find/advanced-find.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import {MatDialogModule} from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
+import { ImagePreviewComponent } from './components/image-preview/image-preview.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { KeyboardShortcutsComponent } from './components/keyboard-shortcuts/keyboard-shortcuts.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +60,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     PreviewComponent,
     FloatingPlayerComponent,
     GenrePipe,
-    AdvancedFindComponent
+    AdvancedFindComponent,
+    ImagePreviewComponent,
+    KeyboardShortcutsComponent
     // ReleaseYearPipe/
     // UsernameExistValidatorDirective
     // RuntimeDisplayPipe
@@ -77,9 +84,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatInputModule,
     MatSidenavModule,
     MatSelectModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatTabsModule,
+    MatDialogModule,
+    MatAutocompleteModule,
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
+  entryComponents:[ImagePreviewComponent],
   providers: [MdbGuardGuard, backendProvider],
   bootstrap: [AppComponent]
 })

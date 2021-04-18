@@ -1,12 +1,14 @@
 @import '../../variables.scss';
 
 * {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
 }
+
 .credit-label {
   overflow: hidden;
   white-space: nowrap;
 }
+
 .credit-list-wrap {
 
   display: inline-block;
@@ -83,6 +85,27 @@ only screen and (max-width: 349px) {
   cursor: pointer;
 }
 
+.mat-tab-body-content {
+  // color: black !important;
+  overflow-x: hidden !important;
+}
+
+.mat-tab-label {
+  color: white !important
+}
+
+.mat-tab-label-active {
+  opacity: 1 !important;
+}
+
+.mat-ink-bar {
+  background-color: $mdb-primary !important
+}
+
+.active-label {
+  opacity: 0;
+}
+
 .play-trailer-btn {
   padding-left: 1.5em;
   padding-right: 1.5em;
@@ -92,6 +115,9 @@ only screen and (max-width: 349px) {
   border-radius: 8px;
 }
 
+#ratingsIcon {
+  color: hsl(56, 100%, 50%)
+}
 
 .play-btn {
   padding: 2em;
@@ -104,4 +130,8 @@ only screen and (max-width: 349px) {
 .play-btn-dropdown-toggle {
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
+}
+
+.mat-divider {
+  border-top-color: rgb(202, 202, 202);
 }

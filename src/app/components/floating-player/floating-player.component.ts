@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ImagePreviewComponent } from '@components/image-preview/image-preview.component';
 import { TMDB_FULL_MOVIE_DETAILS } from 'app/mock-data-movie-details';
 import { MDBMovie } from 'app/models/mdb-movie.model';
 import GeneralUtil from '../../utils/general.util'
@@ -6,7 +8,8 @@ import GeneralUtil from '../../utils/general.util'
 @Component({
   selector: 'app-floating-player',
   templateUrl: './floating-player.component.html',
-  styleUrls: ['./floating-player.component.scss']
+  styleUrls: ['./floating-player.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class FloatingPlayerComponent implements OnInit {
 
@@ -18,8 +21,8 @@ export class FloatingPlayerComponent implements OnInit {
   movieDetailsCast
   playLinks = [{ type: '', name: '', quality: '' }]
   hasContinueWatching
-  movieTrailer=true
-  constructor() {
+  movieTrailer = true
+  constructor(public dialog: MatDialog) {
 
     this.movieDetails = new MDBMovie(TMDB_FULL_MOVIE_DETAILS)
   }
@@ -67,6 +70,11 @@ export class FloatingPlayerComponent implements OnInit {
     return toReturn
   }
 
+  previewImage() {
+    this.dialog.open(ImagePreviewComponent, { data: { imagePath: this.movieDetails.posterPath } });
+  }
+
+  isDisplayShowMore() { }
   playBestPlayLink() { }
   playMovie() { }
   continueWatching() { }
