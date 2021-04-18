@@ -4,6 +4,10 @@ import { PreferencesRoutingModule } from './preferences.routing.module';
 import { PreferencesComponent } from './preferences.component';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [PreferencesComponent],
@@ -11,7 +15,11 @@ import { SharedModule } from '../shared/shared.module';
     FormsModule,
     CommonModule,
     PreferencesRoutingModule,
-    SharedModule
+    SharedModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDialogModule,
   ],
   entryComponents: [
     PreferencesComponent,

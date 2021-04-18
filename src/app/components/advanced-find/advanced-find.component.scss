@@ -1,15 +1,15 @@
 @import '~@angular/material/theming';
 @import '../../variables.scss';
+@import '../../../custom-mat-styles.scss';
 
 .genre-selection {
   width: 150px
 }
 
-::ng-deep .mat-option-text {
-  color: black !important;
-}
-::ng-deep .mat-button-wrapper {
-  // color: black !important;
+#clearButton {
+  ::ng-deep .mat-button-wrapper {
+    color: black !important;
+  }
 }
 
 form {

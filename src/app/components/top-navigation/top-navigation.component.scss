@@ -1,6 +1,11 @@
+@import '../../../custom-mat-styles.scss';
+
+
 @font-face {
-  font-family: 'Akira'; /*a name to be used later*/
-  src: url('../../../assets/fonts/akira_expanded/Akira\ Expanded\ Demo.otf'); /*URL to font*/
+  font-family: 'Akira';
+  /*a name to be used later*/
+  src: url('../../../assets/fonts/akira_expanded/Akira\ Expanded\ Demo.otf');
+  /*URL to font*/
 }
 
 /* The navigation bar */
@@ -133,4 +138,18 @@
   // right: 20px;
   margin: auto;
   // transform: translateY(75%);
+}
+
+.nav-items-group {
+  z-index: 3000;
+  position: relative;
+  -webkit-app-region: no-drag;
+  display: flex;
+}
+
+#advancedFindButton {
+  cursor: pointer;
+  ::ng-deep .mat-button-wrapper {
+    color: black !important;
+  }
 }

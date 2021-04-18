@@ -12,6 +12,8 @@ import { Location } from '@angular/common'
 import { Store, Select } from '@ngxs/store'
 import { Add, CountState, UserState } from '../../app.state'
 import { environment } from '../../../environments/environment';
+import { map, startWith } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 enum STATUS {
   login = 'LOGIN',
@@ -66,15 +68,17 @@ export class TopNavigationComponent implements OnInit {
   hasSearchResults = false
   isSearchDirty = false
   searchHistoryList = ['titanic', 'asdlkajsd', 'terminator']
+  filteredOptions: Observable<string[]>;
   searchHistoryMaxLength = 8
   decadesList = []
   voteAverageList = []
   isSignedIn = false
   lastQuery = ''
 
+  myControl = new FormControl();
   ngOnInit() {
     const e = localStorage.getItem('user')
-    // this.user$.pipe(delay(1000)).subscribe(e => {
+    // this.getSearchHistoryList()
     if (e === null) {
       this.status = 'LOGIN'
       this.isSignedIn = false
@@ -82,12 +86,24 @@ export class TopNavigationComponent implements OnInit {
       this.isSignedIn = true
       this.status = ''
     }
+    this.filteredOptions = this.myControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value))
+    );
+  }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.searchHistoryList.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  getSearchHistoryList() {
     // })
     // this.ipcService.call(this.ipcService.IPCCommand.GetSearchList)
-    this.ipcService.searchList.subscribe(data => {
-      this.searchHistoryList = data
-      console.log('DATA:', data)
-    })
+    // this.ipcService.searchList.subscribe(data => {
+    //   this.searchHistoryList = data
+    //   console.log('DATA:', data)
+    // })
   }
 
   /**

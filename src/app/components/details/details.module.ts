@@ -4,7 +4,6 @@ import { DetailsRoutingModule } from './details.routing.module';
 import { CreditsComponent } from './credits/credits.component';
 import { DetailsComponent } from './view/details.component';
 import { SharedModule } from '../shared/shared.module';
-import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -13,7 +12,6 @@ import { MatTabsModule } from '@angular/material/tabs';
   ],
   imports: [
     CommonModule,
-    MatTabsModule,
     DetailsRoutingModule,
     SharedModule,
   ],
