@@ -5,6 +5,7 @@ import { DEFAULT_PREFERENCES } from '../../mock-data'
 import { IPreferences } from '../../interfaces'
 import { STRING_REGEX_PREFIX } from '@shared/constants';
 import { takeUntil } from 'rxjs/operators';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-preferences',
@@ -26,20 +27,33 @@ export class PreferencesComponent implements OnInit, OnDestroy {
   previousFolder = ''
   isDirty
   preferencesObject: IPreferences = DEFAULT_PREFERENCES
-  language = 'en'
+  DEFAULT_LANGUAGE = 'en'
   languagesOptions = [
     { value: 'en', label: 'English' },
-    { value: 'en', label: 'Deutsch' },
+    { value: 'de', label: 'Deutsch' },
     { value: 'es', label: 'Spanish' },
   ]
   private ngUnsubscribe = new Subject();
   constructor(
+    private formBuilder: FormBuilder,
     private ipcService: IpcService,
     private cdr: ChangeDetectorRef
   ) { }
 
+  preferencesForm: FormGroup
   ngOnInit() {
 
+
+    this.preferencesForm = this.formBuilder.group({
+      language: ['en', []],
+      autoScan: [true, []],
+      username: [true, []],
+    }, {})
+
+    this.preferencesForm.valueChanges.subscribe(e=>{
+      console.log(e);
+    })
+    // this.preferencesForm.controls[''].
     // this.onGetLibraryFolders()
     // this.onGetLibraryMovies()
 
@@ -64,6 +78,13 @@ export class PreferencesComponent implements OnInit, OnDestroy {
       this.preferencesObject = e
     })
 
+  }
+
+  getValue() {
+    const language = this.preferencesForm.get('language').value
+    const autoScan = this.preferencesForm.get('autoScan').value
+    console.log('language: ', language)
+    console.log('autoScan: ', autoScan)
   }
 
   ngOnDestroy(): void {
@@ -207,12 +228,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     this.ipcService.openFolder(folder)
   }
 
+  onValChange(e) {
+    console.log('pref e ', e)
+  }
 }
-
-// @Pipe({ name: 'dataDisplay' })
-// export class DataDisplayPipe implements PipeTransform {
-//   transform(value: any): string {
-//     if (value === null || value === undefined || value === '')
-//       return 'noData'
-//   }
-// }

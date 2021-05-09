@@ -62,7 +62,7 @@ import { KeyboardShortcutsComponent } from './components/keyboard-shortcuts/keyb
     GenrePipe,
     AdvancedFindComponent,
     ImagePreviewComponent,
-    KeyboardShortcutsComponent
+    KeyboardShortcutsComponent,
     // ReleaseYearPipe/
     // UsernameExistValidatorDirective
     // RuntimeDisplayPipe
