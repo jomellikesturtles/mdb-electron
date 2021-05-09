@@ -9,18 +9,24 @@
     <h2>General Settings </h2>
     <mat-divider></mat-divider>
     <i class='icon-question-mark' data-toggle="tooltip" title="Enter the folders where your movie files are"></i>
+    <form [formGroup]="preferencesForm">
 
-    <p>Language</p>
-    <mat-form-field appearance="fill">
-      <!-- <mat-label>Favorite food</mat-label> -->
-      <mat-select>
-        <mat-option *ngFor="let lang of languagesOptions" [value]="lang.value">
-          {{lang.label}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    <p>System update</p>
-    <button>Keyboard Shortcuts</button>
+      <!-- <app-input-container #releaseYearStartSelect formControlName='language' [fieldLabel]="'Language'"
+        [inputType]="'select'" [optionSelections]='languagesOptions' [defaultVal]="'en'"
+        (onChange)='onValChange($event)'>
+      </app-input-container> -->
+
+
+
+      <app-input-container [parentForm]="preferencesForm"
+        [mdbFormControlName]='"autoScan"' [fieldLabel]="'Auto-scan'" [inputType]="'checkbox'">
+      </app-input-container>
+
+      <button (click)='getValue()'>getValue</button>
+
+      <p>System update</p>
+      <button>Keyboard Shortcuts</button>
+    </form>
   </div>
 
   <h2>Library</h2>
@@ -91,21 +97,21 @@
     </div>
     <div>
       <h4>Subtitle Appearance</h4>
-      <p>Font Family</p>
-      <mat-form-field appearance="fill">
-        <mat-label>Font</mat-label>
-        <mat-select>
-          <mat-option *ngFor="let lang of languagesOptions" [value]="lang.value">
-            {{lang.label}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
 
-
+      <!-- <app-input-container [fieldName]="'Font Family'">
+        <ng-template>
+          <mat-label>Font</mat-label>
+          <mat-select>
+            <mat-option *ngFor="let lang of languagesOptions" [value]="lang.value">
+              {{lang.label}}
+            </mat-option>
+          </mat-select>
+        </ng-template>
+      </app-input-container> -->
 
       <p>Font Size</p>
       <mat-form-field appearance="fill">
-        <mat-label>Font</mat-label>
+        <mat-label>Size</mat-label>
         <mat-select>
           <mat-option *ngFor="let lang of languagesOptions" [value]="lang.value">
             {{lang.label}}
