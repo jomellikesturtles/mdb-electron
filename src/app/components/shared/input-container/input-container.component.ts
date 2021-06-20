@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, ContentChild, ElementRef, EventEmitter, forwardRef, Inject, Input, OnDestroy, OnInit, Output, Renderer, Renderer2, TemplateRef, ViewChild } from '@angular/core';
-import { AbstractControlOptions, AsyncValidatorFn, DefaultValueAccessor, FormControl, FormGroup, NgControl, NG_VALUE_ACCESSOR, ValidatorFn } from '@angular/forms';
+import { Component, ContentChild, EventEmitter, Inject, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AbstractControlOptions, AsyncValidatorFn, FormControl, FormGroup, NgControl, ValidatorFn } from '@angular/forms';
 
 @Component({
   selector: 'app-input-container',
@@ -11,10 +11,9 @@ import { AbstractControlOptions, AsyncValidatorFn, DefaultValueAccessor, FormCon
   //   multi: true
   // }]
 })
-export class InputContainerComponent extends FormControl implements OnInit, AfterViewInit, OnDestroy {
+export class InputContainerComponent extends FormControl implements OnInit {
 
   @ContentChild(TemplateRef, {
-    // read?: any;
     static: false
   })
 
@@ -30,7 +29,6 @@ export class InputContainerComponent extends FormControl implements OnInit, Afte
   @Input() parentForm: FormGroup
   @Input() optionSelections: IOptionSelections[]
   @Input() mdbFormGroup: FormGroup
-  @ViewChild('element', { static: false }) element: ElementRef
   @Output() outputEvent = new EventEmitter<any>();
   @Output() onChange = new EventEmitter<any>();
   @Output() value = new EventEmitter<any>();
@@ -46,22 +44,20 @@ export class InputContainerComponent extends FormControl implements OnInit, Afte
   ngOnInit() {
   }
 
-  ngAfterViewInit(): void {
-    // throw new Error('Method not implemented.');
-  }
-  ngOnDestroy(): void {
-    // throw new Error('Method not implemented.');
-  }
+  onChangeFunc(value) {
 
-  onChangeFunc(event) {
-    const value = event.source.value
-    if (event.source.selected) {
+    // const value = event
+    if (value) {
       console.log(value)
       this.onChange.emit(value)
     }
+    // const value = event.source.value
+    // if (event.source.selected) {
+    //   console.log(value)
+    //   this.onChange.emit(value)
+    // }
   }
 }
-
 
 interface IOptionSelections {
   value: any,

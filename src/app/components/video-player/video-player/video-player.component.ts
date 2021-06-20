@@ -10,6 +10,10 @@ import chardet from "chardet";
 import jschardet from "jschardet";
 import { environment } from 'environments/environment';
 import { takeUntil } from 'rxjs/operators';
+import { IPlaybackPreferences, ISubtitlePreferences } from '@models/preferences.model';
+import { COLOR_LIST, FONT_SIZE_LIST } from '@shared/constants';
+import GeneralUtil from '@utils/general.util';
+import { PreferencesService } from '@services/preferences.service';
 
 @Component({
   selector: 'app-video-player',
@@ -21,9 +25,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   @Input() id: string
   @Input() tmdbId: number
   @Input() imdbId: string
-  @ViewChild('videoPlayer1', { static: false }) videoPlayer1: ElementRef
+
+  @ViewChild('videoPlayer1', { static: true }) videoPlayer1: ElementRef
   @ViewChild('progressBar', { static: false }) progressBar: ElementRef
   @ViewChild('tooltipSpan', { static: false }) tooltipSpan: ElementRef
+
   DEFAULT_VOLUME = 50
   isPlaying = false
   isMuted = false
@@ -51,36 +57,23 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     duration: 0,
     remaining: 0
   }
-  caption: {
-    language: 'EN',
-    src: 'src/assets/sample-subtitles.vtt'
-    color: 'blue'
-  }
-  className = 'cue-red'
   subtitleMap = new Map<number, Subtitle>();
 
   currentDisplay1 = 'Subtitles look like this.';
   currentDisplay2 = '';
   isUserInactive = false;
-  subtitleDisplaySettings = {
-    fontColor: 'white',
-    backgroundColor: 'black',
-    fontSize: 'black',
-    textShadow: '3px 3px 5px black'
-  }
-  fontColorsList = ['white', 'black', 'red', 'blue', 'green', 'gray']
+  subtitleDisplaySettings: ISubtitlePreferences = this.preferencesService.getPreferences().subtitle
+  playbackSettings: IPlaybackPreferences = this.preferencesService.getPreferences().playBack
+  fontColorsList = COLOR_LIST
   subtitleSpanElementsList: any;
-  fontSizeList = [
-    { value: '1em', label: 'Juts' },
-    { value: '1.5em', label: 'Medium' },
-    { value: '2em', label: 'Daks' },
-  ]
+  fontSizeList = FONT_SIZE_LIST
   player = {
     currentTime: 0
   }
   currentTime
   canPlay = false
   isMetadataLoaded = false
+  seekTooltip = ''
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -88,7 +81,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     private watchedService: WatchedService,
     private movieService: MovieService,
     private elementRef: ElementRef,
-    private userIdleService: UserIdleService
+    private userIdleService: UserIdleService,
+    private preferencesService: PreferencesService
   ) { console.log('VIDEOPLAYER CONSTRUCTOR') }
 
   onNotIdle() {
@@ -99,11 +93,13 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   ngOnInit() {
     // this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4' // 320p sample
     // this.streamLink = 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4' // 1080p sample
+    // this.streamLink = '../../../../assets/sample movie/Ratatouille (2007) [1080p]/Ratatouille.2007.1080p.BrRip.x264.YIFY.mp4'
     this.userIdleService.startWatching()
     this.userIdleService.onTimerStart().pipe(takeUntil(this.ngUnsubscribe)).subscribe((_count) => { console.log('start! ', _count) });
     this.userIdleService.onIdleStatusChanged().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
       console.log("changed!", e)
     })
+    this.isMetadataLoaded = true
     this.userIdleService.onTimeout().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
       console.log("TIMEOUT!OUT!", e)
       this.isUserInactive = true;
@@ -141,16 +137,21 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
     //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
 
-    this.videoPlayerElement = this.elementRef.nativeElement.querySelector('#videoPlayer')
+    this.videoPlayerElement = this.elementRef.nativeElement.querySelectorAll('#videoPlayer')
+    // this.videoPlayerElement = this.videoPlayer1.nativeElement as HTMLVideoElement
 
+    console.log(this.videoPlayerElement)
+    this.videoPlayerElement = this.videoPlayerElement[0]
+    // console.log(this.videoPlayer1)
     this.togglePlay();
 
-    // Mute/Unmute
-    // this.videoPlayerElement.muted = true
+    //   // Mute/Unmute
+    //   // this.videoPlayerElement.muted = true
     this.videoPlayerElement.addEventListener('canplay', (e) => {
       console.log('canplay', e)
       this.canPlay = true
       this.videoTime.duration = this.videoPlayerElement.duration
+      this.isSeeking = false
     })
     this.videoPlayerElement.addEventListener('durationchange', (e) => {
       console.log('durationchange', e)
@@ -182,20 +183,23 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       console.log('playing', e)
     })
     this.videoPlayerElement.addEventListener('progress', (e) => {
-      console.log('progress', e)
+      // console.log('progress', e)
     })
     this.videoPlayerElement.addEventListener('seeked', (e) => {
       console.log('seeked', e)
       this.updateProgressBar()
+      this.isSeeking = false
     })
     this.videoPlayerElement.addEventListener('seeking', (e) => {
       console.log('seeking', e)
+      this.isSeeking = true
     })
     this.videoPlayerElement.addEventListener('stalled', (e) => {
       console.log('stalled', e)
+      this.isSeeking = true
     })
     this.videoPlayerElement.addEventListener('suspend', (e) => {
-      console.log('onSuspend', e)
+      // console.log('onSuspend', e)
     })
     this.videoPlayerElement.addEventListener('timeupdate', (e) => {
       this.player.currentTime = this.videoPlayerElement.currentTime
@@ -216,13 +220,14 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     })
     const root = this
     setInterval((e) => {
-      root.updateProgressBar()
       if (root.isPlaying) {
+        root.updateProgressBar()
         // this.updateWatchedStatus(e)
       }
     }, 500)
   }
 
+  isSeeking = false
   onKeyPress(val: KeyboardEvent) {
     const key = val.key.toLowerCase()
     console.log(key)
@@ -320,15 +325,14 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
 
   togglePlay() {
-    const isPlaying = this.videoPlayer1.nativeElement.currentTime > 0 && !this.videoPlayer1.nativeElement.paused && !this.videoPlayer1.nativeElement.ended
-      && this.videoPlayer1.nativeElement.readyState > 2;
+    const isPlaying = this.videoPlayerElement.currentTime > 0 && !this.videoPlayerElement.paused && !this.videoPlayerElement.ended
+      && this.videoPlayerElement.readyState > 2;
     // safely autoplay
     if (!isPlaying) {
-      this.videoPlayer1.nativeElement.play();
+      this.videoPlayerElement.play();
     } else {
-      this.videoPlayer1.nativeElement.pause();
+      this.videoPlayerElement.pause();
     }
-    // this.videoPlayer1.nativeElement.paused ? this.videoPlayer1.nativeElement.play() : this.videoPlayer1.nativeElement.pause()
   }
 
   /**
@@ -338,10 +342,10 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   toggleFullScreen() {
 
     const playerOuter = this.elementRef.nativeElement.querySelector('#videoPlayerOuter')
-    if (playerOuter.fullscreenElement) {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+    // if (playerOuter.fullscreenElement) {
+    if (document['webkitIsFullScreen']) {
+      document.exitFullscreen();
+      // }
     } else {
       if (playerOuter.requestFullscreen) {
         playerOuter.requestFullscreen();
@@ -354,22 +358,24 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     }
   }
 
+  toSeek: number = 0
   /**
    * Event for video player scrubber tooltip
    */
   mouseMove(e) {
-    // console.log(e.offsetX)
-    var x = e.clientX
-    this.tooltipSpan.nativeElement.style.top = (-100) + 'px';
-    this.tooltipSpan.nativeElement.style.left = (x + 20) + 'px';
-
+    this.seekTooltip = GeneralUtil.convertToHHMMSS(this.calculateSeekSeconds(e))
   }
 
-  seek(val) {
+  seek() {
+    this.videoPlayerElement.currentTime = this.toSeek
+  }
+
+  private calculateSeekSeconds(val) {
     const totalWidth = val.currentTarget.offsetWidth
     const offsetX = val.offsetX
     const percentage = this.watchedService.getPercentage(offsetX, totalWidth)
-    this.videoPlayerElement.currentTime = parseFloat('.' + percentage) * this.videoPlayerElement.duration
+    this.toSeek = (percentage / 100) * this.videoPlayerElement.duration
+    return this.toSeek
   }
 
   /**
@@ -379,8 +385,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
     // let filePath = 'Aliens.Directors.Cut.1986.1080p.BRrip.x264.GAZ.YIFY.srt'
     let filePath = 'Cinema Paradiso-English.srt'
-    filePath = await this.ipcService.changeSubtitle()
-    filePath = 'tmp/' + filePath
+    // filePath = await this.ipcService.changeSubtitle()
+    filePath = '../../../../assets/tmp/' + filePath
+    // filePath = 'tmp/' + filePath
     console.log('filePath', filePath)
 
     const fileStr = await this.movieService.getSubtitleFileString(filePath).toPromise()
@@ -423,10 +430,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   updateProgressBar() {
     const DURATION = this.videoPlayerElement.duration
-    const PLAYER1_BUFFERED = this.videoPlayer1.nativeElement.buffered
+    const PLAYER1_BUFFERED = this.videoPlayerElement.buffered
 
     this.played = this.watchedService.getPercentage(this.videoPlayerElement.currentTime, DURATION) + '%'
-
     if (PLAYER1_BUFFERED.length > 0) {
       PLAYER1_BUFFERED
       this.buffered = this.watchedService.getPercentage(PLAYER1_BUFFERED.end(0), DURATION) + '%'
@@ -457,6 +463,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     // minutes are worth 60 seconds. Hours are worth 60 minutes.
     const seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
     return seconds
+  }
+
+  savePreferences() {
+    this.preferencesService.preferences['subtitle'] = this.subtitleDisplaySettings
+    this.preferencesService.preferences['playBack'] = this.playbackSettings
   }
 
   changeFontSize(size: string) {
@@ -501,12 +512,6 @@ interface Stats {
 export class HHMMSSPipe implements PipeTransform {
   constructor() { }
   transform(value: number): string {
-    if (!value) return '00:00'
-    const minSec = new Date(value * 1000).toISOString().substr(14, 5)
-    if (value < 3600) {
-      return minSec
-    }
-    const hour = (value / 3600)
-    return hour.toFixed(0) + ':' + minSec
+    return GeneralUtil.convertToHHMMSS(value);
   }
 }

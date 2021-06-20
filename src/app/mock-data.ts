@@ -2,7 +2,7 @@
  * Mock data and Defaults. For pre-defined lists and offline data
  */
 
-import { ITmdbResultObject, ILibraryMovie, IPreferences, IGenre, MDBTorrent, IOmdbMovieDetail } from './interfaces'
+import { ITmdbResultObject, ILibraryMovie, MDBTorrent, IOmdbMovieDetail } from './interfaces'
 import { Injectable } from '@angular/core'
 import { IYTSSingleQuery } from './models/yts-torrent.model'
 import { IProfileData } from './models/profile-data.model'
@@ -809,15 +809,6 @@ const TEST_TMDB_MOVIE_DETAIL2 = {
   vote_count: 17355
 }
 
-
-export const DEFAULT_PREFERENCES: IPreferences = {
-  frequencyUnit: 'day',
-  frequencyValue: 3,
-  isDarkMode: false,
-  isEnableCache: true,
-  libraryFolders: [],
-  torrentSeedRatio: 1
-}
 
 export const YTS_TORRENT_SINGLE_RESULT: IYTSSingleQuery = {
   "status": "ok",

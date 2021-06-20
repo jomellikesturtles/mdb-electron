@@ -9,8 +9,11 @@ export interface IPreferences {
   hotKeys: IHotkeys
   autoPlayTrailer: boolean
   playTrailerBeforeShow: boolean
-  playBack: IPlayback
-  library: ILibraryPreferences
+  playBack: IPlaybackPreferences
+  library: ILibraryPreferences,
+  isAutoScan: boolean
+  autoScanFrequencyUnit: string
+  autoScanFrequencyValue: number
 }
 
 interface ILibraryPreferences {
@@ -18,12 +21,19 @@ interface ILibraryPreferences {
   scanFrenquency: IScanFrequency
 }
 
-interface IPlayback {
-  preferredQuality: string
+export interface IPlaybackPreferences {
+  preferredQuality: Quality
   preferredMode: 'torrent' | 'offline'
   repeat: boolean
+  volume: number
 }
 
+export enum Quality {
+  SD = '4k',
+  HD = '1080p',
+  FHD = '1440p',
+  FourK = '4k'
+}
 interface IScanFrequency {
   isScanAutomatically: boolean
   frequencyUnit: string
@@ -34,9 +44,13 @@ interface IHotkeys {
 
 }
 
-interface ISubtitlePreferences {
+export interface ISubtitlePreferences {
   synchronization: number;
-  color: string;
-  backgroundColor: string;
+  fontColor: string;
   fontSize: string;
+  fontOpacity?: number;
+  textShadow: string;
+  fontFamily?: string;
+  backgroundColor: string;
+  backgroundOpacity: number
 }

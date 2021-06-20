@@ -1,17 +1,22 @@
-import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import {
+  Component, OnInit,
+  // ChangeDetectorRef,
+  // ChangeDetectionStrategy,
+  OnDestroy
+} from '@angular/core';
 import { Subject } from 'rxjs'
 import { IpcService } from '@services/ipc.service';
-import { DEFAULT_PREFERENCES } from '../../mock-data'
-import { IPreferences } from '../../interfaces'
-import { STRING_REGEX_PREFIX } from '@shared/constants';
+import { COLOR_LIST, DEFAULT_PREFERENCES, FONT_SIZE_LIST, FREQUENCY_LIST, LANGUAGE_LIST, STRING_REGEX_PREFIX } from '@shared/constants';
 import { takeUntil } from 'rxjs/operators';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { IPreferences } from '@models/preferences.model';
+import { PreferencesService } from '@services/preferences.service';
 
 @Component({
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
   styleUrls: ['./preferences.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreferencesComponent implements OnInit, OnDestroy {
 
@@ -26,41 +31,54 @@ export class PreferencesComponent implements OnInit, OnDestroy {
   currentFolder = this.initialFolder
   previousFolder = ''
   isDirty
-  preferencesObject: IPreferences = DEFAULT_PREFERENCES
+  preferencesObject: IPreferences
+
   DEFAULT_LANGUAGE = 'en'
-  languagesOptions = [
-    { value: 'en', label: 'English' },
-    { value: 'de', label: 'Deutsch' },
-    { value: 'es', label: 'Spanish' },
-  ]
+  languagesOptions = LANGUAGE_LIST
+  frequencyOptions = FREQUENCY_LIST
+  fontSizeOptions = FONT_SIZE_LIST
+  colorOptions = COLOR_LIST
+  preferencesForm: FormGroup
   private ngUnsubscribe = new Subject();
+
   constructor(
     private formBuilder: FormBuilder,
     private ipcService: IpcService,
-    private cdr: ChangeDetectorRef
+    private preferencesService: PreferencesService
+    // private cdr: ChangeDetectorRef
   ) { }
 
-  preferencesForm: FormGroup
   ngOnInit() {
 
-
     this.preferencesForm = this.formBuilder.group({
-      language: ['en', []],
       autoScan: [true, []],
+      darkMode: [true, []],
+      enableCache: [false, []],
+      language: ['en', []],
       username: [true, []],
+      scanFreqValue: [1, []],
+      scanFreqUnit: ['min', []],
+
+      fontColor: ['min', []],
+      fontSize: ['min', []],
+      fontOpacity: ['min', []],
+      fontFamily: ['min', []],
+      backgroundColor: ['min', []],
+
+
     }, {})
 
-    this.preferencesForm.valueChanges.subscribe(e=>{
+    this.preferencesForm.valueChanges.subscribe(e => {
       console.log(e);
     })
     // this.preferencesForm.controls[''].
     // this.onGetLibraryFolders()
     // this.onGetLibraryMovies()
 
-    this.ipcService.libraryMovies.subscribe((value) => {
-      this.libraryMovies = value
-      this.cdr.detectChanges()
-    })
+    // this.ipcService.libraryMovies.subscribe((value) => {
+    //   this.libraryMovies = value
+    //   this.cdr.detectChanges()
+    // })
     this.ipcService.getFiles().then(value => {
       console.log('getFiles', value);
     }).catch(e => {
@@ -72,19 +90,12 @@ export class PreferencesComponent implements OnInit, OnDestroy {
       console.log(e);
     })
 
-    this.ipcService.getPreferences()
+    this.preferencesObject = this.preferencesService.getPreferences()
     this.ipcService.preferences.pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
       console.log('this.ipcService.preferences ', e)
       this.preferencesObject = e
     })
 
-  }
-
-  getValue() {
-    const language = this.preferencesForm.get('language').value
-    const autoScan = this.preferencesForm.get('autoScan').value
-    console.log('language: ', language)
-    console.log('autoScan: ', autoScan)
   }
 
   ngOnDestroy(): void {
@@ -140,6 +151,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
    */
   onUpdateTorrentDump() {
   }
+
   /**
    * Updates imdb files
    */
@@ -154,13 +166,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
    * saves config file
    */
   onSave() {
-    this.ipcService.savePreferences(DEFAULT_PREFERENCES)
-    // this.ipcService.preferences.subscribe(e => {
-    //   console.log('this.ipcService.preferences ', e)
-    //   this.preferencesObject = e
-    // })
-    // this.preferencesObject.libraryFolders = this.libraryFolders
-    // this.ipcService.call(this.ipcService.IPCCommand.PREFERENCES_SET, this.preferencesObject)
+    this.preferencesService.savePreferences(this.preferencesObject)
     // this.preferencesObject.isDirty = false;
   }
 
@@ -186,7 +192,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
    */
   onDeleteFolder(folder) {
     this.libraryFolders = this.libraryFolders.filter(h => h !== folder)
-    this.cdr.detectChanges()
+    // this.cdr.detectChanges()
   }
 
   /**
