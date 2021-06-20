@@ -141,7 +141,7 @@
                 overflow: hidden !important;
                 text-overflow: ellipsis;
                 margin-bottom: 0px;'>
-                  <span *ngFor="let cast of movieDetailsCast; let isLast=last" style=''>
+                  <span *ngFor="let cast of movieDetailsCast; let isLast=last">
                     <span class='text-hyperlink' (click)='goToDiscover(cast.id)'>
                       {{cast.name}}{{isLast ? '' : ', '}}
                     </span>

@@ -7,9 +7,9 @@
 <ng-template #select>
   <div [formGroup]="parentForm">
     <mat-form-field appearance="fill">
-      <mat-select>
-        <mat-option [formControlName]='mdbFormControlName'  *ngFor="let option of optionSelections" [value]="option.value"
-          (onSelectionChange)='setValue($event.source.value)'>
+      <mat-select [formControlName]='mdbFormControlName'>
+        <mat-option *ngFor="let option of optionSelections" [value]="option.value"
+          (onSelectionChange)='onChangeFunc($event.source.value)'>
           {{option.label}}
         </mat-option>
       </mat-select>
@@ -18,15 +18,15 @@
 </ng-template>
 
 <ng-template #text>
-  <mat-form-field appearance="fill">
-    <input matInput formControlName='{{mdbFormControlName}}' type="text" style='color:white'
-      (change)="setValue($event.target.value)" />
-    <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
-      <mat-icon>close</mat-icon>
-    </button>
-  </mat-form-field>
+  <div [formGroup]="parentForm">
+    <mat-form-field appearance="fill">
+      <input matInput [formControlName]='mdbFormControlName' type="text" style='color:white' />
+      <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
 </ng-template>
-
 
 <ng-template #checkbox>
   <div [formGroup]="parentForm">

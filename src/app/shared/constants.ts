@@ -1,6 +1,7 @@
 /**
  * Constants
  */
+import { IPlaybackPreferences, Quality, ISubtitlePreferences, IPreferences } from '@models/preferences.model'
 import { IGenre } from '../interfaces'
 
 export const TMDB_IMAGE_BASE_URL = 'http://image.tmdb.org/t/p/'
@@ -179,4 +180,67 @@ export const SORT_BY = [
     label: 'Vote Count Descending',
     value: 'vote_count.desc'
   },
+]
+
+const PLAYBACK: IPlaybackPreferences = {
+  preferredMode: 'offline',
+  repeat: false,
+  preferredQuality: Quality.HD,
+  volume: 100
+}
+
+export const DEFAULT_SUBTITLES: ISubtitlePreferences = {
+  fontColor: 'white',
+  backgroundColor: 'black',
+  backgroundOpacity: 0,
+  fontOpacity: 1,
+  fontFamily: '',
+  fontSize: 'black',
+  synchronization: 0,
+  textShadow: '3px 3px 5px black'
+}
+
+export const DEFAULT_PREFERENCES: IPreferences = {
+  isDarkMode: true,
+  isEnableCache: false,
+  libraryFolders: [],
+  torrentSeedRatio: 0,
+  torrentRatio: 0,
+  subtitle: DEFAULT_SUBTITLES,
+  hotKeys: null,
+  autoPlayTrailer: false,
+  playTrailerBeforeShow: true,
+  playBack: PLAYBACK,
+  library: null,
+  isAutoScan: false,
+  autoScanFrequencyUnit: 'day',
+  autoScanFrequencyValue: 0,
+}
+
+export const FONT_SIZE_LIST = [
+  { value: '1em', label: 'Juts' },
+  { value: '1.5em', label: 'Medium' },
+  { value: '2em', label: 'Daks' },
+]
+
+export const COLOR_LIST =
+  [
+    { value: 'white', label: 'White' },
+    { value: 'black', label: 'Black' },
+    { value: 'red', label: 'Red' },
+    { value: 'blue', label: 'Blue' },
+    { value: 'green', label: 'Green' },
+    { value: 'gray', label: 'Gray' },
+  ]
+
+export const LANGUAGE_LIST = [
+  { value: 'en', label: 'English' },
+  { value: 'de', label: 'Deutsch' },
+  { value: 'es', label: 'Spanish' },
+]
+
+export const FREQUENCY_LIST = [
+  { value: 'min', label: 'minutes' },
+  { value: 'hr', label: 'hours' },
+  { value: 'day', label: 'days' },
 ]

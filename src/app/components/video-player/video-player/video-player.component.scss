@@ -12,6 +12,11 @@
 }
 
 #progressBarContainer {
+  width: 100%;
+  height: 5px;
+  position: relative;
+  cursor: pointer;
+  z-index: 30;
   text-decoration: none;
   position: relative;
 }
@@ -20,11 +25,32 @@
   display: none;
 }
 
-#progressBarContainer:hover #tooltipSpan {
-  display: block;
-  position: fixed;
-  overflow: hidden;
+.progress-bar-focus {
+  height: 8px
 }
+
+.buffered-bar {
+  height: 100%;
+  background-color: red;
+  z-index: 21;
+  left: 0;
+  position: absolute
+}
+
+#progressBarContainer:hover {
+  height: 8px;
+
+  #tooltipSpan {
+    display: block;
+    position: fixed;
+    overflow: hidden;
+  }
+
+  .buffered-bar {
+    background-color: hsl(19, 100%, 50%)
+  }
+}
+
 
 .subtitle-span {
   color: white;

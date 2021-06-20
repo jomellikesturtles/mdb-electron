@@ -252,16 +252,6 @@ export interface IGenre {
   name: string
 }
 
-export interface IPreferences {
-  frequencyUnit: string
-  frequencyValue: number
-  isDarkMode: boolean
-  isEnableCache: boolean
-  libraryFolders: string[]
-  torrentSeedRatio: number
-  torrentRatio?:any
-}
-
 export interface Credits {
   id: number;
   cast: CastElement[];

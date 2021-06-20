@@ -11,18 +11,24 @@
     <i class='icon-question-mark' data-toggle="tooltip" title="Enter the folders where your movie files are"></i>
     <form [formGroup]="preferencesForm">
 
-      <!-- <app-input-container #releaseYearStartSelect formControlName='language' [fieldLabel]="'Language'"
-        [inputType]="'select'" [optionSelections]='languagesOptions' [defaultVal]="'en'"
-        (onChange)='onValChange($event)'>
-      </app-input-container> -->
-
-
-
-      <app-input-container [parentForm]="preferencesForm"
-        [mdbFormControlName]='"autoScan"' [fieldLabel]="'Auto-scan'" [inputType]="'checkbox'">
+      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"darkMode"' [fieldLabel]="'Dark Mode'"
+        [inputType]="'checkbox'">
       </app-input-container>
 
-      <button (click)='getValue()'>getValue</button>
+      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Auto-scan'"
+        [inputType]="'checkbox'">
+      </app-input-container>
+
+      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"enableCache"'
+        [fieldLabel]="'Enable Cache'" [inputType]="'checkbox'" [optionSelections]='frequencyOptions'>
+      </app-input-container>
+
+      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"scanFreqUnit"'
+        [fieldLabel]="'Frequency'" [inputType]="'select'" [optionSelections]='frequencyOptions'>
+      </app-input-container>
+      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"scanFreqValue"'
+        [fieldLabel]="'Value'" [inputType]="'text'">
+      </app-input-container>
 
       <p>System update</p>
       <button>Keyboard Shortcuts</button>
@@ -37,18 +43,7 @@
   <button class="btn btn-primary" (click)="onScanLibrary()">Scan Library</button>
   <button class="btn btn-danger" (click)="onStopScanLibrary()">Stop scan
     Library</button>
-  <div class="form-group">
-    <label for="scanFrequencyText"></label>
-    <input [(ngModel)]="preferencesObject.frequencyValue" type="text" class="form-control" name=""
-      id="scanFrequencyText" aria-describedby="helpId" placeholder="">
-    <small id="helpId" class="form-text text-muted">Scan Frequency</small>
-  </div>
-  <select class="form-control" id="sel1" [(ngModel)]="preferencesObject.frequencyUnit">
-    <option value='min'>minutes</option>
-    <option value='hr'>hours</option>
-    <option value='day'>days</option>
-    <option value='nev'>never</option>
-  </select>
+
   <div class='tab container-fluid' *ngFor='let folder of preferencesObject.libraryFolders;'>
     <div class='form-inline form-group'>
       <button class="btn btn-success" (click)="onOpenFolder(folder)">Open</button>
@@ -86,8 +81,6 @@
     <h2>Playback</h2>
     <mat-divider></mat-divider>
     <!-- 3rd party quality -->
-    <!-- Subtitle Appearance -->
-
     <div>
       <p>Playback Quality</p>
     </div>
@@ -98,46 +91,23 @@
     <div>
       <h4>Subtitle Appearance</h4>
 
-      <!-- <app-input-container [fieldName]="'Font Family'">
-        <ng-template>
-          <mat-label>Font</mat-label>
-          <mat-select>
-            <mat-option *ngFor="let lang of languagesOptions" [value]="lang.value">
-              {{lang.label}}
-            </mat-option>
-          </mat-select>
-        </ng-template>
-      </app-input-container> -->
+      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontColor"' [fieldLabel]="'Color'"
+        [inputType]="'select'" [optionSelections]='colorOptions'>
+      </app-input-container>
+      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontSize"' [fieldLabel]="'Size'"
+        [inputType]="'select'" [optionSelections]='fontSizeOptions'>
+      </app-input-container>
+      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontOpacity"' [fieldLabel]="'Opacity'"
+        [inputType]="'select'" [optionSelections]='frequencyOptions'>
+      </app-input-container>
+      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontFamily"'
+        [fieldLabel]="'Font Family'" [inputType]="'select'" [optionSelections]='frequencyOptions'>
+      </app-input-container>
+      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"backgroundColor"'
+        [fieldLabel]="'Background Color'" [inputType]="'select'" [optionSelections]='colorOptions'>
+      </app-input-container>
 
-      <p>Font Size</p>
-      <mat-form-field appearance="fill">
-        <mat-label>Size</mat-label>
-        <mat-select>
-          <mat-option *ngFor="let lang of languagesOptions" [value]="lang.value">
-            {{lang.label}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
 
-      <p>Font Opacity</p>
-      <mat-form-field appearance="fill">
-        <mat-label>Font</mat-label>
-        <mat-select>
-          <mat-option *ngFor="let lang of languagesOptions" [value]="lang.value">
-            {{lang.label}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <p>Background Color Family</p>
-      <mat-form-field appearance="fill">
-        <mat-label>Font</mat-label>
-        <mat-select>
-          <mat-option *ngFor="let lang of languagesOptions" [value]="lang.value">
-            {{lang.label}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
       <!-- Font Family, -->
       <!-- Font size -->
       <!-- Font opacity -->

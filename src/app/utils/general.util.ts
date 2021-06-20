@@ -25,4 +25,17 @@ export default class GeneralUtil {
     }
     return toReturn
   }
+
+  /**
+   * Converts seconds to HH:mm:ss format.
+   */
+  static convertToHHMMSS(value): string {
+    if (!value) return '00:00'
+    const minSec = new Date(value * 1000).toISOString().substr(14, 5)
+    if (value < 3600) {
+      return minSec
+    }
+    const hour = (value / 3600)
+    return Math.floor(hour) + ':' + minSec
+  }
 }

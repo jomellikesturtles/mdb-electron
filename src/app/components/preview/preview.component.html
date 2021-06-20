@@ -8,7 +8,7 @@ z-index: 3000;
       <div *ngIf='hasInitialSelected'>
         <div *ngIf='!isYTReady' class='image-container' style='width:100%;height:100%;background-color: black; position: absolute; background-size: cover;
         background-position: center;'
-          [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/original'+previewMovie.backdrop_path+')'}">
+          [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/original'+previewMovie.backropPath+')'}">
         </div>
         <div id='previewOverlayContext' [ngClass]="{'overlayInvisible':(isYTReady&&showPreviewOverlayContext)==true}"
           style='position:absolute; height: 100%;width:66%; padding-left: 5vw;text-shadow: 3px 3px 5px #333333; padding-left: 5vw; padding-top: 10%;
@@ -36,16 +36,16 @@ z-index: 3000;
           </button>
           <p>{{ previewMovie.overview }}</p>
           <button class='btn btn-outline-info' (click)='toggleBookmark()'>
-            <span *ngIf="!(previewMovie.bookmark && previewMovie.bookmark.id)">Bookmark</span>
-            <span *ngIf="previewMovie.bookmark && previewMovie.bookmark.id">UnBookmark</span>
+            <span *ngIf="!(previewMovie.userData.bookmark && previewMovie.userData.bookmark.id)">Bookmark</span>
+            <span *ngIf="previewMovie.userData.bookmark && previewMovie.userData.bookmark.id">UnBookmark</span>
           </button>
 
           <button class='btn btn-outline-info' (click)='toggleWatched()'>
-            <span *ngIf="!(previewMovie.watched && previewMovie.watched.id)">Mark as Watched</span>
-            <span *ngIf="previewMovie.watched && previewMovie.watched.id">
+            <span *ngIf="!(previewMovie.userData.watched && previewMovie.userData.watched.id)">Mark as Watched</span>
+            <span *ngIf="previewMovie.userData.watched && previewMovie.userData.watched.id">
               Remove Watched</span>
           </button>
-          <button class='btn btn-outline-secondary' (click)="goToMovie(previewMovie.id)">More Info</button>
+          <button class='btn btn-outline-secondary' (click)="goToMovie(previewMovie.tmdbId)">More Info</button>
         </div>
       </div>
     </div>
