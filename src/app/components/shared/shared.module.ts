@@ -17,6 +17,7 @@ import { UserIdleModule } from 'angular-user-idle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MdbExperimentVideoPlayerComponent } from '@components/experiment/mdb-experiment-video-player/mdb-experiment-video-player.component';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
     CardListComponent,
     ReleaseYearPipe,
     VideoPlayerComponent,
+    MdbExperimentVideoPlayerComponent,
     HHMMSSPipe,
     HorizontalCardListComponent,
     RuntimeDisplayPipe
@@ -45,6 +47,7 @@ import { MatIconModule } from '@angular/material/icon';
     CardListComponent,
     ReleaseYearPipe,
     VideoPlayerComponent,
+    MdbExperimentVideoPlayerComponent,
     HorizontalCardListComponent,
     MatDividerModule,
     MatProgressSpinnerModule, MatButtonModule, MatIconModule,

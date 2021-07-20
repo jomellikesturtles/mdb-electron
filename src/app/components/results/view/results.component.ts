@@ -1,10 +1,10 @@
 import { environment } from './../../../../environments/environment';
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
-import { TmdbParameters, TmdbSearchMovieParameters } from '../../../interfaces'
-import { DataService } from '../../../services/data.service'
-import { MovieService } from '../../../services/movie.service'
-import { ISearchQuery } from '../../top-navigation/top-navigation.component'
+import { TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces'
+import { DataService } from '@services/data.service'
+import { MovieService } from '@services/movie.service'
+import { ISearchQuery } from '@components/top-navigation/top-navigation.component'
 import { Select, Store } from '@ngxs/store'
 
 @Component({

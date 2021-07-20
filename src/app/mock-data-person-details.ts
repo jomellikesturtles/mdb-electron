@@ -1,4 +1,4 @@
-import { IPersonDetails, IExternalids, ICredits, IPersonCastCrew, IPersonCredits, IImages } from './interfaces'
+import { IPersonDetails, IExternalids, ICredits, IPersonCastCrew, IPersonCredits, IImages } from '@models/interfaces'
 
 
 export const PERSON_DETAILS: IPersonDetails = {

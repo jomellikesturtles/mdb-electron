@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './firebase.service';
-import { IUserSavedData } from '../interfaces';
+import { IUserSavedData } from '@models/interfaces';
 import { environment } from './../../environments/environment';
-import { IpcService, IUserDataPaginated } from './ipc.service';
+import { IpcService, IUserDataPaginated } from '@services/ipc.service';
 import GeneralUtil from '@utils/general.util';
 
 @Injectable({

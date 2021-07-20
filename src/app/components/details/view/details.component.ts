@@ -1,10 +1,10 @@
-import { GenreCodes } from './../../../interfaces';
+import { GenreCodes } from '@models/interfaces';
 import { IRawLibrary, LibraryService } from '@services/library.service';
 import {
   Component, OnInit,
   OnDestroy,
 } from '@angular/core';
-import { MDBTorrent } from '../../../interfaces';
+import { MDBTorrent } from '@models/interfaces';
 import { TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
 import { BookmarkService } from '@services/bookmark.service'
@@ -97,7 +97,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('DETAILS DESTROY')
+    GeneralUtil.DEBUG.log('DETAILS DESTROY')
     this.ngUnsubscribe.next()
     this.ngUnsubscribe.complete()
   }
@@ -126,14 +126,14 @@ export class DetailsComponent implements OnInit, OnDestroy {
     if (environment.runConfig.useTestData) {
       this.showVideo = true
       this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4'
-      console.log('playingbestplaylink')
+      GeneralUtil.DEBUG.log('playingbestplaylink')
     } else {
       if (this.bestPlayLink.hash) { // is torrent
         this.playTorrent(this.bestPlayLink.hash)
       } else {
         this.playOfflineLibrary(this.bestPlayLink.id);
       }
-      console.log('playingbestplaylink')
+      GeneralUtil.DEBUG.log('playingbestplaylink')
     }
   }
 
@@ -151,7 +151,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   playOfflineLibrary(val) {
     this.libraryService.openVideoStream(val).then(e => {
-      console.log('streamlink1:', e)
+      GeneralUtil.DEBUG.log('streamlink1:', e)
       if (e != 0 && e != [] && e != '' && e.length > 0) {
         this.showVideo = true
         this.streamLink = e
@@ -166,7 +166,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.procVideo, this.procBookmark, this.procWatched = true
 
     this.mdbApiService.getProfileDataByTmdbId(this.movieDetails.tmdbId).subscribe(userMovieData => {
-      console.log('usermoviedata', userMovieData)
+      GeneralUtil.DEBUG.log('usermoviedata', userMovieData)
       if (userMovieData.bookmark) {
         this.userData.bookmark = userMovieData.bookmark
         this.isBookmarked = true
@@ -199,7 +199,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     let bmDoc
     bmDoc = await this.userDataService.toggleBookmark(this.movieDetails)
     this.isBookmarked = !this.isBookmarked
-    console.log('BOOKMARKADD/remove:', bmDoc)
+    GeneralUtil.DEBUG.log('BOOKMARKADD/remove:', bmDoc)
     this.procBookmark = false
   }
 
@@ -209,7 +209,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
     wDoc = await this.watchedService.toggleWatched(this.movieDetails)
     this.isWatched = !this.isWatched
-    console.log('WATCHEDADD/remove:', wDoc)
+    GeneralUtil.DEBUG.log('WATCHEDADD/remove:', wDoc)
     this.procWatched = false
   }
 
@@ -219,7 +219,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     fDoc = await this.favoriteService.toggleFavorite(this.movieDetails)
     this.userData.favorite = fDoc
     // this.isWatched = !this.isWatched
-    console.log('WATCHEDADD/remove:', fDoc)
+    GeneralUtil.DEBUG.log('WATCHEDADD/remove:', fDoc)
     this.procFavorite = false
   }
 
@@ -241,7 +241,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    */
   getMovieOnline(val: number) {
     // tt2015381 is Guardians of the galaxy 2014; for testing only
-    console.log('getMovie initializing with value...', val);
+    GeneralUtil.DEBUG.log('getMovie initializing with value...', val);
 
     // this.movieService.getTmdbMovieDetails(val, [], 'videos,images,credits,similar,external_ids,recommendations').pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
     this.movieService.getTmdbMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
@@ -323,7 +323,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getLibrary() {
 
     this.libraryService.getMovieFromLibrary(this.movieDetails.tmdbId).then((libraryList: IRawLibrary[]) => {
-      console.log("libraryList", libraryList)
+      GeneralUtil.DEBUG.log("libraryList", libraryList)
       if (libraryList.length > 0) {
         this.bestPlayLink = this.mapPlayLink(libraryList[0])
         this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(libraryList)]
@@ -351,26 +351,29 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param hash torrent hash
    */
   playTorrent(hash: string) {
-    this.ipcService.getPlayTorrent(hash)
-    this.ipcService.streamLink.subscribe(e => {
-      console.log('streamlink1:', e)
-      if (e != 0 && e != [] && e != '' && e.length > 0) {
-        console.log('streamlink2:', e)
-        this.showVideo = true
-        this.streamLink = e
-      }
+    this.ipcService.getPlayTorrent(hash).then(e=>{
+      this.showVideo = true
+      this.streamLink = e
     })
+    // this.ipcService.streamLink.subscribe(e => {
+    //   GeneralUtil.DEBUG.log('streamlink1:', e)
+    //   if (e != 0 && e != [] && e != '' && e.length > 0) {
+    //     GeneralUtil.DEBUG.log('streamlink2:', e)
+    //     this.showVideo = true
+    //     this.streamLink = e
+    //   }
+    // })
   }
 
   /**
    * Opens link externally
-   * @param param1 link type
-   * @param param2 id
+   * @param linkType link type
+   * @param idParam id
    */
-  goToLink(param1: string, param2?: string) {
+  goToLink(linkType: string, idParam?: string) {
     let url = ''
-    console.log('1:', param1, ' 2:', param2);
-    switch (param1) {
+    GeneralUtil.DEBUG.log('1:', linkType, ' 2:', idParam);
+    switch (linkType) {
       case 'google':
         let releaseYear = this.getYear(this.movieDetails.releaseDate)
         url = `https://www.google.com/search?q=${this.movieDetails.title} ${releaseYear}`

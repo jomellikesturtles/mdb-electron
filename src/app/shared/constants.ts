@@ -2,7 +2,7 @@
  * Constants
  */
 import { IPlaybackPreferences, Quality, ISubtitlePreferences, IPreferences } from '@models/preferences.model'
-import { IGenre } from '../interfaces'
+import { IGenre } from '@models/interfaces'
 
 export const TMDB_IMAGE_BASE_URL = 'http://image.tmdb.org/t/p/'
 export const TMDB_IMAGE_SECURE_BASE_URL = 'https://image.tmdb.org/t/p/'

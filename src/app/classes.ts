@@ -1,6 +1,6 @@
 // UNUSED
 
-import { IMdbMovieDetails, IRating, ILibraryInfo, IGenre, ISpokenLanguage } from './interfaces'
+import { IMdbMovieDetails, IRating, ILibraryInfo, IGenre, ISpokenLanguage } from '@models/interfaces'
 import { MONTHS, STRING_REGEX_OMDB_RELEASE_DATE, STRING_REGEX_OMDB_BOX_OFFICE } from '@shared/constants'
 
 /**

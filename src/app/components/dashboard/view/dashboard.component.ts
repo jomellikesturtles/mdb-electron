@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core'
 import { MovieService } from '@services/movie.service'
 import { DataService } from '@services/data.service'
-import { UtilsService } from '@services/utils.service'
 import { Router, ActivatedRoute } from '@angular/router'
-import { TmdbParameters, } from '../../../interfaces'
-// import { GENRES } from '../../../shared/constants'
+import { TmdbParameters, } from '@models/interfaces'
 import { GENRES } from '@shared/constants'
 import { Select, Store } from '@ngxs/store'
 import { DomSanitizer } from '@angular/platform-browser'
@@ -20,7 +18,6 @@ export class DashboardComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private movieService: MovieService,
-    private utilsService: UtilsService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private domSanitizer: DomSanitizer,

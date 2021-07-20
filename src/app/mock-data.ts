@@ -2,10 +2,10 @@
  * Mock data and Defaults. For pre-defined lists and offline data
  */
 
-import { ITmdbResultObject, ILibraryMovie, MDBTorrent, IOmdbMovieDetail } from './interfaces'
+import { ITmdbResultObject, ILibraryMovie, MDBTorrent, IOmdbMovieDetail } from '@models/interfaces'
 import { Injectable } from '@angular/core'
-import { IYTSSingleQuery } from './models/yts-torrent.model'
-import { IProfileData } from './models/profile-data.model'
+import { IYTSSingleQuery } from '@models/yts-torrent.model'
+import { IProfileData } from '@models/profile-data.model'
 
 export const TEST_LIBRARY_MOVIES: ILibraryMovie[] = [
   {

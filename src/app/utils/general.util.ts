@@ -38,4 +38,17 @@ export default class GeneralUtil {
     const hour = (value / 3600)
     return Math.floor(hour) + ':' + minSec
   }
+
+  /**
+   * Console log with date time.
+   */
+  static DEBUG = (() => {
+    let timestamp = () => {};
+    timestamp.toString = () => {
+      return "[DEBUG " + new Date().toLocaleString() + "]";
+    };
+    return {
+      log: console.log.bind(console, "%s", timestamp),
+    };
+  })();
 }
