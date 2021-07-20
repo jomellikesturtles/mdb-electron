@@ -2,7 +2,7 @@
 /*jshint esversion: 8 */
 const WebTorrent = require("webtorrent");
 let moment = require("moment");
-const {prettyBytes} = require("./shared/util");
+const { prettyBytes } = require("./shared/util");
 const TorrentUtil = require("./utils/torrentUtil");
 
 let args = process.argv.slice(2);
@@ -42,7 +42,9 @@ function initializeClient() {
  */
 function playMovieTorrent(hash) {
   if (currentStreamHash === hash) {
+    DEBUG.log("sending stream-link1", currentStreamLink);
     process.send(["stream-link", currentStreamLink]);
+    currentStreamLink = "";
     return;
   }
   torrentId = getTorrentId(hash);
@@ -66,14 +68,16 @@ function playMovieTorrent(hash) {
     let desiredFile = TorrentUtil.getDesiredFile(torrent.files);
     const desiredFileIndex = desiredFile.index;
     currentStreamLink = "http:\\\\localhost:3001\\" + desiredFileIndex;
+    DEBUG.log("sending stream-link2", currentStreamLink);
     process.send(["stream-link", currentStreamLink]);
+    currentStreamLink = "";
 
     let noConIndex = 0;
     // remove display if torrent is paused/stopped
     if (currentDisplayInterval) clearInterval(currentDisplayInterval);
     currentDisplayInterval = setInterval(() => {
       displayTorrentProgress(torrent);
-      displayTorrentPiecesInProgress(torrent);
+      // displayTorrentPiecesInProgress(torrent);
       // const isConnected = checkInternetConnectivity().then((e) => {});
 
       if (torrent.downloadSpeed == 0 && !torrent.done) {
@@ -91,11 +95,12 @@ function playMovieTorrent(hash) {
  * TODO: fix the pause. https://github.com/webtorrent/webtorrent/issues/1035
  */
 function stopStream() {
+  currentStreamLink = "";
   if (currentServer) currentServer.close();
   // torrentClient.destroy();
   clearInterval(currentDisplayInterval);
   if (torrentClient) {
-    torrentClient.get(currentStreamHash).removeAllListeners()
+    torrentClient.get(currentStreamHash).removeAllListeners();
     torrentClient.remove(currentStreamHash);
     torrentClient.torrents.forEach((torrent) => {
       DEBUG.log(
@@ -165,22 +170,25 @@ function displayClientProgress(torrent) {
  */
 function displayTorrentProgress(torrent) {
   let percent = Math.round(torrent.progress * 100 * 100) / 100;
-  DEBUG.log("progress: ", percent + "%");
-  DEBUG.log("downloaded: ", prettyBytes(torrent.downloaded));
-  if (!torrent.done) {
-    const remaining = moment
-      .duration(torrent.timeRemaining / 1000, "seconds")
-      .humanize();
-    DEBUG.log(
-      remaining[0].toUpperCase() + remaining.substring(1),
-      " remaining."
-    );
-  }
-  DEBUG.log(
-    "down speed:",
-    prettyBytes(torrent.downloadSpeed) + "/s | " + "up speed:",
-    prettyBytes(torrent.uploadSpeed) + "/s"
-  );
+
+  /* TEMPORARY COMMENT */
+  // DEBUG.log("progress: ", percent + "%");
+  // DEBUG.log("downloaded: ", prettyBytes(torrent.downloaded));
+  // if (!torrent.done) {
+  //   const remaining = moment
+  //     .duration(torrent.timeRemaining / 1000, "seconds")
+  //     .humanize();
+  //   DEBUG.log(
+  //     remaining[0].toUpperCase() + remaining.substring(1),
+  //     " remaining."
+  //   );
+  // }
+  // DEBUG.log(
+  //   "down speed:",
+  //   prettyBytes(torrent.downloadSpeed) + "/s | " + "up speed:",
+  //   prettyBytes(torrent.uploadSpeed) + "/s"
+  // );
+  /* END OF TEMPORARY COMMENT */
   const progressReturn = {
     progress: percent + "%",
     downloadSpeed: torrent.downloadSpeed,
@@ -236,23 +244,22 @@ process.on("uncaughtException", function (error) {
   // process.send(['operation-failed', 'general']);
 });
 
-process.on('unhandledRejection', function (error) {
+process.on("unhandledRejection", function (error) {
   DEBUG.log(error);
-  process.send(['operation-failed', 'general']);
+  process.send(["operation-failed", "general"]);
 });
-process.on('exit', function (error) {
-  DEBUG.log('exiting...', error);
-  process.send(['operation-failed', 'general']);
+process.on("exit", function (error) {
+  DEBUG.log("exiting...", error);
+  process.send(["operation-failed", "general"]);
 });
-process.on('beforeExit', function (error) {
-  DEBUG.log('beforeExit...', error);
-  process.send(['operation-failed', 'general']);
+process.on("beforeExit", function (error) {
+  DEBUG.log("beforeExit...", error);
+  process.send(["operation-failed", "general"]);
 });
-process.on('warning', function (error) {
-  DEBUG.log('warning...', error);
-  process.send(['operation-failed', 'general']);
+process.on("warning", function (error) {
+  DEBUG.log("warning...", error);
+  process.send(["operation-failed", "general"]);
 });
-
 
 process.on("message", (m) => {
   console.log("onMessage ipcChild", m);

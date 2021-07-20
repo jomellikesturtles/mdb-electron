@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of, Subscriber, forkJoin } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { IpcService } from '../services/ipc.service';
-import { TmdbParameters } from '../interfaces'
+import { TmdbParameters } from '@models/interfaces'
 
 const jsonContentType = new HttpHeaders({ 'Content-Type': 'application/json' })
 
@@ -16,8 +15,7 @@ export class PersonService {
   omdbUrl = 'http://www.omdbapi.com'
   tmdbUrl = 'https://api.themoviedb.org/3'
   constructor(
-    private http: HttpClient,
-    private ipcService: IpcService) { }
+    private http: HttpClient) { }
 
   /**
    * Gets the person details.

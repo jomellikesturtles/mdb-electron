@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DataService } from '../../../services/data.service'
-import { MovieService } from '../../../services/movie.service'
-import { TmdbParameters, GenreCodes } from '../../../interfaces';
+import { DataService } from '@services/data.service'
+import { MovieService } from '@services/movie.service'
+import { TmdbParameters, GenreCodes } from '@models/interfaces';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';

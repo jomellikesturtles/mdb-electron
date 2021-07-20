@@ -12,11 +12,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
 import { ipcRenderer } from 'electron'
-import { ILibraryInfo } from '../interfaces'
+import { ILibraryInfo } from '@models/interfaces'
 import { IRawLibrary } from './library.service';
 import { IWatched } from './watched.service';
-import { Review } from '../models/review.model';
-import { IProfileData, ListLinkMovie } from '../models/profile-data.model';
+import { Review } from '@models/review.model';
+import { IProfileData, ListLinkMovie } from '@models/profile-data.model';
 
 
 @Injectable({
@@ -257,8 +257,9 @@ export class IpcService {
     this.sendToMain(IPCRendererChannel.SCAN_LIBRARY_STOP)
   }
 
-  getPlayTorrent(hash: string) {
+  getPlayTorrent(hash: string): Promise<any> {
     this.sendToMain(IPCRendererChannel.PLAY_TORRENT, hash)
+    return this.listenOnce(`stream-link`);
   }
 
   stopStream() {

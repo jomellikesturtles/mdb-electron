@@ -74,6 +74,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   canPlay = false
   isMetadataLoaded = false
   seekTooltip = ''
+  isSeeking = false
+  toSeek: number = 0
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -83,7 +85,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     private elementRef: ElementRef,
     private userIdleService: UserIdleService,
     private preferencesService: PreferencesService
-  ) { console.log('VIDEOPLAYER CONSTRUCTOR') }
+  ) { GeneralUtil.DEBUG.log('VIDEOPLAYER CONSTRUCTOR') }
 
   onNotIdle() {
     this.userIdleService.resetTimer()
@@ -95,37 +97,48 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     // this.streamLink = 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4' // 1080p sample
     // this.streamLink = '../../../../assets/sample movie/Ratatouille (2007) [1080p]/Ratatouille.2007.1080p.BrRip.x264.YIFY.mp4'
     this.userIdleService.startWatching()
-    this.userIdleService.onTimerStart().pipe(takeUntil(this.ngUnsubscribe)).subscribe((_count) => { console.log('start! ', _count) });
+    this.userIdleService.onTimerStart().pipe(takeUntil(this.ngUnsubscribe)).subscribe((_count) => { GeneralUtil.DEBUG.log('start! ', _count) });
     this.userIdleService.onIdleStatusChanged().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
-      console.log("changed!", e)
+      GeneralUtil.DEBUG.log("changed!", e)
     })
-    this.isMetadataLoaded = true
     this.userIdleService.onTimeout().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
-      console.log("TIMEOUT!OUT!", e)
+      GeneralUtil.DEBUG.log("TIMEOUT!OUT!", e)
       this.isUserInactive = true;
     })
-    console.log('VIDEOPLAYER ngOnInit')
+    GeneralUtil.DEBUG.log('1. VIDEOPLAYER ngOnInit')
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     const cs = changes.streamLink
-    if (cs && !cs.firstChange) {
+    if (cs) {
+      GeneralUtil.DEBUG.log('2. cs:', cs)
+      GeneralUtil.DEBUG.log('this.streamLink:', this.streamLink)
+      // if (cs && !cs.firstChange) {
       this.statsForNerds.source = this.streamLink;
+      this.isMetadataLoaded = true
+      GeneralUtil.DEBUG.log('isMetadataLoaded true')
+
+      const root = this
+      let checkExist = setInterval(function () {
+        root.videoPlayerElement = root.elementRef.nativeElement.querySelectorAll('#videoPlayer')
+        if (root.videoPlayerElement.length > 0) {
+          GeneralUtil.DEBUG.log("3. videoPlayer Exists!");
+          // this.videoPlyerElements
+          root.videoPlayerEvents();
+          clearInterval(checkExist);
+        }
+      }, 100); // check every 100ms
+
     }
   }
 
-  ngOnDestroy(): void {
-    this.ipcService.stopStream()
-    this.ngUnsubscribe.next()
-    this.ngUnsubscribe.complete()
-  }
-
   ngAfterViewInit(): void {
-    this.subtitleSpanElementsList = this.elementRef.nativeElement.querySelectorAll('.subtitle-span')
+
+    GeneralUtil.DEBUG.log('AFTERVIEW');
 
     if (environment.runConfig.electron) {
       this.ipcService.statsForNerdsSubscribable.pipe(takeUntil(this.ngUnsubscribe)).subscribe(stats => {
-        console.log(stats)
+        GeneralUtil.DEBUG.log(stats)
         if (stats) {
           this.statsForNerds.downSpeed = stats.downSpeed
           this.statsForNerds.upSpeed = stats.upSpeed
@@ -134,31 +147,42 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
         }
       })
     }
-
     //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+  }
 
-    this.videoPlayerElement = this.elementRef.nativeElement.querySelectorAll('#videoPlayer')
+  ngOnDestroy(): void {
+    GeneralUtil.DEBUG.log('ondestroy')
+    this.canPlay = false
+    this.ngUnsubscribe.next()
+    this.ngUnsubscribe.complete()
+    this.ipcService.stopStream()
+    GeneralUtil.DEBUG.log('DESTROYED')
+  }
+
+  videoPlayerEvents() {
+
     // this.videoPlayerElement = this.videoPlayer1.nativeElement as HTMLVideoElement
 
-    console.log(this.videoPlayerElement)
+    GeneralUtil.DEBUG.log('4. videoPlayerEvents, videoPlayerElement: ', this.videoPlayerElement)
     this.videoPlayerElement = this.videoPlayerElement[0]
-    // console.log(this.videoPlayer1)
-    this.togglePlay();
+    // GeneralUtil.DEBUG.log(this.videoPlayer1)
+    this.togglePlay(); // move to canplay event?
 
     //   // Mute/Unmute
     //   // this.videoPlayerElement.muted = true
     this.videoPlayerElement.addEventListener('canplay', (e) => {
-      console.log('canplay', e)
+      this.subtitleSpanElementsList = this.elementRef.nativeElement.querySelectorAll('.subtitle-span')
+      GeneralUtil.DEBUG.log('EVENT: canplay', e)
       this.canPlay = true
       this.videoTime.duration = this.videoPlayerElement.duration
       this.isSeeking = false
     })
     this.videoPlayerElement.addEventListener('durationchange', (e) => {
-      console.log('durationchange', e)
+      GeneralUtil.DEBUG.log('EVENT: durationchange', e)
     })
     this.videoPlayerElement.addEventListener('ended', (e) => {
       this.isPlaying = false
-      console.log('ended', e)
+      GeneralUtil.DEBUG.log('EVENT: ended', e)
       // this.watchedService.saveWatched({
       //   id: '',
       //   tmdbId: this.tmdbId,
@@ -168,38 +192,38 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       //   year: 0});
     })
     this.videoPlayerElement.addEventListener('error', (e) => {
-      console.log('error', e)
+      GeneralUtil.DEBUG.log('EVENT: error', e)
     })
     this.videoPlayerElement.addEventListener('pause', (e) => {
       this.isPlaying = false
-      console.log('pause', e)
+      GeneralUtil.DEBUG.log('EVENT: pause', e)
     })
     this.videoPlayerElement.addEventListener('play', (e) => {
       this.isPlaying = true
-      console.log('play', e)
+      GeneralUtil.DEBUG.log('EVENT: play', e)
     })
     this.videoPlayerElement.addEventListener('playing', (e) => {
       this.isPlaying = true
-      console.log('playing', e)
+      GeneralUtil.DEBUG.log('EVENT: playing', e)
     })
     this.videoPlayerElement.addEventListener('progress', (e) => {
-      // console.log('progress', e)
+      // GeneralUtil.DEBUG.log('progress', e)
     })
     this.videoPlayerElement.addEventListener('seeked', (e) => {
-      console.log('seeked', e)
+      GeneralUtil.DEBUG.log('EVENT: seeked', e)
       this.updateProgressBar()
       this.isSeeking = false
     })
     this.videoPlayerElement.addEventListener('seeking', (e) => {
-      console.log('seeking', e)
+      GeneralUtil.DEBUG.log('EVENT: seeking', e)
       this.isSeeking = true
     })
     this.videoPlayerElement.addEventListener('stalled', (e) => {
-      console.log('stalled', e)
+      GeneralUtil.DEBUG.log('EVENT: stalled', e)
       this.isSeeking = true
     })
     this.videoPlayerElement.addEventListener('suspend', (e) => {
-      // console.log('onSuspend', e)
+      // GeneralUtil.DEBUG.log('onSuspend', e)
     })
     this.videoPlayerElement.addEventListener('timeupdate', (e) => {
       this.player.currentTime = this.videoPlayerElement.currentTime
@@ -215,6 +239,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       }
     })
     this.videoPlayerElement.addEventListener('loadedmetadata', (e) => {
+      GeneralUtil.DEBUG.log('EVENT: loadedmetadata', e)
       this.isMetadataLoaded = true
       this.statsForNerds.resolution = this.videoPlayerElement.videoWidth + 'x' + this.videoPlayerElement.videoHeight
     })
@@ -227,10 +252,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     }, 500)
   }
 
-  isSeeking = false
   onKeyPress(val: KeyboardEvent) {
     const key = val.key.toLowerCase()
-    console.log(key)
+    GeneralUtil.DEBUG.log(key)
     if (!val.shiftKey && !val.altKey && !val.ctrlKey && !val.metaKey) {
 
       switch (key) {
@@ -246,24 +270,30 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
           this.togglePlay()
           break;
         case 'arrowup':
-          // TODO: add maxvolume limit
-          this.videoPlayerElement.volume += .2
+          try {
+            this.videoPlayerElement.volume += .2
+          } catch (e) {
+            this.videoPlayerElement.volume = 1
+          }
           // keyCode: 38
           break;
         case 'arrowdown':
-          // TODO: add min volume limit
-          this.videoPlayerElement.volume -= .2
+          try {
+            this.videoPlayerElement.volume -= .2
+          } catch (e) {
+            this.videoPlayerElement.volume = 0
+          }
           // keyCode: 40
           break;
         case 'arrowleft':
           // TODO: add limiter for min allowable timestamp
-          // this.videoPlayerElement.currentTime = '10'
+          this.videoPlayerElement.currentTime -= 10
           // keyCode: 37
           // toggl2e fullscreen
           break;
         case 'arrowright':
           // TODO: add limiter for max allowable timestamp
-          // this.videoPlayerElement.currentTime = '20'
+          this.videoPlayerElement.currentTime += 10
           // keyCode: 39
           break;
         case 'pageup':
@@ -294,7 +324,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
           this.videoPlayerElement.currentTime = this.videoPlayerElement.duration
           break;
         default:
-          console.log('no hotkey')
+          GeneralUtil.DEBUG.log('no hotkey')
           break;
       }
     }
@@ -320,15 +350,16 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       year: 0
       // percentage: Math.floor(this.videoPlayerElement.currentTime / this.videoPlayerElement.duration * 100)
     }
-    console.log('updating watched', watchedObj);
+    GeneralUtil.DEBUG.log('updating watched', watchedObj);
     this.watchedService.saveWatched(watchedObj);
   }
 
   togglePlay() {
     const isPlaying = this.videoPlayerElement.currentTime > 0 && !this.videoPlayerElement.paused && !this.videoPlayerElement.ended
       && this.videoPlayerElement.readyState > 2;
+    GeneralUtil.DEBUG.log('5. togglePlay, isPlaying: ', isPlaying)
     // safely autoplay
-    if (!isPlaying) {
+    if (!isPlaying && this.canPlay) {
       this.videoPlayerElement.play();
     } else {
       this.videoPlayerElement.pause();
@@ -358,7 +389,6 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     }
   }
 
-  toSeek: number = 0
   /**
    * Event for video player scrubber tooltip
    */
@@ -384,11 +414,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   async changeCc() {
 
     // let filePath = 'Aliens.Directors.Cut.1986.1080p.BRrip.x264.GAZ.YIFY.srt'
-    let filePath = 'Cinema Paradiso-English.srt'
-    // filePath = await this.ipcService.changeSubtitle()
-    filePath = '../../../../assets/tmp/' + filePath
-    // filePath = 'tmp/' + filePath
-    console.log('filePath', filePath)
+    let filePath = ''
+    // let filePath = 'Cinema Paradiso-English.srt'
+    // filePath = '../../../../assets/tmp/' + filePath
+    filePath = await this.ipcService.changeSubtitle()
+    GeneralUtil.DEBUG.log('filePath', filePath)
 
     const fileStr = await this.movieService.getSubtitleFileString(filePath).toPromise()
     let encodingStr = 'UTF-8'
@@ -396,7 +426,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       encodingStr = jschardet.detect(fileStr, { minimumThreshold: 0 }).encoding // errors with subs with `ó`
     } catch {
       const encodingAlt = chardet.analyse(fileStr)
-      console.log(encodingAlt)
+      GeneralUtil.DEBUG.log(encodingAlt)
       if (encodingAlt.length > 1) {
         encodingStr = encodingAlt[1].name
       } else if (encodingAlt.length === 1) {
@@ -412,10 +442,10 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     const root = this
     fileReader.onloadend = function (x) {
       resultFileStr = fileReader.result
-      console.log(resultFileStr)
+      GeneralUtil.DEBUG.log(resultFileStr)
       resultFileStr = resultFileStr.replace(/[\r]+/g, '')
       root.subtitleMap = SubtitlesUtil.mapSubtitle(resultFileStr)
-      console.log("subtitleMap!", root.subtitleMap)
+      GeneralUtil.DEBUG.log("subtitleMap!", root.subtitleMap)
     };
   }
 

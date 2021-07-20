@@ -1,4 +1,4 @@
-import { Department, IRating } from "../interfaces"
+import { Department, IRating } from "./interfaces"
 import { TMDB_External_Id } from "./tmdb-external-id.model"
 import { IProfileData } from "./profile-data.model"
 

@@ -4,7 +4,7 @@
 import { Component, OnInit, OnDestroy, Pipe, PipeTransform, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from '@services/data.service';
-import { GenreCodes } from '../../../app/interfaces';
+import { GenreCodes } from '@models/interfaces';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MovieService } from '@services/movie.service';
 import { UserDataService } from '@services/user-data.service';

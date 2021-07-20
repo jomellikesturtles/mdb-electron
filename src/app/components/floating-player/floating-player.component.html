@@ -65,7 +65,8 @@ background-attachment: fixed;overflow-y: hidden;
             <div style="position: absolute;top: 0;right: 0; margin-left: auto;cursor: pointer;">
               <h3 style='display: inline-flex; font-size: 2.5rem;margin-top: 11px;'>{{movieDetails.vote.voteAverage}}
               </h3>
-              <img id='ratingsIcon' style='height: 3em; display: inline-flex;margin-left:10px'
+              <img id='ratingsIcon' style='height: 3em; display: inline-flex;margin-left:10px;
+              margin-bottom:1.5rem;'
                 src='../../../assets/icons/star-yellow.svg' />
             </div>
           </div>
@@ -177,6 +178,29 @@ background-attachment: fixed;overflow-y: hidden;
 
           <ng-template #creditsTemplate>
             CREDITS
+
+            <div class="row">
+              Cast
+               <!-- (click)='goToFullCredits()' -->
+              <h5 class='text-hyperlink'>See more...</h5>
+              <div id='featuredCastAndCrewDisplay' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
+                <div *ngFor="let cast of movieDetails.credits.cast" style='margin-right: 20px;'>
+                  <!-- <div (click)='goToPerson(cast.id)'  -->
+                  <div class='image-container'
+                    style='height: 200px; width: 185px; border-radius: 50%; cursor: pointer;'
+                    [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+cast.profilePath+')'}">
+                  </div>
+                  <div>
+                    <!--(click)='goToPerson(cast.id)' -->
+                    <h6 class='text-hyperlink'>{{cast.name}}</h6>
+                    <p>{{cast.character}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
           </ng-template>
           <ng-template #similarMoviesTemplate>
             SIMILAR MOVIES

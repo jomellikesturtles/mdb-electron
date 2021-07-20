@@ -1,4 +1,4 @@
-import { IUserSavedData } from './../interfaces';
+import { IUserSavedData } from '@models/interfaces';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { FirebaseService, FirebaseOperator, CollectionName, FieldName } from './firebase.service'
