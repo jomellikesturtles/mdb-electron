@@ -2,13 +2,13 @@
  * IPC renderer comm to the main.
  * TODO: change behaviorsubjects to something else.
  */
+/**
+ * Service to communicate to ipc main
+ */
 import { environment } from './../../environments/environment';
 import * as IPCRendererChannel from '../../assets/IPCRendererChannel.json';
 import * as IPCMainChannel from '../../assets/IPCMainChannel.json';
 import { v4 as uuidv4 } from 'uuid'
-/**
- * Service to communicate to ipc main
- */
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
 import { ipcRenderer } from 'electron'
@@ -38,6 +38,9 @@ export class IpcService {
 
   constructor() {
     if (environment.runConfig.electron) {
+
+      console.log((window as any).require('electron'))
+
       this.ipcRenderer = (window as any).require('electron').ipcRenderer
 
       this.ipcRenderer.on('torrent-video', (event, data: any) => {

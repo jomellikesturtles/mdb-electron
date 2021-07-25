@@ -6,7 +6,7 @@ let args = process.argv.slice(2);
 let idArg = args[0];
 var http = require('http');
 
-isPortOpen = false;
+let isPortOpen = false;
 const app = express();
 const DataStore = require('nedb');
 const libraryDbService = require('./library-db-service-2');
@@ -102,7 +102,7 @@ initialize()
 function testConnection() {
   console.log('testConnection');
 
-    options = { method: 'GET', host: 'localhost', port: 3000, path: '/stream/Y9LaiH30sFSmjGfV', },
+    let options = { method: 'GET', host: 'localhost', port: 3000, path: '/stream/Y9LaiH30sFSmjGfV', },
     req = http.request(options, function (r) {
       console.log('R: ', r.statusCode);
     });

@@ -40,10 +40,29 @@ export default class GeneralUtil {
   }
 
   /**
+   * Gets the percentage.
+   * @param timestamp timestamp in seconds
+   * @param length movie length in seconds
+   * @returns percentage
+   */
+  static getPercentage(timestamp: number, length: number): number {
+    return (timestamp / length) * 100
+  }
+
+  /**
+   * Gets the timestamp.
+   * @param percentage
+   * @param length movie length in seconds
+   * @returns timestamp in seconds
+   */
+  static getTimestamp(percentage: number, length: number): number {
+    return (percentage / 100) * length
+  }
+  /**
    * Console log with date time.
    */
   static DEBUG = (() => {
-    let timestamp = () => {};
+    let timestamp = () => { };
     timestamp.toString = () => {
       return "[DEBUG " + new Date().toLocaleString() + "]";
     };

@@ -11,11 +11,15 @@ export interface IPreferences {
   playTrailerBeforeShow: boolean
   playBack: IPlaybackPreferences
   library: ILibraryPreferences,
+  streamPreferences?: IStreamPreferences
   isAutoScan: boolean
   autoScanFrequencyUnit: string
   autoScanFrequencyValue: number
 }
 
+interface IStreamPreferences {
+  downloadSpeed: number // in bps
+}
 interface ILibraryPreferences {
   libraryPathList: string[]
   scanFrenquency: IScanFrequency
@@ -29,7 +33,7 @@ export interface IPlaybackPreferences {
 }
 
 export enum Quality {
-  SD = '4k',
+  SD = '720p',
   HD = '1080p',
   FHD = '1440p',
   FourK = '4k'
@@ -41,6 +45,7 @@ interface IScanFrequency {
 }
 
 interface IHotkeys {
+  playerHotkeys?: any
 
 }
 

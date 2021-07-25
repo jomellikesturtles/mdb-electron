@@ -78,3 +78,15 @@ export class RuntimeDisplayPipe implements PipeTransform {
     return toReturn
   }
 }
+
+/**
+ * Convert seconds to HH:MM:SS format
+ * @param value seconds
+ */
+@Pipe({ name: 'toHHMMSS' })
+export class HHMMSSPipe implements PipeTransform {
+  constructor() { }
+  transform(value: number): string {
+    return GeneralUtil.convertToHHMMSS(value);
+  }
+}

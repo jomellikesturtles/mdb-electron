@@ -6,8 +6,7 @@ import { CommonModule } from '@angular/common';
 import { SelectedListComponent } from './selected-list/selected-list.component';
 import { MovieCardComponent } from './movie-card/movie-card.component';
 import { CardListComponent } from './card-list/card-list.component';
-import { ReleaseYearPipe, RuntimeDisplayPipe } from 'app/mdb-pipes.pipe';
-import { HHMMSSPipe, VideoPlayerComponent } from '../video-player/video-player/video-player.component';
+import { HHMMSSPipe, ReleaseYearPipe, RuntimeDisplayPipe } from 'app/mdb-pipes.pipe';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HorizontalCardListComponent } from './horizontal-card-list/horizontal-card-list.component';
@@ -17,7 +16,6 @@ import { UserIdleModule } from 'angular-user-idle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MdbExperimentVideoPlayerComponent } from '@components/experiment/mdb-experiment-video-player/mdb-experiment-video-player.component';
 
 
 @NgModule({
@@ -26,8 +24,6 @@ import { MdbExperimentVideoPlayerComponent } from '@components/experiment/mdb-ex
     MovieCardComponent,
     CardListComponent,
     ReleaseYearPipe,
-    VideoPlayerComponent,
-    MdbExperimentVideoPlayerComponent,
     HHMMSSPipe,
     HorizontalCardListComponent,
     RuntimeDisplayPipe
@@ -46,8 +42,7 @@ import { MdbExperimentVideoPlayerComponent } from '@components/experiment/mdb-ex
     MovieCardComponent,
     CardListComponent,
     ReleaseYearPipe,
-    VideoPlayerComponent,
-    MdbExperimentVideoPlayerComponent,
+    HHMMSSPipe,
     HorizontalCardListComponent,
     MatDividerModule,
     MatProgressSpinnerModule, MatButtonModule, MatIconModule,

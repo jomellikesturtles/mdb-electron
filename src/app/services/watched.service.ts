@@ -111,25 +111,6 @@ export class WatchedService {
     return this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Watched, FieldName.TmdbId, 20, lastVal)
   }
 
-  /**
-   * Gets the percentage.
-   * @param timestamp timestamp in seconds
-   * @param length movie length in seconds
-   * @returns percentage
-   */
-  getPercentage(timestamp: number, length: number): number {
-    return (timestamp / length) * 100
-  }
-
-  /**
-   * Gets the timestamp.
-   * @param percentage
-   * @param length movie length in seconds
-   * @returns timestamp in seconds
-   */
-  getTimestamp(percentage: number, length: number): number {
-    return (percentage / 100) * length
-  }
 }
 
 export interface IWatched extends IUserSavedData {

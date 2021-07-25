@@ -47,10 +47,10 @@ function playMovieTorrent(hash) {
     currentStreamLink = "";
     return;
   }
-  torrentId = getTorrentId(hash);
+  let torrentLink = getTorrentLink(hash);
   currentStreamHash = hash;
   console.log("torrentClient.ratio: ", torrentClient.ratio);
-  torrentClient.add(torrentId, {}, function (torrent) {
+  torrentClient.add(torrentLink, {}, function (torrent) {
     torrent.on("error", (e) => {
       DEBUG.log("noPeers", hash);
     });
@@ -134,12 +134,12 @@ function checkInternetConnectivity() {
   // console.log("afterCheck");
 }
 
-function getTorrentId(hash) {
+function getTorrentLink(hash) {
   return `magnet:?xt=urn:btih:${hash}`;
 }
 
 function addTorrent(hash) {
-  var torrentId = getTorrentId(hash);
+  var torrentId = getTorrentLink(hash);
   let desiredFileIndex = null;
   return client.add(torrentId, function (torrent) {
     // Torrents can contain many files. Let's use the .mp4 file
@@ -152,16 +152,16 @@ function addTorrent(hash) {
 }
 
 function removeTorrent(torrentId) {
-  client.remove(torrentId);
+  // client.remove(torrentId);
 }
 
 function displayClientProgress(torrent) {
-  client.torrents.forEach((torrent) => {
-    DEBUG.log("hash: ", torrent.infoHash);
-  });
-  DEBUG.log("downloadSpeed: ", client.downloadSpeed);
-  DEBUG.log("uploadSpeed: ", client.uploadSpeed);
-  DEBUG.log("progress: ", client.progress);
+  // client.torrents.forEach((torrent) => {
+  //   DEBUG.log("hash: ", torrent.infoHash);
+  // });
+  // DEBUG.log("downloadSpeed: ", client.downloadSpeed);
+  // DEBUG.log("uploadSpeed: ", client.uploadSpeed);
+  // DEBUG.log("progress: ", client.progress);
 }
 
 /**
