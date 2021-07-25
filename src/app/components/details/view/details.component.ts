@@ -26,6 +26,8 @@ import { MdbApiService } from '@services/mdb-api.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util'
 import { environment } from 'environments/environment';
+import { MatDialog } from '@angular/material';
+import { ImagePreviewComponent } from '@components/image-preview/image-preview.component';
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -85,7 +87,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private watchedService: WatchedService,
     private favoriteService: FavoriteService,
     private router: Router,
-    private mdbApiService: MdbApiService
+    private mdbApiService: MdbApiService,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -498,6 +501,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     return this.torrentService.sanitize(torrent);
   }
 
+  previewImage() {
+    this.dialog.open(ImagePreviewComponent, { data: { imagePath: this.movieDetails.posterPath } });
+  }
   /**
    * Copies link to clipboard
    * @param magnetLink link top copy

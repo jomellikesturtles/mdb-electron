@@ -5,6 +5,7 @@ import { CreditsComponent } from './credits/credits.component';
 import { DetailsComponent } from './view/details.component';
 import { SharedModule } from '../shared/shared.module';
 import { VideoPlayerModule } from '@components/video-player/video-player.module';
+import { MatTabsModule } from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,7 @@ import { VideoPlayerModule } from '@components/video-player/video-player.module'
     CommonModule,
     DetailsRoutingModule,
     SharedModule,
-    VideoPlayerModule,
+    VideoPlayerModule,MatTabsModule
   ],
   entryComponents: [
     DetailsComponent,
