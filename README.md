@@ -224,8 +224,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   - update offline files
   - ~~torrent~~
 - ~~add offline files into OneDrive~~
-- streaming: invalid stream url
-- streaming: onpush?
 - uncaughtException ipcChild Error: Cannot add duplicate torrent a86b4adb83506bb12ceabac2f42ae480ba44ecfa
 - VideoPlayerComponent.html:27 ERROR TypeError: Failed to set the 'currentTime' property on 'HTMLMediaElement': The provided double value is non-finite.
 

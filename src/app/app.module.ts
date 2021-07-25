@@ -43,6 +43,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { ImagePreviewComponent } from './components/image-preview/image-preview.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { KeyboardShortcutsComponent } from './components/keyboard-shortcuts/keyboard-shortcuts.component';
+import { VideoPlayerModule } from '@components/video-player/video-player.module';
 
 @NgModule({
   declarations: [
@@ -88,6 +89,7 @@ import { KeyboardShortcutsComponent } from './components/keyboard-shortcuts/keyb
     MatTabsModule,
     MatDialogModule,
     MatAutocompleteModule,
+    VideoPlayerModule
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   entryComponents:[ImagePreviewComponent],

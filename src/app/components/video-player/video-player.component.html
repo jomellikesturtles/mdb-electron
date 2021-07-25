@@ -1,0 +1,57 @@
+<div *ngIf="isMetadataLoaded" [ngClass]="{'user-inactive':isUserInactive}">
+
+  <div id='videoPlayerOuter' (mousemove)='onNotIdle()' (keydown)="onKeyPress($event)" tabindex="1"
+    style='position: relative; background-color: black; width: 100%; height: calc(100vh - 50px);'>
+    <div id='videoContainer' style='position:absolute; width:100%; height:100%; text-align:center; z-index: 20;'
+      (click)='togglePlay()' (dblclick)='toggleFullScreen()'>
+      <!-- animation: ytp-bezel-fadeout .5s linear 1 normal forwards; -->
+      <video #videoPlayer1 id='videoPlayer' style="width:100%; height:100%;" poster="">
+
+        <source [src]='streamLink' controlsList="nodownload" type="video/mp4">
+
+      </video>
+
+      <div style='position: relative; bottom: 100px' [hidden]="!isShowSubtitles">
+        <span class='subtitle-span'>{{subtitleLine1}}</span><br />
+        <span class='subtitle-span'>{{subtitleLine2}}</span>
+      </div>
+    </div>
+
+    <div style='position: absolute;z-index: 21;margin-top: 45vh;margin-left: 45vw;'>
+      <mat-spinner *ngIf='isSeeking' [diameter]='100' style='margin: auto;'></mat-spinner>
+      <!-- video center icons -->
+      <!-- play,pause,mute,unmute,loading -->
+    </div>
+
+    <!-- <app-video-player-stats [stats]='statsForNerds'>
+
+    </app-video-player-stats> -->
+
+      <!-- [isPaused]='videoPlayer1.paused' -->
+      <!-- [videoPlayer1]='videoPlayer1' -->
+      <mdb-video-player-controls
+      *ngIf='canPlay'
+      [hidden]='isUserInactive'
+      [isPlaying]='isPlaying'
+      [isMuted]='videoPlayerElement.muted'
+      [isShowSubtitles]='isShowSubtitles'
+      [canPlay]='canPlay'
+      [videoPlayerElement]='videoPlayerElement'
+      [volume]='volume'
+      [videoTime]='videoTime'
+      [progressBar]='progressBar'
+      (onSeekValue)='onSeek($event)'
+      (onTogglePlay)='togglePlay()'
+      (onToggleMute)='toggleMute($event)'
+      (onToggleFullScreen)='toggleFullScreen()'
+      (onToggleSubtitles)='isShowSubtitles = $event'
+      (onChangeVolume)='changeVolume($event)'
+      (onChangeSubtitleFile)='onChangeCc($event)'
+      (onChangeFontColor)='changeFontSize($event)'
+      (onChangeFontSize)='changeFontColor($event)'
+      (onChangeBackgroundColor)='changeBackgroundColor($event)'
+      >
+    </mdb-video-player-controls>
+
+  </div>
+</div>

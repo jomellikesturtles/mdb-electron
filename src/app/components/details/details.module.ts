@@ -4,6 +4,7 @@ import { DetailsRoutingModule } from './details.routing.module';
 import { CreditsComponent } from './credits/credits.component';
 import { DetailsComponent } from './view/details.component';
 import { SharedModule } from '../shared/shared.module';
+import { VideoPlayerModule } from '@components/video-player/video-player.module';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { SharedModule } from '../shared/shared.module';
     CommonModule,
     DetailsRoutingModule,
     SharedModule,
+    VideoPlayerModule,
   ],
   entryComponents: [
     DetailsComponent,

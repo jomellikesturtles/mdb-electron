@@ -45,7 +45,7 @@ function findWatched(args) {
       if (!err) {
         DEBUG.log('watched found', doc);
         if (doc) {
-          doc = convertToFEWatched(doc);
+          doc = convertToFEFavorites(doc);
           resolve(doc);
         } else {
           resolve(null);
@@ -71,8 +71,8 @@ function getWatchedInList(idList) {
       if (!err) {
         let toList = [];
         docs.forEach((element) => {
-          toList.push(convertToFEWatched(element));
-          console.log('PUSHING ', convertToFEWatched(element))
+          toList.push(convertToFEFavorites(element));
+          console.log('PUSHING ', convertToFEFavorites(element))
         });
         DEBUG.log('DOCS: ', docs);
         resolve(toList);
@@ -133,7 +133,7 @@ async function getWatchedPaginated(page, size, sort) {
     if (watchedList.length > 0) {
       let newData = [];
       const totalPages = getNumberOfPages(count, size);
-      watchedList.forEach(e => { newData.push(convertToFEWatched(e)); });
+      watchedList.forEach(e => { newData.push(convertToFEFavorites(e)); });
       const toReturn = {
         page: page,
         totalPages: totalPages,
@@ -158,7 +158,7 @@ function saveWatched(args) {
     // favoritesDb.ensureIndex({ fieldName: 'tmdbId', unique: true, sparse: true }, function (err) {
       DEBUG.log('args.tmdbId: ', args.tmdbId);
       if (args.tmdbId) {
-        const dbObj = convertToDbWatched(args);
+        const dbObj = convertToDbFavorites(args);
         favoritesDb.update({ tmdb: parseInt(args.tmdbId, 10) }, { $set: dbObj }, { upsert: true }, function (err, numAffected, upsert) {
           if (!err) {
             DEBUG.log('numAffected: ', numAffected);
@@ -174,7 +174,7 @@ function saveWatched(args) {
 
 /**
  * Removes watched.
- * @param {*} args id/tmdbId
+ * @param {*} id/tmdbId
  * @returns number of affected instance.
  */
 function removeWatched(type, id) {

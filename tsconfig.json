@@ -2,6 +2,8 @@
   "compileOnSave": false,
   "compilerOptions": {
     "resolveJsonModule": true,
+    // "allowJs": true,
+    // "checkJs": true,
     "esModuleInterop": true,
     "baseUrl": "src",
     "downlevelIteration": true,
@@ -14,7 +16,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es2015",
-    "types": ["node","karma","mocha","jest"],
+    "types": ["node","mocha","jest"],
     "typeRoots": [
       "node_modules/@types",
     ],
@@ -51,5 +53,18 @@
         "app/utils/*"
       ],
     }
-  }
+  },
+  "exclude": [
+    ".git",
+    ".app-cache",
+    ".npm",
+    ".npm-tmp",
+    "dist",
+    "dist*",
+    "node_modules",
+    "subfolder/dist",
+    "subfolder/node_modules",
+    "**/dist/*",
+    "**/node_modules/*",
+  ]
 }
