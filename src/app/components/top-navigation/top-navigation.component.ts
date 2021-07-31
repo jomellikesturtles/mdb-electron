@@ -11,7 +11,7 @@ import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
 import { Store, Select } from '@ngxs/store'
 import { Add, CountState, UserState } from '../../app.state'
-import { environment } from '../../../environments/environment';
+import { environment } from '.@enviroments/environment';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 

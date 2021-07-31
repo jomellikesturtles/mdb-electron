@@ -1,11 +1,11 @@
-import { UserDataService } from './../../../services/user-data.service';
+import { UserDataService } from '@services/user-data.service';
 /**
  * Displays movies Watched by user
  */
-import { IWatched } from './../../../services/watched.service';
-import { WatchedService } from './../../../services/watched.service';
+import { IWatched } from '@services/watched.service';
+import { WatchedService } from '@services/watched.service';
 import { Component, OnInit } from '@angular/core';
-import { environment } from './../../../../environments/environment';
+import { environment } from '@environments/environment';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { Select } from '@ngxs/store';
 import { CollectionName } from '@services/firebase.service';

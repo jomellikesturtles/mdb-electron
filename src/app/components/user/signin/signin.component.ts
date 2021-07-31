@@ -1,15 +1,14 @@
-import { UsernameExistValidator, UsernameExistingValidator } from '../../../directives/username-exist.directive';
+import { UsernameExistValidator, UsernameExistingValidator } from '@directives/username-exist.directive';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder, AbstractControl } from '@angular/forms'
-import { repeatPasswordValidator } from '../../../directives/repeat-password.directive';
-import { CredentialsValidator } from '../../../directives/credentials.directive';
+import { repeatPasswordValidator } from '@directives/repeat-password.directive';
+import { CredentialsValidator } from '@directives/credentials.directive';
 import * as firebase from 'firebase/app';
 import { AngularFirestore } from '@angular/fire/firestore'
 import { AngularFireAuth, AngularFireAuthModule } from '@angular/fire/auth'
-// import {  } from '@angular/fire/angularfire2'
-import { IpcService } from '../../../services/ipc.service';
-import { FirebaseService, CollectionName } from '../../../services/firebase.service';
-import { UtilsService } from '../../../services/utils.service';
+import { IpcService } from '@services/ipc.service';
+import { FirebaseService, CollectionName } from '@services/firebase.service';
+import { UtilsService } from '@services/utils.service';
 import { repeat, debounceTime, take, map } from 'rxjs/operators';
 
 export class CustomValidator {

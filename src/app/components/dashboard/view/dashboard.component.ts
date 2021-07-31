@@ -23,21 +23,11 @@ export class DashboardComponent implements OnInit {
     private domSanitizer: DomSanitizer,
   ) { }
 
-  isYTReady: boolean
-  hasAlreadySelected: any
-
   @Select(state => state.moviesList) moviesList$
 
   browserConnection = navigator.onLine
-  theLink = ''
-  nameString = 'name'
-  dataString = 'data'
-  topMoviesFromYear = []
   dashboardLists = []
-  selectedMovieBookmarkStatus = false
-  isHighlighted = false
   cardWidth = '130px'
-  tag
 
   ngOnInit() {
     this.getNowShowingMovies()

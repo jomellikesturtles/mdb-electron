@@ -34,10 +34,13 @@
       "@directives/*": [
         "app/directives/*"
       ],
+      "@environments/*": [
+        "environments/*"
+      ],
       "@guards/*": [
         "app/guards/*"
       ],
-      "@mock/*": [
+      "@mocks/*": [
         "app/mock/*"
       ],
       "@models/*": [

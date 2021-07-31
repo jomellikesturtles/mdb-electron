@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService, CollectionName, FieldName } from './firebase.service';
-import { environment } from './../../environments/environment';
+import { environment } from '@enviroments/environment';
 import { IpcService, IUserDataPaginated } from './ipc.service';
 import { MdbApiService } from './mdb-api.service';
 import GeneralUtil from '@utils/general.util';

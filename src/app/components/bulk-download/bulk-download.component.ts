@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { IpcService } from '../../services/ipc.service'
+import { IpcService } from '@services/ipc.service'
 import { DISPLAYEDMOVIES, MOVIEGENRES } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
-import { DataService } from '../../services/data.service'
-import { TorrentService } from '../../services/torrent.service'
+import { DataService } from '@services/data.service'
+import { TorrentService } from '@services/torrent.service'
 
 @Component({
   selector: 'app-bulk-download',

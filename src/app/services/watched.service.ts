@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './firebase.service';
 import { IUserSavedData } from '@models/interfaces';
-import { environment } from './../../environments/environment';
+import { environment } from '@enviroments/environment';
 import { IpcService, IUserDataPaginated } from '@services/ipc.service';
 import GeneralUtil from '@utils/general.util';
 

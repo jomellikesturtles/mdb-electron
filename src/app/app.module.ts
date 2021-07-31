@@ -16,7 +16,7 @@ import { TopNavigationComponent } from '@components/top-navigation/top-navigatio
 import { BrowseComponent } from '@components/browse/browse.component';
 import { PersonDetailsComponent } from '@components/person-details/person-details.component';
 import { AngularFireModule } from '@angular/fire';
-import { environment } from '../environments/environment';
+import { environment } from '.@enviroments/environment';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { NgxsModule } from '@ngxs/store';
@@ -44,6 +44,7 @@ import { ImagePreviewComponent } from './components/image-preview/image-preview.
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { KeyboardShortcutsComponent } from './components/keyboard-shortcuts/keyboard-shortcuts.component';
 import { VideoPlayerModule } from '@components/video-player/video-player.module';
+import { YoutubePlayerComponent } from './components/youtube-player/youtube-player.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { VideoPlayerModule } from '@components/video-player/video-player.module'
     AdvancedFindComponent,
     ImagePreviewComponent,
     KeyboardShortcutsComponent,
+    YoutubePlayerComponent,
     // ReleaseYearPipe/
     // UsernameExistValidatorDirective
     // RuntimeDisplayPipe

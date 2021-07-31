@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  version: 1,
   firebase: {
     apiKey: 'AIzaSyBPB_9eQbL5ZzYrI-mBqFix96xTXYyFo7U',
     authDomain: 'mdb-project-id.firebaseapp.com',

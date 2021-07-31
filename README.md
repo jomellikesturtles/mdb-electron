@@ -120,6 +120,7 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Development Notes
 
 APIs, image size
+confluence: https://media-database.atlassian.net/wiki/home
 
 ### APIs
 

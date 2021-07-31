@@ -5,6 +5,7 @@
 const cp = require("child_process");
 const electron = require("electron");
 const Datastore = require("nedb");
+const url = require('url');
 const configDb = new Datastore({
   filename: "src/assets/config/config.db",
   autoload: true,
@@ -24,8 +25,9 @@ let procScanLibrary;
 let procWebTorrent;
 let mainWindow;
 let mdbTray;
+let splashWindow;
 const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`;
-
+const CRIT_ERR = 'Critical error';
 let DEBUG = (() => {
   let timestamp = () => {};
   timestamp.toString = () => {
@@ -69,6 +71,9 @@ function createWindow() {
   });
   mainWindow.once("show", function () {
     DEBUG.log("main window Show");
+    if (splashWindow) {
+      splashWindow.destroy();
+    }
   });
 
   // ipcMain.on('error', (_, err) => {
@@ -94,7 +99,8 @@ function createWindow() {
 
 app.setAppUserModelId(process.execPath);
 // Create window on electron initialization
-app.on("ready", createWindow);
+app.on("ready", showSplash);
+// app.on("ready", createWindow);
 
 // Quit when all windows are closed.
 app.on("window-all-closed", function () {
@@ -116,6 +122,69 @@ app.on("activate", function () {
 const TEMP_FOLDER = path.join(process.cwd(), 'dist/mdb-electron/tmp');
 if (!fs.existsSync(TEMP_FOLDER)) {
   fs.mkdirSync(TEMP_FOLDER);
+}
+
+
+// dialog.showErrorBox(CRIT_ERR, 'DB error occurred. Please re-install OfflineBay');
+// dialog.showErrorBox(CRIT_ERR, 'Not enough disk space! Minimum 5GB is required to run the application');
+// dialog.showErrorBox(CRIT_ERR, 'Trial has expired');
+// dialog.showErrorBox(CRIT_ERR, 'No internet connection');
+
+function showSplash() {
+  splashWindow = new BrowserWindow({
+    width: 600,
+    height: 400,
+    resizable: false,
+    show: false,
+    frame: false,
+    transparent: false,
+    alwaysOnTop: true,
+    webPreferences:{
+      preload: __dirname + '/preload.js',
+      experimentalFeatures: true,
+      nodeIntegration: false,
+      webSecurity: false,
+      nativeWindowOpen: true,
+      devTools: true
+    },
+    title: 'OfflineBay by TechTac'
+  });
+
+  // splashWindow.webContents.openDevTools();
+  let messagesList = [
+    'checking disk space...',
+    'checking trial...',
+    'checking internet connection...',
+    'launching main app...',
+  ];
+
+  splashWindow.loadURL(url.format({
+      pathname: path.join(__dirname, 'WndSplash.html'),
+      protocol: 'file:',
+      slashes: true
+  }));
+
+  splashWindow.webContents.once('dom-ready', function () {
+    splashWindow.show();
+  });
+
+  splashWindow.once('show', function () {
+    splashWindow.webContents.send('fade');
+    let index = 0;
+
+
+
+    let msgInterval = setInterval(function() {
+      console.log(messagesList[index]);
+      splashWindow.webContents.send('message', messagesList[index]);
+      index++;
+      if (index >= messagesList.length)
+      {
+        clearInterval(msgInterval);
+      }
+    }, 3000);
+    createWindow();
+  });
 }
 
 function setSystemTray() {

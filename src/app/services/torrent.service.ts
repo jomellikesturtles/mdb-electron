@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of, Subscriber, forkJoin } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MDBTorrent, ITPBTorrent } from '@models/interfaces'
-import { IpcService } from '../services/ipc.service'
+import { IpcService } from '@services/ipc.service'
 import { DomSanitizer } from '@angular/platform-browser'
 import { Pipe, PipeTransform } from '@angular/core';
 import { STRING_REGEX_IMDB_ID } from '../shared/constants';
