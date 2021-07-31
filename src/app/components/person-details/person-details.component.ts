@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { DataService } from '../../services/data.service';
-import { PersonService } from '../../services/person.service';
-import { UtilsService } from '../../services/utils.service';
+import { DataService } from '@services/data.service';
+import { PersonService } from '@services/person.service';
+import { UtilsService } from '@services/utils.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { PERSON_DETAILS, PERSON_DETAILS_FULL, PERSON_COMBINED_CREDITS } from '../../mock-data-person-details';

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { NavigationService, Navigation } from '../../services/navigation.service'
+import { NavigationService, Navigation } from '@services/navigation.service'
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',

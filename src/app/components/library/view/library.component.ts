@@ -2,7 +2,7 @@
  * Gets available movies.
  */
 import { UserDataService } from '@services/user-data.service';
-import { environment } from './../../../../environments/environment';
+import { environment } from '@environments/environment';
 import { Component, OnInit, Input } from '@angular/core';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data'
 import { STRING_REGEX_IMAGE_SIZE } from '@shared/constants';

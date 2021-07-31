@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    *,
+    *:before,
+    *:after {
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      transition: opacity 1s;
+      background-color: black;
+      overflow: hidden;
+    }
+
+    #logo {
+      /* height: 280px;
+      width: 280px;
+      position: absolute;
+      z-index: 3;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 100%;
+      overflow: hidden; */
+    }
+
+    .box {
+      height: 600px;
+      width: 400px;
+      /* position: absolute; */
+      /* top: 50%;
+      left: 50%; */
+      /* transform: translate(-50%, -50%); */
+      /* background: #a4724d;
+      /* border-radius: 100%; */
+      overflow: hidden;
+      filter: drop-shadow(0 0px 6px rgba(0, 0, 0, .5));
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <div id="logo" class="logo">
+      <img draggable="false" src="splash.png">
+    </div>
+    <h5 id="message" style='color:white'>starting...</h5>
+  </div>
+  <script src="RndSplash.js"></script>
+</body>
+
+</html>

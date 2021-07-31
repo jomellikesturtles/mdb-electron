@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Select } from '@ngxs/store';
-import { BookmarkService, IBookmark } from '../../../services/bookmark.service';
-import { WatchedService, IWatched } from '../../../services/watched.service';
-import { LibraryService } from '../../../services/library.service';
-import { environment } from '../../../../environments/environment';
+import { BookmarkService, IBookmark } from '@services/bookmark.service';
+import { WatchedService, IWatched } from '@services/watched.service';
+import { LibraryService } from '@services/library.service';
+import { environment } from '@environments/environment';
 import { UserDataService } from '@services/user-data.service';
 import { IProfileData } from '@models/profile-data.model';
 import { MDBMovie } from '@models/mdb-movie.model';

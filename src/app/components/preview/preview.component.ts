@@ -34,18 +34,13 @@ export class PreviewComponent implements OnInit, OnDestroy {
   previewMovie: MDBMovie
   clipSrc = null
   youtubeUrl = ''
-  tag
   player;
-  done = false;
   globalPlayerApiScript
-  selectedMovieBookmarkStatus = false
-  hasAlreadySelected
-  selectedMovie
+  hasAlreadySelected: boolean;
   isYTReady = false
   hasInitialSelected = false
   isHide = true
   playedTmdbId = 0
-  hasQuotaExceeded = false
   isMute = false
   isYTPlaying = false
   hasTrailerClip = false

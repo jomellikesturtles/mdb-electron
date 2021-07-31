@@ -37,25 +37,25 @@ export class RuntimeDisplayPipe implements PipeTransform {
   transform(value: string | number): string {
     let toReturn = ''
     if (typeof value === 'number') {
-      const runtimeHour = Math.floor(value / 60)
-      const valueRemainder = (value % 60)
-      if (runtimeHour === 1) {
-        toReturn += `${runtimeHour} hour`
-      } else if (runtimeHour >= 2) {
-        toReturn += `${runtimeHour} hours`
+      const RUNTIME_HOUR = Math.floor(value / 60)
+      const VALUE_REMAINDER = (value % 60)
+      if (RUNTIME_HOUR === 1) {
+        toReturn += `${RUNTIME_HOUR} hour`
+      } else if (RUNTIME_HOUR >= 2) {
+        toReturn += `${RUNTIME_HOUR} hours`
       }
-      if (valueRemainder !== 0) {
-        if (valueRemainder === 1) {
-          toReturn += ` ${valueRemainder} minutes`
+      if (VALUE_REMAINDER !== 0) {
+        if (VALUE_REMAINDER === 1) {
+          toReturn += ` ${VALUE_REMAINDER} minutes`
         } else {
-          toReturn += ` ${valueRemainder} minutes`
+          toReturn += ` ${VALUE_REMAINDER} minutes`
         }
       }
     } else if (typeof value === 'string') {
       const REGEX_TMDB_RUNTIME = new RegExp(STRING_REGEX_TMDB_RUNTIME, `gi`)
-      const regexResults = REGEX_TMDB_RUNTIME.exec(value)
+      const REGEX_RESULTS = REGEX_TMDB_RUNTIME.exec(value)
       if (value !== 'N/A') {
-        if (regexResults != null) {
+        if (REGEX_RESULTS != null) {
           const runtimeHour = Math.floor(parseInt(value, 10) / 60)
           const integerValue = parseInt(value, 10)
           const valueRemainder = integerValue % 60
