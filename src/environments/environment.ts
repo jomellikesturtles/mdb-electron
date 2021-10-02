@@ -17,7 +17,7 @@ export const environment = {
   devApi: 'http://localhost:8080',
   runConfig: {
     firebaseMode: false,
-    springMode: true,
+    springMode: false,
     electron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
     useTestData: true,
     environment: location.protocol

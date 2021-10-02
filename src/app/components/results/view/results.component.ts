@@ -1,4 +1,4 @@
-import { environment } from '@enviroments/environment';
+import { environment } from '@environments/environment';
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces'

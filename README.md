@@ -29,7 +29,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
       - [themoviedb](#themoviedb)
       - [Google](#google)
       - [YTS](#yts)
-      - [imdb offline database](#imdb-offline-database)
+      - [JustWatch](#justwatch)
       - [Fanart.tv](#fanarttv)
   - [Todo](#todo)
   - [Offline Assets](#offline-assets)
@@ -183,7 +183,11 @@ https://yts.am/api/v2/movie_details.json?movie_id=10
 https://yts.am/api/v2/movie_details.json?movie_id=15&with_images=true&with_cast=true
 ```
 
-#### imdb offline database
+#### JustWatch
+
+```
+https://www.justwatch.com/#### imdb offline database
+```
 
 If online APIs go down, this is the last option. **Note:** this is updated daily by imdb
 

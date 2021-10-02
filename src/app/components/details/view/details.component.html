@@ -8,7 +8,7 @@ height: 100%;
 background-attachment: fixed;'>
   <!-- overflow-y: hidden; -->
   <!-- background-color:black -->
-  <!-- [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.backropPath+')'}" -->
+  <!-- [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.backropPath+')'}" v1-disabled -->
 
   <div class='container' style='padding-top:.75rem'>
     <div class='row'>
@@ -19,7 +19,8 @@ background-attachment: fixed;'>
           <div class='img-container mdb-poster image-cover'
             style='  background-color: white; margin:auto; height: 70vh; width: calc(70vh*.65); max-width: 420px;'
             [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.posterPath+')'}"
-            (click)="previewImage()">
+            >
+            <!-- (click)="previewImage()" v1-disabled-->
           </div>
           <div class='container'>
             <div id='userDataControlsContainer'
@@ -138,7 +139,6 @@ background-attachment: fixed;'>
                 </span>
               </div>
               <div *ngIf="movieDetailsWriters" class='credit-overview-container'>
-                <!-- </div> -->
                 <span class='row'>
                   <span class='col-2 color-secondary font-emphasize credit-label'>Written by </span>
                   <span class='credit-list-wrap col-8'>
@@ -180,16 +180,16 @@ background-attachment: fixed;'>
             CREDITS
             <div class="row">
               Cast
-              <!-- (click)='goToFullCredits()' -->
+              <!-- (click)='goToFullCredits()' v1-disabled -->
               <h5 class='text-hyperlink'>See more...</h5>
               <div id='featuredCastAndCrewDisplay' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
                 <div *ngFor="let cast of movieDetails.credits.cast" style='margin-right: 20px;'>
-                  <!-- <div (click)='goToPerson(cast.id)'  -->
+                  <!-- <div (click)='goToPerson(cast.id)' v1-disabled -->
                   <div class='image-container' style='height: 200px; width: 185px; border-radius: 50%; cursor: pointer;'
                     [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+cast.profilePath+')'}">
                   </div>
                   <div>
-                    <!--(click)='goToPerson(cast.id)' -->
+                    <!--(click)='goToPerson(cast.id)' v1-disabled -->
                     <h6 class='text-hyperlink'>{{cast.name}}</h6>
                     <p>{{cast.character}}</p>
                   </div>

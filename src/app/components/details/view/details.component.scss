@@ -1,5 +1,8 @@
 $mdb-primary: #FF4500;
 @import '../../../variables.scss';
+::ng-deep .mat-tab-body-content {
+  overflow-x: hidden;
+}
 
 * {
   font-size: 1rem;
@@ -66,7 +69,7 @@ only screen and (max-width: 349px) {
 
 .mdb-poster:hover {
   box-shadow: 0 0 10px black;
-  cursor: pointer;
+  // cursor: pointer; v1-disabled
 }
 
 .color-secondary {
