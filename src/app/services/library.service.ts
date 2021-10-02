@@ -1,5 +1,5 @@
 import { IUserSavedData } from '@models/interfaces';
-import { environment } from '.@enviroments/environment';
+import { environment } from '@environments/environment';
 import { Injectable } from '@angular/core';
 import { IpcService } from './ipc.service';
 import { FirebaseService, CollectionName, FieldName, FirebaseOperator } from './firebase.service';

@@ -16,7 +16,7 @@ import { TopNavigationComponent } from '@components/top-navigation/top-navigatio
 import { BrowseComponent } from '@components/browse/browse.component';
 import { PersonDetailsComponent } from '@components/person-details/person-details.component';
 import { AngularFireModule } from '@angular/fire';
-import { environment } from '.@enviroments/environment';
+import { environment } from '@environments/environment';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { NgxsModule } from '@ngxs/store';
