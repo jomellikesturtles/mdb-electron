@@ -41,6 +41,7 @@ function initializeClient() {
  * @param {string} hash
  */
 function playMovieTorrent(hash) {
+  DEBUG.log("Starting playmovie torrent with hash: ", hash);
   if (currentStreamHash === hash) {
     DEBUG.log("sending stream-link1", currentStreamLink);
     process.send(["stream-link", currentStreamLink]);
@@ -239,6 +240,14 @@ function displayTorrentPiecesInProgress(torrent) {
   });
 }
 
+/**
+ * Check if device can play/stream.
+ * @returns boolean
+ */
+function playChecklist() {
+  return true;
+}
+
 process.on("uncaughtException", function (error) {
   console.log("uncaughtException ipcChild", error);
   // process.send(['operation-failed', 'general']);
@@ -262,13 +271,15 @@ process.on("warning", function (error) {
 });
 
 process.on("message", (m) => {
-  console.log("onMessage ipcChild", m);
-  if (m[0] == "play-torrent") {
-    playMovieTorrent(m[1]);
-  } else if (m == "stop-stream") {
+  const message = m[0];
+  const argument = m[1];
+  if (message == "play-torrent") {
+    playChecklist();
+    playMovieTorrent(argument);
+  } else if (message == "stop-stream") {
     console.log("stoppingStream");
     stopStream();
-  } else if (m == "progress") {
+  } else if (message == "progress") {
   }
 });
 

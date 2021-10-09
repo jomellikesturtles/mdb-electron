@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '@services/bookmark.service';
 import { WatchedService, IWatched } from '@services/watched.service';
@@ -14,9 +14,12 @@ import ObjectUtil from '@utils/object.utils';
   templateUrl: './card-list.component.html',
   styleUrls: ['./card-list.component.scss']
 })
-export class CardListComponent implements OnInit {
+export class CardListComponent implements OnInit, OnChanges {
   @Select(state => state.moviesList) moviesList$
 
+  @Input() cardWidth: string
+  @Input() displayMode: string = 'd-inline-flex'
+  @Input() listType: string
   _movieList: MDBMovie[]
   @Input()
   set movieList(inputMessage: any[]) {
@@ -29,9 +32,6 @@ export class CardListComponent implements OnInit {
     return this._movieList;
   }
 
-  @Input() cardWidth: string
-  @Input() displayMode: string = 'd-inline-flex'
-  @Input() listType: string
 
   movieAndUserDataList: IMovieAndUserData[] = []
 
@@ -47,6 +47,12 @@ export class CardListComponent implements OnInit {
     this.getMoviesUserData()
   }
 
+  ngOnChanges(changes: any): void {
+    console.log('changes',changes)
+    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
+    //Add '${implements OnChanges}' to the class.
+
+  }
   /**
    * Gets the user data like: bookmark, watched, video.
    */

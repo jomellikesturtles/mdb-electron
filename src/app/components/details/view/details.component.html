@@ -10,14 +10,20 @@ background-attachment: fixed;'>
   <!-- background-color:black -->
   <!-- [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.backropPath+')'}" v1-disabled -->
 
-  <div class='container' style='padding-top:.75rem'>
-    <div class='row'>
-
-      <div class='col-lg-4'>
+  <div class='container' style='padding-top:.75rem;
+  height: 100%; position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);'>
+    <div class='row' style='
+    position: absolute;top:0;bottom: 0;left: 0;right: 0;margin: auto;
+    overflow-y: auto; padding-bottom:100px;padding-top:50px'>
+<!-- style='background-color: #555555' -->
+      <div class='col-xl-4'>
         <div>
           <!-- <div style='background-color: aqua;height:100%'> -->
           <div class='img-container mdb-poster image-cover'
-            style='  background-color: white; margin:auto; height: 70vh; width: calc(70vh*.65); max-width: 420px;'
+            style='  background-color: white; margin:auto; height: 60vh; width: calc(60vh*.65); max-width: 420px;'
             [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.posterPath+')'}"
             >
             <!-- (click)="previewImage()" v1-disabled-->
@@ -52,8 +58,8 @@ background-attachment: fixed;'>
           </div>
         </div>
       </div>
-
-      <div class='col-md-8'>
+      <!-- style='background-color: white' -->
+      <div class='col-xl-8' >
         <div style='height:100%'>
           <div style='display: flex; position:relative'>
             <h2 id="movieTitle" class='movie-title'>{{movieDetails.title}}</h2>&nbsp;
@@ -208,235 +214,3 @@ background-attachment: fixed;'>
     </div>
   </div>
 </div>
-
-<!-- <div
-  [ngStyle]="{'background-image': 'linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url(https://image.tmdb.org/t/p/original/x7O7oJO7BeXWvqXpLa5YoJd8ZD5.jpg)'}"
-  style='background-size: cover;background-repeat: no-repeat;background-position: center;height: 100%;
-  background-attachment: fixed;'> -->
-<!-- {{certification}} -->
-<!-- PG
-                </p>
-              </div>
-            </div>
-            <div class='uk-button-group'>
-              <button [disabled]='procBookmark' class='btn btn-small bookmark-icon'
-                [ngClass]="{'btn-success': !isBookmarked,'btn-danger':isBookmarked}" (click)='toggleBookmark()'
-                data-toggle='tooltip' title='Toggle Bookmark'>
-                <span *ngIf="isBookmarked">Remove bookmark</span>
-                <span *ngIf="!isBookmarked">Add bookmark</span>
-              </button> -->
-
-<!-- <button [disabled]=' procWatched' class='btn btn-small' -->
-<!-- <button class='btn btn-small' [ngClass]="{'btn-success': !isWatched,'btn-danger':isWatched}"
-                (click)='toggleWatched()' data-toggle='tooltip' title='Mark as Watched'>
-                <span *ngIf="isWatched">Unmark as watched</span>
-                <span *ngIf="!isWatched">Mark as watched</span>
-              </button>
-
-              <button class='btn btn-small'
-                [ngClass]="{'btn-success': !userData.favorite,'btn-danger':userData.favorite}"
-                (click)='toggleFavorite()' data-toggle='tooltip' title='Toggle Favorite'>
-                <span *ngIf="userData.favorite">Unmark as Favorite</span>
-                <span *ngIf="!userData.favorite">Mark as Favorite</span>
-              </button>
-            </div>
-          </div>
-          <div class="col-sm-8">
-
-            <div style='display: flex;'> -->
-<!-- unified play button -->
-<!-- <div class="btn-group" *ngIf="playLinks.length > 0">
-                <button type="button" class="btn btn-danger" (click)='playBestPlayLink()'>Play</button>
-                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="visually-hidden">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu">
-                  <li *ngFor="let playLink of playLinks">
-                    <a class="dropdown-item" (click)='playMovie(playLink)'> {{playLink.type}} | {{playLink.name}}
-                      {{playLink.quality}}</a>
-                  </li>
-                </ul>
-              </div>
-
-              <button class='btn btn-primary' (click)='continueWatching()' *ngIf='hasContinueWatching'>
-                Continue Watching
-              </button>
-              <button class='btn btn-primary' (click)='playTrailer()' *ngIf='movieTrailer'>
-                Play Trailer
-              </button>
-
-              <div *ngIf="movieDetailsDirectors">
-                <span style='color:#919191'>Directed by </span>
-                <span class='text-hyperlink' (click)='goToDiscover("person",director.id,director.name)'
-                  *ngFor="let director of movieDetailsDirectors; let isLast=last">
-                  {{director.name}}{{isLast ? '' : ', '}}
-                </span>
-              </div>
-              <div *ngIf="movieDetailsWriters">
-                <span style='color:#919191'>Written by </span>
-                <span class='text-hyperlink' (click)='goToDiscover(writer.id)'
-                  *ngFor="let writer of movieDetailsWriters; let isLast=last">
-                  {{writer.name}}{{isLast ? '' : ', '}}
-                </span>
-              </div>
-              <div *ngIf="movieDetailsProducers">
-                <span style='color:#919191'>Produced by</span>
-                <span class='text-hyperlink' (click)='goToDiscover(producer.id)'
-                  *ngFor="let producer of movieDetailsProducers; let isLast=last">
-                  {{producer.name}}{{isLast ? '' : ', '}}
-                </span>
-              </div>
-              <div>
-                <span *ngIf="movieDetailsCast" style='color:#919191'>Cast</span>
-                <div style='
-                display: inline-block;
-                width: 100%;
-                white-space: nowrap;
-                overflow: hidden !important;
-                text-overflow: ellipsis;
-                margin-bottom: 0px;'>
-                  <span *ngFor="let cast of movieDetailsCast; let isLast=last">
-                    <span class='text-hyperlink' (click)='goToDiscover(cast.id)'>
-                      {{cast.name}}{{isLast ? '' : ', '}}
-                    </span>
-                  </span>
-                </div> -->
-
-<!-- <span>See more</span> -->
-<!-- </div>
-
-              <div> -->
-<!-- external links -->
-<!-- <div class='row'>
-                  <div class='customBtn' style='background-color:#f5de50;cursor: pointer' (click)="goToLink('imdb')">
-                    <span class='icon' style='background: url(./assets/icons/imdb-logo.png);'></span>
-                    <span class='buttonText'>Imdb</span>
-                  </div>
-                  <a (click)="goToLink('google')" style="cursor: pointer">Google</a>
-                  <div (click)="goToLink('tmdb')" data-toggle='tooltip' title='{{movieDetails.tmdbId}}'>
-                    Tmdb
-                  </div>
-                  <div *ngIf="movieDetails.website" class='text-hyperlink' (click)="goToLink('website')"
-                    data-toggle='tooltip' title='{{movieDetails.website}}'>
-                    Website
-                  </div>
-                  <div *ngIf="movieDetails.external_ids" class='row'>
-                    <div *ngIf="movieDetails.external_ids.facebook_id" class='text-hyperlink'
-                      (click)="goToLink('facebook', movieDetails.external_ids.facebook_id)">
-                      Facebook
-                    </div>
-                    <div *ngIf="movieDetails.external_ids.instagram_id" class='text-hyperlink'
-                      (click)="goToLink('twitter', movieDetails.external_ids.instagram_id)">
-                      Twitter
-                    </div>
-                    <div *ngIf="movieDetails.external_ids.twitter_id" class='text-hyperlink'
-                      (click)="goToLink('instagram', movieDetails.external_ids.twitter_id)">
-                      Instagram
-                    </div>
-                  </div>
-                </div> -->
-<!-- </div>
-            </ng-template>
-          </div>
-        </div>
-
-        <div class="table-responsive-lg container" *ngIf="false">
-          <table class="table">
-            <thead>
-            </thead>
-            <tbody>
-              <tr *ngFor="let torrent of torrents">
-                <td>
-                  <a [href]="sanitize(torrent)">{{torrent.name}}</a>
-                </td>
-                <td>
-                </td>
-                <td>
-                  <p>{{torrent.seeds}}</p>
-                </td>
-                <td>
-                  <p>{{torrent.peers}}</p>
-                </td>
-                <td>
-                  <button class="btn btn-primary" (click)="copyToClipboard(torrent.magnetLink)">Copy to
-                    clipboard</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class='container'>
-        <ng-template #creditsTemplate>
-          <div class="row">
-            Cast
-            <h5 class='text-hyperlink' (click)='goToFullCredits()'>See more...</h5>
-            <div id='featuredCastAndCrewDisplay' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
-              <div *ngFor="let cast of movieDetails.credits.cast" style='margin-right: 20px;'>
-                <div (click)='goToPerson(cast.id)' class='image-container'
-                  style='height: 200px; width: 185px; border-radius: 50%; cursor: pointer;'
-                  [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+cast.profilePath+')'}">
-                </div>
-                <div>
-                  <h6 class='text-hyperlink' (click)='goToPerson(cast.id)'>{{cast.name}}</h6>
-                  <p>{{cast.character}}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            Crew
-            <h5 class='text-hyperlink' (click)='goToFullCredits()'>See more...</h5>
-            <div id='featuredCastAndCrewDisplay' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
-              <div *ngFor="let crew of movieDetails.credits.crew" style='margin-right: 20px;'>
-                <div (click)='goToPerson(crew.id)' class='image-container'
-                  style='height: 200px; width: 185px; border-radius: 50%; cursor: pointer;'
-                  [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+crew.profilePath+')'}">
-                </div>
-                <div>
-                  <h6 class='text-hyperlink' (click)='goToPerson(crew.id)'>{{crew.name}}</h6>
-                  <p>{{crew.job}}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-
-        <ng-template #similarMoviesTemplate>
-          <div class="row"> -->
-<!-- Recommended Movies -->
-<!-- <div id='recommendedMovies' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
-              <div *ngFor="let recommendedMovie of movieDetails.recommendations.results"
-                style='margin-right: 8px; cursor: pointer;'>
-                <div (click)='goToMovie(recommendedMovie.id)' class='image-container'
-                  style='height: 190px; width: 300px'
-                  [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w300'+recommendedMovie.backdrop_path+')'}">
-                </div>
-                <div>
-                  <h6 (click)='goToMovie(recommendedMovie.id)' class='text-hyperlink'>{{recommendedMovie.title}}</h6>
-                  <label class='text-hyperlink' style='float: left'
-                    (click)='goToDiscover("year",getYear(recommendedMovie.release_date))'>
-                    {{recommendedMovie.release_date|releaseYear}}</label>
-                  <label *ngIf='recommendedMovie.vote_average>0' style='float: right' data-toggle='tooltip'
-                    title='{{recommendedMovie.vote_count}} votes'>
-                    <img style='height:10px;
-                filter: invert(1);margin-bottom: 4px;
-                margin-right: 2px;' src='./assets/icons/star.svg' />{{recommendedMovie.vote_average}}</label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-      </div>
-    </div>
-  </div>
-</div> -->
-
-<!-- <div *ngIf="!hasData">
-  <label>The movie you were looking for was not found.</label>
-  <h1>No data retrieved :(</h1>
-  <h3>{{troubleQuote.quote}}</h3>
-  <h5>- {{troubleQuote.title}}</h5>
-</div> -->

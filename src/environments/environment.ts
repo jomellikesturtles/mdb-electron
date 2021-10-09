@@ -19,7 +19,7 @@ export const environment = {
     firebaseMode: false,
     springMode: false,
     electron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
-    useTestData: true,
+    useTestData: false,
     environment: location.protocol
   },
 };

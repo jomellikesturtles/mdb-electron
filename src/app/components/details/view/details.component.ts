@@ -480,7 +480,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   playTrailer() {
-    this.dataService.updatePreviewMovie(this.rawData)
+    this.dataService.updatePreviewMovie(this.movieDetails)
   }
 
   getTroubleQuote() {

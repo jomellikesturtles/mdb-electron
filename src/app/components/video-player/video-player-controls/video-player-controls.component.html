@@ -57,8 +57,9 @@
       <mat-menu #subtitlesAppearanceMenu="matMenu" yPosition="above">
         <button mat-menu-item [matMenuTriggerFor]="subtitlesAppearanceFontColorMenu">Font Color</button>
         <button mat-menu-item [matMenuTriggerFor]="subtitlesAppearanceFontSizeMenu">Font Size</button>
-        <button mat-menu-item [matMenuTriggerFor]="subtitlesAppearanceBackgroundColorMenu">Background
-          Color</button>
+        <button mat-menu-item [matMenuTriggerFor]="subtitlesAppearanceBackgroundColorMenu">Background Color</button>
+        <button mat-menu-item [matMenuTriggerFor]="subtitlesAppearanceBackgroundOpacityMenu">Background
+          Opacity</button>
       </mat-menu>
       <mat-menu #subtitlesAppearanceFontColorMenu="matMenu" yPosition="above">
         <span *ngFor="let color of fontColorsList">
@@ -73,6 +74,11 @@
       <mat-menu #subtitlesAppearanceBackgroundColorMenu="matMenu" yPosition="above">
         <span *ngFor="let color of fontColorsList">
           <button mat-menu-item (click)="changeBackgroundColor(color.value)">{{color.label}}</button>
+        </span>
+      </mat-menu>
+      <mat-menu #subtitlesAppearanceBackgroundOpacityMenu="matMenu" yPosition="above">
+        <span *ngFor="let p of percentageList">
+          <button mat-menu-item (click)="changeBackgroundOpacity(p.value)">{{p.label}}</button>
         </span>
       </mat-menu>
 

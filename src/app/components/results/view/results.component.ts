@@ -78,11 +78,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
     const paramMap = new Map<TmdbParameters | TmdbSearchMovieParameters, any>();
     paramMap.set(TmdbSearchMovieParameters.Query, this.searchQuery.query);
     paramMap.set(TmdbParameters.Page, ++this.currentPage);
+    this.procLoadMoreResults = true
     this.movieService.searchTmdbMovie(paramMap).subscribe(data => {
-      this.searchResults.push(...data.results)
+      this.searchResults = data.results
+      // this.searchResults.push(...data.results) // for some reason this doesn't work anymore
       if (data.total_pages <= this.currentPage) {
         this.hasMoreResults = false
       }
+      this.procLoadMoreResults = false
     })
   }
 

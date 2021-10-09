@@ -46,7 +46,7 @@ const PROC_OPTION = {
 /**
  * Creates the browser window
  */
-function createWindow() {
+function createMainWindow() {
   mainWindow = new BrowserWindow({
     minWidth: 762,
     minHeight: 700,
@@ -69,12 +69,13 @@ function createWindow() {
   mainWindow.on("closed", function () {
     mainWindow = null;
   });
-  mainWindow.once("show", function () {
-    DEBUG.log("main window Show");
-    if (splashWindow) {
-      splashWindow.destroy();
-    }
-  });
+
+  mainWindow.webContents.once("dom-ready", function () {
+      if (splashWindow) {
+        splashWindow.close();
+        DEBUG.log("domready");
+      }
+    });
 
   // ipcMain.on('error', (_, err) => {
   // 	if (!argv.debug) {
@@ -114,9 +115,9 @@ app.on("before-quit", function () {
   globalShortcut.unregisterAll();
 });
 app.on("activate", function () {
-  // macOS specific close process
+  DEBUG.log("activate")
   if (mainWindow === null) {
-    createWindow();
+    createMainWindow();
   }
 });
 const TEMP_FOLDER = path.join(process.cwd(), 'dist/mdb-electron/tmp');
@@ -172,18 +173,16 @@ function showSplash() {
     splashWindow.webContents.send('fade');
     let index = 0;
 
-
-
     let msgInterval = setInterval(function() {
       console.log(messagesList[index]);
       splashWindow.webContents.send('message', messagesList[index]);
       index++;
       if (index >= messagesList.length)
       {
+        createMainWindow();
         clearInterval(msgInterval);
       }
-    }, 3000);
-    createWindow();
+    }, 500);
   });
 }
 
@@ -228,6 +227,7 @@ function playTorrentSample2() {
 }
 
 ipcMain.on(IPCRendererChannel.STOP_STREAM, function (event, args) {
+  DEBUG.log('received Stop Stream')
   procWebTorrent.send("stop-stream");
   if (procVideoService) {
     procVideoService.kill()
@@ -621,7 +621,8 @@ ipcMain.on("get-subtitle", function (event, data) {
         console.log('The file has been saved!');
         if (err) { console.log(err); }
         console.log("subtitle-path", subtitlePath);
-        sendContents("subtitle-path", path.basename(e.filePaths[0]));
+        sendContents("subtitle-path", subtitlePath);
+        // sendContents("subtitle-path", path.basename(e.filePaths[0]));
       });
     }
   });
