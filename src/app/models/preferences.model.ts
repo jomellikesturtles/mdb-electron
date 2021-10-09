@@ -57,5 +57,5 @@ export interface ISubtitlePreferences {
   textShadow: string;
   fontFamily?: string;
   backgroundColor: string;
-  backgroundOpacity: number
+  backgroundOpacity: string;
 }

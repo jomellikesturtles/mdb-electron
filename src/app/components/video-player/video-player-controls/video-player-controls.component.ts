@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IpcService } from '@services/ipc.service';
-import { COLOR_LIST, FONT_SIZE_LIST } from '@shared/constants';
+import { COLOR_LIST, FONT_SIZE_LIST, PERCENTAGE_LIST, RGB_COLOR_LIST } from '@shared/constants';
 import GeneralUtil from '@utils/general.util';
 
 @Component({
@@ -30,9 +30,12 @@ export class VideoPlayerControlsComponent implements OnInit {
   @Output() onChangeFontColor = new EventEmitter<any>();
   @Output() onChangeFontSize = new EventEmitter<any>();
   @Output() onChangeBackgroundColor = new EventEmitter<any>();
+  @Output() onChangeBackgroundOpacity = new EventEmitter<any>();
 
-  fontColorsList = COLOR_LIST
+  fontColorsList = RGB_COLOR_LIST
+  // fontColorsList = COLOR_LIST
   fontSizeList = FONT_SIZE_LIST
+  percentageList = PERCENTAGE_LIST;
   seekTooltip: any
   toSeek: number = 0
   // isPlaying: boolean = false
@@ -92,6 +95,9 @@ export class VideoPlayerControlsComponent implements OnInit {
   }
   changeBackgroundColor(color: string) {
     this.onChangeBackgroundColor.emit(color);
+  }
+  changeBackgroundOpacity(percentage: string) {
+    this.onChangeBackgroundOpacity.emit(percentage);
   }
 
 

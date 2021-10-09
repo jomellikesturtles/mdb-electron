@@ -5,6 +5,7 @@ import { VideoPlayerComponent } from './video-player.component';
 import { VideoPlayerControlsComponent } from './video-player-controls/video-player-controls.component';
 import { MatFormFieldModule, MatInputModule, MatSidenavModule, MatSelectModule, MatCheckboxModule, MatTabsModule, MatDialogModule, MatAutocompleteModule, MatSliderModule, MatDividerModule, MatProgressSpinnerModule, MatTooltipModule, MatButtonModule, MatIconModule, MatMenuModule } from '@angular/material';
 import { VideoPlayerStatsComponent } from './video-player-stats/video-player-stats.component';
+import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { VideoPlayerStatsComponent } from './video-player-stats/video-player-sta
     VideoPlayerComponent
     // DetailsComponent,
     // CreditsComponent,
-  ], exports: [VideoPlayerComponent]
+  ], exports: [VideoPlayerComponent],
+  providers: [{provide: OverlayContainer, useClass: FullscreenOverlayContainer}],
 })
 export class VideoPlayerModule { }

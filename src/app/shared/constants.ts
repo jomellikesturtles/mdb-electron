@@ -190,12 +190,12 @@ const PLAYBACK: IPlaybackPreferences = {
 }
 
 export const DEFAULT_SUBTITLES: ISubtitlePreferences = {
-  fontColor: 'white',
-  backgroundColor: 'black',
-  backgroundOpacity: 0,
+  fontColor: '255,255,255',
+  backgroundColor: '0,0,0',
+  backgroundOpacity: '0%',
   fontOpacity: 1,
   fontFamily: '',
-  fontSize: 'black',
+  fontSize: '1em',
   synchronization: 0,
   textShadow: '3px 3px 5px black'
 }
@@ -223,6 +223,14 @@ export const FONT_SIZE_LIST = [
   { value: '2em', label: 'Daks' },
 ]
 
+export const PERCENTAGE_LIST = [
+  { value: '0%', label: '0%' },
+  { value: '25%', label: '25%' },
+  { value: '50%', label: '50%' },
+  { value: '75%', label: '75%' },
+  { value: '100%', label: '100%' },
+]
+
 export const COLOR_LIST =
   [
     { value: 'white', label: 'White' },
@@ -231,6 +239,15 @@ export const COLOR_LIST =
     { value: 'blue', label: 'Blue' },
     { value: 'green', label: 'Green' },
     { value: 'gray', label: 'Gray' },
+  ]
+
+export const RGB_COLOR_LIST = [
+    { value: '255,255,255', label: 'White' },
+    { value: '0,0,0', label: 'Black' },
+    { value: '255,0,0', label: 'Red' },
+    { value: '0,0,255', label: 'Blue' },
+    { value: '0,128,0', label: 'Green' },
+    { value: '128,128,128', label: 'Gray' },
   ]
 
 export const LANGUAGE_LIST = [

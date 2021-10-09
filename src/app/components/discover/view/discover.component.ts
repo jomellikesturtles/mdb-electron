@@ -91,7 +91,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.procLoadMoreResults = true
     this.paramMap.set(TmdbParameters.Page, ++this.currentPage)
     this.movieService.getMoviesDiscover(this.paramMap).subscribe(data => {
-      this.discoverResults.push(...data.results)
+      this.discoverResults = data.results
+      // this.discoverResults.push(...data.results) // for some reason this doesn't work anymore
       if (data.total_pages <= this.currentPage) {
         this.hasMoreResults = false
       }

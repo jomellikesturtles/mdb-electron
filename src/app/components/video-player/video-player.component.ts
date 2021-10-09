@@ -91,6 +91,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
 
   ngOnInit() {
+
+    // this.subtitleDisplaySettings.fontSize = size
+    // this.subtitleDisplaySettings.fontColor = color
+    // this.subtitleDisplaySettings.backgroundColor = color
+    // this.subtitleDisplaySettings.backgroundOpacity = percentage;
     // this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4' // 320p sample
     // this.streamLink = 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4' // 1080p sample
     // this.streamLink = '../../../../assets/sample movie/Ratatouille (2007) [1080p]/Ratatouille.2007.1080p.BrRip.x264.YIFY.mp4'
@@ -500,14 +505,21 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     this.subtitleDisplaySettings.fontSize = size
   }
   changeFontColor(color: string) {
-    this.setProperties('color', color)
+    this.setProperties('color', 'rgba(' + color + ',1)');
     this.subtitleDisplaySettings.fontColor = color
   }
+  // font outline, shadow, family,
   changeBackgroundColor(color: string) {
-    this.setProperties('background-color', color)
+    this.setProperties('background-color', 'rgba(' + color + ',' + this.subtitleDisplaySettings.backgroundOpacity + ')')
+    // this.setProperties('', 'rgba(' + this.subtitleDisplaySettings.fontColor + ',' + color + ')'))
     this.subtitleDisplaySettings.backgroundColor = color
   }
-
+  changeBackgroundOpacity(percentage: string) {
+    this.setProperties('background-color', 'rgba(' + this.subtitleDisplaySettings.backgroundColor + ',' + percentage + ')');
+    this.subtitleDisplaySettings.backgroundOpacity = percentage;
+  }
+  // background outline
+  // window
   private setProperties(propName: string, propValue: string) {
     this.subtitleSpanElementsList.forEach(element => {
       element.style.setProperty(propName, propValue)

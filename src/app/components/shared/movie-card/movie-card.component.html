@@ -64,7 +64,6 @@
         <mat-spinner [diameter]='20'></mat-spinner>
       </div>
     </div>
-    {{watchedPercentage}}
     <!-- watched Progress bar -->
     <div *ngIf="_userData?.watched" [ngStyle]="{'width': watchedPercentage +'%'}" id='watchedProgressBar'
       class='movie-progress-bar'>
