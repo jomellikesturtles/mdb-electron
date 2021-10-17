@@ -62,8 +62,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
   subtitleMap = new Map<number, Subtitle>();
 
-  subtitleLine1 = 'Subtitles look like this.';
-  subtitleLine2 = '';
+  subtitleLine1 = 'Subtitle line 1 look like this.';
+  subtitleLine2 = 'Subtitle line 2 look like this.';
   isUserInactive = false;
   subtitleDisplaySettings: ISubtitlePreferences = this.preferencesService.getPreferences().subtitle
   playbackSettings: IPlaybackPreferences = this.preferencesService.getPreferences().playBack
@@ -106,13 +106,13 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     })
     this.userIdleService.onTimeout().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
       GeneralUtil.DEBUG.log("TIMEOUT!OUT!", e)
-      this.isUserInactive = true;
+      // this.isUserInactive = true;
     })
 
     const root = this;
-    setTimeout(() => {
-      root.isShowSubtitles = false;
-    }, 5000);
+    // setTimeout(() => {
+    //   root.isShowSubtitles = false;
+    // }, 5000);
 
     GeneralUtil.DEBUG.log('1. VIDEOPLAYER ngOnInit')
   }
@@ -179,7 +179,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       GeneralUtil.DEBUG.log('EVENT: canplay', e)
       this.canPlay = true
       this.videoTime.duration = this.videoPlayerElement.duration
-      // this.togglePlay();
+      this.togglePlay();
       this.isSeeking = false
     })
     this.videoPlayerElement.addEventListener('durationchange', (e) => {
@@ -429,9 +429,10 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       const encodingAlt = chardet.analyse(fileStr)
       GeneralUtil.DEBUG.log(encodingAlt)
       if (encodingAlt.length > 1) {
-        encodingStr = encodingAlt[1].name
-      } else if (encodingAlt.length === 1) {
         encodingStr = encodingAlt[0].name
+      //   encodingStr = encodingAlt[1].name
+      // } else if (encodingAlt.length === 1) {
+      //   encodingStr = encodingAlt[0].name
       }
     }
     const file = await this.movieService.getSubtitleFile(filePath).toPromise()

@@ -37,6 +37,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
   - [Useful links](#useful-links)
   - [Resources](#resources)
   - [notes](#notes)
+    - [takeaways after watching The Captain](#takeaways-after-watching-the-captain)
 
 ## Built with
 
@@ -383,3 +384,18 @@ RE-ADD Jquery
 
 http://javascriptobfuscator.com/javascript-Obfuscator.aspx
 https://www.daftlogic.com/projects-online-javascript-obfuscator.htm
+
+### takeaways after watching The Captain
+
+- fix the encoding proper encoding
+- fix the inactive/idle hide cursor
+- shorten inactive/idle timer to 3/4 seconds
+- make subtitles size relative
+- make subtitles react to player controls
+- add loading indicator when getting play link
+- autoplay first time
+- fix exit program
+- "Cannot add duplicate torrent" error
+
+-minor
+- dragable subtitles

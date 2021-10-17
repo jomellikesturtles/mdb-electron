@@ -1,7 +1,7 @@
 /**
  * Preview for movie details.
  */
-import { Component, OnInit, OnDestroy, Pipe, PipeTransform, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Pipe, PipeTransform, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from '@services/data.service';
 import { GenreCodes } from '@models/interfaces';
@@ -18,7 +18,7 @@ import GeneralUtil from '@utils/general.util';
   styleUrls: ['./preview.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PreviewComponent implements OnInit, OnDestroy {
+export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private dataService: DataService,
@@ -49,9 +49,14 @@ export class PreviewComponent implements OnInit, OnDestroy {
   procWatched = false
   procHighlight = false
   showPreviewOverlayContext = false
+  isTrailerOnly = false;
 
   ngOnInit() {
     this.frameReady()
+  }
+
+  ngAfterViewInit(): void {
+
     this.dataService.previewMovie.subscribe((e: MDBMovie) => {
       console.log('PREVIEWMOVIE:', e)
       this.getVideoClip(e)
@@ -192,11 +197,10 @@ export class PreviewComponent implements OnInit, OnDestroy {
     }
 
     const root = this
-    // setTimeout(() => {
-    root.setVideo(videoId)
-    this.cdr.detectChanges()
-    // }, 5000
-    // )
+    setTimeout(() => {
+      // root.setVideo(videoId)
+      this.cdr.detectChanges()
+    }, 5000)
     // })
   }
 

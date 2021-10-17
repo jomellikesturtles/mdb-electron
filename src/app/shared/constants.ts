@@ -218,9 +218,10 @@ export const DEFAULT_PREFERENCES: IPreferences = {
 }
 
 export const FONT_SIZE_LIST = [
-  { value: '1em', label: 'Juts' },
-  { value: '1.5em', label: 'Medium' },
-  { value: '2em', label: 'Daks' },
+  { value: '1.5vh', label: 'Juts' },
+  { value: '2.5vh', label: 'Medium' },
+  { value: '3.5vh', label: 'Daks' },
+  { value: '5vh', label: 'XL' },
 ]
 
 export const PERCENTAGE_LIST = [

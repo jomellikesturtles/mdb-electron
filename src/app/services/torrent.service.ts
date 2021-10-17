@@ -176,10 +176,10 @@ export class TorrentService {
   }
 
   mapTorrentsList(rawTorrents: YTSTorrent[] | ITPBTorrent[]): MDBTorrent[] {
-    let torrents: (ITPBTorrent | YTSTorrent)[]
-    if (rawTorrents.hasOwnProperty('@meta')) {  // if yts
+    let torrents: (ITPBTorrent | YTSTorrent)[] = []
+    if (rawTorrents.hasOwnProperty('@meta') && rawTorrents['data'].count > 0) {  // if yts and has count
       torrents = rawTorrents['data'].movies[0].torrents // assuming there is only 1 movie or is searched with ID
-    } else {
+    } else if (rawTorrents.length > 0) {
       torrents = rawTorrents
     }
     let newTorrents = []

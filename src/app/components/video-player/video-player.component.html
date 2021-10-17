@@ -6,7 +6,7 @@
 
   <div id='videoPlayerOuter' (mousemove)='onNotIdle()' (keydown)="onKeyPress($event)" tabindex="1"
     style='position: relative; background-color: black; width: 100%; height: calc(100vh - 50px); outline: none'>
-    <div id='videoContainer' style='position:absolute; width:100%; height:100%; text-align:center; z-index: 20;'
+    <div id='videoContainer' style='position: absolute; width:100%; height:100%; text-align:center; z-index: 20;'
       (click)='togglePlay()' (dblclick)='toggleFullScreen()'>
       <!-- animation: ytp-bezel-fadeout .5s linear 1 normal forwards; -->
       <video #videoPlayer1 id='videoPlayer' style="width:100%; height:100%;" poster="">
@@ -15,18 +15,20 @@
 
       </video>
 
-      <div style='position: relative; bottom: 100px' [hidden]="!isShowSubtitles">
-        <span class='subtitle-span'>{{subtitleLine1}}</span><br />
-        <span class='subtitle-span'>{{subtitleLine2}}</span>
-      </div>
     </div>
 
-    <div style='position: absolute;z-index: 21;margin-top: 45vh;margin-left: 45vw;'>
+    <div style='position: absolute;z-index: 22;margin-top: 45vh;margin-left: 45vw;'>
       <mat-spinner *ngIf='isSeeking' [diameter]='100' style='margin: auto;'></mat-spinner>
       <!-- video center icons -->
       <!-- play,pause,mute,unmute,loading -->
     </div>
 
+    <div style='position: absolute; z-index: 21; bottom: 100px; display:flex;
+    width: 100%; align-items: center;flex-direction: column;
+    text-shadow: -2px 2px 2px #000000;' [hidden]="!isShowSubtitles">
+      <span class='subtitle-span'>{{subtitleLine1}}</span><br />
+      <span class='subtitle-span'>{{subtitleLine2}}</span>
+    </div>
     <!-- <app-video-player-stats [stats]='statsForNerds'>
 
     </app-video-player-stats> -->

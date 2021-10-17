@@ -60,9 +60,22 @@
 }
 
 .user-inactive {
-  cursor: none;
-
   #playerControlsContainer {
     display: none
   }
+}
+
+#subtitlesControl::after {
+  width: 24px;
+  left: 12px;
+  height: 3px;
+  border-radius: 3px;
+  background-color: #f00;
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid red;
+  filter: invert(1); // canceling parent invert
 }

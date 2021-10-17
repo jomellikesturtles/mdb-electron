@@ -228,8 +228,9 @@ function playTorrentSample2() {
 
 ipcMain.on(IPCRendererChannel.STOP_STREAM, function (event, args) {
   DEBUG.log('received Stop Stream')
-  procWebTorrent.send("stop-stream");
+  procWebTorrent.send(["stop-stream"]);
   if (procVideoService) {
+    DEBUG.log('killing procVideoService')
     procVideoService.kill()
   }
 });
@@ -283,6 +284,7 @@ ipcMain.on(IPCRendererChannel.MinimizeApp, function () {
 ----------------------*/
 
 ipcMain.on("exit-program", function (event, folder) {
+  DEBUG.log("Exiting app...")
   app.quit();
 });
 // Opens folder with system file explorer.
