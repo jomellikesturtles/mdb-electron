@@ -112,10 +112,14 @@ background-attachment: fixed;'>
 
             <div>
               <!-- unified play button -->
-              <div class="btn-group" *ngIf="playLinks.length > 0">
-                <button class="btn btn-danger mdb-primary play-btn" (click)='playBestPlayLink()'>Play</button>
+              <div class="btn-group">
+                <button class="btn btn-danger mdb-primary play-btn" [disabled]="playLinks.length <= 0" (click)='playBestPlayLink()'>
+                   <span *ngIf='!procPlayLink'>Play </span>
+                  <mat-spinner *ngIf='procPlayLink'
+                    [diameter]='27' style='margin: auto;'></mat-spinner>
+                </button>
                 <button class="btn btn-danger dropdown-toggle dropdown-toggle-split play-btn-dropdown-toggle"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [disabled]="playLinks.length <= 0">
                   <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu">
@@ -149,7 +153,7 @@ background-attachment: fixed;'>
                   <span class='col-2 color-secondary font-emphasize credit-label'>Written by </span>
                   <span class='credit-list-wrap col-8'>
                     <span *ngFor="let writer of movieDetailsWriters; let isLast=last">
-                      <span class='text-hyperlink' (click)='goToDiscover(writer.id)'>
+                      <span class='text-hyperlink' (click)='goToDiscover("person", writer.id, writer.name)'>
                         {{writer.name}}{{isLast ? '' : ', '}}
                       </span>
                     </span>
@@ -161,7 +165,7 @@ background-attachment: fixed;'>
                   <span class='col-2 color-secondary font-emphasize credit-label'>Produced by</span>
                   <span class='credit-list-wrap col-9'>
                     <span *ngFor="let producer of movieDetailsProducers; let isLast=last">
-                      <span class='text-hyperlink' (click)='goToDiscover(producer.id)'>{{producer.name}}{{isLast ? ''
+                      <span class='text-hyperlink' (click)='goToDiscover("person", producer.id, producer.name)'>{{producer.name}}{{isLast ? ''
                         :', '}}</span>
                     </span>
                   </span>
@@ -172,7 +176,7 @@ background-attachment: fixed;'>
                   <span class='col-2 color-secondary font-emphasize credit-label'>Cast</span>
                   <span class='credit-list-wrap col-10'>
                     <span *ngFor="let cast of movieDetailsCast; let isLast=last">
-                      <span class='text-hyperlink' (click)='goToDiscover(cast.id)'>
+                      <span class='text-hyperlink' (click)='goToDiscover("person", cast.id, cast.name)'>
                         {{cast.name}}{{isLast ? '' : ', '}}
                       </span>
                     </span>

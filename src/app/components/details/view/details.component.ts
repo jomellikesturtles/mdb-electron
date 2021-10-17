@@ -60,6 +60,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   procWatched = false
   procFavorite = false
   procVideo = false
+  procPlayLink = false
   showVideo = false
   isBookmarked = false
   isWatched = false
@@ -320,11 +321,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * TODO: add group async
    * Gets movie availability. From user library, torrent, etc.
    * @param val name
    */
   getLibrary() {
-
+    this.procPlayLink = true;
     this.libraryService.getMovieFromLibrary(this.movieDetails.tmdbId).then((libraryList: IRawLibrary[]) => {
       GeneralUtil.DEBUG.log("libraryList", libraryList)
       if (libraryList.length > 0) {
@@ -339,9 +341,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
       if (data) {
         this.torrents = this.torrentService.mapTorrentsList(data);
         this.torrents.sort(function (a, b) { return b.peers - a.peers }); // sort by seeders
-        this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(this.torrents)]
-        if (!this.bestPlayLink) this.bestPlayLink = this.mapPlayLink(this.torrents[0]); // TODO: add sorting by preferred quality
+        this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(this.torrents)];
+
+        if (!this.bestPlayLink && this.torrents.length > 0) this.bestPlayLink = this.mapPlayLink(this.torrents[0]); // TODO: add sorting by preferred quality
       }
+      this.procPlayLink = false;
     });
   }
 
@@ -373,7 +377,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param linkType link type
    * @param idParam id
    */
-  goToLink(linkType: string, idParam?: string) {
+goToLink(linkType: string, idParam?: string) {
     let url = ''
     GeneralUtil.DEBUG.log('1:', linkType, ' 2:', idParam);
     switch (linkType) {
@@ -433,6 +437,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   goToPerson(castId) {
     this.router.navigate([`/person-details/${castId}`], { relativeTo: this.activatedRoute });
+    // this.router.navigate([`/person-details/${castId}`], { relativeTo: this.activatedRoute });
   }
 
   goToFullCredits() {

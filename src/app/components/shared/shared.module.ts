@@ -35,7 +35,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatDividerModule,
     MatProgressSpinnerModule,
     MatMenuModule, MatButtonModule, MatIconModule,
-    UserIdleModule.forRoot({ idle: 5, timeout: 2, ping: 5 })
+    UserIdleModule.forRoot({ idle: 1, timeout: 1, ping: 1 })
+    // UserIdleModule.forRoot({ idle: 3, timeout: 1, ping: 3 })
   ],
   exports: [
     SelectedListComponent,

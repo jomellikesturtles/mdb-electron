@@ -36,6 +36,12 @@ function initializeClient() {
 }
 
 /**
+ * @returns {import("webtorrent").TorrentOptions} torrent
+ */
+function getOptions() {
+  return true;
+}
+/**
  * TODO: retry if connection disconnected
  * Play movie torrent, create server and return streamlink.
  * @param {string} hash
@@ -50,7 +56,8 @@ function playMovieTorrent(hash) {
   }
   let torrentLink = getTorrentLink(hash);
   currentStreamHash = hash;
-  console.log("torrentClient.ratio: ", torrentClient.ratio);
+  DEBUG.log("torrentClient.ratio: ", torrentClient.ratio);
+  // getOptions().
   torrentClient.add(torrentLink, {}, function (torrent) {
     torrent.on("error", (e) => {
       DEBUG.log("noPeers", hash);
@@ -63,12 +70,14 @@ function playMovieTorrent(hash) {
       currentServer.close();
     }
     let server = torrent.createServer();
-    server.listen(3001);
+    const serverPort = 3001;
+    server.listen(serverPort);
     currentServer = server;
 
     let desiredFile = TorrentUtil.getDesiredFile(torrent.files);
     const desiredFileIndex = desiredFile.index;
-    currentStreamLink = "http:\\\\localhost:3001\\" + desiredFileIndex;
+    currentStreamLink =
+      "http:\\\\localhost:" + serverPort + "\\" + desiredFileIndex;
     DEBUG.log("sending stream-link2", currentStreamLink);
     process.send(["stream-link", currentStreamLink]);
     currentStreamLink = "";
@@ -101,8 +110,10 @@ function stopStream() {
   // torrentClient.destroy();
   clearInterval(currentDisplayInterval);
   if (torrentClient) {
-    torrentClient.get(currentStreamHash).removeAllListeners();
     torrentClient.remove(currentStreamHash);
+    try {
+      torrentClient.get(currentStreamHash).removeAllListeners();
+    } catch (e) {}
     torrentClient.torrents.forEach((torrent) => {
       DEBUG.log(
         "torrent.infoHash(): ",
@@ -112,27 +123,6 @@ function stopStream() {
       );
     });
   }
-}
-
-function resetTorrent(torrent) {}
-
-function checkInternetConnectivity() {
-  console.log("b4 Check");
-
-  return new Promise((resolve) => {
-    require("dns").resolve("www.google.com", function (err) {
-      if (err) {
-        console.log("No connection");
-        // cb(false);
-        resolve(false);
-      } else {
-        console.log("Connected");
-        // cb(true);
-        resolve(true);
-      }
-    });
-  });
-  // console.log("afterCheck");
 }
 
 function getTorrentLink(hash) {

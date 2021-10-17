@@ -66,6 +66,11 @@ function prettyBytes(num) {
   return (neg ? "-" : "") + num + " " + unit;
 }
 
+/**
+ *
+ * @param {string} text
+ * @returns
+ */
 function regexify(text) {
   text = text.trim().replace(/(\s+)/g, " ");
   const words = text.split(" ");

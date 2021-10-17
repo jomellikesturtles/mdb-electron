@@ -4,63 +4,60 @@ z-index: 3000;
     background-color: rgba(4,4,4,0.8);cursor:pointer' (click)='onHidePlayer()'>
   <div id='closeIcon' (click)="onHidePlayer()" data-toggle='tooltip' title='Close Preview'></div>
 
-  <div (click)='$event.stopPropagation()' style='cursor:default;transform: translate(0%, 10%); margin-left: 50px;'>
+  <div (click)='$event.stopPropagation()' style='cursor:default;transform: translate(0%, 10%); margin-left: 50px; position:relative'>
     <!-- movie details, backdrop -->
     <div id='previewOverlay'
       style='position:absolute;
       z-index: 5000;'>
       <div *ngIf='hasInitialSelected'>
         <!-- backdrop -->
-        <!-- <div *ngIf='false' class='image-container' style='background-color: black; position: absolute; background-size: cover; -->
         <div *ngIf='!isYTReady' class='image-container' style='background-color: black; position: absolute; background-size: cover;
         background-position: center;
         height:calc(90vw/2.333333); width: 90vw;
-        min-height: 436px;
-        '
+        min-height: 436px;'
           [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/original'+previewMovie.backropPath+')'}">
-          <!-- height:75vh; margin-left: 100px;width: calc(75vh*2.333333); -->
-
         </div>
-        <!-- movie details and buttons -->
-        <div id='previewOverlayContext' [ngClass]="{'overlayInvisible':(isYTReady&&showPreviewOverlayContext)==true}"
-        style='position:absolute; height: 100%;width:66%; padding-left: 5vw;text-shadow: 3px 3px 5px #333333; padding-left: 5vw; padding-top: 10%;
-            background: -webkit-linear-gradient(right, rgba(3,3,3,0), rgba(3,3,3, 1));'>
-        </div>
-        <!--  <div class='d-inline-flex'>
-            <h3>{{previewMovie.title}}</h3>&nbsp;
-            <h3 class='text-hyperlink' (click)='goToDiscover("year",getYear(previewMovie.releaseDate))'>
-              ({{previewMovie.releaseDate|releaseYear}})
-            </h3>
-          </div>
-          <br>
-          <span class='text-hyperlink' (click)='goToDiscover("genre",item)'
-            *ngFor="let item of previewMovie.genreIds; let isLast = last">
-            {{item|genre}}{{ isLast ? "" : ", " }}
-          </span>
-          <button class='btn btn-primary' (click)='playTrailer()' *ngIf="!isYTPlaying && hasTrailerClip">Play
-            Trailer</button>
-          <button class=' btn btn-primary' (click)='stopVideo()' *ngIf="isYTPlaying">Stop Playing</button>
-          <button class=' btn btn-primary' (click)='toggleMute()' *ngIf="isYTPlaying">
-            <span *ngIf="!isMute">Mute</span>
-            <span *ngIf="isMute">UnMute</span>
-          </button>
-          <button class=' btn btn-primary' (click)='playMovie()' *ngIf="previewMovie.video">
-            <span>Play</span>
-          </button>
-          <p>{{ previewMovie.overview }}</p>
-          <button class='btn btn-outline-secondary' (click)="goToMovie(previewMovie.tmdbId)">More Info</button>
-        </div> -->
         <!-- <button class='btn btn-outline-info' (click)='toggleBookmark()'>
           <span *ngIf="!(previewMovie.userData.bookmark && previewMovie.userData.bookmark.id)">Bookmark</span>
           <span *ngIf="previewMovie.userData.bookmark && previewMovie.userData.bookmark.id">UnBookmark</span>
         </button>
-
         <button class='btn btn-outline-info' (click)='toggleWatched()'>
           <span *ngIf="!(previewMovie.userData.watched && previewMovie.userData.watched.id)">Mark as Watched</span>
           <span *ngIf="previewMovie.userData.watched && previewMovie.userData.watched.id">
             Remove Watched</span>
         </button> -->
       </div>
+    </div>
+
+    <!-- movie details and buttons -->
+    <h1>{{isYTReady&&showPreviewOverlayContext}}</h1>
+    <div *ngIf='hasInitialSelected' id='previewOverlayContext' [ngClass]="{'overlayInvisible':(isYTReady&&showPreviewOverlayContext)==true}"
+    style='position:absolute; height: 100%;width:66%; padding-left: 5vw;text-shadow: 3px 3px 5px #333333; padding-left: 5vw; padding-top: 10%;
+        background: -webkit-linear-gradient(right, rgba(3,3,3,0), rgba(3,3,3, 1)); background-color: red;z-index:5001'>
+
+      <h3>{{previewMovie.title}}</h3>&nbsp;
+      <h3 class='text-hyperlink' (click)='goToDiscover("year",getYear(previewMovie.releaseDate))'>
+        ({{previewMovie.releaseDate|releaseYear}})
+      </h3>
+      <!-- <div class='d-inline-flex'>
+      </div>
+      <br>
+      <span class='text-hyperlink' (click)='goToDiscover("genre",item)'
+        *ngFor="let item of previewMovie.genreIds; let isLast = last">
+        {{item|genre}}{{ isLast ? "" : ", " }}
+      </span>
+      <button class='btn btn-primary' (click)='playTrailer()' *ngIf="!isYTPlaying && hasTrailerClip">Play
+        Trailer</button>
+      <button class=' btn btn-primary' (click)='stopVideo()' *ngIf="isYTPlaying">Stop Playing</button>
+      <button class=' btn btn-primary' (click)='toggleMute()' *ngIf="isYTPlaying">
+        <span *ngIf="!isMute">Mute</span>
+        <span *ngIf="isMute">UnMute</span>
+      </button>
+      <button class=' btn btn-primary' (click)='playMovie()' *ngIf="previewMovie.video">
+        <span>Play</span>
+      </button>
+      <p>{{ previewMovie.overview }}</p>
+      <button class='btn btn-outline-secondary' (click)="goToMovie(previewMovie.tmdbId)">More Info</button> -->
     </div>
     <!-- youtube player -->
     <div style='

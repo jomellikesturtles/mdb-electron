@@ -1,7 +1,7 @@
 <div id='playerControlsContainer'>
-  <div id='progressBarContainer'  (mousemove)='mouseMove($event)' (click)='onSeek()' data-toggle='tooltip'
-  title='{{seekTooltip}}'>
-  <!-- #progressBar -->
+  <div id='progressBarContainer' (mousemove)='mouseMove($event)' (click)='onSeek()' data-toggle='tooltip'
+    title='{{seekTooltip}}'>
+    <!-- #progressBar -->
     <!-- [ngClass]="{'progress-bar-focus':isMouseOver==true}" -->
     <!-- <span #tooltipSpan id='tooltipSpan' style='z-index: 9999;'>00:00</span> -->
     <!-- played -->
@@ -25,17 +25,17 @@
       <div (click)='togglePlay()'>
         <!-- videoPlayer1.paused   -->
         <div *ngIf="canPlay">
-          <img *ngIf="videoPlayerElement.paused" class='player-controls-icon' src='./assets/icons/play-solid.svg' data-toggle='tooltip'
-            title='Play'>
-          <img *ngIf="!videoPlayerElement.paused" class='player-controls-icon' src='./assets/icons/pause.svg' data-toggle='tooltip'
-            title='Pause'>
+          <img *ngIf="videoPlayerElement.paused" class='player-controls-icon' src='./assets/icons/play-solid.svg'
+            data-toggle='tooltip' title='Play'>
+          <img *ngIf="!videoPlayerElement.paused" class='player-controls-icon' src='./assets/icons/pause.svg'
+            data-toggle='tooltip' title='Pause'>
         </div>
       </div>
       <div (click)='toggleMute()'>
-        <img *ngIf="(isMuted) " class='player-controls-icon' src='./assets/icons/mute.svg'
-          data-toggle='tooltip' title='Unmute'>
-        <img *ngIf="(!isMuted) || volume <= 0" class='player-controls-icon'
-          src='./assets/icons/volume.svg' data-toggle='tooltip' title='Mute'>
+        <img *ngIf="(isMuted) " class='player-controls-icon' src='./assets/icons/mute.svg' data-toggle='tooltip'
+          title='Unmute'>
+        <img *ngIf="(!isMuted) || volume <= 0" class='player-controls-icon' src='./assets/icons/volume.svg'
+          data-toggle='tooltip' title='Mute'>
       </div>
       <mat-slider (input)="volumeChange($event.value)" [(value)]="volume" min="0" max="100" step="1"
         data-toggle='tooltip' title='Change volume'></mat-slider>
@@ -46,8 +46,10 @@
       <span data-toggle='tooltip' title='Time lapsed'>{{videoTime.elapsed|toHHMMSS}}</span>/
       <span data-toggle='tooltip' title='Duration'>{{videoTime.duration|toHHMMSS}}</span>
 
-      <img class='player-controls-icon' src='./assets/icons/subtitle.svg' [matMenuTriggerFor]="subtitlesMenu"
-        data-toggle='tooltip' title='Subtitles'>
+      <div id='subtitlesControl' class='player-controls-icon' [matMenuTriggerFor]="subtitlesMenu" data-toggle='tooltip'
+        title='Subtitles'>
+        <img id='subsIcon' src='./assets/icons/subtitle.svg'>
+      </div>
       <mat-menu #subtitlesMenu="matMenu" yPosition="above">
         <button mat-menu-item [matMenuTriggerFor]="subtitlesAppearanceMenu">Appearance</button>
         <button mat-menu-item *ngIf='!isShowSubtitles' (click)="toggleSubtitles(true)">On</button>

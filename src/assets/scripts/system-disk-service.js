@@ -8,6 +8,16 @@ const path = require("path");
 const rimraf = require("rimraf");
 const { prettyBytes } = require("./shared/util");
 
+let DEBUG = (() => {
+  let timestamp = () => {};
+  timestamp.toString = () => {
+    return "[DEBUG " + new Date().toLocaleString() + "]";
+  };
+  return {
+    log: console.log.bind(console, "%s", timestamp),
+  };
+})();
+
 process.on("uncaughtException", function (error) {
   console.log("ERROR: ", error);
 });
@@ -26,20 +36,21 @@ process.on("disconnect", function (error) {
 process.send =
   process.send ||
   function (...args) {
-    // DEBUG.log("SIMULATING process.send", ...args);
+    DEBUG.log("SIMULATING process.send", ...args);
   };
 
 let USERNAME = require("os").userInfo().username;
-console.log('username:', USERNAME);
-const webTorrentFullFilePath = `C:\\Users\\${USERNAME}\\AppData\\Local\\Temp\\webtorrent`;
-console.log('username:', webTorrentFullFilePath);
+DEBUG.log("username:", USERNAME);
+const WEBTORRENT_FULL_FILE_PATH = `C:\\Users\\${USERNAME}\\AppData\\Local\\Temp\\webtorrent`;
+DEBUG.log("webTorrentFullFilePath:", WEBTORRENT_FULL_FILE_PATH);
 
 /**
  * Minimum 5GB
  */
 function checkDiskAvailableSpace() {
+  DEBUG.log("Checking disk available space");
   checkDiskSpace("C:\\").then((value) => {
-    // console.log(value);
+    DEBUG.log("Available space: ", prettyBytes(value.free));
     if (value.free >= 5000000000) {
       process.send(["check-disk-ok", prettyBytes(value.free)]);
     } else {
@@ -55,7 +66,7 @@ function checkDiskAvailableSpace() {
  */
 function isRemoveFile(stat) {
   const currentDate = new Date();
-  // @ts-ignore
+
   const diffTime = Math.abs(currentDate - stat.birthtime);
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -74,6 +85,7 @@ function scanWebTorrentFolder(startPath) {
 
     if (stat.isDirectory()) {
       if (isRemoveFile(stat)) {
+        DEBUG.log("Removing filepath: ", filePath);
         // fs.rmdirSync(filePath);
         rimraf.sync(filePath); // rimraf offers recursive delete
       }
@@ -81,4 +93,4 @@ function scanWebTorrentFolder(startPath) {
   }
 }
 checkDiskAvailableSpace();
-scanWebTorrentFolder(webTorrentFullFilePath);
+scanWebTorrentFolder(WEBTORRENT_FULL_FILE_PATH);
