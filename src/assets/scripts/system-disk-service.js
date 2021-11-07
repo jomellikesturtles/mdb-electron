@@ -75,12 +75,11 @@ function isRemoveFile(stat) {
 
 /**
  *
- * @param {string} startPath
  */
-function scanWebTorrentFolder(startPath) {
-  var files = fs.readdirSync(startPath);
+function scanWebTorrentFolder() {
+  var files = fs.readdirSync(WEBTORRENT_FULL_FILE_PATH);
   for (var i = 0; i < files.length; i++) {
-    var filePath = path.join(startPath, files[i]);
+    var filePath = path.join(WEBTORRENT_FULL_FILE_PATH, files[i]);
     var stat = fs.lstatSync(filePath);
 
     if (stat.isDirectory()) {
@@ -92,5 +91,5 @@ function scanWebTorrentFolder(startPath) {
     }
   }
 }
+scanWebTorrentFolder();
 checkDiskAvailableSpace();
-scanWebTorrentFolder(WEBTORRENT_FULL_FILE_PATH);

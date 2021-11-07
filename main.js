@@ -151,7 +151,7 @@ function showSplash() {
     title: 'OfflineBay by TechTac'
   });
 
-  // splashWindow.webContents.openDevTools();
+  splashWindow.webContents.openDevTools();
   let messagesList = [
     'checking disk space...',
     'checking trial...',
@@ -171,20 +171,14 @@ function showSplash() {
 
   splashWindow.once('show', function () {
     splashWindow.webContents.send('fade');
-    let index = 0;
-
-    let msgInterval = setInterval(function() {
-      console.log(messagesList[index]);
-      splashWindow.webContents.send('message', messagesList[index]);
-      index++;
-      if (index >= messagesList.length)
-      {
-        createMainWindow();
-        clearInterval(msgInterval);
-      }
-    }, 500);
   });
 }
+
+ipcMain.on("splash-done", function(event,msg) {
+  DEBUG.log("ITS DONE1");
+  createMainWindow();
+  splashWindow.webContents.send('fade');
+})
 
 function setSystemTray() {
   // let trayIcon = `${__dirname}/dist/mdb-electron/assets/icons/chevron.png`
