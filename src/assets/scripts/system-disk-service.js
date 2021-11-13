@@ -8,6 +8,10 @@ const path = require("path");
 const rimraf = require("rimraf");
 const { prettyBytes } = require("./shared/util");
 
+let args = process.argv.slice(2);
+let headers = args[0];
+let body = args[1];
+
 let DEBUG = (() => {
   let timestamp = () => {};
   timestamp.toString = () => {
@@ -52,9 +56,10 @@ function checkDiskAvailableSpace() {
   checkDiskSpace("C:\\").then((value) => {
     DEBUG.log("Available space: ", prettyBytes(value.free));
     if (value.free >= 5000000000) {
-      process.send(["check-disk-ok", prettyBytes(value.free)]);
+      process.send("check-disk-ok");
+      // process.send(["check-disk-ok", prettyBytes(value.free)]);
     } else {
-      process.send(["check-disk-error", prettyBytes(value.free)]);
+      process.send("check-disk-not-enough");
     }
   });
 }
@@ -90,6 +95,27 @@ function scanWebTorrentFolder() {
       }
     }
   }
+  DEBUG.log("exiting scanWebTorrentFolder...");
+  process.exit(0);
 }
-scanWebTorrentFolder();
-checkDiskAvailableSpace();
+
+function initializeService() {
+  const myHeaders = JSON.parse(headers);
+  // const dataArgs = JSON.parse(body);
+  const command = myHeaders.operation;
+  console.log("myHeaders", myHeaders);
+  // console.log("dataArgs", dataArgs);
+
+  switch (command) {
+    case "check-disk":
+      checkDiskAvailableSpace();
+      break;
+    case "check-torrent-folders":
+      scanWebTorrentFolder();
+      break;
+    default:
+      break;
+  }
+}
+
+initializeService();

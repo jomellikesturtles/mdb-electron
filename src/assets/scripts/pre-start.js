@@ -1,34 +1,58 @@
 let moment = require("moment"),
   request = require("request");
+let cp = require("child_process");
+const path = require("path");
+var { getFuncName } = require("./shared/util");
+const { exit } = require("process");
+
+let procDiskCheck;
+let procTorrentFilesCheck;
+process.send =
+  process.send ||
+  function (...args) {
+    DEBUG.log(getFuncName(), "SIMULATING process.send", ...args);
+  };
 
 let DEBUG = (() => {
   let timestamp = () => {};
   timestamp.toString = () => {
-    return "[DEBUG " + new Date().toISOString() + "]";
+    return "[DEBUG " + new Date().toISOString() + "] ";
   };
   return {
     log: console.log.bind(console, "%s", timestamp),
   };
 })();
 
-function checkDiskSpace() {
-  DEBUG.log("checking diskSpace");
+// function getFuncName() {
+//   return "[Function: " + getFuncName.caller.name + "]";
+// }
 
-  // procPreStart = window.fork(
-  //   path.join(__dirname, "src/assets/scripts/pre-start.js"),
-  //   null,
-  //   {
-  //     cwd: __dirname,
-  //     silent: false,
-  //   }
-  // );
-}
+process.on("uncaughtException", function (error) {
+  DEBUG.log(process.pid, "uncaughtException ERROR: ", error.message);
+  process.send("uncaughtException");
+  process.send(["uncaughtException", error.message]);
+  DEBUG.log(process.pid, "uncaughtException ERROR: ", error.stack);
+  // DEBUG.log(process.pid, "uncaughtException ERROR: ", error.name);
+});
+
+process.on("unhandledRejection", function (error) {
+  process.send(["unhandledRejection", error.message]);
+  DEBUG.log(process.pid, "unhandledRejection ERROR: ", error);
+});
+
+process.on("exit", function (error) {
+  DEBUG.log(process.pid, "exit ERROR: ", error);
+});
+
+process.on("disconnect", function (error) {
+  DEBUG.log(process.pid, "disconnect: ", error);
+});
 
 /**
- *
+ *  Until January 1, 2023
  */
 async function checkTrial() {
-  DEBUG.log("checking trial");
+  DEBUG.log(getFuncName(), "checking trial");
   return new Promise(function (resolve, reject) {
     request(
       "http://worldtimeapi.org/api/timezone/Asia/Manila",
@@ -48,10 +72,10 @@ async function checkTrial() {
           endDate.setMilliseconds(0);
 
           const isTrialOk = endDate > internetDate;
-          DEBUG.log("istrialOk", isTrialOk);
+          DEBUG.log(getFuncName(), "istrialOk", isTrialOk);
           resolve(isTrialOk);
         } else {
-          DEBUG.log("error");
+          DEBUG.log(getFuncName(), "error");
           reject(error);
         }
       }
@@ -60,49 +84,125 @@ async function checkTrial() {
 }
 
 /**
- *
+ * Check internet connection
+ * TODO: check tmdb connection.
  */
 async function checkAPIConnection() {
-  DEBUG.log("checking internet connection");
+  DEBUG.log(getFuncName(), "checking internet connection");
   return new Promise(function (resolve) {
     require("dns").resolve("www.google.com", function (err) {
       if (err) {
-        DEBUG.log("No connection");
+        DEBUG.log(getFuncName(), "No connection");
         resolve(false);
       } else {
-        DEBUG.log("Connected");
+        DEBUG.log(getFuncName(), "Connected");
         resolve(true);
       }
     });
   });
 }
 
-function checkFiles() {}
+function checkDiskSpace() {
+  DEBUG.log(getFuncName(), "starting checkDiskSpace...");
+  //   filename: path.join(__dirname, '..', 'db', 'bookmark.db'), // node
+  // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks.db'),
+  // procDiskCheck = startProc("src/assets/scripts/system-disk-service.js", [ // node
+  procDiskCheck = startProc("system-disk-service.js", [
+    JSON.stringify({
+      operation: "check-disk",
+    }),
+  ]);
+  return new Promise((resolve, reject) => {
+    procDiskCheck.on("message", function (msg) {
+      if (msg == "check-disk-ok") {
+        resolve(true);
+      } else if (msg == "check-disk-not-enough") {
+        resolve(false);
+      }
+    });
+  });
+}
+
+function checkTorrentFolders() {
+  DEBUG.log(getFuncName(), "starting checkFiles...");
+  // procTorrentFilesCheck = startProc("src/assets/scripts/system-disk-service.js", [
+  procTorrentFilesCheck = startProc("system-disk-service.js", [
+    JSON.stringify({
+      operation: "check-torrent-folders",
+    }),
+  ]);
+  return new Promise((resolve, reject) => {
+    procTorrentFilesCheck.on("exit", function (code) {
+      DEBUG.log("EXITING with code", code);
+      if (code == 0) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  });
+}
+
+function startProc(modulePath, args) {
+  return cp.fork(path.join(modulePath), args, {
+    // return cp.fork(path.join(__dirname, modulePath), args, {
+    cwd: __dirname,
+    silent: false,
+  });
+}
 
 // 'checking internet connection...',
 // 'checking trial...',
 // 'checking disk space...',
+// dialog.showErrorBox(CRIT_ERR, 'DB error occurred. Please re-install OfflineBay');
+// dialog.showErrorBox(CRIT_ERR, 'Not enough disk space! Minimum 5GB is required to run the application');
+// dialog.showErrorBox(CRIT_ERR, 'Trial has expired');
+// dialog.showErrorBox(CRIT_ERR, 'No internet connection');
 
 async function init() {
-  process.send("checking internet connection...");
-  // process.send(["checking", "internet-connection"]);
-  const isAPIGood = await checkAPIConnection();
-  if (!isAPIGood) {
-    process.exit(1);
+  // process.send(["status", "checking internet connection..."]);
+  // const isAPIGood = await checkAPIConnection();
+  // if (!isAPIGood) {
+  //   process.send(["error", "No internet connection."]);
+  //   process.exit(1);
+  // }
+  // process.send(["status", "checking trial..."]);
+  // const isTrialGood = await checkTrial();
+  // if (!isTrialGood) {
+  //   process.send(["error", "Trial has expired."]);
+  //   process.exit(1);
+  // } else {
+  //   DEBUG.log(getFuncName(), "trial Good");
+  // }
+
+  // process.send(["status", "checking disk space...."]);
+  // const isDiskSpaceGood = await checkDiskSpace();
+  // if (!isDiskSpaceGood) {
+  //   process.send([
+  //     "error",
+  //     "Not enough disk space! Minimum 5GB is required to run the application.",
+  //   ]);
+  //   process.exit(1);
+  // }
+
+  process.send(["status", "checking old torrent files...."]);
+  const isTorrentFoldersGood = await checkTorrentFolders();
+  if (!isTorrentFoldersGood) {
+    process.send(["warning", "Unable to delete old."]);
   }
-  process.send("checking trial...");
-  // process.send(["checking", "trial"]);
-  const isTrialGood = await checkTrial();
-  if (!isTrialGood) {
-    process.exit(1);
-  } else {
-    DEBUG.log("trial Good");
-  }
-  process.send("checking existing files and disk space...");
-  // process.send(["checking", "disk-space"]);
-  checkDiskSpace();
-  checkFiles();
+  DEBUG.log(getFuncName(), "exiting init...");
   process.exit(0);
 }
-DEBUG.log("initializing pre-start...");
+DEBUG.log(getFuncName(), "initializing pre-start...");
+process.send(["status", "initializing pre-start..."]);
 init();
+// exit(1);
+// try {
+//   // process.exit(0);
+//   throw "I'm Evil";
+//   DEBUG.log(getFuncName(), "You'll never reach to me", 123465);
+// } catch (e) {
+//   DEBUG.log(e); // I'm Evil
+// }
+
+// TODO: handle errors

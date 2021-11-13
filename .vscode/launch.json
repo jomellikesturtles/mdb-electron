@@ -5,6 +5,12 @@
   "version": "0.2.0",
   "configurations": [
   {
+    "type": "java",
+    "request": "attach",
+    "name": "Attach by Process ID",
+    "processId": "${command:PickJavaProcess}"
+  },
+  {
     "name": "Launch Edge",
     "request": "launch",
     "type": "pwa-msedge",
@@ -61,6 +67,16 @@
       "request": "launch",
       "name": "scan-library",
       "program": "${workspaceFolder}\\src\\assets\\scripts\\scan-library.js",
+      // "program": "${workspaceFolder}\\async.ts",
+      "outFiles": [
+        "${workspaceFolder}/dist/out-tsc/**/*.js"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "pre-start",
+      "program": "${workspaceFolder}\\src\\assets\\scripts\\pre-start.js",
       // "program": "${workspaceFolder}\\async.ts",
       "outFiles": [
         "${workspaceFolder}/dist/out-tsc/**/*.js"

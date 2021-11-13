@@ -92,10 +92,19 @@ function getNumberOfPages(count, size) {
   return Math.floor(totalPages);
 }
 
+/**
+ * Gets current function name.
+ * @returns function name
+ */
+function getFuncName() {
+  return "[Function: " + getFuncName.caller.name + "]";
+}
+
 module.exports = {
   sayHello: sayHello,
   getReleaseYear: getReleaseYear,
   prettyBytes: prettyBytes,
   regexify: regexify,
-  getNumberOfPages: getNumberOfPages
+  getNumberOfPages: getNumberOfPages,
+  getFuncName: getFuncName,
 };
