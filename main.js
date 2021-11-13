@@ -27,7 +27,6 @@ let mainWindow;
 let mdbTray;
 let splashWindow;
 const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`;
-const CRIT_ERR = 'Critical error';
 let DEBUG = (() => {
   let timestamp = () => {};
   timestamp.toString = () => {
@@ -125,12 +124,6 @@ if (!fs.existsSync(TEMP_FOLDER)) {
   fs.mkdirSync(TEMP_FOLDER);
 }
 
-
-// dialog.showErrorBox(CRIT_ERR, 'DB error occurred. Please re-install OfflineBay');
-// dialog.showErrorBox(CRIT_ERR, 'Not enough disk space! Minimum 5GB is required to run the application');
-// dialog.showErrorBox(CRIT_ERR, 'Trial has expired');
-// dialog.showErrorBox(CRIT_ERR, 'No internet connection');
-
 function showSplash() {
   splashWindow = new BrowserWindow({
     width: 600,
@@ -139,7 +132,7 @@ function showSplash() {
     show: false,
     frame: false,
     transparent: false,
-    alwaysOnTop: true,
+    alwaysOnTop: false,
     webPreferences:{
       preload: __dirname + '/preload.js',
       experimentalFeatures: true,
@@ -152,12 +145,6 @@ function showSplash() {
   });
 
   splashWindow.webContents.openDevTools();
-  let messagesList = [
-    'checking disk space...',
-    'checking trial...',
-    'checking internet connection...',
-    'launching main app...',
-  ];
 
   splashWindow.loadURL(url.format({
       pathname: path.join(__dirname, 'WndSplash.html'),
@@ -174,10 +161,16 @@ function showSplash() {
   });
 }
 
-ipcMain.on("splash-done", function(event,msg) {
+ipcMain.on("splash-done", function(event, msg) {
   DEBUG.log("ITS DONE1");
   createMainWindow();
   splashWindow.webContents.send('fade');
+})
+
+ipcMain.on("splash-error", function(event, msg) {
+  DEBUG.log("SPLASH-ERROR", msg);
+  dialog.showErrorBox("ERROR", msg[0]);
+  app.quit();
 })
 
 function setSystemTray() {
@@ -693,6 +686,41 @@ function startProc(processName, procPath, params) {
 
   return proc;
 }
+
+/* Notification senders
+------------------------*/
+// Show blue background notification
+function popMsg(msg) {
+  mainWindow.webContents.send('notify', [msg, 'info']);
+}
+// Show green background notification
+function popSuccess(msg) {
+  mainWindow.webContents.send('notify', [msg, 'success']);
+}
+// Show red background notification
+function popErr(msg) {
+  DEBUG.log("ERROR")
+  mainWindow.webContents.send('notify', [msg, 'danger']);
+  // app.quit();
+}
+function popCritError(msg) {
+  DEBUG.log("CRIT ERROR")
+  mainWindow.webContents.send('notify', [msg, 'danger']);
+  app.quit();
+}
+// Show yellow background notification
+function popWarn(msg) {
+  mainWindow.webContents.send('notify', [msg, 'warning']);
+}
+
+process.on('uncaughtException', function (error) {
+  console.log(error);
+  // if (mainWindow){
+      // popErr('An unknown error occurred');
+  // } else {
+      // app.quit();
+  // }
+});
 
 /**
  * exit codes
