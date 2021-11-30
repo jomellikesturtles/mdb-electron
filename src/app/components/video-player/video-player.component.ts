@@ -62,6 +62,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
   subtitleMap = new Map<number, Subtitle>();
 
+  // subtitleLine1 = '<i>Subtitle line 1 look like this.</i>';
+  // subtitleLine2 = '<b><i><font face="Tempus Sans ITC" color="#ffff80" size="30">"Spice Girls : Viva Forever"</font></i></b>';
   subtitleLine1 = 'Subtitle line 1 look like this.';
   subtitleLine2 = 'Subtitle line 2 look like this.';
   isUserInactive = false;

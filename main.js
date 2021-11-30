@@ -6,6 +6,7 @@ const cp = require("child_process");
 const electron = require("electron");
 const Datastore = require("nedb");
 const url = require('url');
+var { DEBUG } = require("./src/assets/scripts/shared/util");
 const configDb = new Datastore({
   filename: "src/assets/config/config.db",
   autoload: true,
@@ -27,15 +28,6 @@ let mainWindow;
 let mdbTray;
 let splashWindow;
 const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`;
-let DEBUG = (() => {
-  let timestamp = () => {};
-  timestamp.toString = () => {
-    return "[DEBUG " + new Date().toLocaleString() + "]";
-  };
-  return {
-    log: console.log.bind(console, "%s", timestamp),
-  };
-})();
 
 const PROC_OPTION = {
   cwd: __dirname,
@@ -144,7 +136,7 @@ function showSplash() {
     title: 'OfflineBay by TechTac'
   });
 
-  splashWindow.webContents.openDevTools();
+  // splashWindow.webContents.openDevTools();
 
   splashWindow.loadURL(url.format({
       pathname: path.join(__dirname, 'WndSplash.html'),
@@ -599,8 +591,9 @@ ipcMain.on("watched", function (event, args) {
 });
 
 // TODO: check if destination file already exists & equal
+// TODO: support other formats
 ipcMain.on("get-subtitle", function (event, data) {
-  dialog.showOpenDialog({filters:[{name:'Subtitle', extensions:['srt','vtt']}]}).then((e) => {
+  dialog.showOpenDialog({filters:[{name:'Subtitle', extensions:['srt']}]}).then((e) => {
     if (e.filePaths.length > 0 && !e.canceled) {
       const subtitlePath = path.join(TEMP_FOLDER, path.basename(e.filePaths[0]));
       const data = new Uint8Array(Buffer.from(fs.readFileSync(e.filePaths[0])));

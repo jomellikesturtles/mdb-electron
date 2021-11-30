@@ -6,42 +6,13 @@ const checkDiskSpace = require("check-disk-space").default;
 const fs = require("fs");
 const path = require("path");
 const rimraf = require("rimraf");
-const { prettyBytes } = require("./shared/util");
+const { prettyBytes, DEBUG, processInit } = require("./shared/util");
 
 let args = process.argv.slice(2);
 let headers = args[0];
 let body = args[1];
 
-let DEBUG = (() => {
-  let timestamp = () => {};
-  timestamp.toString = () => {
-    return "[DEBUG " + new Date().toLocaleString() + "]";
-  };
-  return {
-    log: console.log.bind(console, "%s", timestamp),
-  };
-})();
-
-process.on("uncaughtException", function (error) {
-  console.log("ERROR: ", error);
-});
-
-process.on("unhandledRejection", function (error) {
-  console.log("unhandledRejection ERROR: ", error);
-});
-
-process.on("exit", function (error) {
-  console.log("exit ERROR: ", error);
-});
-
-process.on("disconnect", function (error) {
-  console.log("disconnect: ", error);
-});
-process.send =
-  process.send ||
-  function (...args) {
-    DEBUG.log("SIMULATING process.send", ...args);
-  };
+processInit(process);
 
 let USERNAME = require("os").userInfo().username;
 DEBUG.log("username:", USERNAME);
@@ -49,18 +20,21 @@ const WEBTORRENT_FULL_FILE_PATH = `C:\\Users\\${USERNAME}\\AppData\\Local\\Temp\
 DEBUG.log("webTorrentFullFilePath:", WEBTORRENT_FULL_FILE_PATH);
 
 /**
- * Minimum 5GB
+ * Gets free space in bytes.
+ * @param {string} disk
+ * @returns {number}
  */
-function checkDiskAvailableSpace() {
-  DEBUG.log("Checking disk available space");
-  checkDiskSpace("C:\\").then((value) => {
-    DEBUG.log("Available space: ", prettyBytes(value.free));
-    if (value.free >= 5000000000) {
-      process.send("check-disk-ok");
-      // process.send(["check-disk-ok", prettyBytes(value.free)]);
-    } else {
-      process.send("check-disk-not-enough");
-    }
+function getFreeDiskSpace(disk) {
+  DEBUG.log("Getting disk available space...");
+  return new Promise((resolve, reject) => {
+    checkDiskSpace(`${disk}:\\`)
+      .then((e) => {
+        resolve(e.free);
+      })
+      .catch((err) => {
+        DEBUG.log("Error", err);
+        reject(err);
+      });
   });
 }
 
@@ -79,7 +53,7 @@ function isRemoveFile(stat) {
 }
 
 /**
- *
+ * Scans for old webtorrent file/folder.
  */
 function scanWebTorrentFolder() {
   var files = fs.readdirSync(WEBTORRENT_FULL_FILE_PATH);
@@ -100,15 +74,16 @@ function scanWebTorrentFolder() {
 }
 
 function initializeService() {
+  DEBUG.log("process.argv", process.argv);
   const myHeaders = JSON.parse(headers);
   // const dataArgs = JSON.parse(body);
   const command = myHeaders.operation;
-  console.log("myHeaders", myHeaders);
-  // console.log("dataArgs", dataArgs);
+  DEBUG.log("myHeaders", myHeaders);
+  // DEBUG.log("dataArgs", dataArgs);
 
   switch (command) {
     case "check-disk":
-      checkDiskAvailableSpace();
+      // checkDiskAvailableSpace();
       break;
     case "check-torrent-folders":
       scanWebTorrentFolder();
@@ -117,5 +92,8 @@ function initializeService() {
       break;
   }
 }
-
-initializeService();
+// initializeService();
+module.exports = {
+  getFreeDiskSpace: getFreeDiskSpace,
+  // scanWebTorrentFolder: scanWebTorrentFolder,
+};

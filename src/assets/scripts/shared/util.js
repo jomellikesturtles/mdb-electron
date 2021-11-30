@@ -2,6 +2,52 @@
 /*jshint esversion: 6 */
 const path = require("path");
 
+/**
+ * Fancy console log
+ */
+let DEBUG = (() => {
+  let timestamp = () => {};
+  timestamp.toString = () => {
+    return "[DEBUG " + new Date().toISOString() + "] ";
+  };
+  return {
+    log: console.log.bind(console, "%s", timestamp),
+  };
+})();
+
+/**
+ *
+ * @param {import ("process") } process;
+ */
+let processInit = (process) => {
+  process.send =
+    process.send ||
+    function (...args) {
+      DEBUG.log("SIMULATING process.send", ...args);
+    };
+
+  process.on("uncaughtException", function (error) {
+    DEBUG.log(process.pid, "uncaughtException ERROR: ", error.message);
+    process.send("uncaughtException");
+    process.send(["uncaughtException", error.message]);
+    DEBUG.log(process.pid, "uncaughtException ERROR: ", error.stack);
+    // DEBUG.log(process.pid, "uncaughtException ERROR: ", error.name);
+  });
+
+  process.on("unhandledRejection", function (error) {
+    DEBUG.log(process.pid, "unhandledRejection ERROR: ", error);
+    process.send(["unhandledRejection", error.message]);
+  });
+
+  process.on("exit", function (error) {
+    DEBUG.log(process.pid, "exit ERROR: ", error);
+  });
+
+  process.on("disconnect", function (error) {
+    DEBUG.log(process.pid, "disconnect: ", error);
+  });
+};
+
 const sayHello = function () {
   console.log("hell");
   console.log(path.join(__dirname, "..", "db", "bookmarks.db"));
@@ -107,4 +153,6 @@ module.exports = {
   regexify: regexify,
   getNumberOfPages: getNumberOfPages,
   getFuncName: getFuncName,
+  DEBUG: DEBUG,
+  processInit: processInit,
 };
