@@ -6,6 +6,7 @@ export default class SubtitlesUtil {
   private static subtitlePattern = /(\d+)\n([\d:.,]+)\s+-{2}\>\s+([\d:.,]+)\n([\s\S]*?(?=\n{2}|$))\n([\s\S]*?(?=\n{2}|$))/gm
   /**
    * !TODO: handle/ignore formatting like 00:00:00.000 --> 00:00:04.000 `position:10%`
+   * !TODO: handle dynamic number of captions
    * @param resultFile
    */
   static mapSubtitle(resultFile: string): Map<number, Subtitle> {

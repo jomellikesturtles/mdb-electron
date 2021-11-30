@@ -2,21 +2,12 @@
 /*jshint esversion: 8 */
 const WebTorrent = require("webtorrent");
 let moment = require("moment");
-const { prettyBytes } = require("./shared/util");
+const { prettyBytes, DEBUG } = require("./shared/util");
 const TorrentUtil = require("./utils/torrentUtil");
+let cp = require("child_process");
 
 let args = process.argv.slice(2);
-let command = args[0];
 
-let DEBUG = (() => {
-  let timestamp = () => {};
-  timestamp.toString = () => {
-    return "[DEBUG " + new Date().toLocaleString() + "]";
-  };
-  return {
-    log: console.log.bind(console, "%s", timestamp),
-  };
-})();
 
 const TORRENT_CONFIG = {
   maxConns: 10,
@@ -69,7 +60,16 @@ function playMovieTorrent(hash) {
     if (currentServer) {
       currentServer.close();
     }
+    // torrent.
+
+    let canPlay = playChecklist(torrent.length);
+    if (canPlay) {
+    } else {
+      return;
+    }
+
     let server = torrent.createServer();
+
     const serverPort = 3001;
     server.listen(serverPort);
     currentServer = server;
@@ -232,10 +232,15 @@ function displayTorrentPiecesInProgress(torrent) {
 
 /**
  * Check if device can play/stream.
+ * @param {number} torrentSize
  * @returns boolean
  */
-function playChecklist() {
-  return true;
+function playChecklist(torrentSize) {
+  return cp.fork(path.join(__dirname, "trans-play-process.js"), args, {
+    // return cp.fork(path.join(__dirname, modulePath), args, {
+    cwd: __dirname,
+    silent: false,
+  });
 }
 
 process.on("uncaughtException", function (error) {
@@ -264,10 +269,9 @@ process.on("message", (m) => {
   const message = m[0];
   const argument = m[1];
   if (message == "play-torrent") {
-    playChecklist();
     playMovieTorrent(argument);
   } else if (message == "stop-stream") {
-    console.log("stoppingStream");
+    DEBUG.log("stoppingStream");
     stopStream();
   } else if (message == "progress") {
   }

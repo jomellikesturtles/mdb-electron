@@ -2,51 +2,16 @@ let moment = require("moment"),
   request = require("request");
 let cp = require("child_process");
 const path = require("path");
-var { getFuncName } = require("./shared/util");
+var { getFuncName, DEBUG, processInit } = require("./shared/util");
 const { exit } = require("process");
+const { getFreeDiskSpace } = require("./system-disk-service");
 
 let procDiskCheck;
 let procTorrentFilesCheck;
-process.send =
-  process.send ||
-  function (...args) {
-    DEBUG.log(getFuncName(), "SIMULATING process.send", ...args);
-  };
 
-let DEBUG = (() => {
-  let timestamp = () => {};
-  timestamp.toString = () => {
-    return "[DEBUG " + new Date().toISOString() + "] ";
-  };
-  return {
-    log: console.log.bind(console, "%s", timestamp),
-  };
-})();
+processInit(process);
 
-// function getFuncName() {
-//   return "[Function: " + getFuncName.caller.name + "]";
-// }
 
-process.on("uncaughtException", function (error) {
-  DEBUG.log(process.pid, "uncaughtException ERROR: ", error.message);
-  process.send("uncaughtException");
-  process.send(["uncaughtException", error.message]);
-  DEBUG.log(process.pid, "uncaughtException ERROR: ", error.stack);
-  // DEBUG.log(process.pid, "uncaughtException ERROR: ", error.name);
-});
-
-process.on("unhandledRejection", function (error) {
-  process.send(["unhandledRejection", error.message]);
-  DEBUG.log(process.pid, "unhandledRejection ERROR: ", error);
-});
-
-process.on("exit", function (error) {
-  DEBUG.log(process.pid, "exit ERROR: ", error);
-});
-
-process.on("disconnect", function (error) {
-  DEBUG.log(process.pid, "disconnect: ", error);
-});
 
 /**
  *  Until January 1, 2023
@@ -102,25 +67,39 @@ async function checkAPIConnection() {
   });
 }
 
+/**
+ * Minumum 5GB
+ * @returns {boolean}
+ */
 function checkDiskSpace() {
   DEBUG.log(getFuncName(), "starting checkDiskSpace...");
-  //   filename: path.join(__dirname, '..', 'db', 'bookmark.db'), // node
-  // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks.db'),
-  // procDiskCheck = startProc("src/assets/scripts/system-disk-service.js", [ // node
-  procDiskCheck = startProc("system-disk-service.js", [
-    JSON.stringify({
-      operation: "check-disk",
-    }),
-  ]);
-  return new Promise((resolve, reject) => {
-    procDiskCheck.on("message", function (msg) {
-      if (msg == "check-disk-ok") {
+  return new Promise((resolve) => {
+    getFreeDiskSpace("C").then((value) => {
+      if (value >= 5000000000) {
+        DEBUG.log(value);
         resolve(true);
-      } else if (msg == "check-disk-not-enough") {
+      } else {
         resolve(false);
       }
     });
   });
+  //   filename: path.join(__dirname, '..', 'db', 'bookmark.db'), // node
+  // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks.db'),
+  // procDiskCheck = startProc("src/assets/scripts/system-disk-service.js", [ // node
+  // procDiskCheck = startProc("system-disk-service.js", [
+  //   JSON.stringify({
+  //     operation: "check-disk",
+  //   }),
+  // ]);
+  // return new Promise((resolve, reject) => {
+  //   procDiskCheck.on("message", function (msg) {
+  //     if (msg == "check-disk-ok") {
+  //       resolve(true);
+  //     } else if (msg == "check-disk-not-enough") {
+  //       resolve(false);
+  //     }
+  //   });
+  // });
 }
 
 function checkTorrentFolders() {
@@ -144,6 +123,7 @@ function checkTorrentFolders() {
 }
 
 function startProc(modulePath, args) {
+  DEBUG.log("ARGS: ", args);
   return cp.fork(path.join(modulePath), args, {
     // return cp.fork(path.join(__dirname, modulePath), args, {
     cwd: __dirname,
@@ -151,39 +131,33 @@ function startProc(modulePath, args) {
   });
 }
 
-// 'checking internet connection...',
-// 'checking trial...',
-// 'checking disk space...',
-// dialog.showErrorBox(CRIT_ERR, 'DB error occurred. Please re-install OfflineBay');
-// dialog.showErrorBox(CRIT_ERR, 'Not enough disk space! Minimum 5GB is required to run the application');
-// dialog.showErrorBox(CRIT_ERR, 'Trial has expired');
-// dialog.showErrorBox(CRIT_ERR, 'No internet connection');
-
-async function init() {
-  // process.send(["status", "checking internet connection..."]);
-  // const isAPIGood = await checkAPIConnection();
-  // if (!isAPIGood) {
-  //   process.send(["error", "No internet connection."]);
-  //   process.exit(1);
-  // }
-  // process.send(["status", "checking trial..."]);
-  // const isTrialGood = await checkTrial();
-  // if (!isTrialGood) {
-  //   process.send(["error", "Trial has expired."]);
-  //   process.exit(1);
-  // } else {
-  //   DEBUG.log(getFuncName(), "trial Good");
-  // }
-
-  // process.send(["status", "checking disk space...."]);
+async function initPreStart() {
+  process.send(["status", "checking internet connection..."]);
+  const isAPIGood = await checkAPIConnection();
+  if (!isAPIGood) {
+    process.send(["error", "No internet connection."]);
+    process.exit(1);
+  }
+  process.send(["status", "checking trial..."]);
+  const isTrialGood = await checkTrial();
+  if (!isTrialGood) {
+    process.send(["error", "Trial has expired."]);
+    process.exit(1);
+  } else {
+    DEBUG.log(getFuncName(), "trial Good");
+  }
+  process.send(["status", "checking disk space...."]);
+  let isDiskSpacePassed = await checkDiskSpace();
   // const isDiskSpaceGood = await checkDiskSpace();
-  // if (!isDiskSpaceGood) {
-  //   process.send([
-  //     "error",
-  //     "Not enough disk space! Minimum 5GB is required to run the application.",
-  //   ]);
-  //   process.exit(1);
-  // }
+
+  if (!isDiskSpacePassed) {
+    DEBUG.log("isDiskSpacePassed not passed");
+    process.send([
+      "error",
+      "Not enough disk space! Minimum 5GB is required to run the application.",
+    ]);
+    process.exit(1);
+  }
 
   process.send(["status", "checking old torrent files...."]);
   const isTorrentFoldersGood = await checkTorrentFolders();
@@ -195,7 +169,7 @@ async function init() {
 }
 DEBUG.log(getFuncName(), "initializing pre-start...");
 process.send(["status", "initializing pre-start..."]);
-init();
+initPreStart();
 // exit(1);
 // try {
 //   // process.exit(0);
