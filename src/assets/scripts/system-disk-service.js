@@ -6,6 +6,7 @@ const checkDiskSpace = require("check-disk-space").default;
 const fs = require("fs");
 const path = require("path");
 const rimraf = require("rimraf");
+const fastFolderSize = require("fast-folder-size");
 const { prettyBytes, DEBUG, processInit } = require("./shared/util");
 
 let args = process.argv.slice(2);
@@ -53,7 +54,8 @@ function isRemoveFile(stat) {
 }
 
 /**
- * Scans for old webtorrent file/folder.
+ * Scans and removes old webtorrent file/folder.
+ * TODO: non-process
  */
 function scanWebTorrentFolder() {
   var files = fs.readdirSync(WEBTORRENT_FULL_FILE_PATH);
@@ -71,6 +73,51 @@ function scanWebTorrentFolder() {
   }
   DEBUG.log("exiting scanWebTorrentFolder...");
   process.exit(0);
+}
+
+/**
+ * Size of folder.
+ * @param {string} filePath
+ * @returns
+ */
+function getFolderSize(filePath) {
+  return new Promise((resolve) => {
+    fastFolderSize(filePath, (err, bytes) => {
+      if (err) {
+        throw err;
+      }
+      resolve(bytes);
+      // console.log(bytes);
+    });
+  });
+}
+
+/**
+ * Scans and removes old webtorrent file/folder.
+ * Removes old webtorrent folder until enough space.
+ */
+function removescanWebTorrentFolderV2() {
+  var files = fs.readdirSync(WEBTORRENT_FULL_FILE_PATH);
+  for (var i = 0; i < files.length; i++) {
+    var filePath = path.join(WEBTORRENT_FULL_FILE_PATH, files[i]);
+    var stat = fs.lstatSync(filePath);
+    if (stat.isDirectory()) {
+      if (isRemoveFile(stat)) {
+        DEBUG.log("Removing filepath: ", filePath);
+        // fs.rmdirSync(filePath);
+        rimraf.sync(filePath); // rimraf offers recursive delete
+      }
+    }
+  }
+  DEBUG.log("exiting scanWebTorrentFolder...");
+}
+
+/**
+ * Counts folders in the webtorrent folder
+ * @returns
+ */
+function countWebTorrentFolders() {
+  return 0;
 }
 
 function initializeService() {

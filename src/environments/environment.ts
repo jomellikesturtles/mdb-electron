@@ -22,6 +22,8 @@ export const environment = {
     useTestData: false,
     environment: location.protocol
   },
+  language: 'en',
+  location: 'ph'
 };
 
 /*

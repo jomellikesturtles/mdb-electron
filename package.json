@@ -3,6 +3,11 @@
   "version": "0.0.0",
   "main": "main.js",
   "productName": "mdb",
+  "private": true,
+  "engines": {
+
+  },
+
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
@@ -11,6 +16,7 @@
     "test-coverage": "ng test --code-coverage",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "\n# ELECTRON SCRIPTS": "",
     "electron": "electron .",
     "electron-logging": "electron . --enable-logging",
     "electron2": "electron",
@@ -19,6 +25,7 @@
     "electron-build": "ng build --prod && electron .",
     "start:electron": "ng build --base-href ./ && electron .",
     "start:electron-prod": "ng build --base-href ./ --prod --aot && electron .",
+    "\n# STARTING ANGULAR AND NODE SERVER": "",
     "start:server": "node src/assets/scripts/server/main",
     "start:angular-server": " start ng serve & start npm run start:server",
     "start:angular-server2": "start npm start && npm run start:server",
@@ -38,6 +45,7 @@
     "@angular/pwa": "~0.803.28",
     "@angular/router": "~8.2.14",
     "@angular/service-worker": "~8.2.14",
+    "@datorama/akita": "^7.1.1",
     "@ngxs/store": "^3.6.0",
     "@types/firebase": "^3.2.1",
     "@types/jasmine": "~3.5.0",
@@ -58,6 +66,7 @@
     "eslint": "^7.31.0",
     "express": "^4.17.1",
     "fast-csv": "^3.4.0",
+    "fast-folder-size": "^1.6.1",
     "fast-levenshtein": "^2.0.6",
     "firebase": "^7.5.2",
     "fluent-ffmpeg": "^2.1.2",

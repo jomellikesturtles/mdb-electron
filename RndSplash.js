@@ -12,7 +12,6 @@ let DEBUG = (() => {
 })();
 
 const prestartPath = path.join(__dirname, "src/assets/scripts/pre-start.js");
-console.log(prestartPath);
 procPreStart = window.fork(prestartPath, null, {
   cwd: __dirname,
   silent: false,
@@ -56,8 +55,3 @@ procPreStart.on("unhandledRejection", function (event, msg) {
   console.log("unhandledRejection 123:", msg);
   ipcRenderer.send("splash-error", "123");
 });
-
-//  'checking disk space...',
-//  'checking trial...',
-//  'checking internet connection...',
-//  'launching main app...',

@@ -5,9 +5,9 @@ let moment = require("moment");
 const { prettyBytes, DEBUG } = require("./shared/util");
 const TorrentUtil = require("./utils/torrentUtil");
 let cp = require("child_process");
+const { canPlayNewTorrent } = require("./trans-play-process");
 
 let args = process.argv.slice(2);
-
 
 const TORRENT_CONFIG = {
   maxConns: 10,
@@ -60,13 +60,14 @@ function playMovieTorrent(hash) {
     if (currentServer) {
       currentServer.close();
     }
-    // torrent.
 
-    let canPlay = playChecklist(torrent.length);
-    if (canPlay) {
-    } else {
+    // let canPlay = playChecklist(torrent.length);
+    let canPlay = canPlayNewTorrent(torrent.length);
+    if (!canPlay) {
+      process.send(["can-play", false]);
       return;
     }
+    process.send(["can-play", true]);
 
     let server = torrent.createServer();
 
