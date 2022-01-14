@@ -67,9 +67,9 @@ export class TopNavigationComponent implements OnInit {
   currentSearchQuery = ''
   hasSearchResults = false
   isSearchDirty = false
-  searchHistoryList = ['titanic', 'asdlkajsd', 'terminator']
+  searchHistoryList = []
   filteredOptions: Observable<string[]>;
-  searchHistoryMaxLength = 8
+  SEARCH_HISTORY_MAX_LENGTH = 8
   decadesList = []
   voteAverageList = []
   isSignedIn = false
@@ -130,11 +130,12 @@ export class TopNavigationComponent implements OnInit {
     }
     this.lastQuery = val
     this.searchHistoryList.unshift(val)
+    this.removeDuplicate(val);
     this.searchHistoryList.splice(this.searchHistoryList.indexOf(val), 1)
     console.log(this.searchHistoryList);
-    if (this.searchHistoryList.length >= this.searchHistoryMaxLength) {
+    if (this.searchHistoryList.length >= this.SEARCH_HISTORY_MAX_LENGTH) {
       // this.searchHistoryList = this.searchHistoryList.splice(1)
-      this.searchHistoryList = this.searchHistoryList.slice(0, this.searchHistoryMaxLength)
+      this.searchHistoryList = this.searchHistoryList.slice(0, this.SEARCH_HISTORY_MAX_LENGTH)
     }
     const enteredQuery = val
     // this.isSearchDirty = true
@@ -144,6 +145,7 @@ export class TopNavigationComponent implements OnInit {
     // this.currentSearchQuery = enteredQuery
     // // tt0092099 example
 
+    this.searchHistoryList.unshift(val);
     const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`)
     if (enteredQuery.match(REGEX_IMDB_ID)) {
       this.searchByImdbId(enteredQuery)
@@ -205,6 +207,14 @@ export class TopNavigationComponent implements OnInit {
   }
   onExit() {
     this.ipcService.exitApp()
+  }
+
+  private removeDuplicate(val: string) {
+    let result = this.searchHistoryList.filter((option, index) => {
+      console.log('option: ', option);
+      return this.searchHistoryList.indexOf(option) === index;
+    });
+    this.searchHistoryList = result;
   }
 }
 

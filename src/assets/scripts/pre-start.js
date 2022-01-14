@@ -1,3 +1,6 @@
+/**
+ *  Pre-start
+ **/
 let moment = require("moment"),
   request = require("request");
 let cp = require("child_process");
@@ -5,13 +8,12 @@ const path = require("path");
 var { getFuncName, DEBUG, processInit } = require("./shared/util");
 const { exit } = require("process");
 const { getFreeDiskSpace } = require("./system-disk-service");
+const { SIZE_LIMIT } = require("./shared/constants");
 
 let procDiskCheck;
 let procTorrentFilesCheck;
 
 processInit(process);
-
-
 
 /**
  *  Until January 1, 2023
@@ -75,7 +77,7 @@ function checkDiskSpace() {
   DEBUG.log(getFuncName(), "starting checkDiskSpace...");
   return new Promise((resolve) => {
     getFreeDiskSpace("C").then((value) => {
-      if (value >= 5000000000) {
+      if (value >= SIZE_LIMIT) {
         DEBUG.log(value);
         resolve(true);
       } else {
@@ -102,6 +104,10 @@ function checkDiskSpace() {
   // });
 }
 
+/**
+ * checks for old torrent folders
+ * @returns
+ */
 function checkTorrentFolders() {
   DEBUG.log(getFuncName(), "starting checkFiles...");
   // procTorrentFilesCheck = startProc("src/assets/scripts/system-disk-service.js", [
