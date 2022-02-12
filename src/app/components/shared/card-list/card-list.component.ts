@@ -1,10 +1,9 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { Select } from '@ngxs/store';
 import { BookmarkService, IBookmark } from '@services/bookmark.service';
 import { WatchedService, IWatched } from '@services/watched.service';
 import { LibraryService } from '@services/library.service';
 import { environment } from '@environments/environment';
-import { UserDataService } from '@services/user-data.service';
+import { UserDataService } from '@services/user-data/user-data.service';
 import { IProfileData } from '@models/profile-data.model';
 import { MDBMovie } from '@models/mdb-movie.model';
 import ObjectUtil from '@utils/object.utils';
@@ -15,7 +14,6 @@ import ObjectUtil from '@utils/object.utils';
   styleUrls: ['./card-list.component.scss']
 })
 export class CardListComponent implements OnInit, OnChanges {
-  @Select(state => state.moviesList) moviesList$
 
   @Input() cardWidth: string
   @Input() displayMode: string = 'd-inline-flex'
@@ -24,7 +22,7 @@ export class CardListComponent implements OnInit, OnChanges {
   @Input()
   set movieList(inputMessage: any[]) {
     inputMessage.forEach(inputMovie => {
-      this.movieAndUserDataList.push({ movie: new MDBMovie(inputMovie), userData: null })
+      this.movieAndUserDataList.push({ movie: inputMovie, userData: null })
     })
     this._movieList = inputMessage
   }
@@ -191,37 +189,37 @@ export class CardListComponent implements OnInit, OnChanges {
   }
 
   renderHighlight() {
-    this.moviesList$.subscribe(moviesResult => {
-      console.log('moviesresult: ', moviesResult)
+    // this.moviesList$.subscribe(moviesResult => {
+    //   console.log('moviesresult: ', moviesResult)
 
-      if (moviesResult.change === 'add') {
-        this.movieList.forEach(element => {
-          if (moviesResult.idChanged === element.id) {
-            element.isHighlighted = true
-          }
-        })
-      } else if (moviesResult.change === 'remove') {
-        this.movieList.forEach(element => {
-          if (moviesResult.idChanged === element.id) {
-            element.isHighlighted = false
-          }
-        })
-      } else if (moviesResult.change === 'clear') {
-        this.movieList.forEach(element => {
-          element.isHighlighted = false
-        })
-      } else if (moviesResult.change === 'watched') {
-        this.movieList.forEach(element => {
-          moviesResult.idChanged.forEach(mrId => {
-            if (mrId === element.id) {
-              // element.isWatched = true
-              // element.watchedProgress = "100%"
-              // this.cdr.detectChanges()
-            }
-          });
-        })
-      }
-    });
+    //   if (moviesResult.change === 'add') {
+    //     this.movieList.forEach(element => {
+    //       if (moviesResult.idChanged === element.id) {
+    //         element.isHighlighted = true
+    //       }
+    //     })
+    //   } else if (moviesResult.change === 'remove') {
+    //     this.movieList.forEach(element => {
+    //       if (moviesResult.idChanged === element.id) {
+    //         element.isHighlighted = false
+    //       }
+    //     })
+    //   } else if (moviesResult.change === 'clear') {
+    //     this.movieList.forEach(element => {
+    //       element.isHighlighted = false
+    //     })
+    //   } else if (moviesResult.change === 'watched') {
+    //     this.movieList.forEach(element => {
+    //       moviesResult.idChanged.forEach(mrId => {
+    //         if (mrId === element.id) {
+    //           // element.isWatched = true
+    //           // element.watchedProgress = "100%"
+    //           // this.cdr.detectChanges()
+    //         }
+    //       });
+    //     })
+    //   }
+    // });
   }
 
   collectIds() {

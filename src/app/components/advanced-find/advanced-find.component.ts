@@ -4,7 +4,7 @@ import {
 import { GENRES, SORT_BY } from '@shared/constants';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ISearchQuery } from '@components/top-navigation/top-navigation.component';
-import { MovieService } from '@services/movie.service';
+import { MovieService } from '@services/movie/movie.service';
 import { IGenre, TmdbParameters } from '@models/interfaces';
 import { MatOptionSelectionChange } from '@angular/material/core';
 import { DataService } from '@services/data.service';

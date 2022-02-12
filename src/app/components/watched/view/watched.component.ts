@@ -1,4 +1,4 @@
-import { UserDataService } from '@services/user-data.service';
+import { UserDataService } from '@services/user-data/user-data.service';
 /**
  * Displays movies Watched by user
  */
@@ -7,7 +7,6 @@ import { WatchedService } from '@services/watched.service';
 import { Component, OnInit } from '@angular/core';
 import { environment } from '@environments/environment';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
-import { Select } from '@ngxs/store';
 import { CollectionName } from '@services/firebase.service';
 
 @Component({
@@ -17,7 +16,6 @@ import { CollectionName } from '@services/firebase.service';
 })
 export class WatchedComponent implements OnInit {
 
-  @Select(state => state.moviesList) moviesList$
 
   procSync = false
   readonly listType = CollectionName.Watched

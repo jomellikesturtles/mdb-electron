@@ -72,10 +72,10 @@ export class SigninComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    const env = this.utilsService.getEnvironment()
-    if (env === 'web') {
-      this.isOAuthValid = true
-    }
+    // const env = this.utilsService.getEnvironment()
+    // if (env === 'web') {
+    //   this.isOAuthValid = true
+    // }
 
     this.signUpForm = this.formBuilder.group({
       username: [this.userSignUp.username, [Validators.required, Validators.minLength(4)], UsernameExistingValidator.validateUsername(this.afs)

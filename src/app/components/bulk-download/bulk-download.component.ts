@@ -3,7 +3,7 @@ import { IpcService } from '@services/ipc.service'
 import { DISPLAYEDMOVIES, MOVIEGENRES } from '../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '@services/data.service'
-import { TorrentService } from '@services/torrent.service'
+import { TorrentService } from '@services/torrent/torrent.service'
 
 @Component({
   selector: 'app-bulk-download',

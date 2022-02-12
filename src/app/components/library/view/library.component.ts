@@ -1,14 +1,13 @@
 /**
  * Gets available movies.
  */
-import { UserDataService } from '@services/user-data.service';
+import { UserDataService } from '@services/user-data/user-data.service';
 import { environment } from '@environments/environment';
 import { Component, OnInit, Input } from '@angular/core';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data'
 import { STRING_REGEX_IMAGE_SIZE } from '@shared/constants';
 import { IpcService, IUserDataPaginated } from '@services/ipc.service';
 import { Observable } from 'rxjs'
-import { Select } from '@ngxs/store'
 import { CollectionName } from '@services/firebase.service';
 
 @Component({
@@ -19,7 +18,6 @@ import { CollectionName } from '@services/firebase.service';
 export class LibraryComponent implements OnInit {
 
   @Input() data: Observable<any>
-  @Select(state => state.moviesList) moviesList$
 
   constructor(
     private ipcService: IpcService,

@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router'
+// import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '@services/data.service'
-import { Select, Store } from '@ngxs/store';
-import { ClearList, AddWatched, AddBookmark } from '../../../movie.actions'
-import { RemoveMovie } from '../../../movie.actions';
+// import { Select, Store } from '@ngxs/store';
+// import { ClearList, AddWatched, AddBookmark } from '../../../movie.actions'
+// import { RemoveMovie } from '../../../movie.actions';
 import { Observable, Subscription } from 'rxjs';
-import { MovieList } from '../../../movie.state';
+// import { MovieList } from '../../../movie.state';
 
 @Component({
   selector: 'app-selected-list',
@@ -14,28 +14,29 @@ import { MovieList } from '../../../movie.state';
 })
 export class SelectedListComponent implements OnInit, OnDestroy {
 
-  @Select(state => state.moviesList) movies$: Observable<any>
+  // @Select(state => state.moviesList) movies$: Observable<any>
   display = false
   movieIdList = []
   moviesListSubscription: Subscription
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private dataService: DataService,
-    private store: Store) { }
+    // private activatedRoute: ActivatedRoute,
+    // private router: Router,
+    // private dataService: DataService,
+    // private store: Store
+    ) { }
 
   ngOnInit() {
-    this.movies$.subscribe((e: any) => {
-      this.movieIdList = []
-      if (e.movies.length > 0) {
-        this.display = true
-      } else {
-        this.display = false
-      }
-      e.movies.forEach((movie: MovieList) => {
-        this.movieIdList.push(movie.id)
-      })
-    })
+    // this.movies$.subscribe((e: any) => {
+    //   this.movieIdList = []
+    //   if (e.movies.length > 0) {
+    //     this.display = true
+    //   } else {
+    //     this.display = false
+    //   }
+    //   e.movies.forEach((movie: MovieList) => {
+    //     this.movieIdList.push(movie.id)
+    //   })
+    // })
   }
 
   ngOnDestroy(): void {
@@ -49,22 +50,13 @@ export class SelectedListComponent implements OnInit, OnDestroy {
    * Downloads movie in the list.
    */
   download() {
-    // this.movies$.toPromise().then(moviesList => {
+    // this.moviesListSubscription = this.movies$.subscribe(moviesList => {
     //   console.log('moviesList: ', moviesList.movies);
     //   this.dataService.updateSelectedMovies(moviesList.movies)
     //   this.router.navigate([`/bulk-download`], {
     //     relativeTo: this.activatedRoute
     //   })
     // })
-    // this.moviesListSubscription
-    // console.log(this.movieIdList)
-    this.moviesListSubscription = this.movies$.subscribe(moviesList => {
-      console.log('moviesList: ', moviesList.movies);
-      this.dataService.updateSelectedMovies(moviesList.movies)
-      this.router.navigate([`/bulk-download`], {
-        relativeTo: this.activatedRoute
-      })
-    })
 
     // d.unsubscribe()
   }
@@ -73,7 +65,7 @@ export class SelectedListComponent implements OnInit, OnDestroy {
    * Adds bookmarks to all items in the list.
    */
   addBookmark() {
-    this.store.dispatch(new AddBookmark())
+    // this.store.dispatch(new AddBookmark())
   }
 
   markAsWatched() {
@@ -85,7 +77,7 @@ export class SelectedListComponent implements OnInit, OnDestroy {
     // // this.utilsService.hideSnackbar(root)
     // this.watchedService.saveWatchedMulti(this.movieIdList)
 
-    this.store.dispatch(new AddWatched())
+    // this.store.dispatch(new AddWatched())
   }
 
   /**
@@ -93,13 +85,13 @@ export class SelectedListComponent implements OnInit, OnDestroy {
    * @param movie movie to remove
    */
   removeMovie(movie) {
-    this.store.dispatch(new RemoveMovie(movie))
+    // this.store.dispatch(new RemoveMovie(movie))
   }
 
   /**
    * Clears the selected movies list.
    */
   clearList() {
-    this.store.dispatch(new ClearList())
+    // this.store.dispatch(new ClearList())
   }
 }

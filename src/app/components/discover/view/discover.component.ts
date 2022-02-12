@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DataService } from '@services/data.service'
-import { MovieService } from '@services/movie.service'
+import { MovieService } from '@services/movie/movie.service'
 import { TmdbParameters, GenreCodes } from '@models/interfaces';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';

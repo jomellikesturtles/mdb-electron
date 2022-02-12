@@ -398,4 +398,11 @@ https://www.daftlogic.com/projects-online-javascript-obfuscator.htm
 - "Cannot add duplicate torrent" error
 
 -minor
+
 - dragable subtitles
+- cleanup
+  - project restructuring
+  - ~~state management migration; ngxs to akita (add app state)~~
+  - FE re-code (not priority)
+  - css variables
+  - object mapping/conversion (map/convert object to MDB Objecet from service)

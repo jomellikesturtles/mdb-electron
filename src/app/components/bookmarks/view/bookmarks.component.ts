@@ -1,12 +1,11 @@
 /**
  * Bookmarked by user
  */
-import { UserDataService } from '@services/user-data.service';
+import { UserDataService } from '@services/user-data/user-data.service';
 import { IBookmark } from '@services/bookmark.service';
 import { environment } from '@environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
-import { Select } from '@ngxs/store';
 import { CollectionName } from '@services/firebase.service';
 
 @Component({
@@ -16,7 +15,6 @@ import { CollectionName } from '@services/firebase.service';
 })
 export class BookmarksComponent implements OnInit {
 
-  @Select(state => state.moviesList) moviesList$
   procSync = false
 
   bookmarksList

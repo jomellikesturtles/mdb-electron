@@ -1,12 +1,10 @@
-import { UserDataService } from '@services/user-data.service';
+import { UserDataService } from '@services/user-data/user-data.service';
 import { PreferencesService } from '@services/preferences.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Store } from '@ngxs/store';
-import { AddMovie, RemoveMovie } from '../../../movie.actions';
 import { DataService } from '@services/data.service';
-import { MovieService } from '@services/movie.service';
-import { TorrentService } from '@services/torrent.service';
+import { MovieService } from '@services/movie/movie.service';
+import { TorrentService } from '@services/torrent/torrent.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MDBMovie } from '@models/mdb-movie.model';
@@ -22,7 +20,7 @@ import GeneralUtil from '@utils/general.util';
 export class MovieCardComponent implements OnInit {
 
   _movie: MDBMovie
-  @Input()  // TODO: add an interface.
+  @Input()
   set movie(inputMessage: MDBMovie) {
     this._movie = inputMessage
 
@@ -99,7 +97,6 @@ export class MovieCardComponent implements OnInit {
     private userDataService: UserDataService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private store: Store,
   ) { }
 
   ngOnInit(): void {

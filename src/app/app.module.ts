@@ -19,10 +19,6 @@ import { AngularFireModule } from '@angular/fire';
 import { environment } from '@environments/environment';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { NgxsModule } from '@ngxs/store';
-import { CountState } from './app.state';
-import { AppRunState } from './states/app-run.state';
-import { SelectedMoviesState } from './movie.state';
 import { NotificationComponent } from '@components/notification/notification.component';
 import { PreviewComponent, GenrePipe } from '@components/preview/preview.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -79,7 +75,6 @@ import { YoutubePlayerComponent } from './components/youtube-player/youtube-play
     AngularFireAuthModule,
     AngularFirestoreModule,
     RouterModule.forRoot([]),
-    NgxsModule.forRoot([CountState, SelectedMoviesState, AppRunState]),
     SharedModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
