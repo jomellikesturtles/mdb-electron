@@ -7,15 +7,13 @@ import {
 import { MDBTorrent } from '@models/interfaces';
 import { TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
-import { BookmarkService } from '@services/bookmark.service'
 import { DataService } from '@services/data.service';
-import { MovieService } from '@services/movie.service';
-import { TorrentService } from '@services/torrent.service';
-import { UtilsService } from '@services/utils.service';
+import { MovieService } from '@services/movie/movie.service';
+import { TorrentService } from '@services/torrent/torrent.service';
 import { IpcService } from '@services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TROUBLE_QUOTES } from '@shared/constants';
-import { UserDataService } from '@services/user-data.service';
+import { UserDataService } from '@services/user-data/user-data.service';
 import { WatchedService, IWatched } from '@services/watched.service';
 import { takeUntil } from 'rxjs/operators'
 import { Subject } from 'rxjs';
@@ -39,11 +37,9 @@ import { ImagePreviewComponent } from '@components/image-preview/image-preview.c
  */
 export class DetailsComponent implements OnInit, OnDestroy {
 
-  selectedMovie;
   movieBackdrop;
   torrents: MDBTorrent[] = [];
   testSelectedMovie = TEST_TMDB_MOVIE_DETAILS
-  rawData = null
   testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg'
   isAvailable = false
   hasData = false
@@ -71,18 +67,15 @@ export class DetailsComponent implements OnInit, OnDestroy {
   bestPlayLink: PlayLink;
   certification: 'PG'
   userData: IProfileData = new IProfileData()
-  MDBMovie = new MDBMovie()
   private ngUnsubscribe = new Subject();
 
   constructor(
     private sanitizer: DomSanitizer,
     private activatedRoute: ActivatedRoute,
-    private bookmarkService: BookmarkService,
     private dataService: DataService,
     private movieService: MovieService,
     private ipcService: IpcService,
     private torrentService: TorrentService,
-    private utilsService: UtilsService,
     private userDataService: UserDataService,
     private libraryService: LibraryService,
     private watchedService: WatchedService,
@@ -247,13 +240,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // tt2015381 is Guardians of the galaxy 2014; for testing only
     GeneralUtil.DEBUG.log('getMovie initializing with value...', val);
 
-    // this.movieService.getTmdbMovieDetails(val, [], 'videos,images,credits,similar,external_ids,recommendations').pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
-    this.movieService.getTmdbMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
-      this.selectedMovie = data;
-      const myObject = this.selectedMovie
-      this.movieDetails = new MDBMovie(myObject);
+    this.movieService.getMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
+      this.movieDetails = data;
       this.loadVideoData()
-      this.rawData = data
       this.hasData = true
       // COMMENTED UNTIL 'error spawn ENAMETOOLONG' is fixed.
       // this.saveMovieDataOffline(this.movieDetails)
@@ -276,7 +265,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
    */
   getMoviePoster() {
     // implement offline movie poster
-    return this.selectedMovie.Poster
   }
 
   /**
@@ -284,10 +272,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
    */
   getMovieBackdrop() {
     // this.ipcService.getImage(this.selectedMovie.imdbID, 'backdrop')
-    return this.selectedMovie.Poster
   }
 
   /**
+   * !UNUSED
    * Gets backdrop or background image
    * @param val IMDb id
    */
@@ -300,7 +288,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
         );
         this.movieBackdrop = data.moviebackground[imageIndex].url;
       } else {
-        this.movieBackdrop = this.selectedMovie.Poster;
+        // this.movieBackdrop = this.selectedMovie.Poster;
       }
     });
   }
@@ -406,10 +394,10 @@ goToLink(linkType: string, idParam?: string) {
       default:
         break;
     }
-    const env = this.utilsService.getEnvironment()
-    if (env === 'desktop') {
+
+    if (environment.runConfig.electron) {
       // this.ipcService.call(this.ipcService.IPCCommand.OpenLinkExternal, url)
-    } else if (env === 'web') {
+    } else {
       window.open(url)
     }
   }

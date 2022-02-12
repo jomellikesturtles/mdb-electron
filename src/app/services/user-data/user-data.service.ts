@@ -1,13 +1,13 @@
-import { LibraryService } from './library.service';
+import { LibraryService } from '../library.service';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { IBookmark, BookmarkService } from './bookmark.service';
-import { MovieService } from './movie.service';
-import { WatchedService, IWatched } from './watched.service';
-import { IpcService, IUserDataPaginated } from './ipc.service';
+import { IBookmark, BookmarkService } from '../bookmark.service';
+import { MovieService } from '../movie/movie.service';
+import { WatchedService, IWatched } from '../watched.service';
+import { IpcService, IUserDataPaginated } from '../ipc.service';
 import { environment } from 'environments/environment';
-import { CollectionName, FirebaseService } from './firebase.service';
-import { MdbApiService } from './mdb-api.service';
+import { CollectionName, FirebaseService } from '../firebase.service';
+import { MdbApiService } from '../mdb-api.service';
 import GeneralUtil from '@utils/general.util';
 
 @Injectable({
@@ -217,7 +217,7 @@ export class UserDataService {
         dataDoc = isFirebase ? dataDoc.data() : dataDoc // firebaseData or offlineData
         index++
         if (dataDoc.tmdbId > 0) {
-          this.movieService.getTmdbMovieDetails(dataDoc.tmdbId, 'videos,images,credits,similar,external_ids,recommendations').pipe().subscribe(movie => {
+          this.movieService.getMovieDetails(dataDoc.tmdbId, 'videos,images,credits,similar,external_ids,recommendations').pipe().subscribe(movie => {
             const userData = this.setDataObject(dataType, dataDoc)
             movie[dataType] = userData
             moviesDisplayList.push(movie)

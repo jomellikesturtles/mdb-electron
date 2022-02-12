@@ -4,10 +4,7 @@
   "main": "main.js",
   "productName": "mdb",
   "private": true,
-  "engines": {
-
-  },
-
+  "engines": {},
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
@@ -46,7 +43,6 @@
     "@angular/router": "~8.2.14",
     "@angular/service-worker": "~8.2.14",
     "@datorama/akita": "^7.1.1",
-    "@ngxs/store": "^3.6.0",
     "@types/firebase": "^3.2.1",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",

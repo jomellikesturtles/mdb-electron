@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core'
-import { MovieService } from '@services/movie.service'
+import { MovieService } from '@services/movie/movie.service'
 import { DataService } from '@services/data.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { TmdbParameters, } from '@models/interfaces'
 import { GENRES } from '@shared/constants'
-import { Select, Store } from '@ngxs/store'
 import { DomSanitizer } from '@angular/platform-browser'
 import GeneralUtil from '@utils/general.util'
 
@@ -22,8 +21,6 @@ export class DashboardComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private domSanitizer: DomSanitizer,
   ) { }
-
-  @Select(state => state.moviesList) moviesList$
 
   browserConnection = navigator.onLine
   dashboardLists = []

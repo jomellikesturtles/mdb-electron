@@ -3,9 +3,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core'
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces'
 import { DataService } from '@services/data.service'
-import { MovieService } from '@services/movie.service'
+import { MovieService } from '@services/movie/movie.service'
 import { ISearchQuery } from '@components/top-navigation/top-navigation.component'
-import { Select, Store } from '@ngxs/store'
 
 @Component({
   selector: 'app-results',
@@ -13,7 +12,6 @@ import { Select, Store } from '@ngxs/store'
   styleUrls: ['./results.component.scss']
 })
 export class ResultsComponent implements OnInit, OnDestroy {
-  @Select(state => state.moviesList) moviesList$
   searchResults = []
   searchQuery: ISearchQuery
   hasSearchResults = false
@@ -62,7 +60,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   getSearchResults() {
     const paramMap = new Map<TmdbParameters | TmdbSearchMovieParameters, any>();
     paramMap.set(TmdbSearchMovieParameters.Query, this.searchQuery.query);
-    this.movieService.searchTmdbMovie(paramMap).subscribe(data => {
+    this.movieService.searchMovie(paramMap).subscribe(data => {
       this.searchResults.push(...data.results)
       if (data.total_pages > this.currentPage) {
         this.hasMoreResults = true
@@ -79,7 +77,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     paramMap.set(TmdbSearchMovieParameters.Query, this.searchQuery.query);
     paramMap.set(TmdbParameters.Page, ++this.currentPage);
     this.procLoadMoreResults = true
-    this.movieService.searchTmdbMovie(paramMap).subscribe(data => {
+    this.movieService.searchMovie(paramMap).subscribe(data => {
       this.searchResults = data.results
       // this.searchResults.push(...data.results) // for some reason this doesn't work anymore
       if (data.total_pages <= this.currentPage) {

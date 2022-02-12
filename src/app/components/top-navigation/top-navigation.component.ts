@@ -5,12 +5,10 @@ import { IOmdbMovieDetail, MovieGenre, IGenre } from '@models/interfaces';
 import { MOVIES, MOVIEGENRES } from '../../mock-data';
 import { STRING_REGEX_IMDB_ID } from '../../shared/constants';
 import { DataService } from '@services/data.service'
-import { MovieService } from '@services/movie.service'
+import { MovieService } from '@services/movie/movie.service'
 import { IpcService } from '@services/ipc.service'
 import { Router, ActivatedRoute } from '@angular/router'
 import { Location } from '@angular/common'
-import { Store, Select } from '@ngxs/store'
-import { Add, CountState, UserState } from '../../app.state'
 import { environment } from '@environments/environment';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
@@ -27,8 +25,6 @@ enum STATUS {
 })
 export class TopNavigationComponent implements OnInit {
   @Input() data: Observable<any>
-  @Select(CountState) count$: Observable<number>
-  @Select(state => state.UserState) user$: Observable<any>
   constructor(
     private dataService: DataService,
     // private firebaseService: FirebaseService,
@@ -36,8 +32,7 @@ export class TopNavigationComponent implements OnInit {
     private movieService: MovieService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private location: Location,
-    private store: Store) { }
+    private location: Location) { }
 
   isElectron = environment.runConfig.electron
   status = 'LOGIN'
@@ -187,16 +182,6 @@ export class TopNavigationComponent implements OnInit {
 
   signOut() {
     // this.firebaseService.signOut()
-  }
-
-  changeCredentialState(actionName: string) {
-    this.user$.subscribe(e => {
-      // console.log('user$', user$);
-      // this.store.dispatch(new SetUser())
-    })
-    // if (actionName === STATUS.login) {
-    //   this.status = STATUS.logout
-    // }
   }
 
   onMinimize() {

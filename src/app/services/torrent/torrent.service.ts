@@ -6,10 +6,10 @@ import { MDBTorrent, ITPBTorrent } from '@models/interfaces'
 import { IpcService } from '@services/ipc.service'
 import { DomSanitizer } from '@angular/platform-browser'
 import { Pipe, PipeTransform } from '@angular/core';
-import { STRING_REGEX_IMDB_ID } from '../shared/constants';
+import { STRING_REGEX_IMDB_ID } from '../../shared/constants';
 import { IYTSSingleQuery, YTSTorrent } from '@models/yts-torrent.model';
-import { UtilsService } from './utils.service';
-import { CacheService } from './cache.service';
+import { CacheService } from '../cache.service';
+import GeneralUtil from '@utils/general.util';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -24,8 +24,7 @@ export class TorrentService {
     private http: HttpClient,
     private ipcService: IpcService,
     private cacheService: CacheService,
-    private sanitizer: DomSanitizer,
-    private utilsService: UtilsService) { }
+    private sanitizer: DomSanitizer) { }
 
   trackers = [`udp://glotorrents.pw:6969/announce`,
     `udp://tracker.opentrackr.org:1337/announce`,
@@ -162,7 +161,7 @@ export class TorrentService {
     newTorrent.hash = rawTorrent.hash
     newTorrent.sizeBytes = rawTorrent.hasOwnProperty('size_bytes') ? rawTorrent['size_bytes'] : rawTorrent['sizeBytes']
     newTorrent.size = rawTorrent.hasOwnProperty('size') ? rawTorrent['size'] :
-      this.utilsService.prettyBytes(rawTorrent['sizeBytes'])
+    GeneralUtil.prettyBytes(rawTorrent['sizeBytes'])
     newTorrent.name = rawTorrent.hasOwnProperty('name') ? rawTorrent['name'] : null
     newTorrent.dateUploaded = rawTorrent.hasOwnProperty('date_uploaded') ? rawTorrent['date_uploaded'] : rawTorrent['added']
     newTorrent.dateUploadedUnix = rawTorrent.hasOwnProperty('date_uploaded_unix') ? rawTorrent['date_uploaded_unix'] : (new Date(rawTorrent['added']).getTime() / 1000)

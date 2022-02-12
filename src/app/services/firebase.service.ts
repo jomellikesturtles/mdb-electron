@@ -5,7 +5,6 @@ import { AngularFirestore, } from '@angular/fire/firestore'
 import { QueryDocumentSnapshot } from '@angular/fire/firestore/interfaces';
 import * as firebase from 'firebase';
 import { IpcService, BookmarkChanges } from './ipc.service';
-import { Store } from '@ngxs/store';
 import { RemoveUser } from '../app.actions';
 import { combineLatest } from 'rxjs';
 @Injectable({
@@ -26,7 +25,6 @@ export class FirebaseService {
     private angularFirestore: AngularFirestore,
     private ipcService: IpcService,
     private auth: AngularFireAuth,
-    private store: Store,
     private afm: AngularFireModule,
   ) { this.db = this.angularFirestore.firestore }
 
@@ -273,7 +271,7 @@ export class FirebaseService {
       localStorage.removeItem('uid')
       localStorage.removeItem('displayName')
       localStorage.removeItem('email')
-      this.store.dispatch(new RemoveUser(e))
+      // this.store.dispatch(new RemoveUser(e))
       // resolve(e)
     }).catch(e => {
       console.log('SIGNOUT CATCH ', e);

@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of, Subscriber, forkJoin } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { TmdbParameters } from '@models/interfaces'
+import { TMDB_API_KEY } from '@shared/constants';
 
 const jsonContentType = new HttpHeaders({ 'Content-Type': 'application/json' })
 
@@ -11,7 +12,6 @@ const jsonContentType = new HttpHeaders({ 'Content-Type': 'application/json' })
 })
 export class PersonService {
   httpParam = new HttpParams()
-  tmdbApiKey = 'a636ce7bd0c125045f4170644b4d3d25'
   omdbUrl = 'http://www.omdbapi.com'
   tmdbUrl = 'https://api.themoviedb.org/3'
   constructor(
@@ -25,7 +25,7 @@ export class PersonService {
   getPersonDetails(id: string | number, language?: string) {
     console.log('in getPersonDetails');
     const url = `${this.tmdbUrl}/person/${id}`
-    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, 'a636ce7bd0c125045f4170644b4d3d25')
+    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY)
     if (!language) {
       language = 'en-US'
     }
