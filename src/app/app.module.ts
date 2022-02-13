@@ -1,32 +1,32 @@
 import {
   CommaSpacePipe, ReleaseYearPipe,
-} from './mdb-pipes.pipe';
-import { SimplifySizePipe, MagnetPipe } from './services/torrent.service';
+} from './shared/pipes/mdb-pipes.pipe';
+import { SimplifySizePipe, MagnetPipe } from './services/torrent/torrent.service';
 import { SearchComponent } from '@components/search/search.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing/app-routing.module';
 import { AppComponent } from './app.component';
-import { BulkDownloadComponent } from '@components/bulk-download/bulk-download.component';
+import { BulkDownloadComponent } from 'app/modules/admin/bulk-download/bulk-download.component';
 import { NavigationComponent } from '@components/navigation/navigation.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http';
 import { TopNavigationComponent } from '@components/top-navigation/top-navigation.component';
 import { BrowseComponent } from '@components/browse/browse.component';
-import { PersonDetailsComponent } from '@components/person-details/person-details.component';
+import { PersonDetailsComponent } from 'app/modules/person/person-details/person-details.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '@environments/environment';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { NotificationComponent } from '@components/notification/notification.component';
-import { PreviewComponent, GenrePipe } from '@components/preview/preview.component';
+import { NotificationComponent } from 'app/modules/events/notification/notification.component';
+import { PreviewComponent, GenrePipe } from '@shared/components/preview/preview.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MdbGuardGuard } from './mdb-guard.guard';
 import { backendProvider } from './services/http-interceptor.service';
 import { RouterModule } from '@angular/router';
 import { FloatingPlayerComponent } from '@components/floating-player/floating-player.component';
-import { SharedModule } from '@components/shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -40,7 +40,7 @@ import { ImagePreviewComponent } from './components/image-preview/image-preview.
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { KeyboardShortcutsComponent } from './components/keyboard-shortcuts/keyboard-shortcuts.component';
 import { VideoPlayerModule } from '@components/video-player/video-player.module';
-import { YoutubePlayerComponent } from './components/youtube-player/youtube-player.component';
+import { YoutubePlayerComponent } from './shared/components/youtube-player/youtube-player.component';
 
 @NgModule({
   declarations: [

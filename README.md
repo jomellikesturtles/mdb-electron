@@ -44,7 +44,6 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 - Angular 7
 - Electronjs
 - Bootstrap 4
-- jquery
 - nodejs libraries
   - Nedb
   - fast-levenshtein
@@ -233,7 +232,6 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 - uncaughtException ipcChild Error: Cannot add duplicate torrent a86b4adb83506bb12ceabac2f42ae480ba44ecfa
 - VideoPlayerComponent.html:27 ERROR TypeError: Failed to set the 'currentTime' property on 'HTMLMediaElement': The provided double value is non-finite.
 
-
 > major
 
 - ~/.dotfiles
@@ -257,6 +255,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   size
   res
 }
+
 > minor
 
 - ~~lazy loading~~
@@ -406,3 +405,4 @@ https://www.daftlogic.com/projects-online-javascript-obfuscator.htm
   - FE re-code (not priority)
   - css variables
   - object mapping/conversion (map/convert object to MDB Objecet from service)
+  - electron to ts

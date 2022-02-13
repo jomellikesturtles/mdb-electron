@@ -150,11 +150,20 @@ export class MovieService {
   }
 
   /**
+   * TODO: add akita caching
    * Gets related videos from TMDB.
    * @param tmdbId the tmdb id.
    */
-  getTmdbVideos(tmdbId: number): Observable<any> {
-    return this.cacheService.get(tmdbId + '_TMDB_VIDEOS', this.tmdbVideos(tmdbId));
+  getRelatedClips(tmdbId: number, refresh: boolean = false): Observable<any> {
+    let theFunction: Observable<any>;
+
+    // if (!this.mdbMovieQuery.hasEntity(tmdbId) || refresh) {
+    if (environment.dataSource.toString() === "TMDB") {
+      theFunction = this.tmdbService.getTmdbVideos(tmdbId);
+    }
+
+    // }
+    return this.cacheService.get(tmdbId + '_TMDB_VIDEOS', this.tmdbService.getTmdbVideos(tmdbId));
   }
 
   /**
@@ -246,10 +255,10 @@ export class MovieService {
         return theFunction.pipe(
           first(),
           map((data: ITmdbResultObject) => {
-            let newData = []
-            data.results.forEach(e=>{
+            let newData = [];
+            data.results.forEach(e => {
               newData.push(new MDBMovie(e));
-            })
+            });
             const store = {
               id: queryId,
               movie: newData,
@@ -337,17 +346,6 @@ export class MovieService {
     const url = `${TMDB_URL}/movie/${tmdbId}/external_ids?api_key=${TMDB_API_KEY}`;
     return this.http.get<TMDB_External_Id>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getExternalId')));
-  }
-
-  private tmdbVideos(tmdbId: number): Observable<any> {
-    const url = `${TMDB_URL}/movie/${tmdbId}/videos`;
-    const myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY);
-    const tmdbHttpOptions = {
-      headers: JSON_CONTENT_TYPE_HEADER,
-      params: myHttpParam
-    };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('tmdbVideos')));
   }
 
   private movieDiscover(paramMap: Map<TmdbParameters, any>) {
