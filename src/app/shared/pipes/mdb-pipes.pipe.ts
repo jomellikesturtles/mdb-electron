@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { STRING_REGEX_TMDB_RUNTIME } from './shared/constants';
+import { STRING_REGEX_TMDB_RUNTIME } from '../constants';
 import GeneralUtil from '@utils/general.util';
 
 /**

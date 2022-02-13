@@ -3,13 +3,13 @@
  */
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SelectedListComponent } from './selected-list/selected-list.component';
-import { MovieCardComponent } from './movie-card/movie-card.component';
-import { CardListComponent } from './card-list/card-list.component';
-import { HHMMSSPipe, ReleaseYearPipe, RuntimeDisplayPipe } from 'app/mdb-pipes.pipe';
+import { SelectedListComponent } from './components/selected-list/selected-list.component';
+import { MovieCardComponent } from './components/movie-card/movie-card.component';
+import { CardListComponent } from './components/card-list/card-list.component';
+import { HHMMSSPipe, ReleaseYearPipe, RuntimeDisplayPipe } from '@shared/pipes/mdb-pipes.pipe';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { HorizontalCardListComponent } from './horizontal-card-list/horizontal-card-list.component';
+import { HorizontalCardListComponent } from './components/horizontal-card-list/horizontal-card-list.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { UserIdleModule } from 'angular-user-idle';

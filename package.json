@@ -26,7 +26,8 @@
     "start:server": "node src/assets/scripts/server/main",
     "start:angular-server": " start ng serve & start npm run start:server",
     "start:angular-server2": "start npm start && npm run start:server",
-    "pack": "electron-packager ./ --overwrite"
+    "pack": "electron-packager ./ --overwrite",
+    "clean:install": "rm -rf node_modules && rm -rf package-lock.json && npm cache clean --force && install --save --save-exact"
   },
   "dependencies": {
     "@angular/animations": "~8.2.14",

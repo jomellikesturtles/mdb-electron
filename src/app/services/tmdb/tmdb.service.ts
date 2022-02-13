@@ -5,13 +5,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, first, map, tap } from 'rxjs/operators';
-import { IpcService } from '@services/ipc.service';
 import { ITmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { TMDB_API_KEY, TMDB_URL } from '../../shared/constants';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { CacheService } from '../cache.service';
-import { environment } from '@environments/environment';
-import { MDBMovieQuery, TMDBMovieQuery } from '../movie/movie.query';
+import { TMDBMovieQuery } from '../movie/movie.query';
 import { TMDBMovieStore } from '@services/movie/movie.store';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -22,7 +20,6 @@ export class TmdbService {
   constructor(
     private http: HttpClient,
     private cacheService: CacheService,
-    private ipcService: IpcService,
     private tmdbMovieQuery: TMDBMovieQuery,
     private tmdbMovieStore: TMDBMovieStore,
   ) { }
@@ -117,6 +114,17 @@ export class TmdbService {
       catchError(this.handleError<any>('getExternalId')));
   }
 
+  getTmdbVideos(tmdbId: number): Observable<any> {
+    const url = `${TMDB_URL}/movie/${tmdbId}/videos`;
+    const myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, TMDB_API_KEY);
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('tmdbVideos')));
+  }
+
   /**
    * Appends parameters list into http param object.
    * @param paramMap parameters key-value pair list
@@ -145,6 +153,6 @@ export class TmdbService {
   }
 
   private log(message: string) {
-    console.log(`MovieService: ${message} `);
+    console.log(`TmdbService: ${message} `);
   }
 }

@@ -32,6 +32,9 @@
       "@constants/*": [
         "app/constants/*"
       ],
+      "@core/*": [
+        "app/core/*"
+      ],
       "@directives/*": [
         "app/directives/*"
       ],
@@ -46,6 +49,9 @@
       ],
       "@models/*": [
         "app/models/*"
+      ],
+      "@modules/*": [
+        "app/modules/*"
       ],
       "@services/*": [
         "app/services/*"

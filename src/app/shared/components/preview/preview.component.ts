@@ -155,7 +155,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     const query = `${this.previewMovie.title} ${this.getYear(this.previewMovie.releaseDate)}`
     title = title.replace(/[.…]+/g, '')
 
-    let theRes = await this.movieService.getTmdbVideos(this.previewMovie.tmdbId).toPromise()
+    let theRes = await this.movieService.getRelatedClips(this.previewMovie.tmdbId).toPromise()
 
     if (theRes.results.length === 0) {
       this.clipSrc = null

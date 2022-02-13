@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IpcService } from '@services/ipc.service'
-import { DISPLAYEDMOVIES, MOVIEGENRES } from '../../mock-data'
+import { DISPLAYEDMOVIES, MOVIEGENRES } from '../../../mock-data'
 import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '@services/data.service'
 import { TorrentService } from '@services/torrent/torrent.service'

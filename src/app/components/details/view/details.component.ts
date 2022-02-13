@@ -268,13 +268,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Gets the movie backdrop
-   */
-  getMovieBackdrop() {
-    // this.ipcService.getImage(this.selectedMovie.imdbID, 'backdrop')
-  }
-
-  /**
    * !UNUSED
    * Gets backdrop or background image
    * @param val IMDb id

@@ -6,6 +6,7 @@ import { TmdbParameters, } from '@models/interfaces'
 import { GENRES } from '@shared/constants'
 import { DomSanitizer } from '@angular/platform-browser'
 import GeneralUtil from '@utils/general.util'
+import { MDBMovie } from '@models/mdb-movie.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -84,9 +85,13 @@ export class DashboardComponent implements OnInit {
     for (let entry of paramMap.entries()) {
       myParam2[entry[0]] = entry[1]
     }
+    let mappedRes = [];
+    data.results.forEach(e=>{
+      mappedRes.push(new MDBMovie(e));
+    })
     const innerList = {
       name: listName,
-      data: data.results,
+      data: mappedRes,
       queryParams: paramMap
     }
     this.dashboardLists.push(innerList)

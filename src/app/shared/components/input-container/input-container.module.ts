@@ -7,8 +7,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { PreferencesRoutingModule } from '@components/preferences/preferences.routing.module';
-import { SharedModule } from '../shared.module';
+import { PreferencesRoutingModule } from 'app/modules/settings/preferences/preferences.routing.module';
+import { SharedModule } from '@shared/shared.module';
 import { InputContComponent } from '../input-cont/input-cont.component';
 
 

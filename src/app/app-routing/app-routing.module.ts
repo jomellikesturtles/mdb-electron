@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { BulkDownloadComponent } from '@components/bulk-download/bulk-download.component';
+import { BulkDownloadComponent } from 'app/modules/admin/bulk-download/bulk-download.component';
 import { BrowseComponent } from '@components/browse/browse.component';
-import { PersonDetailsComponent } from '@components/person-details/person-details.component';
-import { PreviewComponent } from '@components/preview/preview.component';
+import { PersonDetailsComponent } from 'app/modules/person/person-details/person-details.component';
+import { PreviewComponent } from '@shared/components/preview/preview.component';
 import { MdbGuardGuard } from '../mdb-guard.guard';
 import { AdvancedFindComponent } from '@components/advanced-find/advanced-find.component';
 
@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'video', loadChildren: () => import('@components/video-player/video-player.module').then(m => m.VideoPlayerModule) },
   { path: '', redirectTo: '/preferences', pathMatch: 'full' }, // for fast boot?
   { path: 'browse', component: BrowseComponent },
-  { path: 'preferences', loadChildren: () => import('@components/preferences/preferences.module').then(m => m.PreferencesModule) },
+  { path: 'preferences', loadChildren: () => import('app/modules/settings/preferences/preferences.module').then(m => m.PreferencesModule) },
   { path: 'preferences/bulk-download', component: BulkDownloadComponent },
 
   { path: 'person-details/:id', component: PersonDetailsComponent },
@@ -31,6 +31,20 @@ const routes: Routes = [
   { path: 'user', loadChildren: () => import('@components/user/user.module').then(m => m.UserModule) },
   { path: 'advanced-find', component: AdvancedFindComponent },
   { path: '**', redirectTo: '/dashboard', pathMatch: 'full' }, // not found
+
+  // new structure:
+  // { path: 'home', loadChildren: () => import('@components/user/user.module').then(m => m.UserModule) },
+  // { path: 'movie', loadChildren: () => import('@components/user/user.module').then(m => m.MovieModule) },
+  // { path: 'user', loadChildren: () => import('@components/user/user.module').then(m => m.UserModule) },
+  // { path: 'person', loadChildren: () => import('@components/user/user.module').then(m => m.PersonModule) },
+  // { path: 'search', loadChildren: () => import('@components/user/user.module').then(m => m.SearchModule) },
+  // { path: 'watch', loadChildren: () => import('@components/user/user.module').then(m => m.WatchModule) },
+  // { path: 'settings', loadChildren: () => import('@components/user/user.module').then(m => m.SettingsModule) },
+  // { path: 'events', loadChildren: () => import('@components/user/user.module').then(m => m.EventsModule) },
+  // { path: 'login', loadChildren: () => import('@components/user/user.module').then(m => m.LoginModule) },
+  // { path: 'register', loadChildren: () => import('@components/user/user.module').then(m => m.RegisterModule) },
+  // { path: 'reset-password', loadChildren: () => import('@components/user/user.module').then(m => m.ResetPasswordModule) },
+
 ];
 
 @NgModule({
