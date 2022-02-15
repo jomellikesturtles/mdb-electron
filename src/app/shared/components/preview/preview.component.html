@@ -46,9 +46,9 @@ z-index: 3000;
         *ngFor="let item of previewMovie.genreIds; let isLast = last">
         {{item|genre}}{{ isLast ? "" : ", " }}
       </span>
-      <button class='btn btn-primary' (click)='playTrailer()' *ngIf="!isYTPlaying && hasTrailerClip">Play
+      <button class='btn btn-primary' (click)='playPreview()' *ngIf="!isYTPlaying && hasTrailerClip">Play
         Trailer</button>
-      <button class=' btn btn-primary' (click)='stopVideo()' *ngIf="isYTPlaying">Stop Playing</button>
+      <button class=' btn btn-primary' (click)='stopPreview()' *ngIf="isYTPlaying">Stop Playing</button>
       <button class=' btn btn-primary' (click)='toggleMute()' *ngIf="isYTPlaying">
         <span *ngIf="!isMute">Mute</span>
         <span *ngIf="isMute">UnMute</span>

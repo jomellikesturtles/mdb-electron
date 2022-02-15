@@ -4,7 +4,7 @@ import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces'
 import { DataService } from '@services/data.service'
 import { MovieService } from '@services/movie/movie.service'
-import { ISearchQuery } from '@components/top-navigation/top-navigation.component'
+import { ISearchQuery } from '@core/components/top-navigation/top-navigation.component'
 
 @Component({
   selector: 'app-results',

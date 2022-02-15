@@ -8,52 +8,16 @@ const { SIZE_LIMIT, WEBTORRENT_FULL_FILE_PATH } = require("./shared/constants");
 const fs = require("fs");
 const rimraf = require("rimraf");
 
-let procDiskCheck;
-let procTorrentFilesCheck;
-
 processInit(process);
 
-async function checkDisk() {
-  let spaceNeed = 123;
-  let freeSpace = await getFreeDiskSpace("C");
-  DEBUG.log(freeSpace);
-  DEBUG.log(freeSpace >= SIZE_LIMIT);
-  if (freeSpace >= SIZE_LIMIT) {
-    return true;
-  } else {
-    return false;
-    // delete earliest modified/added torrent movie
-    // if cannot delete or deleting wont be enough, throw error message
-    // function checkTorrentFolders() {
-    //   DEBUG.log(getFuncName(), "starting checkFiles...");
-    //   // procTorrentFilesCheck = startProc("src/assets/scripts/system-disk-service.js", [
-    //   procTorrentFilesCheck = startProc("system-disk-service.js", [
-    //     JSON.stringify({
-    //       operation: "check-torrent-folders",
-    //     }),
-    //   ]);
-    //   return new Promise((resolve, reject) => {
-    //     procTorrentFilesCheck.on("exit", function (code) {
-    //       DEBUG.log("EXITING with code", code);
-    //       if (code == 0) {
-    //         resolve(true);
-    //       } else {
-    //         resolve(false);
-    //       }
-    //     });
-    //   });
-    // }
-  }
-}
-
 /**
- * Check if
+ * TODO: optional: count all sizes before deleting
+ * Check if can play.
  * @param {number} spaceNeeded
- *
  */
 async function canPlayNewTorrent(spaceNeeded) {
+  spaceNeeded = 15000000000; //15GB
   // let freeSpace = await getFreeDiskSpace("C");
-  // DEBUG.log(freeSpace >= spaceNeeded);
   let isEnoughSpace = false;
 
   let foldersOrderedByBirthTimeList = [];
@@ -62,7 +26,9 @@ async function canPlayNewTorrent(spaceNeeded) {
   } else {
     // delete earliest modified/added torrent movie
     // if cannot delete or deleting wont be enough, throw error message
-    foldersOrderedByBirthTimeList = getSorted(WEBTORRENT_FULL_FILE_PATH);
+    foldersOrderedByBirthTimeList = getSortedWebtorrentFolders(
+      WEBTORRENT_FULL_FILE_PATH
+    );
     let index = 0;
     do {
       rimraf.sync(foldersOrderedByBirthTimeList[index]);
@@ -79,7 +45,12 @@ async function isDiskSpaceEnough(spaceNeeded) {
   return freeSpace > spaceNeeded;
 }
 
-function getSorted(dir) {
+/**
+ * Gets list of folders path in webtorrent ordered by oldest modified.
+ * @param {string} dir
+ * @returns {string[]}
+ */
+function getSortedWebtorrentFolders(dir) {
   var files = fs
     .readdirSync(dir)
     .map(function (v) {
@@ -97,10 +68,9 @@ function getSorted(dir) {
 function init() {
   // diskspace,
   // if not enough, delete more
-  checkDisk().then((isOk) => {
-    DEBUG.log(getFuncName(), isOk);
-  });
-  // canPlayNewTorrent(2).
+  // checkDisk().then((isOk) => {
+  //   DEBUG.log(getFuncName(), isOk);
+  // });
 }
 
 // init();

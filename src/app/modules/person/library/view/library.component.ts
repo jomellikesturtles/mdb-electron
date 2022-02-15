@@ -4,7 +4,7 @@
 import { UserDataService } from '@services/user-data/user-data.service';
 import { environment } from '@environments/environment';
 import { Component, OnInit, Input } from '@angular/core';
-import { TMDB_SEARCH_RESULTS } from '../../../mock-data'
+import { TMDB_SEARCH_RESULTS } from '../../../../mock-data'
 import { STRING_REGEX_IMAGE_SIZE } from '@shared/constants';
 import { IpcService, IUserDataPaginated } from '@services/ipc.service';
 import { Observable } from 'rxjs'

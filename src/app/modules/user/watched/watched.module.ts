@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WatchedComponent } from './view/watched.component';
-import { SharedModule } from '../../shared/shared.module';
+import { WatchedComponent } from './watched.component';
+import { SharedModule } from '@shared/shared.module';
 import { WatchedRoutingModule } from './watched.routing.module';
 
 @NgModule({

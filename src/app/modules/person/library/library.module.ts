@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LibraryComponent } from './view/library.component';
-import { SharedModule } from '../../shared/shared.module';
+import { SharedModule } from '../../../shared/shared.module';
 import { LibraryRoutingModule } from './library.routing.module';
 
 @NgModule({

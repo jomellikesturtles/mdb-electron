@@ -1,7 +1,7 @@
 // IPC Main utils.
 /*jshint esversion: 6 */
 const path = require("path");
-
+const IPCMainChannel = require("../../assets/IPCMainChannel.json");
 /**
  * Fancy console log
  */
@@ -16,15 +16,15 @@ let DEBUG = (() => {
 })();
 
 /**
- *
+ *  Common function to init process.
  * @param {import ("process") } process;
  */
 let processInit = (process) => {
-  process.send =
-    process.send ||
-    function (...args) {
-      DEBUG.log("SIMULATING process.send", ...args);
-    };
+  // process.send =
+  //   process.send ||
+  //   function (...args) {
+  //     DEBUG.log("SIMULATING process.send", ...args);
+  //   };
 
   process.on("uncaughtException", function (error) {
     DEBUG.log(process.pid, "uncaughtException ERROR: ", error.message);
@@ -39,8 +39,18 @@ let processInit = (process) => {
     process.send(["unhandledRejection", error.message]);
   });
 
+  process.on("beforeExit", function (error) {
+    DEBUG.log(process.pid, "beforeExit...", error);
+    process.send(["operation-failed", "general"]);
+  });
+
+  process.on("warning", function (error) {
+    DEBUG.log(process.pid, "warning...", error);
+    process.send(["warning", "general"]);
+  });
+
   process.on("exit", function (error) {
-    DEBUG.log(process.pid, "exit ERROR: ", error);
+    DEBUG.log(process.pid, "exit: ", error);
   });
 
   process.on("disconnect", function (error) {
@@ -48,7 +58,29 @@ let processInit = (process) => {
   });
 };
 
+/**
+ * Common function to init process.
+ * @param {import ("process") } process;
+ * @param {IPCMainChannel} args
+ */
+let processSend = (process, message, args) => {
+  DEBUG.log("Sending process message:", message, "; args: ", args);
+  process.send =
+    process.send ||
+    function (...args) {
+      DEBUG.log("SIMULATING process.send", ...args);
+    };
+
+  // process.send([message, args]) ||
+  //   function (...args) {
+  //     DEBUG.log("SIMULATING process.send", ...args);
+  //   };
+  process.send([message, args]);
+};
+
 const sayHello = function () {
+  // processSend(process, IPCMainChannel.);
+  // IPCMainChannel.
   console.log("hell");
   console.log(path.join(__dirname, "..", "db", "bookmarks.db"));
 };
@@ -155,4 +187,5 @@ module.exports = {
   getFuncName: getFuncName,
   DEBUG: DEBUG,
   processInit: processInit,
+  processSend: processSend,
 };

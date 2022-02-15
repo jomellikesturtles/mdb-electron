@@ -22,7 +22,7 @@ export class MovieCardComponent implements OnInit {
   _movie: MDBMovie
   @Input()
   set movie(inputMessage: MDBMovie) {
-    this._movie = inputMessage
+    this._movie = new MDBMovie(inputMessage)
 
     if (this.preferencesService.isGetTorrentFromMovieCard) {
       // UNCOMMENT BELOW to get external_id and torrent one by one

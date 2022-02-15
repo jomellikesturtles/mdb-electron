@@ -23,7 +23,6 @@ DEBUG.log("webTorrentFullFilePath:", WEBTORRENT_FULL_FILE_PATH);
 /**
  * Gets free space in bytes.
  * @param {string} disk
- * @returns {number}
  */
 function getFreeDiskSpace(disk) {
   DEBUG.log("Getting disk available space...");
