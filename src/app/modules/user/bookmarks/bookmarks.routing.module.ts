@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DiscoverComponent } from './view/discover.component';
+import { BookmarksComponent } from './bookmarks.component';
 
 const routes: Routes = [
-  { path: '', component: DiscoverComponent },
+  { path: '', component: BookmarksComponent },
 ];
 
 @NgModule({
@@ -15,4 +15,4 @@ const routes: Routes = [
   ]
 })
 
-export class DiscoverRoutingModule { }
+export class BookmarksRoutingModule { }

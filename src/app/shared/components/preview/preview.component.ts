@@ -11,6 +11,7 @@ import { UserDataService } from '@services/user-data/user-data.service';
 import { WatchedService } from '@services/watched.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util';
+import { TMDB_FULL_MOVIE_DETAILS } from 'app/mock-data-movie-details';
 
 @Component({
   selector: 'app-preview',
@@ -57,12 +58,12 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
 
-    this.dataService.previewMovie.subscribe((e: MDBMovie) => {
-      console.log('PREVIEWMOVIE:', e)
-      this.getVideoClip(e)
+    // this.dataService.previewMovie.subscribe((e: MDBMovie) => {
+    //   console.log('PREVIEWMOVIE:', e)
+      this.getVideoClip(new MDBMovie(TMDB_FULL_MOVIE_DETAILS))
       this.showPreviewOverlayContext = this.router.url.includes('/details/') ? false : true
       this.cdr.detectChanges()
-    })
+    // })
   }
 
   ngOnDestroy() {
@@ -288,13 +289,13 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.onHidePlayer()
   }
 
-  playTrailer() {
+  playPreview() {
     this.player.playVideo()
   }
 
-  stopVideo() {
+  stopPreview() {
     if (this.player) {
-      this.player.stopVideo()
+      this.player.stopPreview()
     }
   }
 
@@ -302,7 +303,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log(this.player)
     this.isHide = true
     this.clipSrc = null
-    this.stopVideo()
+    this.stopPreview()
   }
 
   playMovie() {

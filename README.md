@@ -17,6 +17,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
   - [How To run](#how-to-run)
     - [Run as electron project](#run-as-electron-project)
     - [Run as angular project](#run-as-angular-project)
+    - [Run individual node process](#run-individual-node-process)
   - [Code scaffolding](#code-scaffolding)
   - [Build](#build)
   - [Running unit tests](#running-unit-tests)
@@ -65,6 +66,10 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 1. type `npm start` to start as angular project
 2. open localhost:4200 on browser
+
+### Run individual node process
+
+1. `node <process_name> args`
 
 ## Code scaffolding
 
@@ -398,6 +403,7 @@ https://www.daftlogic.com/projects-online-javascript-obfuscator.htm
 
 -minor
 
+- tslint to eslint
 - dragable subtitles
 - cleanup
   - project restructuring

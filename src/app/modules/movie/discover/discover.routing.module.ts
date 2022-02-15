@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WatchedComponent } from './view/watched.component';
+import { DiscoverComponent } from './discover.component';
 
 const routes: Routes = [
-  { path: '', component: WatchedComponent },
+  { path: '', component: DiscoverComponent },
 ];
 
 @NgModule({
@@ -15,4 +15,4 @@ const routes: Routes = [
   ]
 })
 
-export class WatchedRoutingModule { }
+export class DiscoverRoutingModule { }

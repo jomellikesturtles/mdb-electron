@@ -2,8 +2,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs'
 import { IOmdbMovieDetail, MovieGenre, IGenre } from '@models/interfaces';
-import { MOVIES, MOVIEGENRES } from '../../mock-data';
-import { STRING_REGEX_IMDB_ID } from '../../shared/constants';
+import { MOVIES, MOVIEGENRES } from '../../../mock-data';
+import { STRING_REGEX_IMDB_ID } from '@shared/constants';
 import { DataService } from '@services/data.service'
 import { MovieService } from '@services/movie/movie.service'
 import { IpcService } from '@services/ipc.service'

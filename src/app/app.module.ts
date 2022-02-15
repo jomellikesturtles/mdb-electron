@@ -12,8 +12,8 @@ import { BulkDownloadComponent } from 'app/modules/admin/bulk-download/bulk-down
 import { NavigationComponent } from '@components/navigation/navigation.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http';
-import { TopNavigationComponent } from '@components/top-navigation/top-navigation.component';
-import { BrowseComponent } from '@components/browse/browse.component';
+import { TopNavigationComponent } from '@core/components/top-navigation/top-navigation.component';
+import { BrowseComponent } from '@modules/user/browse/browse.component';
 import { PersonDetailsComponent } from 'app/modules/person/person-details/person-details.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '@environments/environment';
@@ -25,7 +25,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { MdbGuardGuard } from './mdb-guard.guard';
 import { backendProvider } from './services/http-interceptor.service';
 import { RouterModule } from '@angular/router';
-import { FloatingPlayerComponent } from '@components/floating-player/floating-player.component';
+import { FloatingPlayerComponent } from '@shared/components/floating-player/floating-player.component';
 import { SharedModule } from '@shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -36,11 +36,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {MatDialogModule} from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
-import { ImagePreviewComponent } from './components/image-preview/image-preview.component';
+import { ImagePreviewComponent } from '@shared/components/image-preview/image-preview.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { KeyboardShortcutsComponent } from './components/keyboard-shortcuts/keyboard-shortcuts.component';
-import { VideoPlayerModule } from '@components/video-player/video-player.module';
-import { YoutubePlayerComponent } from './shared/components/youtube-player/youtube-player.component';
+import { KeyboardShortcutsComponent } from '@modules/settings/keyboard-shortcuts/keyboard-shortcuts.component';
+import { VideoPlayerModule } from '@modules/watch/video-player.module';
+import { YoutubePlayerComponent } from '@shared/components/youtube-player/youtube-player.component';
 
 @NgModule({
   declarations: [

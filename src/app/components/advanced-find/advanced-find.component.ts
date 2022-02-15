@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import { GENRES, SORT_BY } from '@shared/constants';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ISearchQuery } from '@components/top-navigation/top-navigation.component';
+import { ISearchQuery } from '@core/components/top-navigation/top-navigation.component';
 import { MovieService } from '@services/movie/movie.service';
 import { IGenre, TmdbParameters } from '@models/interfaces';
 import { MatOptionSelectionChange } from '@angular/material/core';

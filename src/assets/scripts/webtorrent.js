@@ -2,7 +2,7 @@
 /*jshint esversion: 8 */
 const WebTorrent = require("webtorrent");
 let moment = require("moment");
-const { prettyBytes, DEBUG } = require("./shared/util");
+const { prettyBytes, DEBUG, processInit } = require("./shared/util");
 const TorrentUtil = require("./utils/torrentUtil");
 let cp = require("child_process");
 const { canPlayNewTorrent } = require("./trans-play-process");
@@ -63,6 +63,7 @@ function playMovieTorrent(hash) {
 
     // let canPlay = playChecklist(torrent.length);
     let canPlay = canPlayNewTorrent(torrent.length);
+    DEBUG.log("CanPlay: ", canPlay);
     if (!canPlay) {
       process.send(["can-play", false]);
       return;
@@ -244,27 +245,28 @@ function playChecklist(torrentSize) {
   });
 }
 
-process.on("uncaughtException", function (error) {
-  console.log("uncaughtException ipcChild", error);
-  // process.send(['operation-failed', 'general']);
-});
+processInit(process);
+// process.on("uncaughtException", function (error) {
+//   console.log("uncaughtException ipcChild", error);
+//   // process.send(['operation-failed', 'general']);
+// });
 
-process.on("unhandledRejection", function (error) {
-  DEBUG.log(error);
-  process.send(["operation-failed", "general"]);
-});
-process.on("exit", function (error) {
-  DEBUG.log("exiting...", error);
-  process.send(["operation-failed", "general"]);
-});
-process.on("beforeExit", function (error) {
-  DEBUG.log("beforeExit...", error);
-  process.send(["operation-failed", "general"]);
-});
-process.on("warning", function (error) {
-  DEBUG.log("warning...", error);
-  process.send(["operation-failed", "general"]);
-});
+// process.on("unhandledRejection", function (error) {
+//   DEBUG.log(error);
+//   process.send(["operation-failed", "general"]);
+// });
+// process.on("exit", function (error) {
+//   DEBUG.log("exiting...", error);
+//   process.send(["operation-failed", "general"]);
+// });
+// process.on("beforeExit", function (error) {
+//   DEBUG.log("beforeExit...", error);
+//   process.send(["operation-failed", "general"]);
+// });
+// process.on("warning", function (error) {
+//   DEBUG.log("warning...", error);
+//   process.send(["operation-failed", "general"]);
+// });
 
 process.on("message", (m) => {
   const message = m[0];

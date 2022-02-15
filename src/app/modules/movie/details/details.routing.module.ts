@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DetailsComponent } from './view/details.component';
-import { CreditsComponent } from './credits/credits.component';
+import { DetailsComponent } from './details.component';
+import { CreditsComponent } from '../credits/credits.component';
 
 const routes: Routes = [
   { path: '', component: DetailsComponent },

@@ -25,7 +25,7 @@ import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util'
 import { environment } from 'environments/environment';
 import { MatDialog } from '@angular/material';
-import { ImagePreviewComponent } from '@components/image-preview/image-preview.component';
+import { ImagePreviewComponent } from '@shared/components/image-preview/image-preview.component';
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -465,7 +465,7 @@ goToLink(linkType: string, idParam?: string) {
     return toReturn
   }
 
-  playTrailer() {
+  playPreview() {
     this.dataService.updatePreviewMovie(this.movieDetails)
   }
 
