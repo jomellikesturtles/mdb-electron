@@ -24,7 +24,7 @@ import { MdbApiService } from '@services/mdb-api.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util'
 import { environment } from 'environments/environment';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ImagePreviewComponent } from '@shared/components/image-preview/image-preview.component';
 @Component({
   selector: 'app-details',
