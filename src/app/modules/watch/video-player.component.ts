@@ -376,11 +376,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       && this.videoPlayerElement.readyState > 2;
     GeneralUtil.DEBUG.log('5. togglePlay, isPlaying: ', isPlaying)
     // safely autoplay
-    if (!isPlaying && this.canPlay) {
-      this.videoPlayerElement.play();
-    } else {
-      this.videoPlayerElement.pause();
-    }
+    // if (!isPlaying && this.canPlay) {
+    //   this.videoPlayerElement.play();
+    // } else {
+    //   this.videoPlayerElement.pause();
+    // }
   }
 
   /**

@@ -290,12 +290,12 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   playPreview() {
-    this.player.playVideo()
+    this.player.playVideo();
   }
 
   stopPreview() {
     if (this.player) {
-      this.player.stopPreview()
+      this.player.stopVideo();
     }
   }
 

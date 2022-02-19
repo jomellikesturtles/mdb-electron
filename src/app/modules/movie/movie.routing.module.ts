@@ -5,10 +5,15 @@ import { DiscoverComponent } from './discover/discover.component';
 
 const routes: Routes = [
 
-  { path: ':id', loadChildren: () => import('@modules/movie/details/details.module').then(m => m.DetailsModule) },
-  // { path: ':id/credits', loadChildren: () => import('@modules/user/user.module').then(m => m.UserModule) },
-  // { path: ':id/similar', component: AdvancedFindComponent },
-  // { path: ':id/reviews', component: AdvancedFindComponent },
+  {
+    path: ':id',
+    loadChildren: () => import('@modules/movie/details/details.module').then(m => m.DetailsModule),
+    children: [
+      // { path: 'credits', component: ProfileComponent }
+      // { path: 'similar', component: ProfileComponent }
+      // { path: 'reviews', component: ProfileComponent }
+    ]
+  },
   { path: 'discover', component: DiscoverComponent },
   { path: '**', redirectTo: '/dashboard', pathMatch: 'full' }, // not found
 

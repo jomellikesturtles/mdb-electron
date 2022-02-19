@@ -2,9 +2,8 @@
 let cp = require("child_process");
 const path = require("path");
 var { DEBUG, processInit, getFuncName } = require("./shared/util");
-const { exit } = require("process");
 const { getFreeDiskSpace } = require("./system-disk-service");
-const { SIZE_LIMIT, WEBTORRENT_FULL_FILE_PATH } = require("./shared/constants");
+const { WEBTORRENT_FULL_FILE_PATH } = require("./shared/constants");
 const fs = require("fs");
 const rimraf = require("rimraf");
 
@@ -17,7 +16,6 @@ processInit(process);
  */
 async function canPlayNewTorrent(spaceNeeded) {
   spaceNeeded = 15000000000; //15GB
-  // let freeSpace = await getFreeDiskSpace("C");
   let isEnoughSpace = false;
 
   let foldersOrderedByBirthTimeList = [];

@@ -165,11 +165,12 @@ async function initPreStart() {
     process.exit(1);
   }
 
-  process.send(["status", "checking old torrent files...."]);
-  const isTorrentFoldersGood = await checkTorrentFolders();
-  if (!isTorrentFoldersGood) {
-    process.send(["warning", "Unable to delete old."]);
-  }
+  // TODO: fix stuck
+  // process.send(["status", "checking old torrent files...."]);
+  // const isTorrentFoldersGood = await checkTorrentFolders();
+  // if (!isTorrentFoldersGood) {
+  //   process.send(["warning", "Unable to delete old."]);
+  // }
   DEBUG.log(getFuncName(), "exiting init...");
   process.exit(0);
 }

@@ -2,12 +2,14 @@
 z-index: 3000;
     padding-top: 50px;
     background-color: rgba(4,4,4,0.8);cursor:pointer' (click)='onHidePlayer()'>
+
+  <!-- close x button -->
   <div id='closeIcon' (click)="onHidePlayer()" data-toggle='tooltip' title='Close Preview'></div>
 
-  <div (click)='$event.stopPropagation()' style='cursor:default;transform: translate(0%, 10%); margin-left: 50px; position:relative'>
+  <div (click)='$event.stopPropagation()'
+    style='cursor:default;transform: translate(0%, 10%); margin-left: 50px; position:relative; height:calc(90vw/2.333333); width: 90vw;'>
     <!-- movie details, backdrop -->
-    <div id='previewOverlay'
-      style='position:absolute;
+    <div id='previewOverlay' style='position:absolute;
       z-index: 5000;'>
       <div *ngIf='hasInitialSelected'>
         <!-- backdrop -->
@@ -17,28 +19,21 @@ z-index: 3000;
         min-height: 436px;'
           [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/original'+previewMovie.backropPath+')'}">
         </div>
-        <!-- <button class='btn btn-outline-info' (click)='toggleBookmark()'>
-          <span *ngIf="!(previewMovie.userData.bookmark && previewMovie.userData.bookmark.id)">Bookmark</span>
-          <span *ngIf="previewMovie.userData.bookmark && previewMovie.userData.bookmark.id">UnBookmark</span>
-        </button>
-        <button class='btn btn-outline-info' (click)='toggleWatched()'>
-          <span *ngIf="!(previewMovie.userData.watched && previewMovie.userData.watched.id)">Mark as Watched</span>
-          <span *ngIf="previewMovie.userData.watched && previewMovie.userData.watched.id">
-            Remove Watched</span>
-        </button> -->
       </div>
     </div>
 
     <!-- movie details and buttons -->
-    <h1>{{isYTReady&&showPreviewOverlayContext}}</h1>
-    <div *ngIf='hasInitialSelected' id='previewOverlayContext' [ngClass]="{'overlayInvisible':(isYTReady&&showPreviewOverlayContext)==true}"
-    style='position:absolute; height: 100%;width:66%; padding-left: 5vw;text-shadow: 3px 3px 5px #333333; padding-left: 5vw; padding-top: 10%;
-        background: -webkit-linear-gradient(right, rgba(3,3,3,0), rgba(3,3,3, 1)); background-color: red;z-index:5001'>
+    <!-- <h1>{{isYTReady&&showPreviewOverlayContext}}</h1> -->
+    <div *ngIf='hasInitialSelected' id='previewOverlayContext'
+      [ngClass]="{'overlayInvisible':(isYTReady&&showPreviewOverlayContext)==true}"
+      style='position:absolute; height: 100%;width:66%; padding-left: 5vw;text-shadow: 3px 3px 5px #333333; padding-left: 5vw; padding-top: 10%; min-height: 436px;
+        background: -webkit-linear-gradient(right, rgba(3,3,3,0), rgba(3,3,3, 1)); border: solid 1px red;;z-index:5001'>
 
       <h3>{{previewMovie.title}}</h3>&nbsp;
       <h3 class='text-hyperlink' (click)='goToDiscover("year",getYear(previewMovie.releaseDate))'>
         ({{previewMovie.releaseDate|releaseYear}})
       </h3>
+      <p>{{ previewMovie.overview }}</p>
       <!-- <div class='d-inline-flex'>
       </div>
       <br>
@@ -58,6 +53,16 @@ z-index: 3000;
       </button>
       <p>{{ previewMovie.overview }}</p>
       <button class='btn btn-outline-secondary' (click)="goToMovie(previewMovie.tmdbId)">More Info</button> -->
+
+      <!-- <button class='btn btn-outline-info' (click)='toggleBookmark()'>
+          <span *ngIf="!(previewMovie.userData.bookmark && previewMovie.userData.bookmark.id)">Bookmark</span>
+          <span *ngIf="previewMovie.userData.bookmark && previewMovie.userData.bookmark.id">UnBookmark</span>
+        </button>
+        <button class='btn btn-outline-info' (click)='toggleWatched()'>
+          <span *ngIf="!(previewMovie.userData.watched && previewMovie.userData.watched.id)">Mark as Watched</span>
+          <span *ngIf="previewMovie.userData.watched && previewMovie.userData.watched.id">
+            Remove Watched</span>
+        </button> -->
     </div>
     <!-- youtube player -->
     <div style='
@@ -65,7 +70,7 @@ z-index: 3000;
     min-height: 436px;
     background-color: violet;
     position: absolute;' [hidden]='!isYTReady'>
-    <!-- <div style='height:75vh;width: calc(75vh*2.333333);transform: translate(8.9%, 10%);
+      <!-- <div style='height:75vh;width: calc(75vh*2.333333);transform: translate(8.9%, 10%);
     position: absolute;' [hidden]='!isYTReady'> -->
       <div style='height:100%;width: 100%;' [hidden]='!isYTReady' id="player" #player>
       </div>

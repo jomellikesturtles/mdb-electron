@@ -3,9 +3,7 @@ const PROC_NAMES = {
 };
 const SIZE_LIMIT = 5000000000;
 
-DEBUG.log("username:", USERNAME);
-
-function getUserName (){
+function getUserName() {
   return require("os").userInfo().username;
 }
 
@@ -15,5 +13,4 @@ module.exports = {
   PROC_NAMES,
   SIZE_LIMIT,
   WEBTORRENT_FULL_FILE_PATH,
-
 };

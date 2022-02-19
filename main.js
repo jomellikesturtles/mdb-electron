@@ -102,8 +102,10 @@ app.on("window-all-closed", function () {
   }
 });
 app.on("before-quit", function () {
-  // save changes
+  // TODO: save changes
   globalShortcut.unregisterAll();
+  mainWindow.removeAllListeners('close');
+  mainWindow.close();
 });
 app.on("activate", function () {
   DEBUG.log("activate")
@@ -262,8 +264,8 @@ ipcMain.on(IPCRendererChannel.MinimizeApp, function () {
 /* Operating System
 ----------------------*/
 
-ipcMain.on("exit-program", function (event, folder) {
-  DEBUG.log("Exiting app...")
+ipcMain.on(IPCRendererChannel.ExitApp, function () {
+  DEBUG.log("Exiting app...");
   app.quit();
 });
 // Opens folder with system file explorer.

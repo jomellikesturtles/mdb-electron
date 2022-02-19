@@ -1,3 +1,6 @@
+enum source {
+  TMDB = "TMDB", IMDB = "IMDB", MDB = "MDB", OMDB = "OMDB", Local = "local"
+}
 export const environment = {
   production: true,
   firebase: {
@@ -22,5 +25,7 @@ export const environment = {
     // firebaseMode: true,
     // electron: false,
     // useTestData: false
+
   },
+  dataSource: source.TMDB
 };
