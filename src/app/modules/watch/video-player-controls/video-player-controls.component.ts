@@ -40,6 +40,7 @@ export class VideoPlayerControlsComponent implements OnInit {
   toSeek: number = 0
   // isPlaying: boolean = false
   isPaused: false;
+  isShowStatus = false;
   constructor(
     private ipcService: IpcService) { }
 

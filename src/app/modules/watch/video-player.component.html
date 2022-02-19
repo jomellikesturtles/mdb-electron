@@ -6,6 +6,16 @@
 
   <div id='videoPlayerOuter' (mousemove)='onNotIdle()' (keydown)="onKeyPress($event)" tabindex="1"
     style='position: relative; background-color: black; width: 100%; height: calc(100vh - 50px); outline: none'>
+
+    <!-- top HUD -->
+    <!-- back, title, -->
+    <!-- <div style='position: absolute; z-index: 21; display:flex;
+    width: 100%; align-items: center;flex-direction: row;
+    text-shadow: -2px 2px 2px #000000;'>
+      <span>back</span>
+      <span>title</span>
+    </div> -->
+
     <div id='videoContainer' style='position: absolute; width:100%; height:100%; text-align:center; z-index: 20;'
       (click)='togglePlay()' (dblclick)='toggleFullScreen()'>
       <!-- animation: ytp-bezel-fadeout .5s linear 1 normal forwards; -->

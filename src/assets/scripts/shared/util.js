@@ -1,7 +1,6 @@
 // IPC Main utils.
 /*jshint esversion: 6 */
 const path = require("path");
-const IPCMainChannel = require("../../assets/IPCMainChannel.json");
 /**
  * Fancy console log
  */
@@ -61,7 +60,6 @@ let processInit = (process) => {
 /**
  * Common function to init process.
  * @param {import ("process") } process;
- * @param {IPCMainChannel} args
  */
 let processSend = (process, message, args) => {
   DEBUG.log("Sending process message:", message, "; args: ", args);
