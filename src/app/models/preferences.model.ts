@@ -12,9 +12,11 @@ export interface IPreferences {
   playBack: IPlaybackPreferences
   library: ILibraryPreferences,
   streamPreferences?: IStreamPreferences
-  isAutoScan: boolean
-  autoScanFrequencyUnit: string
-  autoScanFrequencyValue: number
+  autoScan : {
+    enable: boolean
+    frequencyUnit?: "day"|"minute"|"hour"|"week"
+    frequencyValue?: number
+  }
 }
 
 interface IStreamPreferences {

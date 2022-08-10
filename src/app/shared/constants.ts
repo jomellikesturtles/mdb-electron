@@ -212,9 +212,11 @@ export const DEFAULT_PREFERENCES: IPreferences = {
   playTrailerBeforeShow: true,
   playBack: PLAYBACK,
   library: null,
-  isAutoScan: false,
-  autoScanFrequencyUnit: 'day',
-  autoScanFrequencyValue: 0,
+  autoScan: {
+    enable: false,
+    frequencyUnit: 'day',
+    frequencyValue: 0,
+  }
 }
 
 export const FONT_SIZE_LIST = [

@@ -44,13 +44,13 @@
   <button class="btn btn-danger" (click)="onStopScanLibrary()">Stop scan
     Library</button>
 
-  <div class='tab container-fluid' *ngFor='let folder of preferencesObject.libraryFolders;'>
+  <!-- <div class='tab container-fluid' *ngFor='let folder of preferencesObject.libraryFolders;'>
     <div class='form-inline form-group'>
       <button class="btn btn-success" (click)="onOpenFolder(folder)">Open</button>
       <input type='text' class="form-control" [(ngModel)]='folder' data-toggle="tooltip" title="{{folder}}" disabled />
       <button class="btn btn-danger" (click)="onDeleteFolder(folder)">Delete</button>
     </div>
-  </div>
+  </div> -->
   <!-- <input id="myFile" type="file" webkitdirectory /> -->
   <!-- <button class=" btn btn-success" (click)="onAddFolder(folderName.value); folderName.value=''">Add</button> -->
   <!-- <div *ngFor="let folder of unsavedPreferences.libraryFolders">
@@ -182,11 +182,11 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <p>status bar...</p>
-        <button class="btn btn-success" (click)="onSave()">Save</button>
-        <button class="btn" data-dismiss="modal">Cancel</button>
-      </div>
     </div>
   </div>
+</div>
+<div class="modal-footer">
+  <!-- <p>status bar...</p> -->
+  <button class="btn btn-success" (click)="onSave()">Save</button>
+  <button class="btn" data-dismiss="modal">Cancel</button>
 </div>

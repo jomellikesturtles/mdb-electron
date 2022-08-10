@@ -412,3 +412,49 @@ https://www.daftlogic.com/projects-online-javascript-obfuscator.htm
   - css variables
   - object mapping/conversion (map/convert object to MDB Objecet from service)
   - electron to ts
+
+
+
+MEDIA
+
+/mediaUser/:mediaId
+mediaUserDataService -> bffService && ipcService (current user only)
+
+
+USER
+/user/:username
+- user info and stuff
+if online:  userService -> bffService && ipcService
+if offline: userService -> ipcService
+bffService -> UserService -> UserInfoService | FavoritesService | BookmarksService | ListsService | etc.. ->
+    UserInfoRepository | FavoritesRepository | BookmarksRepository| ListsService | etc.. -> DB
+
+/user/:username/favorites 
+- get all favorites
+-> bffService -> UserService -> FavoritesService -> FavoritesRepository -> DB
+
+/user/:username/bookmarks ->
+- get all user bookmarks
+-> bffService -> UserService -> BookmarksService -> BookmarksRepository -> DB
+
+/user/:username/lists ->
+- get all user lists
+-> bffService -> UserService -> ListsService -> ListsRepository -> DB
+
+LIST
+/list/:listId
+if online:  listService -> bffService && ipcService
+if offline: listService -> ipcService
+bffService -> ListsService -> ListsRepository -> DB
+
+FAVORITES
+if online: favoritesService -> bffService && ipcService
+if offline: favoritesService -> ipcService
+
+bffService -> FavoritesService -> FavoritesRepository -> DB
+ipcService -> favorites-service -> NedDB
+
+
+BOOKMARKS
+
+PREFERENCES
