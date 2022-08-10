@@ -11,6 +11,7 @@ export class IProfileData {
   isBookmark?: boolean;
   isFavorite?: boolean;
   library?: any
+  isPlayed?: boolean
   // isBookmark?: boolean;
 }
 
