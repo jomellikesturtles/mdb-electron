@@ -27,7 +27,7 @@ const routes: Routes = [
   { path: 'library', loadChildren: () => import('@modules/person/library/library.module').then(m => m.LibraryModule) },
 
   { path: 'results', loadChildren: () => import('@components/results/results.module').then(m => m.ResultsModule) },
-  { path: 'details/:id', loadChildren: () => import('@modules/movie/details/details.module').then(m => m.DetailsModule) },
+  { path: 'details', loadChildren: () => import('@modules/movie/details/details.module').then(m => m.DetailsModule) },
   { path: 'user', loadChildren: () => import('@modules/user/user.module').then(m => m.UserModule) },
   { path: 'advanced-find', component: AdvancedFindComponent },
   { path: '**', redirectTo: '/dashboard', pathMatch: 'full' }, // not found

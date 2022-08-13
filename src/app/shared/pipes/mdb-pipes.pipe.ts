@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { STRING_REGEX_TMDB_RUNTIME } from '../constants';
 import GeneralUtil from '@utils/general.util';
+import { GenreCodes } from '@models/interfaces';
 
 /**
  * Gets the release year from string with format `00 Month 0000`.
@@ -88,5 +89,58 @@ export class HHMMSSPipe implements PipeTransform {
   constructor() { }
   transform(value: number): string {
     return GeneralUtil.convertToHHMMSS(value);
+  }
+}
+
+/**
+ * Converts genre code into its genre name equivalent.
+ * @param genreCode genre code origin
+ * @returns genre name
+ */
+@Pipe({ name: 'genre' })
+export class GenrePipe implements PipeTransform {
+  constructor() { }
+  transform(genreCode: number): string {
+    return GenreCodes[genreCode]
+  }
+}
+
+@Pipe({ name: 'simplifySize' })
+export class SimplifySizePipe implements PipeTransform {
+  transform(value: number): string {
+    console.log('topipe value: ', value)
+    let output = '';
+    if (value < 1000) {
+      output = value.toFixed(2).toString() + 'bytes';
+    } else if (value >= 1000 && value < 1000000) {
+      value = value / 1000;
+      output = value.toFixed(2).toString() + 'kB';
+    } else if (value >= 1000000 && value < 1000000000) {
+      value = value / 1000000;
+      output = value.toFixed(2).toString() + 'MB';
+    } else if (value >= 100000000) {
+      value = value / 1000000000;
+      output = value.toFixed(2).toString() + 'GB';
+    }
+    return output;
+  }
+}
+
+// magnet:?xt=urn:btih:TORRENT_HASH&dn=Url+Encoded+Movie+Name&tr=http://track.one:1234/announce&tr=udp://track.two:80
+// BE046ED20B048C4FB86E15838DD69DADB27C5E8A
+// 13-2010
+// &tr=http://track.one:1234/announce&tr=udp://track.two:80
+// magnet:?xt=urn:btih:BE046ED20B048C4FB86E15838DD69DADB27C5E8A&dn=13-2010&tr=http://track.one:1234/announce&tr=udp://track.two:80
+@Pipe({ name: 'magnet' })
+export class MagnetPipe implements PipeTransform {
+  transform(value: string): string {
+    let output = '';
+    // let output = 'magnet';
+    // let client = '?xt=urn:btih';
+    let hash = value;
+    let fileName = '&dn=';
+    output += hash;
+
+    return output;
   }
 }

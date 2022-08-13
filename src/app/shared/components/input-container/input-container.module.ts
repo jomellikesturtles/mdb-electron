@@ -9,15 +9,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { PreferencesRoutingModule } from 'app/modules/settings/preferences/preferences.routing.module';
 import { SharedModule } from '@shared/shared.module';
-import { InputContComponent } from '../input-cont/input-cont.component';
-
-
 
 @NgModule({
 
   declarations: [
     InputContainerComponent,
-    InputContComponent
   ],
   imports: [
     CommonModule,
@@ -31,7 +27,7 @@ import { InputContComponent } from '../input-cont/input-cont.component';
     MatDialogModule,
     MatCheckboxModule
   ],
-  exports:[InputContainerComponent,InputContComponent],
+  exports:[InputContainerComponent],
   providers: [
     {
       provide: 'formState',

@@ -9,22 +9,26 @@
 
     <!-- top HUD -->
     <!-- back, title, -->
-    <!-- <div style='position: absolute; z-index: 21; display:flex;
-    width: 100%; align-items: center;flex-direction: row;
-    text-shadow: -2px 2px 2px #000000;'>
-      <span>back</span>
-      <span>title</span>
-    </div> -->
+    <div style='position: absolute; z-index: 21; display:flex;
+    width: 100%; align-items: center; flex-direction: row; 
+    padding-left: 10px;
+    max-height: 20%;
+    min-height: 60px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: -2px 2px 2px #000000; 
+    outline: solid 1px red'>
+      <span>-C--</span>
+      <!-- <span>Saving Private Ryan</span> -->
+    </div>
 
+    <!-- actual video -->
     <div id='videoContainer' style='position: absolute; width:100%; height:100%; text-align:center; z-index: 20;'
       (click)='togglePlay()' (dblclick)='toggleFullScreen()'>
       <!-- animation: ytp-bezel-fadeout .5s linear 1 normal forwards; -->
       <video #videoPlayer1 id='videoPlayer' style="width:100%; height:100%;" poster="">
-
         <source [src]='streamLink' controlsList="nodownload" type="video/mp4">
-
       </video>
-
     </div>
 
     <div style='position: absolute;z-index: 22;margin-top: 45vh;margin-left: 45vw;'>
@@ -33,6 +37,7 @@
       <!-- play,pause,mute,unmute,loading -->
     </div>
 
+    <!-- SUBTITLES -->
     <div style='position: absolute; z-index: 21; bottom: 100px; display:flex;
     width: 100%; align-items: center;flex-direction: column;
     text-shadow: -2px 2px 2px #000000;' [hidden]="!isShowSubtitles">
@@ -45,7 +50,7 @@
 
       <!-- [isPaused]='videoPlayer1.paused' -->
       <!-- [videoPlayer1]='videoPlayer1' -->
-      <mdb-video-player-controls
+    <mdb-video-player-controls
       *ngIf='canPlay'
       [hidden]='isUserInactive'
       [isPlaying]='isPlaying'

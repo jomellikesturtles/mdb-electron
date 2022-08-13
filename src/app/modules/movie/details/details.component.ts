@@ -20,7 +20,7 @@ import { Subject } from 'rxjs';
 import { basename } from 'path'
 import { FavoriteService } from '@services/favorite.service';
 import { IProfileData } from '@models/profile-data.model';
-import { MdbApiService } from '@services/mdb-api.service';
+import { BffService } from '@services/mdb-api.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util'
 import { environment } from 'environments/environment';
@@ -81,11 +81,13 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private watchedService: WatchedService,
     private favoriteService: FavoriteService,
     private router: Router,
-    private mdbApiService: MdbApiService,
+    private mdbApiService: BffService,
     public dialog: MatDialog
   ) { }
 
   ngOnInit() {
+
+    // this.activatedRoute.snapshot.subscribe(val => {
     this.activatedRoute.params.subscribe(val => {
       this.showVideo = false
       this.getMovieOnline(val['id'])
@@ -388,7 +390,7 @@ goToLink(linkType: string, idParam?: string) {
         break;
     }
 
-    if (environment.runConfig.electron) {
+    if (environment.runConfig.isElectron) {
       // this.ipcService.call(this.ipcService.IPCCommand.OpenLinkExternal, url)
     } else {
       window.open(url)

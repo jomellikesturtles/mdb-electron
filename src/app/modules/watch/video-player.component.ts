@@ -15,6 +15,7 @@ import { COLOR_LIST, FONT_SIZE_LIST } from '@shared/constants';
 import GeneralUtil from '@utils/general.util';
 import { PreferencesService } from '@services/preferences.service';
 import { IProgressBar, VideoPlayerControlsComponent } from './video-player-controls/video-player-controls.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-video-player',
@@ -62,10 +63,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
   subtitleMap = new Map<number, Subtitle>();
 
-  // subtitleLine1 = '<i>Subtitle line 1 look like this.</i>';
+  subtitleLine1 = '<i>Subtitle line 1 look like this.</i>';
+  subtitleLine2 = this.sanitizer.bypassSecurityTrustHtml('<span style="cursor:pointer; color:red"><b cursor="pointer">Luke,</b></span> I am your father <button>hey</button>');
   // subtitleLine2 = '<b><i><font face="Tempus Sans ITC" color="#ffff80" size="30">"Spice Girls : Viva Forever"</font></i></b>';
-  subtitleLine1 = 'Subtitle line 1 look like this.';
-  subtitleLine2 = 'Subtitle line 2 look like this.';
+  // subtitleLine1 = 'Subtitle line 1 look like this.';
+  // subtitleLine2 = 'Subtitle line 2 look like this.';
   isUserInactive = false;
   subtitleDisplaySettings: ISubtitlePreferences = this.preferencesService.getPreferences().subtitle
   playbackSettings: IPlaybackPreferences = this.preferencesService.getPreferences().playBack
@@ -84,7 +86,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     private movieService: MovieService,
     private elementRef: ElementRef,
     private userIdleService: UserIdleService,
-    private preferencesService: PreferencesService
+    private preferencesService: PreferencesService,
+    private sanitizer: DomSanitizer
   ) { GeneralUtil.DEBUG.log('VIDEOPLAYER CONSTRUCTOR') }
 
   onNotIdle() {
@@ -144,7 +147,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   ngAfterViewInit(): void {
 
-    if (environment.runConfig.electron) {
+    if (environment.runConfig.isElectron) {
       this.ipcService.statsForNerdsSubscribable.pipe(takeUntil(this.ngUnsubscribe)).subscribe(stats => {
         GeneralUtil.DEBUG.log(stats)
         if (stats) {

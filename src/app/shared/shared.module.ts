@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { SelectedListComponent } from './components/selected-list/selected-list.component';
 import { MovieCardComponent } from './components/movie-card/movie-card.component';
 import { CardListComponent } from './components/card-list/card-list.component';
-import { HHMMSSPipe, ReleaseYearPipe, RuntimeDisplayPipe } from '@shared/pipes/mdb-pipes.pipe';
+import { CommaSpacePipe, GenrePipe, HHMMSSPipe, MagnetPipe, ReleaseYearPipe, RuntimeDisplayPipe, SimplifySizePipe } from '@shared/pipes/mdb-pipes.pipe';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HorizontalCardListComponent } from './components/horizontal-card-list/horizontal-card-list.component';
@@ -17,7 +17,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-
 @NgModule({
   declarations: [
     SelectedListComponent,
@@ -26,7 +25,11 @@ import { MatIconModule } from '@angular/material/icon';
     ReleaseYearPipe,
     HHMMSSPipe,
     HorizontalCardListComponent,
-    RuntimeDisplayPipe
+    RuntimeDisplayPipe,
+    CommaSpacePipe,
+    SimplifySizePipe,
+    MagnetPipe,
+    GenrePipe,
   ],
   imports: [
     CommonModule,
@@ -47,7 +50,11 @@ import { MatIconModule } from '@angular/material/icon';
     HorizontalCardListComponent,
     MatDividerModule,
     MatProgressSpinnerModule, MatButtonModule, MatIconModule,
-    RuntimeDisplayPipe
+    RuntimeDisplayPipe,
+    CommaSpacePipe,
+    SimplifySizePipe,
+    MagnetPipe,
+    GenrePipe,
   ]
 })
 export class SharedModule { }
