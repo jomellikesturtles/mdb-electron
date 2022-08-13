@@ -219,6 +219,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 
 ## Todo
 
+- change details data fetch from Component to Guard by using CanActivate
 - ~~Search by title, imdbId~~ or keyword,
 - 'advanced' filters by date, genre, isAvailable, etc.
 - has backup offline search by using torrent_dump and offline-imdb

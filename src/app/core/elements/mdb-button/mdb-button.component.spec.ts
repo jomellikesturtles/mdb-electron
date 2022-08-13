@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InputContComponent } from './input-cont.component';
+import { MdbButtonComponent } from './mdb-button.component';
 
-describe('InputContComponent', () => {
-  let component: InputContComponent;
-  let fixture: ComponentFixture<InputContComponent>;
+describe('MdbButtonComponent', () => {
+  let component: MdbButtonComponent;
+  let fixture: ComponentFixture<MdbButtonComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ InputContComponent ]
+      declarations: [ MdbButtonComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(InputContComponent);
+    fixture = TestBed.createComponent(MdbButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

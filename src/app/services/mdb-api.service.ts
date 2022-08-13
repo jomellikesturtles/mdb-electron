@@ -5,14 +5,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { IpcService } from '../services/ipc.service';
-import { STRING_REGEX_IMDB_ID, MDB_API_URL } from '../shared/constants';
+import { MDB_API_URL } from '../shared/constants';
 import { IProfileData } from '../models/profile-data.model';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
 
 @Injectable({ providedIn: 'root' })
-export class MdbApiService {
+export class BffService {
 
   constructor(
     private http: HttpClient

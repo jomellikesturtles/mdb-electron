@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { Subject } from 'rxjs'
 import { IpcService } from '@services/ipc.service';
-import { COLOR_LIST, DEFAULT_PREFERENCES, FONT_SIZE_LIST, FREQUENCY_LIST, LANGUAGE_LIST, STRING_REGEX_PREFIX } from '@shared/constants';
+import { COLOR_LIST, DEFAULT_PREFERENCES, FONT_SIZE_LIST, FREQUENCY_LIST, LANGUAGE_LIST, MODE_LIST, QUALITY_LIST, STRING_REGEX_PREFIX } from '@shared/constants';
 import { takeUntil } from 'rxjs/operators';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { IPreferences } from '@models/preferences.model';
@@ -38,6 +38,8 @@ export class PreferencesComponent implements OnInit, OnDestroy {
   frequencyOptions = FREQUENCY_LIST
   fontSizeOptions = FONT_SIZE_LIST
   colorOptions = COLOR_LIST
+  qualityOptions = QUALITY_LIST
+  modeOptions = MODE_LIST
   preferencesForm: FormGroup
   private ngUnsubscribe = new Subject();
 

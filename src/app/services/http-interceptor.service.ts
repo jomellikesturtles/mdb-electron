@@ -14,6 +14,7 @@ export class HttpInterceptorService implements HttpInterceptor {
     if (environment.runConfig.useTestData) {
       return mockDataFactory(req, next)
     } else {
+      req.headers.set('Authorization', sessionStorage.getItem('token'))
       return next.handle(req)
     }
   }

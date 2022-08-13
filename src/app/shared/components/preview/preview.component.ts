@@ -311,16 +311,3 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 }
-
-/**
- * Converts genre code into its genre name equivalent.
- * @param genreCode genre code origin
- * @returns genre name
- */
-@Pipe({ name: 'genre' })
-export class GenrePipe implements PipeTransform {
-  constructor() { }
-  transform(genreCode: number): string {
-    return GenreCodes[genreCode]
-  }
-}

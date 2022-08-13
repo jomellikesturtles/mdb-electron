@@ -6,6 +6,7 @@ import { DetailsComponent } from './details.component';
 import { SharedModule } from '@shared/shared.module';
 import { VideoPlayerModule } from '@modules/watch/video-player.module';
 import { MatTabsModule } from '@angular/material/tabs';
+import { DetailsGuard } from './details.guard';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,9 @@ import { MatTabsModule } from '@angular/material/tabs';
   entryComponents: [
     DetailsComponent,
     CreditsComponent,
+  ],
+  providers: [
+    DetailsGuard
   ]
 })
 export class DetailsModule { }

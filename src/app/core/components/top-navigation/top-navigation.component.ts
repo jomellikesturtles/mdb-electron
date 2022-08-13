@@ -13,11 +13,6 @@ import { environment } from '@environments/environment';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 
-enum STATUS {
-  login = 'LOGIN',
-  logout = 'LOGOUT'
-}
-
 @Component({
   selector: 'app-top-navigation',
   templateUrl: './top-navigation.component.html',
@@ -34,7 +29,7 @@ export class TopNavigationComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private location: Location) { }
 
-  isElectron = environment.runConfig.electron
+  isElectron = environment.runConfig.isElectron
   status = 'LOGIN'
   browserConnection = navigator.onLine;
   selectedMovie: IOmdbMovieDetail

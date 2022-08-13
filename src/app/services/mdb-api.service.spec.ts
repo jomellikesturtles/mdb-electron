@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MdbApiService } from './mdb-api.service';
+import { BffService } from './mdb-api.service';
 
 describe('MdbApiService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: MdbApiService = TestBed.get(MdbApiService);
+    const service: BffService = TestBed.get(BffService);
     expect(service).toBeTruthy();
   });
 });

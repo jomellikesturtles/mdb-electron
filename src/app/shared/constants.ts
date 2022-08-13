@@ -245,13 +245,13 @@ export const COLOR_LIST =
   ]
 
 export const RGB_COLOR_LIST = [
-    { value: '255,255,255', label: 'White' },
-    { value: '0,0,0', label: 'Black' },
-    { value: '255,0,0', label: 'Red' },
-    { value: '0,0,255', label: 'Blue' },
-    { value: '0,128,0', label: 'Green' },
-    { value: '128,128,128', label: 'Gray' },
-  ]
+  { value: '255,255,255', label: 'White' },
+  { value: '0,0,0', label: 'Black' },
+  { value: '255,0,0', label: 'Red' },
+  { value: '0,0,255', label: 'Blue' },
+  { value: '0,128,0', label: 'Green' },
+  { value: '128,128,128', label: 'Gray' },
+]
 
 export const LANGUAGE_LIST = [
   { value: 'en', label: 'English' },
@@ -263,4 +263,14 @@ export const FREQUENCY_LIST = [
   { value: 'min', label: 'minutes' },
   { value: 'hr', label: 'hours' },
   { value: 'day', label: 'days' },
+]
+export const MODE_LIST = [
+  { value: 'torrent', label: 'torrent' },
+  { value: 'offline', label: 'offline' },
+]
+export const QUALITY_LIST = [
+  { value: '720p', label: '720p' },
+  { value: '1080p', label: '1080p' },
+  { value: '1440p', label: '1440p' },
+  { value: '4k', label: '4k' },
 ]

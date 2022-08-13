@@ -5,10 +5,10 @@ export interface IPreferences {
   libraryFolders: string[]
   torrentSeedRatio: number
   torrentRatio?: any
-  subtitle: ISubtitlePreferences
-  hotKeys: IHotkeys
   autoPlayTrailer: boolean
   playTrailerBeforeShow: boolean
+  subtitle: ISubtitlePreferences
+  hotKeys: IHotkeys
   playBack: IPlaybackPreferences
   library: ILibraryPreferences,
   streamPreferences?: IStreamPreferences

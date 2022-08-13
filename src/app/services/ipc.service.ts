@@ -37,7 +37,7 @@ export class IpcService {
   private ipcRenderer: typeof ipcRenderer
 
   constructor() {
-    if (environment.runConfig.electron) {
+    if (environment.runConfig.isElectron) {
 
       console.log((window as any).require('electron'))
 

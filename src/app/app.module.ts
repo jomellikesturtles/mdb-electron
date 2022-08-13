@@ -1,7 +1,3 @@
-import {
-  CommaSpacePipe, ReleaseYearPipe,
-} from './shared/pipes/mdb-pipes.pipe';
-import { SimplifySizePipe, MagnetPipe } from './services/torrent/torrent.service';
 import { SearchComponent } from '@components/search/search.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -20,7 +16,7 @@ import { environment } from '@environments/environment';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { NotificationComponent } from 'app/modules/events/notification/notification.component';
-import { PreviewComponent, GenrePipe } from '@shared/components/preview/preview.component';
+import { PreviewComponent } from '@shared/components/preview/preview.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MdbGuardGuard } from './mdb-guard.guard';
 import { backendProvider } from './services/http-interceptor.service';
@@ -41,6 +37,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { KeyboardShortcutsComponent } from '@modules/settings/keyboard-shortcuts/keyboard-shortcuts.component';
 import { VideoPlayerModule } from '@modules/watch/video-player.module';
 import { YoutubePlayerComponent } from '@shared/components/youtube-player/youtube-player.component';
+import { MdbButtonComponent } from './core/elements/mdb-button/mdb-button.component';
 
 @NgModule({
   declarations: [
@@ -52,19 +49,13 @@ import { YoutubePlayerComponent } from '@shared/components/youtube-player/youtub
     PersonDetailsComponent,
     SearchComponent,
     NotificationComponent,
-    SimplifySizePipe,
-    MagnetPipe,
-    CommaSpacePipe,
     PreviewComponent,
     FloatingPlayerComponent,
-    GenrePipe,
     AdvancedFindComponent,
     ImagePreviewComponent,
     KeyboardShortcutsComponent,
     YoutubePlayerComponent,
-    // ReleaseYearPipe/
-    // UsernameExistValidatorDirective
-    // RuntimeDisplayPipe
+    MdbButtonComponent,
   ],
   imports: [
     BrowserModule,
@@ -80,6 +71,7 @@ import { YoutubePlayerComponent } from '@shared/components/youtube-player/youtub
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatAutocompleteModule,
     MatSidenavModule,
     MatSelectModule,
     MatCheckboxModule,

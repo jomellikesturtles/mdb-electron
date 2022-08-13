@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FirebaseService, CollectionName, FieldName } from './firebase.service';
 import { environment } from '@environments/environment';
 import { IpcService, IUserDataPaginated } from './ipc.service';
-import { MdbApiService } from './mdb-api.service';
+import { BffService as BffService } from './mdb-api.service';
 import GeneralUtil from '@utils/general.util';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class FavoriteService {
 
   constructor(
     private ipcService: IpcService,
-    private mdbApiService: MdbApiService) { }
+    private bffService: BffService) { }
 
   async toggleFavorite(movie) {
     let fDocId
@@ -38,7 +38,7 @@ export class FavoriteService {
 
   saveFavorite(data: any): Promise<any> {
     if (environment.runConfig.springMode) {
-      return this.mdbApiService.saveFavorite(data).toPromise()
+      return this.bffService.saveFavorite(data).toPromise()
     }
     else {
       return this.ipcService.saveFavorite(data)
@@ -52,7 +52,7 @@ export class FavoriteService {
    */
   removeFavorite(type: 'id' | 'tmdbId', id: string | number) {
     if (environment.runConfig.springMode) {
-      return this.mdbApiService.deleteFavorite(id).toPromise()
+      return this.bffService.deleteFavorite(id).toPromise()
     }
     else {
       return this.ipcService.removeWatched(type, id)
