@@ -11,12 +11,14 @@ import * as IPCMainChannel from '../../assets/IPCMainChannel.json';
 import { v4 as uuidv4 } from 'uuid'
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
-import { ipcRenderer } from 'electron'
+import { IpcRenderer, ipcRenderer } from 'electron'
 import { ILibraryInfo } from '@models/interfaces'
 import { IRawLibrary } from './library.service';
 import { IWatched } from './watched.service';
 import { Review } from '@models/review.model';
 import { IProfileData, ListLinkMovie } from '@models/profile-data.model';
+import { MediaList } from '@models/media-list.model';
+import { LoggerService } from '@core/logger.service';
 
 
 @Injectable({
@@ -36,7 +38,9 @@ export class IpcService {
   statsForNerdsSubscribable = this.statsForNerds.asObservable()
   private ipcRenderer: typeof ipcRenderer
 
-  constructor() {
+  constructor(
+    private loggerService: LoggerService
+  ) {
     if (environment.runConfig.isElectron) {
 
       console.log((window as any).require('electron'))
@@ -243,6 +247,21 @@ export class IpcService {
     return this.listenOnce(`favorite-${theUuid}`);
   }
 
+  // ------- Media List
+  saveMediaList(data: MediaList) {
+    const theUuid = uuidv4();
+    const channel = 'media-list';
+    this.sendToMain(channel, { operation: IpcOperations.SAVE, uuid: theUuid }, data);
+    return this.listenOnce(`${channel}-${theUuid}`);
+  }
+
+  getMediaList(id: string): Promise<MediaList> {
+    const theUuid = uuidv4();
+    const channel = 'media-list';
+    this.sendToMain(channel, { operation: IpcOperations.FIND_ONE, uuid: theUuid }, { id });
+    return this.listenOnce(`${channel}-${theUuid}`);
+  }
+
   // ----- END OF USER DATA
   startScanLibrary() {
 
@@ -296,6 +315,12 @@ export class IpcService {
     // })
   }
 
+  generalOperation(channel: typeof IPCRendererChannel, data: any): Promise<any> {
+    const theUuid = uuidv4();
+    this.sendToMain(channel.toString(), { operation: IpcOperations.SAVE, uuid: theUuid }, data);
+    return this.listenOnce(`${channel}-${theUuid}`);
+  }
+
   changeSubtitle(): Promise<any> {
     this.sendToMain("get-subtitle")
     return this.listenOnce('subtitle-path')
@@ -322,6 +347,7 @@ export class IpcService {
       console.log('sent to ipc... ', channel, [headers, body])
     } catch {
       console.log('failed to send Ipc: ', channel, [headers, body])
+      this.loggerService.error(`'failed to send Ipc: ${channel} [${headers}, ${body}]`)
     }
   }
 
@@ -329,12 +355,12 @@ export class IpcService {
     return new Promise<any>((resolve, reject) => {
       try {
         this.ipcRenderer.once(channel, (event, arg) => {
-          console.log('channel: ', channel, ' arg: ', arg)
+          this.loggerService.info(`channel:  ${channel}  arg: ${arg}`)
           resolve(arg);
         });
       } catch {
+        this.loggerService.error(`listen ${channel} failed`)
         resolve(null);
-        console.log(`listen ${channel} failed`)
       }
     });
   }
@@ -400,8 +426,4 @@ export interface IUserDataPaginated {
   totalResults: number,
   page?: number,
   results: any[],
-}
-
-interface SortObject {
-  [x: string]: 1 | -1
 }

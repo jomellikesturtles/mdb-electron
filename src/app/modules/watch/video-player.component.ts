@@ -63,8 +63,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
   subtitleMap = new Map<number, Subtitle>();
 
-  subtitleLine1 = '<i>Subtitle line 1 look like this.</i>';
-  subtitleLine2 = this.sanitizer.bypassSecurityTrustHtml('<span style="cursor:pointer; color:red"><b cursor="pointer">Luke,</b></span> I am your father <button>hey</button>');
+  subtitleLine1 = this.sanitizeSubtitle('<i>Subtitle line 1 look like this.</i>');
+  subtitleLine2 = this.sanitizeSubtitle('<span style="cursor:pointer; color:red"><b cursor="pointer">Luke,</b></span> I am your father <button>hey</button>');
   // subtitleLine2 = '<b><i><font face="Tempus Sans ITC" color="#ffff80" size="30">"Spice Girls : Viva Forever"</font></i></b>';
   // subtitleLine1 = 'Subtitle line 1 look like this.';
   // subtitleLine2 = 'Subtitle line 2 look like this.';
@@ -97,10 +97,6 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   ngOnInit() {
 
-    // this.subtitleDisplaySettings.fontSize = size
-    // this.subtitleDisplaySettings.fontColor = color
-    // this.subtitleDisplaySettings.backgroundColor = color
-    // this.subtitleDisplaySettings.backgroundOpacity = percentage;
     // this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4' // 320p sample
     // this.streamLink = 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4' // 1080p sample
     // this.streamLink = '../../../../assets/sample movie/Ratatouille (2007) [1080p]/Ratatouille.2007.1080p.BrRip.x264.YIFY.mp4'
@@ -418,14 +414,6 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
    */
   async onChangeCc(filePath) {
 
-    // let filePath = 'Aliens.Directors.Cut.1986.1080p.BRrip.x264.GAZ.YIFY.srt'
-    // let filePath = ''
-    // let filePath = 'Cinema Paradiso-English.srt'
-    // filePath = '../../../../assets/tmp/' + filePath
-
-    // filePath = await this.ipcService.changeSubtitle()
-    // GeneralUtil.DEBUG.log('filePath', filePath)
-
     const fileStr = await this.movieService.getSubtitleFileString(filePath).toPromise()
     let encodingStr = 'UTF-8'
     try {
@@ -435,9 +423,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       GeneralUtil.DEBUG.log(encodingAlt)
       if (encodingAlt.length > 1) {
         encodingStr = encodingAlt[0].name
-      //   encodingStr = encodingAlt[1].name
-      // } else if (encodingAlt.length === 1) {
-      //   encodingStr = encodingAlt[0].name
+        //   encodingStr = encodingAlt[1].name
+        // } else if (encodingAlt.length === 1) {
+        //   encodingStr = encodingAlt[0].name
       }
     }
     const file = await this.movieService.getSubtitleFile(filePath).toPromise()
@@ -484,10 +472,17 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
 
   updateDisplaySubtitle(val1: string, val2: string) {
-    this.subtitleLine1 = val1
-    this.subtitleLine2 = val2
+    this.subtitleLine1 = this.sanitizeSubtitle(val1);
+    this.subtitleLine2 = this.sanitizeSubtitle(val2);
   }
 
+  private sanitizeSubtitle(value: string) {
+    value.includes('Luke')
+    return this.sanitizer.bypassSecurityTrustHtml(value);
+  }
+
+  // referenceWords
+  referenceWords = ['Luke']
   /**
    * converts HH:mm:ss format to seconds float.
    * @param hms time in HH:mm:ss format
@@ -517,7 +512,6 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   // font outline, shadow, family,
   changeBackgroundColor(color: string) {
     this.setProperties('background-color', 'rgba(' + color + ',' + this.subtitleDisplaySettings.backgroundOpacity + ')')
-    // this.setProperties('', 'rgba(' + this.subtitleDisplaySettings.fontColor + ',' + color + ')'))
     this.subtitleDisplaySettings.backgroundColor = color
   }
   changeBackgroundOpacity(percentage: string) {
@@ -546,3 +540,15 @@ interface Stats {
   size: string;
   resolution: string
 }
+
+
+// let list = ['Luke']
+// let subtitle = 'Luke, I am your father.'
+
+// console.log(list.some(x => subtitle.includes(x)))
+
+
+// function addRef(val) {
+    
+//     `<span style="cursor: pointer; color: blue"><b cursor="pointer">${val}</b></span>`
+// }

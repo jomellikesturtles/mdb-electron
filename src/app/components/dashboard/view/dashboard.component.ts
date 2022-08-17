@@ -7,6 +7,7 @@ import { GENRES } from '@shared/constants'
 import { DomSanitizer } from '@angular/platform-browser'
 import GeneralUtil from '@utils/general.util'
 import { MDBMovie } from '@models/mdb-movie.model';
+import { LoggerService } from '@core/logger.service'
 
 @Component({
   selector: 'app-dashboard',
@@ -21,6 +22,7 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private domSanitizer: DomSanitizer,
+    private loggerService: LoggerService
   ) { }
 
   browserConnection = navigator.onLine
@@ -28,6 +30,7 @@ export class DashboardComponent implements OnInit {
   cardWidth = '130px'
 
   ngOnInit() {
+    this.loggerService.log("HEY HEY HEY")
     this.getNowShowingMovies()
     // this.getTopMoviesFromYear()
     // this.getTopGenreMovie()
@@ -103,7 +106,6 @@ export class DashboardComponent implements OnInit {
    */
   getMoviesFromLibrary() {
     console.log('getMoviesFromLibrary dashboard.component')
-    // this.ipcService.getMoviesFromLibrary()
   }
 
   /**

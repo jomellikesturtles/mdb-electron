@@ -7,6 +7,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MDB_API_URL } from '../shared/constants';
 import { IProfileData } from '../models/profile-data.model';
+import { MediaList } from '@models/media-list.model';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' })
 
@@ -46,9 +47,9 @@ export class BffService {
     return this.http.post<any>(`${MDB_API_URL}\\profileData\\list\\remove`, listLinkMovie).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('saveFavorite')))
   }
-  saveList(listBody: any): Observable<any> {
+  saveMediaList(listBody: MediaList): Observable<any> {
     return this.http.post<any>(`${MDB_API_URL}\\profileData\\list`, listBody).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('saveFavorite')))
+      catchError(this.handleError<any>('saveList')))
   }
   deleteList(listId: any): Observable<any> {
     let httpParams = new HttpParams().set('id', listId);

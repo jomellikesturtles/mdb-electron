@@ -64,7 +64,6 @@ export class MovieCardComponent implements OnInit {
   _userData: IProfileData
   @Input()
   set userData(inputData: IProfileData) {
-    console.log("USERDATA", inputData)
     this._userData = inputData
     if (!ObjectUtil.isEmpty(inputData)) {
       if (inputData.watched) {
