@@ -18,7 +18,7 @@ export const environment = {
     messagingSenderId: '24146436081',
     appId: '1:24146436081:web:78f0dd1c699e12514eae50'
   },
-  devApi: 'http://localhost:8080',
+  bffBaseUrl: 'http://localhost:8080',
   runConfig: {
     firebaseMode: false,
     springMode: false,
@@ -27,7 +27,8 @@ export const environment = {
   },
   language: 'en',
   location: 'ph',
-  dataSource: source.TMDB
+  dataSource: source.TMDB,
+  
 };
 
 

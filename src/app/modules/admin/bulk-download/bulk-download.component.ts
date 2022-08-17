@@ -23,7 +23,6 @@ export class BulkDownloadComponent implements OnInit {
   result: any
 
   constructor(
-    private ipcService: IpcService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private dataService: DataService) {

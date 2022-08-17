@@ -6,7 +6,6 @@ import { CredentialsValidator } from '@directives/credentials.directive';
 import * as firebase from 'firebase/app';
 import { AngularFirestore } from '@angular/fire/firestore'
 import { AngularFireAuth, AngularFireAuthModule } from '@angular/fire/auth'
-import { IpcService } from '@services/ipc.service';
 import { FirebaseService, CollectionName } from '@services/firebase.service';
 import { UtilsService } from '@services/utils.service';
 import { repeat, debounceTime, take, map } from 'rxjs/operators';
@@ -64,7 +63,6 @@ export class SigninComponent implements OnInit {
     private auth: AngularFireAuth,
     private authModule: AngularFireAuthModule,
     private firebaseService: FirebaseService,
-    private ipcService: IpcService,
     private utilsService: UtilsService,
     private formBuilder: FormBuilder,
     private usernameExistValidator: UsernameExistValidator,
