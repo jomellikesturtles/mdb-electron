@@ -58,12 +58,13 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
 
-    // this.dataService.previewMovie.subscribe((e: MDBMovie) => {
+    this.dataService.previewMovie.subscribe((e: MDBMovie) => {
     //   console.log('PREVIEWMOVIE:', e)
-      this.getVideoClip(new MDBMovie(TMDB_FULL_MOVIE_DETAILS))
+      // this.getVideoClip(new MDBMovie(TMDB_FULL_MOVIE_DETAILS))
+      this.getVideoClip(new MDBMovie(e))
       this.showPreviewOverlayContext = this.router.url.includes('/details/') ? false : true
       this.cdr.detectChanges()
-    // })
+    })
   }
 
   ngOnDestroy() {
@@ -261,10 +262,11 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
    * Goes to detail of the selected movie.
    * @param movie the movie selected
    */
-  goToMovie(id: any) {
-    const highlightedId = id;
-    this.dataService.updateHighlightedMovie(highlightedId);
-    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+  goToMovie() {
+    const id = this.previewMovie.tmdbId;
+
+    this.dataService.updateHighlightedMovie(id);
+    this.router.navigate([`/details/${id}`], { relativeTo: this.activatedRoute });
     this.isHide = true
     this.onHidePlayer()
   }

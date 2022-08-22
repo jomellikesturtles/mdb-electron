@@ -4,6 +4,7 @@ import { Observable, Subject } from 'rxjs';
  */
 import { Injectable } from '@angular/core'
 import { BehaviorSubject } from 'rxjs'
+import { TmdbParameters } from '@models/interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,9 @@ export class DataService {
 
   private discoverMoviesSource = new BehaviorSubject<any>('')
   discoverQuery = this.discoverMoviesSource.asObservable()
+
+  private discoverMoviesV2Source = new BehaviorSubject<any>('')
+  discoverQueryV2 = this.discoverMoviesV2Source.asObservable()
 
   constructor() { }
 
@@ -88,6 +92,10 @@ export class DataService {
   }
 
   // updateDiscoverQuery(type: string, val: string | null | number) {
+    /**
+     *
+     * @param val
+     */
   updateDiscoverQuery(val: { type: string, value: any, name: string, paramMap?: any }) {
     // this.discoverQuery = val;
     this.discoverMoviesSource.next(val)
@@ -95,5 +103,16 @@ export class DataService {
 
   getDiscoverQuery() {
     return this.discoverQuery;
+  }
+    /**
+     *
+     * @param val
+     */
+  updateDiscoverQueryV2(paramMap: Map<TmdbParameters, any>) {
+    this.discoverMoviesV2Source.next(paramMap)
+  }
+
+  getDiscoverQueryV2() {
+    return this.discoverQueryV2;
   }
 }
