@@ -1,6 +1,6 @@
 <!-- TMDB discover -->
 <app-selected-list></app-selected-list>
-<select class="form-control" [(ngModel)]='sortBy' style='width: 200px; float:right'>
+<select class="form-control" [(ngModel)]='sortBy' (change)="changeSort($event.target.value)" style='width: 200px; float:right'>
   <option value='popularity.desc'>Popularity</option>
   <option value='release_date.asc'>Oldest</option>
   <option value='release_date.desc'>Newest</option>

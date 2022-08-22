@@ -1,5 +1,12 @@
+
+div {
+  outline-style: auto;
+  outline-width: 1px;
+  outline-color: red;
+}
+
 .see-more-label {
-  display: none;
+  opacity: 0.3;
 }
 
 .card-list-container:hover {
@@ -7,6 +14,6 @@
   background-color: #333333;
 
   .see-more-label {
-    display: block;
+    opacity: 1;
   }
 }

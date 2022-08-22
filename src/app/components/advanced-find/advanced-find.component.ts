@@ -9,6 +9,8 @@ import { IGenre, TmdbParameters } from '@models/interfaces';
 import { MatOptionSelectionChange } from '@angular/material/core';
 import { DataService } from '@services/data.service';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'advanced-find',
@@ -21,8 +23,10 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
     private formBuilder: FormBuilder,
     private movieService: MovieService,
     private dataService: DataService,
-    private router: Router) { }
+    private router: Router,
+    ) { }
 
+  private ngUnsubscribe = new Subject();
   genresList = GENRES
   sortByList = SORT_BY
   browseLists = []
@@ -49,10 +53,8 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
   genreAndOr = '|'
   genreListVal = {}
   myVal = true
+
   ngOnInit() {
-    this.movieService.proxyTest().subscribe(e => {
-      console.log("EEEE", e)
-    })
     let academyWinnersList = {
       name: 'Academy Winners',
       contents: []
@@ -158,12 +160,8 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
     paramMap.set(TmdbParameters.VoteAverageGreater, this.searchForm.get('averageRatingFrom').value)
     paramMap.set(TmdbParameters.VoteAverageLess, this.searchForm.get('averageRatingTo').value)
     paramMap.set(TmdbParameters.SortBy, this.searchForm.get('sortBy').value)
-    // this.dataService.updateDiscoverQuery({ type: type, value: id, name: name })
-    // this.router.navigate([`/results`], { queryParams: { type: type, id: id, name: name } });
-
-    this.movieService.getMoviesDiscover(paramMap).subscribe(e => {
-      console.log(e);
-    })
+  this.dataService.updateDiscoverQuery({name:'', type:'', value:'', paramMap})
+  this.router.navigate([`/discover`]);
   }
 
   clearAdvancedSearch() {
@@ -180,6 +178,13 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
 
   closeAdvancedSearch() {
 
+  }
+
+
+  ngOnDestroy(): void {
+    console.log('destroy advanced find')
+    this.ngUnsubscribe.next()
+    this.ngUnsubscribe.complete()
   }
 }
 

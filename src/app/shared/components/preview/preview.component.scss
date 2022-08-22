@@ -3,6 +3,12 @@
 //   transition: .3s
 // }
 
+* {
+  outline-style: auto;
+  outline-width: 1px;
+  outline-color: green;
+}
+
 #previewOverlayContext:hover {
   opacity: 1
 }

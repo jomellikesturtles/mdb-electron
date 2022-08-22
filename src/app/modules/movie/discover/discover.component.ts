@@ -33,12 +33,13 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
   ) { }
   ngOnInit(): void {
-    this.dataService.discoverQuery.subscribe((discoverData) => {
+    this.dataService.discoverQuery.pipe(takeUntil(this.ngUnsubscribe)).subscribe((discoverData) => {
       this.discoverQuery(discoverData.type, discoverData.value, discoverData.name, discoverData)
     })
   }
 
   ngOnDestroy(): void {
+    console.log('destroy discover')
     this.ngUnsubscribe.next()
     this.ngUnsubscribe.complete()
   }
@@ -75,7 +76,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
         break;
     }
 
-    this.movieService.getMoviesDiscover(this.paramMap).subscribe(data => {
+    this.movieService.getMoviesDiscover(this.paramMap).pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
       if (data.results.length > 0) {
         this.discoverResults.push(...data.results)
         this.hasResults = true
@@ -87,10 +88,33 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     });
   }
 
+  changeSort(val: string) {
+
+    this.procLoadMoreResults = true
+    this.paramMap.set(TmdbParameters.SortBy, val)
+    this.hasResults = false
+    this.movieService.getMoviesDiscover(this.paramMap).pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
+
+      // if (data.results.length > 0) {
+        //   this.discoverResults.push(...data.results)
+        //   this.hasResults = true
+        //   this.discoverTitle = tempTitle
+        //   if (data.total_pages > this.currentPage) {
+        //     this.hasMoreResults = true
+        //   }
+        // }
+
+        this.discoverResults = data.results
+        this.hasResults = true
+      // this.discoverResults.push(...data.results) // for some reason this doesn't work anymore
+      this.procLoadMoreResults = false
+    })
+  }
+
   getMoreResults() {
     this.procLoadMoreResults = true
     this.paramMap.set(TmdbParameters.Page, ++this.currentPage)
-    this.movieService.getMoviesDiscover(this.paramMap).subscribe(data => {
+    this.movieService.getMoviesDiscover(this.paramMap).pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
       this.discoverResults = data.results
       // this.discoverResults.push(...data.results) // for some reason this doesn't work anymore
       if (data.total_pages <= this.currentPage) {

@@ -1,12 +1,12 @@
 import { SearchComponent } from '@components/search/search.component';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing/app-routing.module';
 import { AppComponent } from './app.component';
 import { BulkDownloadComponent } from 'app/modules/admin/bulk-download/bulk-download.component';
 import { NavigationComponent } from '@components/navigation/navigation.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { TopNavigationComponent } from '@core/components/top-navigation/top-navigation.component';
 import { BrowseComponent } from '@modules/user/browse/browse.component';
@@ -30,7 +30,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { AdvancedFindComponent } from '@components/advanced-find/advanced-find.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import {MatDialogModule} from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ImagePreviewComponent } from '@shared/components/image-preview/image-preview.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -38,6 +38,7 @@ import { KeyboardShortcutsComponent } from '@modules/settings/keyboard-shortcuts
 import { VideoPlayerModule } from '@modules/watch/video-player.module';
 import { YoutubePlayerComponent } from '@shared/components/youtube-player/youtube-player.component';
 import { MdbButtonComponent } from './core/elements/mdb-button/mdb-button.component';
+import { CoreEnvironmentService } from '@services/core-environment.service';
 
 @NgModule({
   declarations: [
@@ -81,8 +82,24 @@ import { MdbButtonComponent } from './core/elements/mdb-button/mdb-button.compon
     VideoPlayerModule
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
-  entryComponents:[ImagePreviewComponent],
-  providers: [MdbGuardGuard, backendProvider],
+  entryComponents: [ImagePreviewComponent],
+  providers: [MdbGuardGuard, backendProvider,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: AppInitializerFactory,
+      deps: [
+        CoreEnvironmentService
+      ],
+      multi: true
+    }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+export function AppInitializerFactory(coreEnvironmentService: CoreEnvironmentService) {
+  return async function init() {
+    return Promise.all([
+      await coreEnvironmentService.init(window['environment'])
+    ]);
+  };
+}

@@ -48,10 +48,12 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     private ipcService: IpcService,
     private preferencesService: PreferencesService
     // private cdr: ChangeDetectorRef
-  ) { }
+    ) {
+      console.log('preferences constructor')
+    }
 
   ngOnInit() {
-
+    console.log('preferences oninit')
     this.preferencesForm = this.formBuilder.group({
       autoScan: [true, []],
       darkMode: [true, []],

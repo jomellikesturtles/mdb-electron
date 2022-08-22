@@ -11,7 +11,6 @@ const routes: Routes = [
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // homepage
   // { path: '', redirectTo: '/results', pathMatch: 'full' },
   { path: 'video', loadChildren: () => import('@modules/watch/video-player.module').then(m => m.VideoPlayerModule) },
-  { path: '', redirectTo: '/preferences', pathMatch: 'full' }, // for fast boot?
   { path: 'browse', component: BrowseComponent },
   { path: 'preferences', loadChildren: () => import('app/modules/settings/preferences/preferences.module').then(m => m.PreferencesModule) },
   { path: 'preferences/bulk-download', component: BulkDownloadComponent },

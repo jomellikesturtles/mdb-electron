@@ -25,13 +25,15 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.json"
+              "src/manifest.json",
+              "src/environment.js"
             ],
             "styles": [
               "src/styles.scss"
             ],
             "scripts": [
-              "./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+              "./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+              "src/environment.js"
             ]
           },
           "configurations": {
@@ -64,21 +66,6 @@
           "options": {
             "browserTarget": "mdb-electron:build",
             "proxyConfig": "proxy.conf.json"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "mdb-electron:build:production"
-            },
-            "dev": {
-              "browserTarget": "mdb-electron:build:dev",
-              "proxyConfig": "proxy.conf.json"
-            }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "mdb-electron:build"
           }
         },
         "test": {
