@@ -528,6 +528,25 @@ ipcMain.on("torrent-search", function (event, data) {
 });
 
 // USER DATA
+ipcMain.on("user-data-new", function (event, data) {
+    DEBUG.log("myProcUserData ", data);
+
+    let myProcUserData = forkChildProcess(
+      "src/assets/scripts/user-db-service-new.js",
+      data,
+      {
+        cwd: __dirname,
+        silent: false,
+      }
+    );
+    myProcUserData.on("data", (data) => printData(data));
+    myProcUserData.on("exit", function () {
+      DEBUG.log("myProcUserData process ended");
+      myProcUserData = null;
+    });
+    myProcUserData.on("message", (m) => sendContents(m[0], m[1]));
+
+});
 ipcMain.on("user-data", function (event, data) {
     DEBUG.log("myProcUserData ", data);
 
@@ -614,12 +633,13 @@ ipcMain.on("get-subtitle", function (event, data) {
 
 /**
  * Gets the video by id and streams to localhost.
+ * @param libraryFileId libraryFile Id
  */
-ipcMain.on("play-offline-video-stream", function (event, data) {
+ipcMain.on("play-offline-video-stream", function (event, libraryFile) {
   DEBUG.log("procVideoService", data);
   procVideoService = forkChildProcess(
     "src/assets/scripts/video-service.js",
-    [data],
+    [libraryFileId],
     // PROC_OPTION
     {
       cwd: __dirname,
