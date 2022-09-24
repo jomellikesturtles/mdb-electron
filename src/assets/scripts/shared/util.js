@@ -7,10 +7,12 @@ const path = require("path");
 let DEBUG = (() => {
   let timestamp = () => {};
   timestamp.toString = () => {
-    return "[DEBUG " + new Date().toISOString() + "] ";
+    return "" + new Date().toISOString() + "] ";
+    // return `[${type} ` + new Date().toISOString() + "] ";
   };
   return {
-    log: console.log.bind(console, "%s", timestamp),
+    log: console.log.bind(console, "%s", "[DEBUG", timestamp.toString()),
+    error: console.error.bind(console, "%s", "[ERROR", timestamp.toString()),
   };
 })();
 

@@ -262,6 +262,15 @@ export class IpcService {
     return this.listenOnce(`${channel}-${theUuid}`);
   }
 
+  userDataNew(headers: Headers, body: Body) {
+    const theUuid = uuidv4();
+    const channel = 'user-data-new';
+    headers.uuid = theUuid;
+    this.sendToMainNew(channel, headers,
+      body);
+    return this.listenOnce(`${channel}-${theUuid}`);
+  }
+
   // ----- END OF USER DATA
   startScanLibrary() {
 
@@ -351,6 +360,18 @@ export class IpcService {
     }
   }
 
+  private sendToMainNew(channel: string, headers: Headers, body: Body) {
+    const ipcContext: IPCContext = {headers, body}
+    const ipcContextStr: string = JSON.stringify(ipcContext) //serialize
+    try {
+      this.ipcRenderer.send(channel, ipcContextStr)
+      console.log('sent to ipc... ', channel, ipcContextStr)
+    } catch {
+      console.log('failed to send Ipc: ', channel, ipcContextStr)
+      this.loggerService.error(`'failed to send Ipc: ${channel} ${ipcContextStr}`)
+    }
+  }
+
   private listenOnce(channel: string) {
     return new Promise<any>((resolve, reject) => {
       try {
@@ -369,9 +390,15 @@ export class IpcService {
   IPCChannel = IPCMainChannel['default']
 }
 
+interface IPCContext {
+  headers?: Headers
+  body?: Body
+}
+
 interface Headers {
-  operation: IpcOperations,
-  uuid: string
+  operation?: IpcOperations,
+  uuid?: string,
+  subChannel?: string
 }
 
 interface Body {
@@ -380,7 +407,7 @@ interface Body {
   [x: string]: any
 }
 
-enum IpcOperations {
+export enum IpcOperations {
   FIND = 'find',
   FIND_ONE = 'find-one',
   FIND_IN_LIST = 'find-in-list',
@@ -390,6 +417,16 @@ enum IpcOperations {
   GET_BY_PAGE = 'get-by-page',
   COUNT = 'count'
 }
+
+export enum SubChannel {
+  LISTS = 'lists',
+  FAVORITES = 'favorites',
+  BOOKMARKS = 'bookmarks',
+  ALL = 'all',
+  PLAYED = 'played',
+  PROGRESS = 'progress',
+}
+
 export interface IBookmarkChanges {
   change: BookmarkChanges
 }

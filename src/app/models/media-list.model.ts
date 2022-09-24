@@ -1,6 +1,6 @@
 export interface MediaList {
     id: number
     rating: number
-    name: string
+    title: string
     description: string
 }

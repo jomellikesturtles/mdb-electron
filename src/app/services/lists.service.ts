@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './firebase.service';
 import { IUserSavedData } from '@models/interfaces';
 import { environment } from '@environments/environment';
-import { IpcService, IUserDataPaginated } from '@services/ipc.service';
+import { IpcOperations, IpcService, IUserDataPaginated } from '@services/ipc.service';
 import { BffService } from './mdb-api.service';
 import { MediaList } from '@models/media-list.model';
 
@@ -17,11 +17,13 @@ export class ListsService {
     private bffService: BffService
   ) { }
 
-  createList(list: MediaList) {
-    this.bffService.saveMediaList(list).subscribe(e => {
-      return;
-    })
-    this.ipcService.saveMediaList(list)
+  createList(listObject: MediaList) {
+    // this.bffService.saveMediaList(list).subscribe(e => {
+    //   return;
+    // })
+    // this.ipcService.saveMediaList(list)
+    this.ipcService.userDataNew({subChannel: 'lists', operation: IpcOperations.SAVE},
+      {listObject})
   }
 
   getList(id: string): Promise<any> {
@@ -33,7 +35,7 @@ export class ListsService {
   }
 
   /**
-   * Gets multiple watched movies.
+   * Deletes multiple watched movies.
    * @param idList
    */
   deleteList(list: string): any {
