@@ -1,0 +1,19 @@
+{"tmdbId":809,"_id":"3hYqToian45HXMdj","imdb":"","title":"Shrek 2","yr":2004,"pctg":100}
+{"tmdbId":337401,"title":"Mulan","yr":2020,"pctg":100,"_id":"4xcPU29vCe51oPRk"}
+{"tmdbId":10681,"_id":"7BoILtyRHMOL1Uhc","imdb":"","title":"WALL·E","yr":2008,"pctg":100}
+{"tmdbId":354912,"_id":"BnEKL9Jim2co41cr","imdb":"","title":"Coco","yr":2017,"pctg":100}
+{"tmdbId":420817,"_id":"GpOnjO72hEyFitQu","imdb":"","title":"Aladdin","yr":2019,"pctg":23}
+{"tmdbId":600,"_id":"Pw7iOHP9NvWBMKNM","imdb":"tt0093058","title":"Full Metal Jacket","yr":1987,"pctg":30}
+{"tmdbId":260514,"_id":"Qnkpm1S5cMZF3t71","imdb":"","title":"Cars 3","yr":2017,"pctg":100}
+{"tmdbId":9444,"_id":"RmgOV6I8ZUfSEr7D","imdb":"tt0118617","title":"Anastasia","yr":1997,"pctg":100}
+{"tmdbId":10674,"title":"Mulan","yr":1998,"pctg":100,"_id":"SBk67wvI6TBQJvEj"}
+{"tmdbId":109445,"_id":"Va6iPCnfiNHn6Fxg","imdb":"","title":"Frozen","yr":2013,"pctg":100}
+{"tmdbId":808,"_id":"WPYjwyVSKeraqyPS","imdb":"","title":"Shrek","yr":2001,"pctg":100}
+{"tmdbId":1234,"imdb":"tt1234567","pctg":85,"_id":"aDzvLa5oYHjwxtLj"}
+{"tmdbId":475557,"_id":"gc0VxJdd7GwD4DVt","imdb":"","title":"Joker","yr":2019,"pctg":100}
+{"tmdbId":597,"_id":"iOnRLTaADgecI3No","imdb":"","title":"Titanic","yr":1997,"pctg":100}
+{"tmdbId":530915,"_id":"mXFCoBlRSX6Nev03","imdb":"","title":"1917","yr":2019,"pctg":100}
+{"tmdbId":8587,"_id":"nhYiVILOoPkH8fAM","imdb":"","title":"The Lion King","yr":1994,"pctg":100}
+{"tmdbId":862,"_id":"pH3j4RSzkNjxx16X","imdb":"","title":"Toy Story","yr":1995,"pctg":100}
+{"tmdbId":496243,"_id":"q2zWMzrWVnqRA0lq","imdb":"","title":"Parasite","yr":2019,"pctg":100}
+{"$$indexCreated":{"fieldName":"tmdbId","unique":true,"sparse":true}}
