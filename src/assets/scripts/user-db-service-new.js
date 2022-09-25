@@ -8,6 +8,14 @@ let args = process.argv.slice(2);
 const path = require("path");
 const DataStore = require("nedb");
 const { DEBUG } = require("./shared/util");
+const {
+  listsDb,
+  favoritesDb,
+  bookmarksDb,
+  playedRepository,
+} = require("./mock-main");
+const { debug } = require("console");
+// const watchedDbService = require("./watched-db-service");
 // const watchedDbService = require("./watched-db-service");
 // const bookmarkDbService = require("./bookmark-db-service");
 let currentDb;
@@ -35,7 +43,13 @@ var bookmarksChangesDb = new DataStore({
 });
 
 process.on("uncaughtException", function (error) {
-  process.send(['operation-failed', 'general']);
+  DEBUG.error(
+    "SIMULATING operation-failed",
+    error.name,
+    " message: ",
+    error.message
+  );
+  // process.send(["operation-failed", "general"]);
 });
 
 process.send =
@@ -44,22 +58,76 @@ process.send =
     DEBUG.log("SIMULATING process.send", ...args);
   };
 
-
 /**
  *
- * @param {number} tmdbId
+ * @param headers
+ * @param body
  */
-async function findUserMovieData(tmdbId) {
-  const watchedObj = await watchedDbService.findWatched(tmdbId);
-  const bookmarkObj = await bookmarkDbService.findBookmark(tmdbId);
-  const returnObject = {
-    played: watchedObj,
-    bookmark: bookmarkObj,
-    library: null,
-    progress: null,
-    favorite: null,
-  };
-  return returnObject;
+async function findUserMovieData(headers, body) {
+  DEBUG.log("starting findUserMovieData");
+  let tmdbId = body.tmdbId;
+  let subChannels = headers.subChannel;
+  let subChannelsArr = [];
+  if (subChannels) {
+    subChannelsArr = subChannels.split(",");
+  }
+  DEBUG.log("subChannelsArr ", subChannelsArr);
+  let promises = [];
+  subChannelsArr.forEach((subChannel) => {
+    switch (subChannel) {
+      case "bookmarks":
+        // promises.push(
+        //   new Promise((resolve, reject) => {
+        //     bookmarksDb.findOne({ tmdb: parseInt(tmdbId, 10) });
+        //   })
+        // );
+        break;
+      case "played":
+        promises.push(playedRepository.findPlayed(tmdbId));
+        break;
+      case "progress":
+        break;
+      case "lists":
+        // promises.push(
+        //   new Promise((resolve, reject) => {
+        //     listsDb.findOne({ tmdb: parseInt(tmdbId, 10) });
+        //   })
+        // );
+        break;
+      case "favorites":
+        // promises.push(
+        //   new Promise((resolve, reject) => {
+        //     favoritesDb.findOne({ tmdb: parseInt(tmdbId, 10) });
+        //   })
+        // );
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  DEBUG.log("promises ", promises);
+  Promise.all(promises)
+    .then((value) => {
+      DEBUG.log("value: ", value);
+    })
+    .catch((reason) => {
+      DEBUG.error("REASON: ", reason);
+    });
+  let res = await Promise.all(promises);
+  DEBUG.log("RES", res);
+  // DEBUG.log(data);
+  // const watchedObj = await watchedDbService.findWatched(tmdbId);
+  // const bookmarkObj = await bookmarkDbService.findBookmark(tmdbId);
+  // const returnObject = {
+  //   played: watchedObj,
+  //   bookmark: bookmarkObj,
+  //   library: null,
+  //   progress: null,
+  //   favorite: null,
+  // };
+  // return returnObject;
 }
 
 /**
@@ -145,47 +213,20 @@ function initializeService() {
   const body = data.body;
   const uuid = headers.uuid;
   const command = headers.operation;
-  const subChannel = headers.subChannel;
   DEBUG.log("headers", headers);
   DEBUG.log("body", body);
-
-  currentDb = new DataStore({
-    // filename: path.join(__dirname, '..', 'db', `${subChannel}.db`), // node
-    filename: path.join(
-      process.cwd(),
-      "src",
-      "assets",
-      "db",
-      `${subChannel}.db`
-    ),
-    autoload: true,
-  });
 
   // "tmdbId":10681,"imdbId":"tt0910970"
   let hasError = false;
   let errorMessage = "";
-  switch (subChannel) {
-    case "lists":
-      currentDb.ensureIndex(
-        { fieldName: "title", unique: true },
-        function (err) {}
-      );
-      break;
 
-    default:
-      hasError = true;
-      errorMessage = "No subChannel";
-      DEBUG.error(errorMessage);
-      break;
-  }
-
-  let asyncFunc;
+  // let asyncFunc;
   switch (command) {
     case "save":
       asyncFunc = saveUserData(headers, body);
       break;
-    case "find":
-      findUserMovieData(body.tmdbId);
+    case "find-one":
+      findUserMovieData(headers, body);
       break;
     case "find-in-list":
       getUserMovieDataInList(body.idList);
@@ -202,10 +243,10 @@ function initializeService() {
     process.send([`user-data-${uuid}`, errorMessage]);
   }
 
-  asyncFunc.then((value, reject) => {
-    process.send([`user-data-${uuid}`, value]);
-    process.exit();
-  });
+  // asyncFunc.then((value, reject) => {
+  //   process.send([`user-data-${uuid}`, value]);
+  //   process.exit();
+  // });
 
   console.log("ended...");
 }
