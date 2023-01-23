@@ -5,7 +5,7 @@ import { Injectable } from "@angular/core";
 })
 export class LoggerService {
 
-  logLevel = new LogLevel()
+  logLevel = new LogLevel();
   constructor(
   ) { }
 
@@ -27,8 +27,12 @@ export class LoggerService {
     this.logWith(this.logLevel.Error, msg);
   }
 
-  private logWith(level: any, msg: string): void {
-    const timestamp = "[DEBUG " + new Date().toLocaleString() + "]"
+  private logWith(level: any, rawMsg: any): void {
+    const timestamp = "[DEBUG " + new Date().toLocaleString() + "]";
+    let msg = rawMsg;
+    if (typeof rawMsg == "object") {
+      msg = JSON.stringify(rawMsg);
+    }
     if (level <= this.logLevel.Error) {
       switch (level) {
         case this.logLevel.None:
@@ -53,5 +57,5 @@ class LogLevel {
   Warn = 3;
   Error = 4;
   Fatal = 5;
-  Off = 6
+  Off = 6;
 }

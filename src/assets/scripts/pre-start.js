@@ -30,7 +30,7 @@ async function checkTrial() {
           let internetDate = new Date(responseDateTime);
 
           let endDate = new Date();
-          endDate.setFullYear(2023);
+          endDate.setFullYear(2025);
           endDate.setMonth(0);
           endDate.setDate(1);
           endDate.setHours(0);
@@ -42,7 +42,7 @@ async function checkTrial() {
           DEBUG.log(getFuncName(), "istrialOk", isTrialOk);
           resolve(isTrialOk);
         } else {
-          DEBUG.log(getFuncName(), "error");
+          DEBUG.log(getFuncName(), "error", error);
           reject(error);
         }
       }
@@ -145,13 +145,13 @@ async function initPreStart() {
     process.exit(1);
   }
   process.send(["status", "checking trial..."]);
-  const isTrialGood = await checkTrial();
-  if (!isTrialGood) {
-    process.send(["error", "Trial has expired."]);
-    process.exit(1);
-  } else {
-    DEBUG.log(getFuncName(), "trial Good");
-  }
+  // const isTrialGood = await checkTrial();
+  // if (!isTrialGood) {
+  //   process.send(["error", "Trial has expired."]);
+  //   process.exit(1);
+  // } else {
+  //   DEBUG.log(getFuncName(), "trial Good");
+  // }
   process.send(["status", "checking disk space...."]);
   let isDiskSpacePassed = await checkDiskSpace();
   // const isDiskSpaceGood = await checkDiskSpace();

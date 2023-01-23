@@ -73,6 +73,7 @@
     "hammerjs": "^2.0.8",
     "http-server": "^0.12.1",
     "jschardet": "^2.2.1",
+    "jshint": "^2.13.6",
     "moment": "^2.27.0",
     "nedb": "^1.8.0",
     "ngx-cacheable": "^1.3.2",

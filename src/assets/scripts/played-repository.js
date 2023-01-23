@@ -3,9 +3,6 @@
  */
 /*jshint esversion: 8 */
 let args = process.argv.slice(2);
-let headers = args[0];
-let body = args[1];
-
 const path = require("path");
 const DataStore = require("nedb");
 const { getNumberOfPages } = require("./shared/util");
@@ -47,8 +44,8 @@ class PlayedRepository {
     // this.instance = this;
     this._this = this;
     this.#playedDbLocal = new DataStore({
-      filename: path.join(__dirname, "..", "db", "played.db"), // node
-      // filename: path.join(process.cwd(), "src", "assets", "db", "played.db"),
+      // filename: path.join(__dirname, "..", "db", "played.db"), // node
+      filename: path.join(process.cwd(), "src", "assets", "db", "played.db"),
       autoload: true,
     });
   }
@@ -64,7 +61,7 @@ class PlayedRepository {
           if (!err) {
             DEBUG.log("played found", doc);
             if (doc) {
-              doc = root.#convertToFEWatched(doc);
+              doc = root.convertToFEWatched(doc);
               resolve(doc);
             } else {
               resolve(null);
@@ -90,7 +87,7 @@ class PlayedRepository {
         if (!err) {
           let toList = [];
           docs.forEach((element) => {
-            toList.push(root.#convertToFEWatched(element));
+            toList.push(root.convertToFEWatched(element));
             console.log("PUSHING ", this.convertToFEWatched(element));
           });
           DEBUG.log("DOCS: ", docs);
@@ -103,7 +100,7 @@ class PlayedRepository {
     });
   }
 
-  #convertToFEWatched(arg) {
+  convertToFEWatched(arg) {
     return {
       id: arg._id,
       tmdbId: arg.tmdb,
@@ -251,15 +248,7 @@ function removedCallback(err, numAffected) {
   });
 }
 
-// headers = {operation: 'remove', uuid:'123'};
-// body = {type:'tmdbId', id:10895};
-// headers = JSON.stringify(headers);
-// body = JSON.stringify(body);
-// initializeService();
-
 module.exports = {
-  // findWatched: findWatched,
-  // getWatchedInList: getWatchedInList,
   PlayedRepository,
 };
 
