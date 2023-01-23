@@ -3,13 +3,23 @@
  */
 /*jshint esversion: 8 */
 let args = process.argv.slice(2);
-let headers = args[0];
-let body = args[1];
+// let args = process.argv[2];
 
 const path = require("path");
 const DataStore = require("nedb");
-const watchedDbService = require('./watched-db-service');
-const bookmarkDbService = require('./bookmark-db-service');
+const { DEBUG } = require("./shared/util");
+const {
+  listsDb,
+  favoritesDb,
+  bookmarksDb,
+  playedRepository,
+} = require("./mock-main");
+const { debug } = require("console");const v8 = require('v8');
+const {Singleton, ListsRepository} = require("./lists-repository");
+// const watchedDbService = require("./watched-db-service");
+// const watchedDbService = require("./watched-db-service");
+// const bookmarkDbService = require("./bookmark-db-service");
+let currentDb;
 
 // const bookmarksDb = new DataStore({
 //   // filename: path.join(__dirname, "..", "db", "bookmarks.db"), // for node only
@@ -29,38 +39,96 @@ const bookmarkDbService = require('./bookmark-db-service');
 
 var bookmarksChangesDb = new DataStore({
   filename: path.join(__dirname, "..", "db", "bookmarks-changes.db"), // for node only
-    // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks-changes.db'),
+  // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks-changes.db'),
   autoload: true,
 });
 
 process.on("uncaughtException", function (error) {
-  console.log(error);
-  // process.send(['operation-failed', 'general']);
+  DEBUG.error(
+    "SIMULATING operation-failed",
+    error.name,
+    " message: ",
+    error.message
+  );
+  // process.send(["operation-failed", "general"]);
 });
 
-process.send = process.send ||
+process.send =
+  process.send ||
   function (...args) {
     DEBUG.log("SIMULATING process.send", ...args);
   };
 
-process.on('uncaughtException', function (error) {
-  console.log(error);
-  process.send(['operation-failed', 'general']);
-});
-
 /**
  *
- * @param {number} id
+ * @param headers
+ * @param body
  */
-async function findUserMovieData(id) {
-    const watchedObj = await watchedDbService.findWatched(id);
-    const bookmarkObj = await bookmarkDbService.findBookmark(id);
-    const returnObject = {
-      watched: watchedObj,
-      bookmark:  bookmarkObj,
-      library: null
-    };
-    return returnObject;
+async function findUserMovieData(headers, body) {
+  DEBUG.log("starting findUserMovieData");
+  let tmdbId = body.tmdbId;
+  let subChannels = headers.subChannel;
+  let subChannelsArr = [];
+  if (subChannels) {
+    subChannelsArr = subChannels.split(",");
+  }
+  DEBUG.log("subChannelsArr ", subChannelsArr);
+  let promises = [];
+  subChannelsArr.forEach((subChannel) => {
+    switch (subChannel) {
+      case "bookmarks":
+        // promises.push(
+        //   new Promise((resolve, reject) => {
+        //     bookmarksDb.findOne({ tmdb: parseInt(tmdbId, 10) });
+        //   })
+        // );
+        break;
+      case "played":
+        // promises.push(playedRepository.findPlayed(tmdbId));
+        break;
+      case "progress":
+        break;
+      case "lists":
+        // promises.push(
+        //   new Promise((resolve, reject) => {
+        //     listsDb.findOne({ tmdb: parseInt(tmdbId, 10) });
+        //   })
+        // );
+        break;
+      case "favorites":
+        // promises.push(
+        //   new Promise((resolve, reject) => {
+        //     favoritesDb.findOne({ tmdb: parseInt(tmdbId, 10) });
+        //   })
+        // );
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  DEBUG.log("promises ", promises);
+  Promise.all(promises)
+    .then((value) => {
+      DEBUG.log("value: ", value);
+    })
+    .catch((reason) => {
+      DEBUG.error("REASON: ", reason);
+    });
+  let res = await Promise.all(promises);
+  DEBUG.log("RES", res);
+  // DEBUG.log(data);
+  // const watchedObj = await watchedDbService.findWatched(tmdbId);
+  // const bookmarkObj = await bookmarkDbService.findBookmark(tmdbId);
+  // const returnObject = {
+  //   played: watchedObj,
+  //   bookmark: bookmarkObj,
+  //   library: null,
+  //   progress: null,
+  //   favorite: null,
+  // };
+  // return returnObject;
 }
 
 /**
@@ -72,25 +140,30 @@ async function getUserMovieDataInList(idList) {
   const bookmarkObjList = await bookmarkDbService.getBookmarkInList(idList);
   const libraryObjList = [];
   const userMovieDataList = [];
-  console.log('watchedObjList: ', watchedObjList)
-  console.log('bookmarkObjList: ', bookmarkObjList)
+  DEBUG.log("watchedObjList: ", watchedObjList);
+  DEBUG.log("bookmarkObjList: ", bookmarkObjList);
   mapObjList("watched", watchedObjList, userMovieDataList);
   mapObjList("bookmark", bookmarkObjList, userMovieDataList);
   mapObjList("library", libraryObjList, userMovieDataList);
-  console.log('userMovieDataList: ', userMovieDataList)
+  DEBUG.log("userMovieDataList: ", userMovieDataList);
   return userMovieDataList;
 }
 
 function mapObjList(type, objList, userMovieDataList) {
   objList.forEach((watchedObj) => {
-    const res = userMovieDataList.find((umd) => umd.tmdbId === watchedObj.tmdbId);
+    const res = userMovieDataList.find(
+      (umd) => umd.tmdbId === watchedObj.tmdbId
+    );
     if (!res) {
-      userMovieDataList.push({ tmdbId: watchedObj.tmdbId, [type]: mapSinglObj(type, watchedObj) });
+      userMovieDataList.push({
+        tmdbId: watchedObj.tmdbId,
+        [type]: mapSinglObj(type, watchedObj),
+      });
     } else {
       res[type] = mapSinglObj(type, watchedObj);
     }
     if (watchedObj.tmdbId === 123) {
-      console.log(userMovieDataList)
+      DEBUG.log(userMovieDataList);
     }
   });
 }
@@ -114,55 +187,87 @@ function mapSinglObj(type, obj) {
 }
 
 /**
- * !UNUSED
- * Saves the bookmark changes into the bookmarks-changes.db
- * @param type change type
- * @param id the tmdb id or imdb id
+ *
+ * @param {number} id
  */
-function addChanges(type, id) {
-  bookmarksDb.ensureIndex({ fieldName: "tmdbId", unique: true }, function (err) {
-    if (!err) {
-      bookmarksChangesDb.update(
-        { tmdbId: parseInt(id, 10) },
-        { $set: { command: type, timestamp: Date.now() } },
-        { upsert: true },
-        function (err, numAffected, upsert) {
-          if (!err) {
-            console.log(numAffected);
-            console.log(upsert);
-          } else {
-            console.log(err);
-          }
-          // process.exit(0)
-        });
-    } else {
-      // process.exit(0)
-    }
-  });
+async function saveUserData(body) {
+  DEBUG.log(`saveUserData`)
+  let listsRepository = new ListsRepository()
+  let listsRepository2 = new ListsRepository()
+  DEBUG.log(`-----------------------------------`)
+  console.log(listsRepository === listsRepository2)
+  DEBUG.log(`-----------------------------------`)
+  console.log(new ListsRepository() === new ListsRepository())
+  DEBUG.log(`-----------------------------------`)
+  listsRepository.save(body)
+  // currentDb.insert(body, function (err, newDoc) {
+  //   DEBUG.log(newDoc);
+  //   DEBUG.log(newDoc._id);
+  // });
 }
 
 function initializeService() {
-  const myHeaders = JSON.parse(headers);
-  const dataArgs = JSON.parse(body);
-  const uuid = myHeaders.uuid;
-  const command = myHeaders.operation;
-  console.log("myHeaders", myHeaders);
-  console.log("dataArgs", dataArgs);
+
+  let listsRepository = new Singleton()
+  let listsRepository2 = new Singleton()
+
+
+  DEBUG.log(`INSTANCEUUID:  ${listsRepository.getInstanceUUID()} | ${process.pid}`)
+
+  DEBUG.log(`INSTANCEUUID:  ${listsRepository2.getInstanceUUID()} | ${process.pid}`)
+  DEBUG.log(`-----------------------------------`)
+  console.log(listsRepository === listsRepository2)
+  DEBUG.log(`-----------------------------------`)
+  console.log(new Singleton() === new Singleton())
+  DEBUG.log(`-----------------------------------`)
+  const FILE_NAME = 'user-db-service'
+  DEBUG.log(`${FILE_NAME} initializing...`);
+  //   '{"headers":{"operation":"save","subCommand":"bookmarks","uuid":"1234-abcd"},"body":{"tmdbId":1234}}';
+  const rawData = JSON.parse(args[0]);
+  const data = JSON.parse(rawData.data)
+  DEBUG.log(`${FILE_NAME} data`, data);
+  DEBUG.log(`${FILE_NAME} data typeof`, typeof data);
+  DEBUG.log(`${FILE_NAME} data typeof`, typeof data);
+  const headers = data['headers'];
+  DEBUG.log(`${FILE_NAME} headers`, headers);
+  const body = data.body;
+  DEBUG.log(`${FILE_NAME} body`, body);
+  const uuid = headers.uuid;
+  const command = headers.operation;
+
   // "tmdbId":10681,"imdbId":"tt0910970"
-  // console.log("user-db-service initializeService",
-  //   command, tmdbIdArg, imdbIdArg);
+  let hasError = false;
+  let errorMessage = "";
+
+  // let asyncFunc;
   switch (command) {
-    case "find": findUserMovieData(dataArgs.tmdbId).then((value) => {
-        process.send([`user-data-${uuid}`, value]);
-      });
+    case "save":
+      asyncFunc = saveUserData(headers, body);
       break;
-    case "find-in-list": getUserMovieDataInList(dataArgs.idList).then((value) => {
-        process.send([`user-data-${uuid}`, value]);
-      });
+    case "find-one":
+      findUserMovieData(headers, body);
+      break;
+    case "find-in-list":
+      getUserMovieDataInList(body.idList);
       break;
     default:
+      hasError = true;
+      errorMessage += "No command";
+      DEBUG.error(`${FILE_NAME} errorMessage`);
       break;
   }
+
+  if (hasError) {
+    DEBUG.error(`${FILE_NAME} errorMessage`);
+    process.send([`user-data-${uuid}`, errorMessage]);
+  }
+
+  // asyncFunc.then((value, reject) => {
+  //   process.send([`user-data-${uuid}`, value]);
+  //   process.exit();
+  // });
+
+  DEBUG.log("ended...");
 }
 
 initializeService();

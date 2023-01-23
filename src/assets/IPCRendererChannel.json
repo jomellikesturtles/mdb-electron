@@ -30,5 +30,7 @@
   "ModalFileExplorer": "modal-file-explorer",
   "GetTorrentsTitle": "get-torrents-title",
   "GetImage": "get-image",
-  "GetSearchList": "get-search-list"
+  "GetSearchList": "get-search-list",
+  "USER_DATA_NEW": "user-data-new",
+  "USER_DATA": "user-data"
 }

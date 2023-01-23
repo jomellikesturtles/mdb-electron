@@ -20,5 +20,6 @@
         "commandCenter.border": "#15202b99"
     },
     "peacock.color": "#41a9f3",
-    "svg.preview.background": "transparent"
+    "svg.preview.background": "transparent",
+    "editor.formatOnSave": true
 }

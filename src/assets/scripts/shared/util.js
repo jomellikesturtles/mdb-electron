@@ -12,7 +12,7 @@ let DEBUG = (() => {
   };
   return {
     log: console.log.bind(console, "%s", "[DEBUG", timestamp.toString()),
-    error: console.error.bind(console, "%s", "[ERROR", timestamp.toString()),
+    error: console.error.bind(console, "%s", "[ERROR", timestamp.toString())
   };
 })();
 
@@ -89,14 +89,8 @@ let getReleaseYear = function (releaseDate) {
   const STRING_REGEX_OMDB_RELEASE_DATE = `^(\\d{2})+\\s+([a-z]{3,})+\\s+(\\d{4})+`;
   const STRING_REGEX_TMDB_RELEASE_DATE = `([0-9]{2,4})-([0-9]{2})-([0-9]{2})`;
   const STRING_REGEX_YEAR_ONLY = `^([0-9]{2,4})$`;
-  const REGEX_OMDB_RELEASE_DATE_LOCAL = new RegExp(
-    STRING_REGEX_OMDB_RELEASE_DATE,
-    `gi`
-  );
-  const REGEX_TMDB_RELEASE_DATE_LOCAL = new RegExp(
-    STRING_REGEX_TMDB_RELEASE_DATE,
-    `gi`
-  );
+  const REGEX_OMDB_RELEASE_DATE_LOCAL = new RegExp(STRING_REGEX_OMDB_RELEASE_DATE, `gi`);
+  const REGEX_TMDB_RELEASE_DATE_LOCAL = new RegExp(STRING_REGEX_TMDB_RELEASE_DATE, `gi`);
   const REGEX_YEAR_ONLY = new RegExp(STRING_REGEX_YEAR_ONLY, `gi`);
   const result1 = REGEX_OMDB_RELEASE_DATE_LOCAL.exec(releaseDate);
   const result2 = REGEX_TMDB_RELEASE_DATE_LOCAL.exec(releaseDate);
@@ -135,10 +129,7 @@ function prettyBytes(num) {
     units = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   if (neg) num = -num;
   if (num < 1) return (neg ? "-" : "") + num + " B";
-  exponent = Math.min(
-    Math.floor(Math.log(num) / Math.log(1000)),
-    units.length - 1
-  );
+  exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1);
   num = Number((num / Math.pow(1000, exponent)).toFixed(2));
   unit = units[exponent];
   return (neg ? "-" : "") + num + " " + unit;
@@ -187,5 +178,5 @@ module.exports = {
   getFuncName: getFuncName,
   DEBUG: DEBUG,
   processInit: processInit,
-  processSend: processSend,
+  processSend: processSend
 };

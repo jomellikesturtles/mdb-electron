@@ -4,6 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+
   {
     "type": "java",
     "request": "attach",
@@ -81,6 +82,24 @@
       "outFiles": [
         "${workspaceFolder}/dist/out-tsc/**/*.js"
       ]
+    },
+    {
+      "name": "Launch",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.js",
+      "stopOnEntry": false,
+      "args": [],
+      "cwd": "${workspaceRoot}",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+      "runtimeArgs": [
+          ".",
+          "--enable-logging"
+      ],
+      "env": {},
+      "externalConsole": false,
+      "sourceMaps": false,
+      "outDir": null
     },
   ]
 }

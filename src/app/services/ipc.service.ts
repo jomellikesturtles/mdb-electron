@@ -8,17 +8,18 @@
 import { environment } from '@environments/environment';
 import * as IPCRendererChannel from '../../assets/IPCRendererChannel.json';
 import * as IPCMainChannel from '../../assets/IPCMainChannel.json';
-import { v4 as uuidv4 } from 'uuid'
-import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable, fromEvent } from 'rxjs'
-import { IpcRenderer, ipcRenderer } from 'electron'
-import { ILibraryInfo } from '@models/interfaces'
+import { v4 as uuidv4 } from 'uuid';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, fromEvent, from } from 'rxjs';
+import { IpcRenderer, ipcRenderer } from 'electron';
+import { ILibraryInfo } from '@models/interfaces';
 import { IRawLibrary } from './library.service';
 import { IWatched } from './watched.service';
 import { Review } from '@models/review.model';
 import { IProfileData, ListLinkMovie } from '@models/profile-data.model';
 import { MediaList } from '@models/media-list.model';
 import { LoggerService } from '@core/logger.service';
+import GeneralUtil from '@utils/general.util';
 
 
 @Injectable({
@@ -26,45 +27,45 @@ import { LoggerService } from '@core/logger.service';
 })
 export class IpcService {
 
-  libraryMovies = new BehaviorSubject<string[]>([])
-  libraryMovie = new BehaviorSubject<string[]>([])
-  bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([])
-  movieIdentified = new BehaviorSubject<any>({ id: 0 })
-  searchList = new BehaviorSubject<any>([])
-  torrentVideo = new BehaviorSubject<string[]>([])
-  preferences = new BehaviorSubject<any>([])
-  streamLink = new BehaviorSubject<any>('')
-  private statsForNerds = new BehaviorSubject<any>({})
-  statsForNerdsSubscribable = this.statsForNerds.asObservable()
-  private ipcRenderer: typeof ipcRenderer
+  libraryMovies = new BehaviorSubject<string[]>([]);
+  libraryMovie = new BehaviorSubject<string[]>([]);
+  bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([]);
+  movieIdentified = new BehaviorSubject<any>({ id: 0 });
+  searchList = new BehaviorSubject<any>([]);
+  torrentVideo = new BehaviorSubject<string[]>([]);
+  preferences = new BehaviorSubject<any>([]);
+  streamLink = new BehaviorSubject<any>('');
+  private statsForNerds = new BehaviorSubject<any>({});
+  statsForNerdsSubscribable = this.statsForNerds.asObservable();
+  private ipcRenderer: typeof ipcRenderer;
 
   constructor(
     private loggerService: LoggerService
   ) {
     if (environment.runConfig.isElectron) {
 
-      console.log((window as any).require('electron'))
+      console.log((window as any).require('electron'));
 
-      this.ipcRenderer = (window as any).require('electron').ipcRenderer
+      this.ipcRenderer = (window as any).require('electron').ipcRenderer;
 
       this.ipcRenderer.on('torrent-video', (event, data: any) => {
-        console.log('event: ', event)
-        console.log('data: ', data)
-        this.torrentVideo.next(data)
-      })
+        console.log('event: ', event);
+        console.log('data: ', data);
+        this.torrentVideo.next(data);
+      });
 
       this.ipcRenderer.on(IPCMainChannel.PREFERENCES_GET_COMPLETE, (event: Electron.IpcRendererEvent, data) => {
-        this.preferences.next(data)
-        console.log('IPCMainChannel.PREFERENCES_COMPLETE ', data)
-      })
+        this.preferences.next(data);
+        console.log('IPCMainChannel.PREFERENCES_COMPLETE ', data);
+      });
       this.ipcRenderer.on(IPCMainChannel.STREAM_LINK, (event: Electron.IpcRendererEvent, data) => {
-        this.streamLink.next(data)
-        console.log('IPCMainChannel.STREAM_LINK ', data)
-      })
+        this.streamLink.next(data);
+        console.log('IPCMainChannel.STREAM_LINK ', data);
+      });
       this.ipcRenderer.on(IPCMainChannel.STATS, (event: Electron.IpcRendererEvent, data) => {
-        this.statsForNerds.next(data)
-        console.log('IPCMainChannel.STATS ', data)
-      })
+        this.statsForNerds.next(data);
+        console.log('IPCMainChannel.STATS ', data);
+      });
     }
   }
 
@@ -93,7 +94,7 @@ export class IpcService {
    * @param data folder directory
    */
   openFolder(data: string) {
-    console.log('open', data)
+    console.log('open', data);
     // this.ipcRenderer.send('go-to-folder', ['open', data])
   }
 
@@ -102,7 +103,7 @@ export class IpcService {
    * @param idList
    */
   getMoviesFromLibraryInList(idList: number[]): Promise<any> {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('library', { operation: IpcOperations.FIND_IN_LIST, uuid: theUuid },
       { idList: idList });
     return this.listenOnce(`library-${theUuid}`);
@@ -115,7 +116,7 @@ export class IpcService {
    * @param size
    */
   getMultiplePaginatedFirst(collectionName: string, sort: string, size?: number): Promise<IUserDataPaginated> {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain(collectionName, { operation: IpcOperations.GET_BY_PAGE, uuid: theUuid },
       { sort: sort, size: size, lastVal: 0 });
     return this.listenOnce(`${collectionName}-${theUuid}`);
@@ -129,7 +130,7 @@ export class IpcService {
    * @param lastVal
    */
   getMultiplePaginated(collectionName: string, sort: string, limit?: number, lastVal?: string | number): Promise<IUserDataPaginated> {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain(collectionName, { operation: IpcOperations.GET_BY_PAGE, uuid: theUuid },
       { sort: sort, limit: limit, lastVal: lastVal });
     return this.listenOnce(`${collectionName}-${theUuid}`);
@@ -141,7 +142,7 @@ export class IpcService {
    * @param arg imdb id or movie title and release year or tmdb id
    */
   getMovieFromLibrary(arg): Promise<IRawLibrary> {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('library', { operation: IpcOperations.FIND, uuid: theUuid },
       { tmdbId: arg });
     return this.listenOnce(`library-${theUuid}`);
@@ -149,14 +150,14 @@ export class IpcService {
 
   // // user services; watchlist/bookmarks, watched
   getBookmark(data: number) {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('bookmark', { operation: IpcOperations.FIND_ONE, uuid: theUuid },
-      { tmdbId: data })
+      { tmdbId: data });
     return this.listenOnce(`bookmark-${theUuid}`);
   }
 
   getBookmarkInList(idList: number[]): Promise<any> {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('bookmark', {
       operation: IpcOperations.FIND_IN_LIST,
       uuid: theUuid
@@ -165,23 +166,23 @@ export class IpcService {
   }
 
   saveBookmark(data) {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('bookmark', { operation: IpcOperations.SAVE, uuid: theUuid },
       data);
     return this.listenOnce(`bookmark-${theUuid}`);
   }
 
   removeBookmark(type: string, id: string | number) {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('bookmark', { operation: IpcOperations.REMOVE, uuid: theUuid }, { type: type, id: id });
     return this.listenOnce(`bookmark-${theUuid}`);
   }
 
   // ----- WATCHED
   getWatched(data: number) {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('watched', { operation: IpcOperations.FIND_ONE, uuid: theUuid },
-      { tmdbId: data })
+      { tmdbId: data });
     return this.listenOnce(`watched-${theUuid}`);
   }
 
@@ -190,7 +191,7 @@ export class IpcService {
    * @param idList
    */
   getWatchedInList(idList: number[]): Promise<any> {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('watched', {
       operation: IpcOperations.FIND_IN_LIST,
       uuid: theUuid
@@ -199,20 +200,20 @@ export class IpcService {
   }
 
   saveWatched(data) {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('watched', { operation: IpcOperations.SAVE, uuid: theUuid }, data);
     return this.listenOnce(`watched-${theUuid}`);
   }
 
   updateWatchedStatus(val: IWatched) {
-    this.ipcRenderer.send('', val)
+    this.ipcRenderer.send('', val);
   }
 
   /**
    * TODO: remove type
    */
   removeWatched(type: string, id: string | number) {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('watched', { operation: IpcOperations.REMOVE, uuid: theUuid }, { type: type, id: id });
     return this.listenOnce(`watched-${theUuid}`);
   }
@@ -224,7 +225,7 @@ export class IpcService {
    * @param id tmdb id
    */
   getMovieUserData(id: number): Promise<IProfileData> {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('user-data', {
       operation: IpcOperations.FIND,
       uuid: theUuid
@@ -233,16 +234,16 @@ export class IpcService {
   }
 
   getMovieUserDataInList(idList: number[]): Promise<IProfileData[]> {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('user-data', {
       operation: IpcOperations.FIND_IN_LIST,
       uuid: theUuid
     }, { idList: idList });
-    return this.listenOnce(`user-data-${theUuid}`)
+    return this.listenOnce(`user-data-${theUuid}`);
   }
 
   saveFavorite(data) {
-    const theUuid = uuidv4()
+    const theUuid = uuidv4();
     this.sendToMain('favorite', { operation: IpcOperations.SAVE, uuid: theUuid }, data);
     return this.listenOnce(`favorite-${theUuid}`);
   }
@@ -264,37 +265,38 @@ export class IpcService {
 
   userDataNew(headers: Headers, body: Body) {
     const theUuid = uuidv4();
-    const channel = 'user-data-new';
+    const channel = 'user-data';
+    // const channel = IPCRendererChannel.USER_DATA;
     headers.uuid = theUuid;
     this.sendToMainNew(channel, headers,
       body);
-    return this.listenOnce(`${channel}-${theUuid}`);
+    return from(this.listenOnce(`${channel}-${theUuid}`));
   }
 
   // ----- END OF USER DATA
   startScanLibrary() {
 
-    this.sendToMain(IPCRendererChannel.SCAN_LIBRARY_START)
+    this.sendToMain(IPCRendererChannel.SCAN_LIBRARY_START);
     this.ipcRenderer.on(IPCMainChannel.ScanLibraryResult, e => {
-      console.log(IPCMainChannel.ScanLibraryResult, e)
-    })
+      console.log(IPCMainChannel.ScanLibraryResult, e);
+    });
     this.ipcRenderer.once(IPCMainChannel.ScanLibraryComplete, e => {
-      console.log('completscan')
-      this.ipcRenderer.removeListener(IPCMainChannel.ScanLibraryResult, d => { })
-    })
+      console.log('completscan');
+      this.ipcRenderer.removeListener(IPCMainChannel.ScanLibraryResult, d => { });
+    });
   }
 
   stopScanLibrary() {
-    this.sendToMain(IPCRendererChannel.SCAN_LIBRARY_STOP)
+    this.sendToMain(IPCRendererChannel.SCAN_LIBRARY_STOP);
   }
 
   getPlayTorrent(hash: string): Promise<any> {
-    this.sendToMain(IPCRendererChannel.PLAY_TORRENT, hash)
+    this.sendToMain(IPCRendererChannel.PLAY_TORRENT, hash);
     return this.listenOnce(`stream-link`);
   }
 
   stopStream() {
-    this.sendToMain(IPCRendererChannel.STOP_STREAM)
+    this.sendToMain(IPCRendererChannel.STOP_STREAM);
   }
 
   playOfflineVideo(docId): Promise<any> {
@@ -304,7 +306,7 @@ export class IpcService {
 
   getPreferences() {
 
-    this.sendToMain(IPCRendererChannel.PREFERENCES_GET)
+    this.sendToMain(IPCRendererChannel.PREFERENCES_GET);
     // this.ipcRenderer.addListener(IPCMainChannel.PREFERENCES_GET_COMPLETE, this.pref)
 
     // (event, data: any) => {
@@ -316,7 +318,7 @@ export class IpcService {
   }
 
   savePreferences(val) {
-    this.sendToMain(IPCRendererChannel.PREFERENCES_SET, val)
+    this.sendToMain(IPCRendererChannel.PREFERENCES_SET, val);
     // this.ipcRenderer.on(IPCMainChannel.PREFERENCES_SET_COMPLETE, (event, data: any) => {
     //   console.log('IPCMainChannel.PREFERENCES_SET_COMPLETE ', data)
     //   this.preferences.next(data)
@@ -331,44 +333,43 @@ export class IpcService {
   }
 
   changeSubtitle(): Promise<any> {
-    this.sendToMain("get-subtitle")
-    return this.listenOnce('subtitle-path')
+    this.sendToMain("get-subtitle");
+    return this.listenOnce('subtitle-path');
   }
 
   minimizeWindow() {
-    this.sendToMain(this.IPCCommand.MinimizeApp)
+    this.sendToMain(this.IPCCommand.MinimizeApp);
   }
   minimizeRestoreWindow() {
-    this.sendToMain(this.IPCCommand.RestoreApp)
+    this.sendToMain(this.IPCCommand.RestoreApp);
   }
   exitApp() {
-    this.sendToMain(this.IPCCommand.ExitApp)
+    this.sendToMain(this.IPCCommand.ExitApp);
   }
 
   private removeListener(channel: string) {
-    console.log('REMOVING LISTENER', channel)
-    this.ipcRenderer.removeListener(channel, d => { })
+    console.log('REMOVING LISTENER', channel);
+    this.ipcRenderer.removeListener(channel, d => { });
   }
 
   private sendToMain(channel: string, headers?: Headers | string, body?: Body) {
     try {
-      this.ipcRenderer.send(channel, [headers, body])
-      console.log('sent to ipc... ', channel, [headers, body])
+      this.ipcRenderer.send(channel, [headers, body]);
+      console.log('sent to ipc... ', channel, [headers, body]);
     } catch {
-      console.log('failed to send Ipc: ', channel, [headers, body])
-      this.loggerService.error(`'failed to send Ipc: ${channel} [${headers}, ${body}]`)
+      console.log('failed to send Ipc: ', channel, [headers, body]);
+      this.loggerService.error(`'failed to send Ipc: ${channel} [${headers}, ${body}]`);
     }
   }
 
   private sendToMainNew(channel: string, headers: Headers, body: Body) {
-    const ipcContext: IPCContext = {headers, body}
-    const ipcContextStr: string = JSON.stringify(ipcContext) //serialize
+    const ipcContext: IPCContext = { headers, body };
+    const ipcContextStr: string = JSON.stringify(ipcContext); //serialize
     try {
-      this.ipcRenderer.send(channel, ipcContextStr)
-      console.log('sent to ipc... ', channel, ipcContextStr)
-    } catch {
-      console.log('failed to send Ipc: ', channel, ipcContextStr)
-      this.loggerService.error(`'failed to send Ipc: ${channel} ${ipcContextStr}`)
+      this.loggerService.info(`sending to ipc...:  ${channel}  ipcContextStr: ${ipcContextStr}`);
+      this.ipcRenderer.send(channel, ipcContextStr);
+    } catch (e) {
+      this.loggerService.error(`'failed to send Ipc: ${channel} | ${ipcContextStr} | ${e}`);
     }
   }
 
@@ -376,35 +377,36 @@ export class IpcService {
     return new Promise<any>((resolve, reject) => {
       try {
         this.ipcRenderer.once(channel, (event, arg) => {
-          this.loggerService.info(`channel:  ${channel}  arg: ${arg}`)
+          this.loggerService.info(`channel:  ${channel}  arg: ${arg}`);
           resolve(arg);
         });
       } catch {
-        this.loggerService.error(`listen ${channel} failed`)
+        this.loggerService.error(`listen ${channel} failed`);
         resolve(null);
       }
     });
   }
 
-  IPCCommand = IPCRendererChannel['default']
-  IPCChannel = IPCMainChannel['default']
+  IPCCommand = IPCRendererChannel['default'];
+  IPCChannel = IPCMainChannel['default'];
 }
 
 interface IPCContext {
-  headers?: Headers
-  body?: Body
+  headers?: Headers;
+  body?: Body;
 }
 
 interface Headers {
   operation?: IpcOperations,
   uuid?: string,
-  subChannel?: string
+  subChannel?: string;
 }
 
 interface Body {
-  tmdbId?: number
-  idList?: number[]
-  [x: string]: any
+  tmdbId?: number;
+  idList?: number[];
+  _id?: string | number;
+  [x: string]: any;
 }
 
 export enum IpcOperations {
@@ -419,7 +421,8 @@ export enum IpcOperations {
 }
 
 export enum SubChannel {
-  LISTS = 'lists',
+  LIST = 'list',
+  LISTLINKMEDIA = 'listLinkMovie',
   FAVORITES = 'favorites',
   BOOKMARKS = 'bookmarks',
   ALL = 'all',
@@ -428,7 +431,7 @@ export enum SubChannel {
 }
 
 export interface IBookmarkChanges {
-  change: BookmarkChanges
+  change: BookmarkChanges;
 }
 
 export enum BookmarkChanges {
@@ -440,7 +443,7 @@ export enum BookmarkChanges {
 export interface IBookmark {
   tmdbId: number,
   imdbId: string,
-  id: string
+  id: string;
 }
 
 
@@ -450,12 +453,12 @@ interface ILibrary {
   year?: number,
   tmdbId?: number,
   imdbId?: string,
-  libraryList: ILibraryData[]
+  libraryList: ILibraryData[];
 }
 
 interface ILibraryData {
   fullFilePath: string,
-  _id: string
+  _id: string;
 }
 
 export interface IUserDataPaginated {

@@ -5,17 +5,18 @@
 const cp = require("child_process");
 const electron = require("electron");
 const Datastore = require("nedb");
-const url = require('url');
+const url = require("url");
 var { DEBUG } = require("./src/assets/scripts/shared/util");
-const configDb = new Datastore({
-  filename: "src/assets/config/config.db",
-  autoload: true,
-});
 const path = require("path");
 const fs = require("fs");
-const {app, BrowserWindow, ipcMain,globalShortcut, Menu, Tray, shell, dialog} = electron;
+const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray, shell, dialog } = electron;
 const IPCRendererChannel = require("./src/assets/IPCRendererChannel.json");
 const IPCMainChannel = require("./src/assets/IPCMainChannel.json");
+const configDb = new Datastore({
+  filename: "src/assets/config/config.db",
+  autoload: true
+});
+
 let procLibraryDb;
 let procSearch;
 let procTorrentSearch;
@@ -31,7 +32,7 @@ const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`;
 
 const PROC_OPTION = {
   cwd: __dirname,
-  silent: true,
+  silent: true
 };
 
 /**
@@ -48,10 +49,10 @@ function createMainWindow() {
       experimentalFeatures: true,
       nodeIntegration: true,
       webSecurity: false,
-      nativeWindowOpen: true,
+      nativeWindowOpen: true
     },
     icon: appIcon,
-    title: "MDB",
+    title: "MDB"
   });
   mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
@@ -62,11 +63,11 @@ function createMainWindow() {
   });
 
   mainWindow.webContents.once("dom-ready", function () {
-      if (splashWindow) {
-        splashWindow.close();
-        DEBUG.log("domready");
-      }
-    });
+    if (splashWindow) {
+      splashWindow.close();
+      DEBUG.log("domready");
+    }
+  });
 
   // ipcMain.on('error', (_, err) => {
   // 	if (!argv.debug) {
@@ -88,7 +89,6 @@ function createMainWindow() {
   setSystemTray();
   startTorrentClient();
 }
-
 app.setAppUserModelId(process.execPath);
 // Create window on electron initialization
 app.on("ready", showSplash);
@@ -104,16 +104,16 @@ app.on("window-all-closed", function () {
 app.on("before-quit", function () {
   // TODO: save changes
   globalShortcut.unregisterAll();
-  mainWindow.removeAllListeners('close');
+  mainWindow.removeAllListeners("close");
   mainWindow.close();
 });
 app.on("activate", function () {
-  DEBUG.log("activate")
+  DEBUG.log("activate");
   if (mainWindow === null) {
     createMainWindow();
   }
 });
-const TEMP_FOLDER = path.join(process.cwd(), 'dist/mdb-electron/tmp');
+const TEMP_FOLDER = path.join(process.cwd(), "dist/mdb-electron/tmp");
 if (!fs.existsSync(TEMP_FOLDER)) {
   fs.mkdirSync(TEMP_FOLDER);
 }
@@ -127,45 +127,47 @@ function showSplash() {
     frame: false,
     transparent: false,
     alwaysOnTop: false,
-    webPreferences:{
-      preload: __dirname + '/preload.js',
+    webPreferences: {
+      preload: __dirname + "/preload.js",
       experimentalFeatures: true,
       nodeIntegration: false,
       webSecurity: false,
       nativeWindowOpen: true,
       devTools: true
     },
-    title: 'OfflineBay by TechTac'
+    title: "OfflineBay by TechTac"
   });
 
   // splashWindow.webContents.openDevTools();
 
-  splashWindow.loadURL(url.format({
-      pathname: path.join(__dirname, 'WndSplash.html'),
-      protocol: 'file:',
+  splashWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, "WndSplash.html"),
+      protocol: "file:",
       slashes: true
-  }));
+    })
+  );
 
-  splashWindow.webContents.once('dom-ready', function () {
+  splashWindow.webContents.once("dom-ready", function () {
     splashWindow.show();
   });
 
-  splashWindow.once('show', function () {
-    splashWindow.webContents.send('fade');
+  splashWindow.once("show", function () {
+    splashWindow.webContents.send("fade");
   });
 }
 
-ipcMain.on("splash-done", function(event, msg) {
-  DEBUG.log("ITS DONE1");
+ipcMain.on("splash-done", function (event, msg) {
+  DEBUG.log("splash-done");
   createMainWindow();
-  splashWindow.webContents.send('fade');
-})
+  splashWindow.webContents.send("fade");
+});
 
-ipcMain.on("splash-error", function(event, msg) {
+ipcMain.on("splash-error", function (event, msg) {
   DEBUG.log("SPLASH-ERROR", msg);
   dialog.showErrorBox("ERROR", msg[0]);
   app.quit();
-})
+});
 
 function setSystemTray() {
   // let trayIcon = `${__dirname}/dist/mdb-electron/assets/icons/chevron.png`
@@ -176,7 +178,7 @@ function setSystemTray() {
     // { label: "Torrent1", click: playTorrentSample },
     // { label: "Torrent2", click: playTorrentSample2 },
     { label: "MDB", click: app.focus },
-    { label: "Quit", click: app.quit },
+    { label: "Quit", click: app.quit }
   ]);
   mdbTray.setToolTip("Media Database");
   mdbTray.setContextMenu(trayMnu);
@@ -194,25 +196,19 @@ function showWindow() {
 }
 
 function playTorrentSample() {
-  procWebTorrent.send([
-    "play-torrent",
-    "2ef6de6be35239d370db76e5b47be49d96bbf4da",
-  ]);
+  procWebTorrent.send(["play-torrent", "2ef6de6be35239d370db76e5b47be49d96bbf4da"]);
 }
 
 function playTorrentSample2() {
-  procWebTorrent.send([
-    "play-torrent",
-    "2f200765bbfa5802ac2afdf0cb71865714e833a2",
-  ]);
+  procWebTorrent.send(["play-torrent", "2f200765bbfa5802ac2afdf0cb71865714e833a2"]);
 }
 
 ipcMain.on(IPCRendererChannel.STOP_STREAM, function (event, args) {
-  DEBUG.log('received Stop Stream')
+  DEBUG.log("received Stop Stream");
   procWebTorrent.send(["stop-stream"]);
   if (procVideoService) {
-    DEBUG.log('killing procVideoService')
-    procVideoService.kill()
+    DEBUG.log("killing procVideoService");
+    procVideoService.kill();
   }
 });
 ipcMain.on(IPCRendererChannel.PLAY_TORRENT, function (event, args) {
@@ -226,7 +222,7 @@ function startTorrentClient() {
     [],
     {
       cwd: __dirname,
-      silent: false,
+      silent: false
     }
     // PROC_OPTION
   );
@@ -277,11 +273,7 @@ ipcMain.on("open-file-explorer", function (event, folder) {
 // go to folder folder then return list of folders inside
 ipcMain.on("go-to-folder", function (event, param) {
   DEBUG.log("go to folder", param);
-  procLibraryDb = forkChildProcess(
-    "src/assets/scripts/file-explorer.js",
-    [param[0], param[1]],
-    PROC_OPTION
-  );
+  procLibraryDb = forkChildProcess("src/assets/scripts/file-explorer.js", [param[0], param[1]], PROC_OPTION);
   procLibraryDb.stdout.on("data", (data) => printData(data));
   procLibraryDb.on("exit", function () {
     DEBUG.log("file-explorer process ended");
@@ -324,14 +316,10 @@ ipcMain.on(IPCRendererChannel.SCAN_LIBRARY_START, function (event) {
   DEBUG.log("scan-library");
   if (!procScanLibrary) {
     // if process search is not yet running
-    procScanLibrary = forkChildProcess(
-      "src/assets/scripts/scan-library.js",
-      [],
-      {
-        cwd: __dirname,
-        silent: false,
-      }
-    );
+    procScanLibrary = forkChildProcess("src/assets/scripts/scan-library.js", [], {
+      cwd: __dirname,
+      silent: false
+    });
     procScanLibrary.on("exit", function () {
       DEBUG.log("ScanLibrary process ended");
       procScanLibrary = null;
@@ -354,11 +342,7 @@ ipcMain.on(IPCRendererChannel.SCAN_LIBRARY_STOP, function (event) {
 ipcMain.on("search-query", function (event, data) {
   if (!procSearch) {
     // if process search is not yet running
-    procSearch = forkChildProcess(
-      "src/assets/scripts/search-movie.js",
-      [],
-      PROC_OPTION
-    );
+    procSearch = forkChildProcess("src/assets/scripts/search-movie.js", [], PROC_OPTION);
     procSearch.stdout.on("data", (data) => printData(data));
   } else {
     DEBUG.log("One Search process is already running");
@@ -372,7 +356,7 @@ ipcMain.on("retrieve-library-folders", function (event, data) {
   var config = configDb;
   config.findOne(
     {
-      type: "libraryFolders",
+      type: "libraryFolders"
     },
     function (err, dbPref) {
       if (!err) {
@@ -392,7 +376,7 @@ ipcMain.on("get-search-list", function (event, data) {
   var config = configDb;
   config.findOne(
     {
-      type: "searchList",
+      type: "searchList"
     },
     function (err, dbPref) {
       if (!err) {
@@ -422,10 +406,7 @@ ipcMain.on(IPCRendererChannel.PREFERENCES_GET, function (event, data) {
 
 ipcMain.on(IPCRendererChannel.PREFERENCES_SET, function (event, data) {
   DEBUG.log("preferences-set ", data);
-  configDb.update({ type: "preferences" }, { $set: data }, {}, function (
-    err,
-    result
-  ) {
+  configDb.update({ type: "preferences" }, { $set: data }, {}, function (err, result) {
     if (!err) {
       DEBUG.log("result", result);
       sendContents(IPCMainChannel.PREFERENCES_SET_COMPLETE, result);
@@ -516,113 +497,136 @@ ipcMain.on("get-image", function (event, data) {
 // TORRENTS
 ipcMain.on("torrent-search", function (event, data) {
   if (!procTorrentSearch) {
-    procTorrentSearch = forkChildProcess(
-      "src/assets/scripts/search-torrent.js",
-      [data[0], [data[1]]],
-      PROC_OPTION
-    );
+    procTorrentSearch = forkChildProcess("src/assets/scripts/search-torrent.js", [data[0], [data[1]]], PROC_OPTION);
     procTorrentSearch.stdout.on("data", (data) => printData(data));
   } else {
     DEBUG.log("One Search process is already running");
   }
 });
 
-// USER DATA
-ipcMain.on("user-data-new", function (event, data) {
-    DEBUG.log("myProcUserData ", data);
-
-    let myProcUserData = forkChildProcess(
-      "src/assets/scripts/user-db-service-new.js",
-      data,
-      {
-        cwd: __dirname,
-        silent: false,
-      }
-    );
-    myProcUserData.on("data", (data) => printData(data));
-    myProcUserData.on("exit", function () {
-      DEBUG.log("myProcUserData process ended");
-      myProcUserData = null;
-    });
-    myProcUserData.on("message", (m) => sendContents(m[0], m[1]));
-
-});
-ipcMain.on("user-data", function (event, data) {
-    DEBUG.log("myProcUserData ", data);
-
-    data[0] = JSON.stringify(data[0]);
-    data[1] = JSON.stringify(data[1]);
-    let myProcUserData = forkChildProcess(
-      "src/assets/scripts/user-db-service.js",
-      data,
-      {
-        cwd: __dirname,
-        silent: false,
-      }
-    );
-    myProcUserData.on("data", (data) => printData(data));
-    myProcUserData.on("exit", function () {
-      DEBUG.log("myProcUserData process ended");
-      myProcUserData = null;
-    });
-    myProcUserData.on("message", (m) => sendContents(m[0], m[1]));
-
-});
-
-// BOOKMARK
-ipcMain.on("bookmark", function (event, data) {
-  // if (!procBookmark) {
-    DEBUG.log("procBookmark ", data);
-
-    data[0] = JSON.stringify(data[0]);
-    data[1] = JSON.stringify(data[1]);
-    let myProcBookmark = forkChildProcess(
-      "src/assets/scripts/bookmark-db-service.js",
-      data,
-      PROC_OPTION
-    );
-    myProcBookmark.on("data", (data) => printData(data));
-    myProcBookmark.on("exit", function () {
-      DEBUG.log("procBookmark process ended");
-      myProcBookmark = null;
-    });
-    myProcBookmark.on("message", (m) => sendContents(m[0], m[1]));
-  // }
-});
-
-// WATCHED
-ipcMain.on("watched", function (event, args) {
-  DEBUG.log("procWatched ", args);
-  args[0] = JSON.stringify(args[0]);
-  args[1] = JSON.stringify(args[1]);
-  let procWatched = forkChildProcess(
-    "src/assets/scripts/watched-db-service.js",
-    args,
-    {
-      cwd: __dirname,
-      silent: false,
-    }
-    // PROC_OPTION
-  );
-  procWatched.on("exit", function () {
-    DEBUG.log("procWatched process ended");
-    procWatched = null;
+/**
+ *
+ * @param {string} dbPath
+ * @param {string} ensuredFieldName
+ * @returns
+ */
+function loadDb(dbPath, ensuredFieldName) {
+  const loadedDb = new Datastore({
+    // filename: path.join(__dirname, "..", "db", "played.db"), // node
+    // filename: path.join(process.cwd(), "src", "assets", "db", "lists.db"),
+    filename: path.join(dbPath),
+    autoload: true
   });
-  procWatched.on("message", (m) => sendContents(m[0], m[1]));
+
+  loadedDb.ensureIndex({ fieldName: ensuredFieldName, unique: true }, function () {});
+  return loadedDb;
+}
+let listDb = loadDb("src/assets/db/lists.db");
+let listLinkMediaDb = loadDb("src/assets/db/listLinkMedia.db");
+let favoriteDb = loadDb("src/assets/db/favorite.db");
+let bookmarkDb = loadDb("src/assets/db/bookmark.db");
+let playedDb = loadDb("src/assets/db/played.db");
+let progressDb = loadDb("src/assets/db/progress.db", "title");
+
+const { ListsRepository2 } = require("./src/assets/scripts/lists-repository-2");
+const { GeneralRepository } = require("./src/assets/scripts/general-repository");
+// let listsRepository = new ListsRepository2(listDb);
+let listsRepository = new GeneralRepository(listDb);
+let listLinkMediaRepository = new GeneralRepository(listLinkMediaDb);
+let favoriteRepository = new GeneralRepository(favoriteDb);
+// USER DATA
+ipcMain.on("user-data", function (event, rawData) {
+  // data = {"data": data}
+  let data = JSON.parse(rawData);
+  const headers = data["headers"];
+  const body = data["body"];
+  DEBUG.log("headers ", headers);
+  DEBUG.log("body ", body);
+  DEBUG.log("headers TO ", typeof headers);
+  DEBUG.log("body TO ", typeof body);
+  try {
+    handleUserData(listsRepository, headers, body);
+  } catch (err) {
+    DEBUG.error(`errorMessage ${JSON.stringify(err)}`);
+    sendContents(`user-data-${uuid}`, `${JSON.stringify(err)}`);
+  }
+
+  // let myProcUserData = forkChildProcess(
+  //   "src/assets/scripts/user-db-service.js",
+  //   dataStr,
+  //   {
+  //     cwd: __dirname,
+  //     silent: false,
+  //   }
+  // );
+  // myProcUserData.on("data", (data) => printData(data));
+  // myProcUserData.on("exit", function () {
+  //   DEBUG.log("myProcUserData process ended");
+  //   myProcUserData = null;
+  // });
+  // myProcUserData.on("message", (m) => sendContents(m[0], m[1]));
 });
+
+//  * @param {listsRepository} myFunc
+/**
+ *
+ * @param {GeneralRepository} myFunc
+ */
+async function handleUserData(myFunc, headers, body) {
+  DEBUG.log("headers", headers);
+  const operation = headers["operation"];
+  DEBUG.log("operation", operation);
+  let hasError = false;
+  let errorMessage = "";
+  const uuid = headers["uuid"];
+  let result;
+  switch (operation) {
+    case "save":
+      result = await myFunc.save(body);
+      break;
+    case "find-one":
+      result = await myFunc.findOneById(body);
+      // result = await myFunc.findOneByTmdbId(body);
+      break;
+    case "find-in-list":
+      // getUserMovieDataInList(body.idList);
+      break;
+    default:
+      hasError = true;
+      errorMessage += "No command";
+      DEBUG.error(`errorMessage`);
+      break;
+  }
+
+  if (hasError) {
+    DEBUG.error(`${FILE_NAME} errorMessage`);
+    sendContents([`user-data-${uuid}`, errorMessage]);
+  } else {
+    sendContents(`user-data-${uuid}`, result);
+  }
+
+  // asyncFunc.then((value, reject) => {
+  //   process.send([`user-data-${uuid}`, value]);
+  //   process.exit();
+  // });
+
+  DEBUG.log("ended...");
+}
 
 // TODO: check if destination file already exists & equal
 // TODO: support other formats
 ipcMain.on("get-subtitle", function (event, data) {
-  dialog.showOpenDialog({filters:[{name:'Subtitle', extensions:['srt']}]}).then((e) => {
+  dialog.showOpenDialog({ filters: [{ name: "Subtitle", extensions: ["srt"] }] }).then((e) => {
     if (e.filePaths.length > 0 && !e.canceled) {
       const subtitlePath = path.join(TEMP_FOLDER, path.basename(e.filePaths[0]));
       const data = new Uint8Array(Buffer.from(fs.readFileSync(e.filePaths[0])));
       // fs.copyFile(e.filePaths[0], subtitlePath, (err) => {
       fs.writeFile(subtitlePath, data, (err) => {
         if (err) throw err;
-        console.log('The file has been saved!');
-        if (err) { console.log(err); }
+        console.log("The file has been saved!");
+        if (err) {
+          console.log(err);
+        }
         console.log("subtitle-path", subtitlePath);
         sendContents("subtitle-path", subtitlePath);
         // sendContents("subtitle-path", path.basename(e.filePaths[0]));
@@ -643,7 +647,7 @@ ipcMain.on("play-offline-video-stream", function (event, libraryFile) {
     // PROC_OPTION
     {
       cwd: __dirname,
-      silent: false,
+      silent: false
     }
   );
   // procVideoService.stdout.on("data", (data) => printData(data));
@@ -656,7 +660,7 @@ ipcMain.on("play-offline-video-stream", function (event, libraryFile) {
 });
 
 function forkChildProcess(modulePath, args, processOptions) {
-  return cp.fork(path.join(__dirname, modulePath), args, processOptions);
+  return cp.fork(path.join(__dirname, modulePath), [args], processOptions);
 }
 function printError(processName, args) {
   DEBUG.log(`${processName} in error`, args);
@@ -706,34 +710,34 @@ function startProc(processName, procPath, params) {
 ------------------------*/
 // Show blue background notification
 function popMsg(msg) {
-  mainWindow.webContents.send('notify', [msg, 'info']);
+  mainWindow.webContents.send("notify", [msg, "info"]);
 }
 // Show green background notification
 function popSuccess(msg) {
-  mainWindow.webContents.send('notify', [msg, 'success']);
+  mainWindow.webContents.send("notify", [msg, "success"]);
 }
 // Show red background notification
 function popErr(msg) {
-  DEBUG.log("ERROR")
-  mainWindow.webContents.send('notify', [msg, 'danger']);
+  DEBUG.log("ERROR");
+  mainWindow.webContents.send("notify", [msg, "danger"]);
   // app.quit();
 }
 function popCritError(msg) {
-  DEBUG.log("CRIT ERROR")
-  mainWindow.webContents.send('notify', [msg, 'danger']);
+  DEBUG.log("CRIT ERROR");
+  mainWindow.webContents.send("notify", [msg, "danger"]);
   app.quit();
 }
 // Show yellow background notification
 function popWarn(msg) {
-  mainWindow.webContents.send('notify', [msg, 'warning']);
+  mainWindow.webContents.send("notify", [msg, "warning"]);
 }
 
-process.on('uncaughtException', function (error) {
+process.on("uncaughtException", function (error) {
   console.log(error);
   // if (mainWindow){
-      // popErr('An unknown error occurred');
+  // popErr('An unknown error occurred');
   // } else {
-      // app.quit();
+  // app.quit();
   // }
 });
 

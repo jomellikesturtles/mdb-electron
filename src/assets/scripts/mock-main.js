@@ -5,10 +5,12 @@ const path = require("path");
 const fs = require("fs");
 const DataStore = require("nedb");
 const { PlayedRepository } = require("./played-repository");
+const { ProgressRepository } = require("./progress-repository");
+const ListsRepository = require("./lists-repository");
 
 function init(data) {
   DEBUG.log(data);
-  let myProcUserData = forkChildProcess("./user-db-service-new.js", data, {
+  let myProcUserData = forkChildProcess("./user-db-service.js", data, {
     cwd: __dirname,
     silent: false,
   });
@@ -34,8 +36,19 @@ function sendContents(channel, args) {
   // mainWindow.webContents.send(channel, args); // reply
 }
 
-init(`{"headers":{"operation":"find-one","subChannel":"bookmarks,lists,played","uuid":"1234-abcd"},
-  "body":{"tmdbId":1234}}`);
+function init2() {
+  // let pr = new ListsRepository();
+  // console.log(pr.instanceUUID);
+  // let pr2 = new ListsRepository();
+  // console.log(pr2.instanceUUID);
+  // console.log(pr.getInstanceUUID);
+  // console.log(pr.getInstance);
+  // console.log(pr.getInstanceUUID);
+}
+init2()
+
+// init(`"data":{"headers":{"operation":"find-one","subChannel":"bookmarks,lists,played","uuid":"1234-abcd"},
+//   "body":{"tmdbId":1234}}}`);
 
 // var playedDb = new DataStore({
 //   filename: path.join(__dirname, "..", "db", "played.db"), // node
@@ -66,6 +79,10 @@ let playedRepository = new PlayedRepository();
 
 listsDb.ensureIndex({ fieldName: "title", unique: true }, function () {});
 
+function initRepository() {
+  playedRepository = new PlayedRepository();
+}
+
 module.exports = {
   // playedDb: playedDb,
   progressDb: progressDb,
@@ -73,4 +90,5 @@ module.exports = {
   listsDb: listsDb,
   favoritesDb: favoritesDb,
   playedRepository: playedRepository,
+  initRepository
 };
