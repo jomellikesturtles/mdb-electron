@@ -131,6 +131,13 @@ export class DataService {
       return func2;
     }
   }
+  deleteHandle(func1: Observable<any>, func2: Observable<any>): Observable<any> {
+    if (this.isWebApp()) {
+      return func1;
+    } else {
+      return func2;
+    }
+  }
   syncData() {
     /**
      * v1: separate BFF and ipc

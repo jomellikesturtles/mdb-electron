@@ -8,17 +8,7 @@ let args = process.argv.slice(2);
 const path = require("path");
 const DataStore = require("nedb");
 const { DEBUG } = require("./shared/util");
-const {
-  listsDb,
-  favoritesDb,
-  bookmarksDb,
-  playedRepository,
-} = require("./mock-main");
-const { debug } = require("console");const v8 = require('v8');
-const {Singleton, ListsRepository} = require("./lists-repository");
-// const watchedDbService = require("./watched-db-service");
-// const watchedDbService = require("./watched-db-service");
-// const bookmarkDbService = require("./bookmark-db-service");
+const { Singleton, ListsRepository } = require("./lists-repository");
 let currentDb;
 
 // const bookmarksDb = new DataStore({
@@ -40,16 +30,11 @@ let currentDb;
 var bookmarksChangesDb = new DataStore({
   filename: path.join(__dirname, "..", "db", "bookmarks-changes.db"), // for node only
   // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'bookmarks-changes.db'),
-  autoload: true,
+  autoload: true
 });
 
 process.on("uncaughtException", function (error) {
-  DEBUG.error(
-    "SIMULATING operation-failed",
-    error.name,
-    " message: ",
-    error.message
-  );
+  DEBUG.error("SIMULATING operation-failed", error.name, " message: ", error.message);
   // process.send(["operation-failed", "general"]);
 });
 
@@ -151,13 +136,11 @@ async function getUserMovieDataInList(idList) {
 
 function mapObjList(type, objList, userMovieDataList) {
   objList.forEach((watchedObj) => {
-    const res = userMovieDataList.find(
-      (umd) => umd.tmdbId === watchedObj.tmdbId
-    );
+    const res = userMovieDataList.find((umd) => umd.tmdbId === watchedObj.tmdbId);
     if (!res) {
       userMovieDataList.push({
         tmdbId: watchedObj.tmdbId,
-        [type]: mapSinglObj(type, watchedObj),
+        [type]: mapSinglObj(type, watchedObj)
       });
     } else {
       res[type] = mapSinglObj(type, watchedObj);
@@ -191,15 +174,15 @@ function mapSinglObj(type, obj) {
  * @param {number} id
  */
 async function saveUserData(body) {
-  DEBUG.log(`saveUserData`)
-  let listsRepository = new ListsRepository()
-  let listsRepository2 = new ListsRepository()
-  DEBUG.log(`-----------------------------------`)
-  console.log(listsRepository === listsRepository2)
-  DEBUG.log(`-----------------------------------`)
-  console.log(new ListsRepository() === new ListsRepository())
-  DEBUG.log(`-----------------------------------`)
-  listsRepository.save(body)
+  DEBUG.log(`saveUserData`);
+  let listsRepository = new ListsRepository();
+  let listsRepository2 = new ListsRepository();
+  DEBUG.log(`-----------------------------------`);
+  console.log(listsRepository === listsRepository2);
+  DEBUG.log(`-----------------------------------`);
+  console.log(new ListsRepository() === new ListsRepository());
+  DEBUG.log(`-----------------------------------`);
+  listsRepository.save(body);
   // currentDb.insert(body, function (err, newDoc) {
   //   DEBUG.log(newDoc);
   //   DEBUG.log(newDoc._id);
@@ -207,28 +190,26 @@ async function saveUserData(body) {
 }
 
 function initializeService() {
+  let listsRepository = new Singleton();
+  let listsRepository2 = new Singleton();
 
-  let listsRepository = new Singleton()
-  let listsRepository2 = new Singleton()
+  DEBUG.log(`INSTANCEUUID:  ${listsRepository.getInstanceUUID()} | ${process.pid}`);
 
-
-  DEBUG.log(`INSTANCEUUID:  ${listsRepository.getInstanceUUID()} | ${process.pid}`)
-
-  DEBUG.log(`INSTANCEUUID:  ${listsRepository2.getInstanceUUID()} | ${process.pid}`)
-  DEBUG.log(`-----------------------------------`)
-  console.log(listsRepository === listsRepository2)
-  DEBUG.log(`-----------------------------------`)
-  console.log(new Singleton() === new Singleton())
-  DEBUG.log(`-----------------------------------`)
-  const FILE_NAME = 'user-db-service'
+  DEBUG.log(`INSTANCEUUID:  ${listsRepository2.getInstanceUUID()} | ${process.pid}`);
+  DEBUG.log(`-----------------------------------`);
+  console.log(listsRepository === listsRepository2);
+  DEBUG.log(`-----------------------------------`);
+  console.log(new Singleton() === new Singleton());
+  DEBUG.log(`-----------------------------------`);
+  const FILE_NAME = "user-db-service";
   DEBUG.log(`${FILE_NAME} initializing...`);
   //   '{"headers":{"operation":"save","subCommand":"bookmarks","uuid":"1234-abcd"},"body":{"tmdbId":1234}}';
   const rawData = JSON.parse(args[0]);
-  const data = JSON.parse(rawData.data)
+  const data = JSON.parse(rawData.data);
   DEBUG.log(`${FILE_NAME} data`, data);
   DEBUG.log(`${FILE_NAME} data typeof`, typeof data);
   DEBUG.log(`${FILE_NAME} data typeof`, typeof data);
-  const headers = data['headers'];
+  const headers = data["headers"];
   DEBUG.log(`${FILE_NAME} headers`, headers);
   const body = data.body;
   DEBUG.log(`${FILE_NAME} body`, body);

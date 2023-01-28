@@ -1,6 +1,6 @@
 
-export interface Review {
-    id: number
-    rating: number
-    content: string
-  }
+export interface IReview {
+  id: number;
+  rating: number;
+  content: string;
+}

@@ -56,6 +56,10 @@ export class BffService {
     return this.http.post<any>(`${MDB_API_URL}/profileData/list`, listBody).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('saveList')));
   }
+  saveProgress(listBody: MediaList): Observable<any> {
+    return this.http.post<any>(`${MDB_API_URL}/profileData/list`, listBody).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('saveList')));
+  }
   deleteList(listId: any): Observable<any> {
     let httpParams = new HttpParams().set('id', listId);
     return this.http.delete<any>(`${MDB_API_URL}/profileData/list`, { params: httpParams }).pipe(tap(_ => this.log('')),
