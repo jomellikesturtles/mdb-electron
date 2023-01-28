@@ -10,17 +10,10 @@ import * as IPCRendererChannel from '../../assets/IPCRendererChannel.json';
 import * as IPCMainChannel from '../../assets/IPCMainChannel.json';
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, fromEvent, from } from 'rxjs';
+import { BehaviorSubject, from } from 'rxjs';
 import { IpcRenderer, ipcRenderer } from 'electron';
-import { ILibraryInfo } from '@models/interfaces';
 import { IRawLibrary } from './library.service';
-import { IWatched } from './watched.service';
-import { IReview } from '@models/review.model';
-import { IProfileData, ListLinkMovie } from '@models/profile-data.model';
-import { MediaList } from '@models/media-list.model';
 import { LoggerService } from '@core/logger.service';
-import GeneralUtil from '@utils/general.util';
-
 
 @Injectable({
   providedIn: 'root'
@@ -148,129 +141,14 @@ export class IpcService {
     return this.listenOnce(`library-${theUuid}`);
   }
 
-  // // user services; watchlist/bookmarks, watched
-  getBookmark(data: number) {
-    const theUuid = uuidv4();
-    this.sendToMain('bookmark', { operation: IpcOperations.FIND_ONE, uuid: theUuid },
-      { tmdbId: data });
-    return this.listenOnce(`bookmark-${theUuid}`);
-  }
-
-  getBookmarkInList(idList: number[]): Promise<any> {
-    const theUuid = uuidv4();
-    this.sendToMain('bookmark', {
-      operation: IpcOperations.FIND_IN_LIST,
-      uuid: theUuid
-    }, { idList: idList });
-    return this.listenOnce(`bookmark-${theUuid}`);
-  }
-
-  saveBookmark(data) {
-    const theUuid = uuidv4();
-    this.sendToMain('bookmark', { operation: IpcOperations.SAVE, uuid: theUuid },
-      data);
-    return this.listenOnce(`bookmark-${theUuid}`);
-  }
-
-  removeBookmark(type: string, id: string | number) {
-    const theUuid = uuidv4();
-    this.sendToMain('bookmark', { operation: IpcOperations.REMOVE, uuid: theUuid }, { type: type, id: id });
-    return this.listenOnce(`bookmark-${theUuid}`);
-  }
-
-  // ----- WATCHED
-  getWatched(data: number) {
-    const theUuid = uuidv4();
-    this.sendToMain('watched', { operation: IpcOperations.FIND_ONE, uuid: theUuid },
-      { tmdbId: data });
-    return this.listenOnce(`watched-${theUuid}`);
-  }
-
-  /**
-   * Ipc renderer that sends command to main renderer to get movies from library db.
-   * @param idList
-   */
-  getWatchedInList(idList: number[]): Promise<any> {
-    const theUuid = uuidv4();
-    this.sendToMain('watched', {
-      operation: IpcOperations.FIND_IN_LIST,
-      uuid: theUuid
-    }, { idList: idList });
-    return this.listenOnce(`watched-${theUuid}`);
-  }
-
-  saveWatched(data) {
-    const theUuid = uuidv4();
-    this.sendToMain('watched', { operation: IpcOperations.SAVE, uuid: theUuid }, data);
-    return this.listenOnce(`watched-${theUuid}`);
-  }
-
-  updateWatchedStatus(val: IWatched) {
-    this.ipcRenderer.send('', val);
-  }
-
-  /**
-   * TODO: remove type
-   */
-  removeWatched(type: string, id: string | number) {
-    const theUuid = uuidv4();
-    this.sendToMain('watched', { operation: IpcOperations.REMOVE, uuid: theUuid }, { type: type, id: id });
-    return this.listenOnce(`watched-${theUuid}`);
-  }
-
-
-  // ----- END OF WATCHED
-  /**
-   *
-   * @param id tmdb id
-   */
-  getMovieUserData(id: number): Promise<IProfileData> {
-    const theUuid = uuidv4();
-    this.sendToMain('user-data', {
-      operation: IpcOperations.FIND,
-      uuid: theUuid
-    }, { tmdbId: id });
-    return this.listenOnce(`user-data-${theUuid}`);
-  }
-
-  getMovieUserDataInList(idList: number[]): Promise<IProfileData[]> {
-    const theUuid = uuidv4();
-    this.sendToMain('user-data', {
-      operation: IpcOperations.FIND_IN_LIST,
-      uuid: theUuid
-    }, { idList: idList });
-    return this.listenOnce(`user-data-${theUuid}`);
-  }
-
-  saveFavorite(data) {
-    const theUuid = uuidv4();
-    this.sendToMain('favorite', { operation: IpcOperations.SAVE, uuid: theUuid }, data);
-    return this.listenOnce(`favorite-${theUuid}`);
-  }
-
-  // ------- Media List
-  saveMediaList(data: MediaList) {
-    const theUuid = uuidv4();
-    const channel = 'media-list';
-    this.sendToMain(channel, { operation: IpcOperations.SAVE, uuid: theUuid }, data);
-    return this.listenOnce(`${channel}-${theUuid}`);
-  }
-
-  getMediaList(id: string): Promise<MediaList> {
-    const theUuid = uuidv4();
-    const channel = 'media-list';
-    this.sendToMain(channel, { operation: IpcOperations.FIND_ONE, uuid: theUuid }, { id });
-    return this.listenOnce(`${channel}-${theUuid}`);
-  }
-
-  userData(headers: Headers, body: Body, params?: { [x: string]: any; }) {
+  userData(headers: Headers, body: Body, params?: Object) {
     const theUuid = uuidv4();
     const channel = 'user-data';
     // const channel = IPCRendererChannel.USER_DATA;
     headers.uuid = theUuid;
     this.sendToMainNew(channel, headers,
       body, params);
-    return from(this.listenOnce(`${channel}-${theUuid}`));
+    return from(this.listenOnceWithTimeout(`${channel}-${theUuid}`));
   }
 
   // ----- END OF USER DATA
@@ -373,7 +251,7 @@ export class IpcService {
     }
   }
 
-  private listenOnce(channel: string) {
+  private listenOnce(channel: string, timeoutSeconds = 300) {
     return new Promise<any>((resolve, reject) => {
       try {
         this.ipcRenderer.once(channel, (event, arg) => {
@@ -385,6 +263,40 @@ export class IpcService {
         resolve(null);
       }
     });
+  }
+
+  private listenOnceWithTimeout(channel: string, timeoutMillis = 30) {
+    // return new Promise<any>((resolve, reject) => {
+    //   try {
+    //     this.ipcRenderer.once(channel, (event, arg) => {
+    //       this.loggerService.info(`channel:  ${channel}  arg: ${arg}`);
+    //       resolve(arg);
+    //     });
+    //   } catch {
+    //     this.loggerService.error(`listen ${channel} failed`);
+    //     resolve(null);
+    //   }
+    // });
+    const promise = new Promise<any>((resolve, reject) => {
+      try {
+        this.ipcRenderer.once(channel, (event, arg) => {
+          this.loggerService.info(`channel:  ${channel}  arg: ${arg}`);
+          resolve(arg);
+        });
+      } catch {
+        this.loggerService.error(`listen ${channel} failed`);
+        reject(null);
+      }
+    });
+    const timeout = new Promise((resolve, reject) =>
+      setTimeout(
+        () => reject(`Timed out after ${timeoutMillis} ms.`),
+        timeoutMillis));
+    return Promise.race([
+      promise,
+      timeout
+    ]);
+
   }
 
   IPCCommand = IPCRendererChannel['default'];
@@ -427,13 +339,13 @@ export enum IpcOperations {
 
 export enum SubChannel {
   LIST = 'list',
-  LISTLINKMEDIA = 'listLinkMovie',
-  FAVORITES = 'favorites',
-  BOOKMARKS = 'bookmarks',
+  LIST_LINK_MEDIA = 'listLinkMedia',
+  FAVORITE = 'favorite',
+  BOOKMARK = 'bookmark',
   ALL = 'all',
   PLAYED = 'played',
   PROGRESS = 'progress',
-  REVIEW = 'review',
+  REVIEW = 'review'
 }
 
 export interface IBookmarkChanges {
@@ -451,8 +363,6 @@ export interface IBookmark {
   imdbId: string,
   id: string;
 }
-
-
 
 interface ILibrary {
   title?: string,

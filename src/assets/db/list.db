@@ -2,4 +2,5 @@
 {"_id":"9hewzf52OVa2HA5b","createdAt":{"$$date":1674837763430},"updatedAt":{"$$date":1674837763430}}
 {"title":"movies with spielberg","description":"panoodin ko bukas","_id":"Bl8zwPAwNhvby8Hq","createdAt":{"$$date":1674837726655},"updatedAt":{"$$date":1674838450284}}
 {"_id":"DAWEYPQZkW5BmFJB","createdAt":{"$$date":1674838084553},"updatedAt":{"$$date":1674838084553}}
+{"title":"paborito kong pelikula 2","description":"deskriptsyon","_id":"q6chZmoVQmhuJJ9k","createdAt":{"$$date":1674882091460},"updatedAt":{"$$date":1674882091460}}
 {"$$indexCreated":{"fieldName":"title","unique":true,"sparse":true}}

@@ -3,6 +3,7 @@ import { Location } from '@angular/common';
 import { NavigationService, Navigation } from '@services/navigation.service';
 import { ListsService } from '@services/lists.service';
 import { LoggerService } from '@core/logger.service';
+import { MediaUserDataService } from '@services/media-user-data.service';
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
@@ -13,13 +14,17 @@ export class NavigationComponent implements OnInit {
   constructor(private location: Location,
     // private navigationService: NavigationService
     private listsService: ListsService,
-    private loggerService: LoggerService
+    private loggerService: LoggerService,
+    private mediaUserDataService: MediaUserDataService
   ) { }
 
   isOpenNav = false;
   sideNavWidth;
   // navigation = new NavigationService(this, this.location)
   ngOnInit() {
+    this.mediaUserDataService.getMediaUserData(122).subscribe(e => {
+      this.loggerService.log(`mediaUserDataService.getMediaUserData ${JSON.stringify(e)}`);
+    });
     this.listsService.createList({
       title: "paborito kong pelikula 2",
       description: "deskriptsyon"

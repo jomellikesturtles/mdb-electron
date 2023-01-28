@@ -1,51 +1,68 @@
+/*jshint esversion: 6 */
 /**
  * General repository
  */
 
-const { uuidv4 } = require("./shared/util");
+const { uuidv4, DEBUG } = require("./shared/util");
 
-let DEBUG = (() => {
-  let timestamp = () => {};
-  timestamp.toString = () => {
-    return "[DEBUG " + new Date().toLocaleString() + "]";
-  };
-  return {
-    log: console.log.bind(console, "%s", timestamp)
-  };
-})();
+const path = require("path");
+const DataStore = require("nedb");
 
 class GeneralRepository {
-  static instance;
-  // instance = this.constructor.instance;
-  // _this;
-  currentDbLocal;
-  instanceUUID;
+  static get instance() {
+    return this.instance;
+  }
+  /**@returns {DataStore} */
+  static get currentDbLocal() {
+    return this.currentDbLocal;
+  }
+
+  /**@returns {string} */
+  static get instanceUUID() {
+    return this.instanceUUID;
+  }
+
+  /**@returns {string} */
+  static get currentDbLocalName() {
+    return this.currentDbLocalName;
+  }
 
   /**
    *
-   * @param {import("nedb")} currentDb
+   * @param {string} dbName
    * @param {string} uniqueFieldName
    * @returns
    */
-  constructor(currentDb, uniqueFieldName) {
+  constructor(dbName, uniqueFieldName) {
     // if (this.instance) {
     //   return this.instance;
     // }
     // this.instance = this;
-    DEBUG.log("GeneralRepository constructor");
-    if (uniqueFieldName)
+    DEBUG.log("Creating repository for", dbName);
+    this.currentDbLocalName = dbName;
+    let currentDb = new DataStore({
+      filename: path.join(process.cwd(), "src", "assets", "db", `${dbName}.db`), // electron
+      autoload: true,
+      timestampData: true
+    });
+
+    if (uniqueFieldName) {
       currentDb.ensureIndex({ fieldName: uniqueFieldName, unique: true, sparse: true }, function () {});
+    }
+
     // if (instance) return instance;
     // this.instance = this;
     // this._this = this;
     this.instanceUUID = uuidv4();
     this.currentDbLocal = currentDb;
   }
+
   getInstanceUUID() {
     return this.instanceUUID;
   }
+
   save(body) {
-    DEBUG.log("GeneralRepository save body", body);
+    DEBUG.log(`GeneralRepository saving body in ${this.currentDbLocalName}`, body);
     const root = this;
     return new Promise(function (resolve, reject) {
       root.currentDbLocal.insert(body, (err, doc) => {
@@ -65,7 +82,7 @@ class GeneralRepository {
    * @returns
    */
   update(query, body) {
-    DEBUG.log("GeneralRepository update body", body);
+    DEBUG.log(`GeneralRepository updating in ${this.currentDbLocalName}`, body);
     const root = this;
     return new Promise(function (resolve, reject) {
       root.currentDbLocal.update(
@@ -92,11 +109,11 @@ class GeneralRepository {
    */
   findOne(query) {
     let root = this;
+    DEBUG.log(`GeneralRepository findOne in ${root.currentDbLocalName}`, query);
     return new Promise(function (resolve, reject) {
-      DEBUG.log("GeneralRepository findOne", query);
       root.currentDbLocal.findOne(query, function (err, doc) {
         if (!err) {
-          DEBUG.log("played found", doc);
+          DEBUG.log(`${root.currentDbLocalName} found`, doc);
           if (!err) {
             // doc = root.map(doc);
             resolve(doc);
@@ -115,14 +132,14 @@ class GeneralRepository {
    * @returns {Promise<any[]>} list of watched movies
    */
   getInList(idList) {
-    console.log("getInList idList: ", idList);
+    DEBUG.log(`getInList in ${this.currentDbLocalName} idList: `, idList);
     const root = this;
     return new Promise(function (resolve, reject) {
       root.currentDbLocal.find({ tmdbId: { $in: idList } }, function (err, docs) {
         if (!err) {
           let toList = [];
-          DEBUG.log("DOCS: ", docs);
-          resolve(toList);
+          DEBUG.log(`in ${root.currentDbLocalName} DOCS: `, docs);
+          resolve(docs);
         } else {
           reject(root.handleReject(err));
         }
