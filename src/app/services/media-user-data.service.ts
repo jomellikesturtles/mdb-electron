@@ -50,7 +50,7 @@ export class MediaUserDataService {
   }
 
   putMediaFavorite(favoriteBody) {
-    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.FAVORITES, operation: IpcOperations.SAVE },
+    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.SAVE },
       favoriteBody));
   }
 }

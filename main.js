@@ -16,6 +16,7 @@ const configDb = new Datastore({
   filename: "src/assets/config/config.db",
   autoload: true
 });
+let { onUserData } = require("./src/assets/scripts/user-media-db");
 
 let procLibraryDb;
 let procSearch;
@@ -504,100 +505,10 @@ ipcMain.on("torrent-search", function (event, data) {
   }
 });
 
-/**
- *
- * @param {string} dbPath
- * @param {string} ensuredFieldName
- * @returns
- */
-function loadDb(dbPath, ensuredFieldName) {
-  const loadedDb = new Datastore({
-    // filename: path.join(__dirname, "..", "db", "played.db"), // node
-    // filename: path.join(process.cwd(), "src", "assets", "db", "lists.db"),
-    filename: path.join(dbPath),
-    autoload: true
-  });
-
-  loadedDb.ensureIndex({ fieldName: ensuredFieldName, unique: true }, function () {});
-  return loadedDb;
-}
-let listDb = loadDb("src/assets/db/lists.db");
-
-const { GeneralRepository } = require("./src/assets/scripts/general-repository");
-let listsRepository = new GeneralRepository(listDb);
 // USER DATA
 ipcMain.on("user-data", function (event, rawData) {
-  // data = {"data": data}
-  let data = JSON.parse(rawData);
-  const headers = data.headers;
-  const body = data.body;
-  DEBUG.log("headers ", headers);
-  DEBUG.log("body ", body);
-  DEBUG.log("headers TO ", typeof headers);
-  DEBUG.log("body TO ", typeof body);
-  try {
-    handleUserData(listsRepository, headers, body);
-  } catch (err) {
-    DEBUG.error(`errorMessage ${JSON.stringify(err)}`);
-    sendContents(`user-data-${uuid}`, `${JSON.stringify(err)}`);
-  }
+  onUserData(rawData, mainWindow);
 });
-
-let OPERATIONS = Object.freeze({
-  FIND: "find",
-  FIND_ONE: "find-one",
-  FIND_IN_LIST: "find-in-list",
-  UPDATE: "update",
-  SAVE: "save",
-  REMOVE: "remove",
-  GET_BY_PAGE: "get-by-page",
-  COUNT: "count"
-});
-//  * @param {listsRepository} myFunc
-/**
- *
- * @param {GeneralRepository} myFunc
- */
-async function handleUserData(myFunc, headers, body) {
-  DEBUG.log("headers", headers);
-  const operation = headers.operation;
-  DEBUG.log("operation", operation);
-  let hasError = false;
-  let errorMessage = "";
-  const uuid = headers.uuid;
-  let result;
-  switch (operation) {
-    case OPERATIONS.SAVE:
-      result = await myFunc.save(body);
-      break;
-    case OPERATIONS.FIND_ONE:
-      result = await myFunc.findOne(body);
-      // result = await myFunc.findOneByTmdbId(body);
-      break;
-    case OPERATIONS.FIND_IN_LIST:
-      result = myFunc.getInList(body.idList);
-      break;
-    default:
-      hasError = true;
-      errorMessage += "No command";
-      DEBUG.error(`errorMessage`);
-      break;
-  }
-
-  if (hasError) {
-    DEBUG.error(`${FILE_NAME} errorMessage`);
-    sendContents([`user-data-${uuid}`, errorMessage]);
-  } else {
-    sendContents(`user-data-${uuid}`, result);
-  }
-
-  // asyncFunc.then((value, reject) => {
-  //   process.send([`user-data-${uuid}`, value]);
-  //   process.exit();
-  // });
-
-  DEBUG.log("ended...");
-}
 
 // TODO: check if destination file already exists & equal
 // TODO: support other formats
@@ -626,7 +537,7 @@ ipcMain.on("get-subtitle", function (event, data) {
  * @param libraryFileId libraryFile Id
  */
 ipcMain.on("play-offline-video-stream", function (event, libraryFile) {
-  DEBUG.log("procVideoService", data);
+  DEBUG.log("procVideoService", mediaUserData);
   procVideoService = forkChildProcess(
     "src/assets/scripts/video-service.js",
     [libraryFileId],

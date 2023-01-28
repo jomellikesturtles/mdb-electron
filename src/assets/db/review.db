@@ -1,6 +1,1 @@
-{"tmdb":123,"_id":"jpgjYx4wKJwjg46U","createdAt":{"$$date":1674838677744},"updatedAt":{"$$date":1674838677744}}
-{"tmdb":123,"_id":"k9HFadfrPwyk6UJv","createdAt":{"$$date":1674838681146},"updatedAt":{"$$date":1674838681146}}
-{"tmdb":123,"_id":"lh9TfA1lyW1sHoeh","createdAt":{"$$date":1674838811138},"updatedAt":{"$$date":1674838811138}}
-{"tmdbId":124,"rating":5,"content":"ganda lang","_id":"rEDvNNXnqPzKuv6R","createdAt":{"$$date":1674843069760},"updatedAt":{"$$date":1674843069760}}
-{"tmdbId":123,"rating":5,"content":"ganda lang","_id":"tXiWagxqDUewuNZf","createdAt":{"$$date":1674838922374},"updatedAt":{"$$date":1674838922374}}
 {"$$indexCreated":{"fieldName":"tmdbId","unique":true,"sparse":true}}

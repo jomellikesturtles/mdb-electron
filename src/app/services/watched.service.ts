@@ -2,8 +2,11 @@ import { Injectable } from '@angular/core';
 import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './firebase.service';
 import { IUserSavedData } from '@models/interfaces';
 import { environment } from '@environments/environment';
-import { IpcService, IUserDataPaginated } from '@services/ipc.service';
+import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '@services/ipc.service';
 import GeneralUtil from '@utils/general.util';
+import { BffService } from './mdb-api.service';
+import { DataService } from './data.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,59 +14,68 @@ import GeneralUtil from '@utils/general.util';
 export class WatchedService {
 
   constructor(private firebaseService: FirebaseService,
-    private ipcService: IpcService
+    private ipcService: IpcService,
+    private bffService: BffService,
+    private dataService: DataService
   ) { }
 
   async toggleWatched(movie) {
-    let wDocId
+    let wDocId;
     if (!movie.watched || !movie.watched.id) {
-      const rDate = movie.release_date ? movie.release_date : movie.releaseDate
-      const releaseYear = parseInt(GeneralUtil.getYear(rDate), 10)
+      const rDate = movie.release_date ? movie.release_date : movie.releaseDate;
+      const releaseYear = parseInt(GeneralUtil.getYear(rDate), 10);
       const data: IWatched = {
         title: movie.title,
         tmdbId: movie.id ? movie.id : movie.tmdbId,
         imdbId: movie.imdbId ? movie.imdbId : '',
         year: releaseYear ? releaseYear : 0,
         percentage: 100
-      }
-      wDocId = await this.saveWatched(data)
-      movie.watched = wDocId
+      };
+      wDocId = await this.saveWatched(data);
+      movie.watched = wDocId;
     } else {
-      const type = movie.watched && movie.watched.id ? 'id' : 'tmdbId'
-      const id = type === 'id' ? movie.watched.id : movie.tmdbId
-      wDocId = await this.removeWatched(type, id)
-      movie.watched.id = ''
+      const type = movie.watched && movie.watched.id ? 'id' : 'tmdbId';
+      const id = type === 'id' ? movie.watched.id : movie.tmdbId;
+      wDocId = await this.removeWatched(type, id);
+      movie.watched.id = '';
     }
     return wDocId;
   }
 
-  getWatched(id): Promise<any> {
-    if (environment.runConfig.firebaseMode) {
-      return this.firebaseService.getFromFirestore(CollectionName.Watched, FieldName.TmdbId, FirebaseOperator.Equal, id)
-    } else {
-      return this.ipcService.getWatched(id)
-    }
+  getWatched(id): Observable<any> {
+    // if (environment.runConfig.firebaseMode) {
+    //   return this.firebaseService.getFromFirestore(CollectionName.Watched, FieldName.TmdbId, FirebaseOperator.Equal, id);
+    // } else {
+    //   return this.ipcService.getWatched(id);
+    // }
+    return this.dataService.getHandle(this.bffService.getMediaUserData(id), this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+      { tmdbId: id }));
   }
 
   /**
    * Gets multiple watched movies.
    * @param idList
    */
-  getWatchedInList(idList: number[]): Promise<any> {
+  getWatchedInList(idList: number[]): Observable<any> {
 
-    const myFunction = environment.runConfig.firebaseMode ?
-      this.firebaseService.getFromFirestoreMultiple(CollectionName.Watched, FieldName.TmdbId, idList) :
-      this.ipcService.getWatchedInList(idList);
+    // const myFunction = environment.runConfig.firebaseMode ?
+    //   this.firebaseService.getFromFirestoreMultiple(CollectionName.Watched, FieldName.TmdbId, idList) :
+    //   this.ipcService.getWatchedInList(idList);
 
-    return myFunction
+    // return myFunction;
+
+    return this.dataService.getHandle(this.bffService.getMediaUserData(0), this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+      { tmdbId: 0 }));
   }
 
-  saveWatched(data: IWatched): Promise<any> {
-    if (environment.runConfig.firebaseMode) {
-      return this.firebaseService.insertIntoFirestore(CollectionName.Watched, data)
-    } else {
-      return this.ipcService.saveWatched(data)
-    }
+  saveWatched(data: IWatched): Observable<any> {
+    // if (environment.runConfig.firebaseMode) {
+    //   return this.firebaseService.insertIntoFirestore(CollectionName.Watched, data)
+    // } else {
+    //   return this.ipcService.saveWatched(data)
+    // }
+    return this.dataService.getHandle(this.bffService.getMediaUserData(null), this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+      { tmdbId: 0 }));
   }
 
   /**
@@ -72,20 +84,20 @@ export class WatchedService {
    * @param id watched id/_id/tmdbId to remove.
    */
   removeWatched(type: 'id' | 'tmdbId', id: string | number) {
-    if (environment.runConfig.firebaseMode) {
-      return this.firebaseService.deleteFromFirestore(CollectionName.Watched, id)
-    } else {
-      return this.ipcService.removeWatched(type, id)
-    }
+    // if (environment.runConfig.firebaseMode) {
+    //   return this.firebaseService.deleteFromFirestore(CollectionName.Watched, id)
+    // } else {
+    //   return this.ipcService.removeWatched(type, id)
+    // }
   }
 
   saveWatchedMulti(data: object[]) {
     if (environment.runConfig.firebaseMode) {
-      const list = []
+      const list = [];
       data.forEach(element => {
-        list.push({ tmdbId: element })
-      })
-      this.firebaseService.insertIntoFirestoreMulti(CollectionName.Watched, list)
+        list.push({ tmdbId: element });
+      });
+      this.firebaseService.insertIntoFirestoreMulti(CollectionName.Watched, list);
     } else {
 
     }
@@ -96,9 +108,9 @@ export class WatchedService {
    */
   getWatchedPaginatedFirstPage(): Promise<IUserDataPaginated | any> {
     if (environment.runConfig.firebaseMode) {
-      return this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20)
+      return this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20);
     } else {
-      return this.ipcService.getMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20)
+      return this.ipcService.getMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20);
     }
   }
 
@@ -108,13 +120,13 @@ export class WatchedService {
    */
   getWatchedPaginated(lastVal: string | number): Promise<IUserDataPaginated | any> {
     console.log('getting multiplewatched...', lastVal);
-    return this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Watched, FieldName.TmdbId, 20, lastVal)
+    return this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Watched, FieldName.TmdbId, 20, lastVal);
   }
 
 }
 
 export interface IWatched extends IUserSavedData {
-  id?: string // also use in Doc Id
+  id?: string; // also use in Doc Id
   tmdbId: number,
   imdbId?: string,
   title: string,

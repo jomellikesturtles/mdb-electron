@@ -22,7 +22,12 @@ export class BffService {
 
   getMediaUserData(tmdbId: number): Observable<any> {
     return this.http.get<any>(`${MDB_API_URL}/media/${tmdbId}`).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('saveFavorite')));
+      catchError(this.handleError<any>('getMediaUserData')));
+  }
+
+  getMediaUserDataInList(tmdbIdList: number[]): Observable<any> {
+    return this.http.get<any>(`${MDB_API_URL}/media/${tmdbIdList}`).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getMediaUserDataInList')));
   }
 
   saveBookmark(bookmarkBody: any): Observable<any> {
@@ -48,6 +53,7 @@ export class BffService {
     return this.http.post<any>(`${MDB_API_URL}/profileData/list/add`, listLinkMovie).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('saveFavorite')));
   }
+
   removeFromList(listLinkMovie: any): Observable<any> {
     return this.http.post<any>(`${MDB_API_URL}/profileData/list/remove`, listLinkMovie).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('saveFavorite')));
@@ -135,3 +141,14 @@ export interface RegisterUser {
   avatar: string;
   contactNumber?: string;
 }
+
+export const ENDPOINT = {
+  ACCOUNT: `/account/`,
+  CONFIG: `/config/`,
+  USER: `/user/`,
+  MEDIA: `/media/`,
+  LIST: `/list/`,
+  FAVORITE: `/preferences/`,
+  PREFERENCES: `/preferences/`,
+  PROGRESS: `/progress/`,
+};

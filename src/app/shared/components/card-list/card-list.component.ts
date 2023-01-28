@@ -15,23 +15,23 @@ import ObjectUtil from '@utils/object.utils';
 })
 export class CardListComponent implements OnInit, OnChanges {
 
-  @Input() cardWidth: string
-  @Input() displayMode: string = 'd-inline-flex'
-  @Input() listType: string
-  _movieList: MDBMovie[]
+  @Input() cardWidth: string;
+  @Input() displayMode: string = 'd-inline-flex';
+  @Input() listType: string;
+  _movieList: MDBMovie[];
   @Input()
   set movieList(inputMessage: any[]) {
     inputMessage.forEach(inputMovie => {
-      this.movieAndUserDataList.push({ movie: inputMovie, userData: null })
-    })
-    this._movieList = inputMessage
+      this.movieAndUserDataList.push({ movie: inputMovie, userData: null });
+    });
+    this._movieList = inputMessage;
   }
   get movieList(): any[] {
     return this._movieList;
   }
 
 
-  movieAndUserDataList: IMovieAndUserData[] = []
+  movieAndUserDataList: IMovieAndUserData[] = [];
 
   constructor(
     private bookmarkService: BookmarkService,
@@ -41,12 +41,12 @@ export class CardListComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
-    this.renderHighlight()
-    this.getMoviesUserData()
+    this.renderHighlight();
+    this.getMoviesUserData();
   }
 
   ngOnChanges(changes: any): void {
-    console.log('changes',changes)
+    console.log('changes', changes);
     //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
     //Add '${implements OnChanges}' to the class.
 
@@ -55,9 +55,9 @@ export class CardListComponent implements OnInit, OnChanges {
    * Gets the user data like: bookmark, watched, video.
    */
   getMoviesUserData() {
-    const idList = this.collectIds()
-    const listLength = idList.length
-    const arr2 = this.createDividedList(idList, listLength)
+    const idList = this.collectIds();
+    const listLength = idList.length;
+    const arr2 = this.createDividedList(idList, listLength);
 
     // const arr2 = thisidList, listLength)
     // tslint:disable-next-line:prefer-for-of
@@ -65,7 +65,7 @@ export class CardListComponent implements OnInit, OnChanges {
       const queryList = arr2[index];
 
       if (this.listType === 'none') { // all types of user data.
-        this.userDataService.getMovieUserDataInList(queryList).then((docsList: IProfileData[]) => {
+        this.userDataService.getMovieUserDataInList(queryList).subscribe((docsList: IProfileData[]) => {
           // if (docs.isFirebaseData && docs.isFirebaseData === true) {
           //   const localDocs: Array<QueryDocumentSnapshot<any>>[] = docs.data
           //   if (localDocs[0].length > 0) {
@@ -87,39 +87,39 @@ export class CardListComponent implements OnInit, OnChanges {
           if (!ObjectUtil.isEmpty(docsList)) {
             if (environment.runConfig.springMode) {
               this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
-                const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId)
-                movieAndUserData.userData = doc
-              })
+                const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId);
+                movieAndUserData.userData = doc;
+              });
             } else {
               docsList.forEach(data => {
 
                 // validate if works with IPC
                 this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
-                  const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId)
-                  movieAndUserData.userData = doc
-                })
+                  const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId);
+                  movieAndUserData.userData = doc;
+                });
               });
             }
           }
-        })
+        });
       } else {
         if (this.listType !== 'bookmark') {
-          this.bookmarkService.getBookmarksInList(queryList).then(docs => {
-            const dataType = 'bookmark'
-            this.curateUserData(dataType, docs)
-          })
+          this.bookmarkService.getBookmarksInList(queryList).subscribe(docs => {
+            const dataType = 'bookmark';
+            this.curateUserData(dataType, docs);
+          });
         }
         if (this.listType !== 'watched') {
-          this.watchedService.getWatchedInList(queryList).then(docs => {
-            const dataType = 'watched'
-            this.curateUserData(dataType, docs)
-          })
+          this.watchedService.getWatchedInList(queryList).subscribe(docs => {
+            const dataType = 'watched';
+            this.curateUserData(dataType, docs);
+          });
         }
         if (this.listType !== 'library') {
           this.libraryService.getMoviesFromLibraryInList(queryList).then(docs => {
-            const dataType = 'library'
-            this.curateUserData(dataType, docs)
-          })
+            const dataType = 'library';
+            this.curateUserData(dataType, docs);
+          });
         }
       }
     }
@@ -129,14 +129,14 @@ export class CardListComponent implements OnInit, OnChanges {
    * Organizes user data and binds them into movie cards.
    */
   curateUserData(dataType: string, docs: firebase.firestore.QuerySnapshot | IProfileData[]): void {
-    const dataList = []
+    const dataList = [];
 
     docs.forEach(doc => {
-      const docData = environment.runConfig.firebaseMode ? doc.data() : doc
-      const dTmdbId = docData.tmdbId
-      const dTitle = docData.title
-      const dYear = docData.year
-      let myData
+      const docData = environment.runConfig.firebaseMode ? doc.data() : doc;
+      const dTmdbId = docData.tmdbId;
+      const dTitle = docData.title;
+      const dYear = docData.year;
+      let myData;
       switch (dataType) {
         case 'bookmark':
           const bm: IBookmark = {
@@ -144,8 +144,8 @@ export class CardListComponent implements OnInit, OnChanges {
             tmdbId: dTmdbId ? dTmdbId : 0,
             title: dTitle ? dTitle : '',
             year: dYear ? dYear : 0
-          }
-          myData = bm
+          };
+          myData = bm;
           break;
         case 'watched':
           const wtchd: IWatched = {
@@ -154,8 +154,8 @@ export class CardListComponent implements OnInit, OnChanges {
             title: dTitle ? dTitle : '',
             year: dYear ? parseInt(dYear, 10) : 0,
             percentage: docData.percentage ? docData.percentage : 100
-          }
-          myData = wtchd
+          };
+          myData = wtchd;
           break;
         case 'video':
           // const vid: IVideo = {
@@ -169,23 +169,23 @@ export class CardListComponent implements OnInit, OnChanges {
             id: doc.id,
             tmdbId: docData.tmdbId,
             videoUrl: docData.fullFilePath
-          }
-          myData = vid
+          };
+          myData = vid;
           break;
         case 'none':
           break;
         default:
           break;
       }
-      dataList.push(myData)
-    })
+      dataList.push(myData);
+    });
     this.movieList.forEach(movie => {
       dataList.forEach(data => {
         if (data.tmdbId === movie.id) {
-          movie[dataType] = data
+          movie[dataType] = data;
         }
       });
-    })
+    });
   }
 
   renderHighlight() {
@@ -223,11 +223,11 @@ export class CardListComponent implements OnInit, OnChanges {
   }
 
   collectIds() {
-    const idList = []
+    const idList = [];
     this.movieList.forEach(e => {
-      idList.push(e.id)
+      idList.push(e.id);
     }); // lodash is not faster than this.
-    return idList
+    return idList;
   }
 
   /**
@@ -237,22 +237,22 @@ export class CardListComponent implements OnInit, OnChanges {
    * @returns list of split list `[[],[]]`
    */
   createDividedList(idList: number[], listLength: number) {
-    const toReturn = []
-    let temparray
+    const toReturn = [];
+    let temparray;
     // const chunk = 10; // Firebase's max length in IN query.
-    const chunk = environment.runConfig.firebaseMode ? 10 : 20
-    let a = 0
+    const chunk = environment.runConfig.firebaseMode ? 10 : 20;
+    let a = 0;
     for (let i = 0; i < listLength; i += chunk) {
       temparray = idList.slice(i, i + chunk);
-      toReturn[a] = temparray
-      a++
+      toReturn[a] = temparray;
+      a++;
     }
-    return toReturn
+    return toReturn;
   }
 
 }
 
 interface IMovieAndUserData {
   movie: MDBMovie;
-  userData?: IProfileData
+  userData?: IProfileData;
 }

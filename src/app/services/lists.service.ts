@@ -68,12 +68,9 @@ export class ListsService {
    * @param data
    * @returns
    */
-  editListById(id: string, data: IWatched): Promise<any> {
-    if (environment.runConfig.firebaseMode) {
-      return this.firebaseService.insertIntoFirestore(CollectionName.Watched, data);
-    } else {
-      return this.ipcService.saveWatched(data);
-    }
+  editListById(id: string, listObject: MediaList): Observable<any> {
+    return this.dataService.postHandle(this.bffService.saveMediaList(listObject), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.UPDATE },
+      listObject));
   }
 
   /**
@@ -82,11 +79,11 @@ export class ListsService {
    * @param id watched id/_id/tmdbId to remove.
    */
   addOrRemoveItemFromList(type: 'id' | 'tmdbId', id: string | number) {
-    if (environment.runConfig.firebaseMode) {
-      return this.firebaseService.deleteFromFirestore(CollectionName.Watched, id);
-    } else {
-      return this.ipcService.removeWatched(type, id);
-    }
+    // if (environment.runConfig.firebaseMode) {
+    //   return this.firebaseService.deleteFromFirestore(CollectionName.Watched, id);
+    // } else {
+    //   return this.ipcService.removeWatched(type, id);
+    // }
   }
 
 }
