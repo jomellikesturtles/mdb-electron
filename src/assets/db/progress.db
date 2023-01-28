@@ -1,1 +1,2 @@
-{"$$indexCreated":{"fieldName":"title","unique":true,"sparse":false}}
+{"tmdbId":"123","current":3022,"total":2000,"_id":"WoDIcUd3ZSsu4Y1y","createdAt":{"$$date":1674835804590},"updatedAt":{"$$date":1674835832656}}
+{"tmdbId":"122","current":3022,"total":2000,"_id":"aYSSrWDHzotlbtse","createdAt":{"$$date":1674834974115},"updatedAt":{"$$date":1674835866114}}

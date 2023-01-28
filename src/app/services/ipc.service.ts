@@ -15,7 +15,7 @@ import { IpcRenderer, ipcRenderer } from 'electron';
 import { ILibraryInfo } from '@models/interfaces';
 import { IRawLibrary } from './library.service';
 import { IWatched } from './watched.service';
-import { Review } from '@models/review.model';
+import { IReview } from '@models/review.model';
 import { IProfileData, ListLinkMovie } from '@models/profile-data.model';
 import { MediaList } from '@models/media-list.model';
 import { LoggerService } from '@core/logger.service';
@@ -263,13 +263,13 @@ export class IpcService {
     return this.listenOnce(`${channel}-${theUuid}`);
   }
 
-  userDataNew(headers: Headers, body: Body) {
+  userData(headers: Headers, body: Body, params?: { [x: string]: any; }) {
     const theUuid = uuidv4();
     const channel = 'user-data';
     // const channel = IPCRendererChannel.USER_DATA;
     headers.uuid = theUuid;
     this.sendToMainNew(channel, headers,
-      body);
+      body, params);
     return from(this.listenOnce(`${channel}-${theUuid}`));
   }
 
@@ -362,8 +362,8 @@ export class IpcService {
     }
   }
 
-  private sendToMainNew(channel: string, headers: Headers, body: Body) {
-    const ipcContext: IPCContext = { headers, body };
+  private sendToMainNew(channel: string, headers: Headers, body: Body, params?: any) {
+    const ipcContext: IPCContext = { headers, body, params };
     const ipcContextStr: string = JSON.stringify(ipcContext); //serialize
     try {
       this.loggerService.info(`sending to ipc...:  ${channel}  ipcContextStr: ${ipcContextStr}`);
@@ -394,6 +394,7 @@ export class IpcService {
 interface IPCContext {
   headers?: Headers;
   body?: Body;
+  params?: any;
 }
 
 interface Headers {
@@ -407,6 +408,10 @@ interface Body {
   idList?: number[];
   _id?: string | number;
   [x: string]: any;
+}
+
+export interface IPCParams {
+  limit: number, offset: number, sortBy: string, type: string;
 }
 
 export enum IpcOperations {
@@ -428,6 +433,7 @@ export enum SubChannel {
   ALL = 'all',
   PLAYED = 'played',
   PROGRESS = 'progress',
+  REVIEW = 'review',
 }
 
 export interface IBookmarkChanges {

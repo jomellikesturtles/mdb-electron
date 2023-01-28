@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { MediaProgress } from '@models/media-progress';
+import { IReview } from '@models/review.model';
 import { DataService } from './data.service';
 import { IpcOperations, IpcService, SubChannel } from './ipc.service';
 import { BffService } from './mdb-api.service';
@@ -23,15 +25,32 @@ export class MediaUserDataService {
    * @param currentUserOnly
    */
   getMediaUserData(tmdbId: number, currentUserOnly: boolean = true) {
-    return this.dataService.getHandle(this.bffService.getMediaUserData(tmdbId), this.ipcService.userDataNew({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+    return this.dataService.getHandle(this.bffService.getMediaUserData(tmdbId), this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
       { tmdbId: tmdbId }));
   }
 
-  getReviews(mediaId: string) {
-
+  getMediaProgress(mediaId: number, currentUserOnly: boolean = true) {
+    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.PROGRESS, operation: IpcOperations.FIND_ONE },
+      { tmdbId: mediaId }));
   }
 
-  getProgress(mediaId: string) {
+  getMediaReviews(mediaId: string, currentUserOnly: boolean = true) {
+    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.REVIEW, operation: IpcOperations.FIND_ONE },
+      null, { mediaId }));
+  }
 
+  putMediaProgress(progressBody: MediaProgress) {
+    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.PROGRESS, operation: IpcOperations.SAVE },
+      progressBody));
+  }
+
+  putMediaReview(tmdbId: number, reviewBody: IReview) {
+    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.REVIEW, operation: IpcOperations.SAVE },
+      reviewBody, { tmdbId }));
+  }
+
+  putMediaFavorite(favoriteBody) {
+    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.FAVORITES, operation: IpcOperations.SAVE },
+      favoriteBody));
   }
 }

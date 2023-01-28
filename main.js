@@ -522,24 +522,15 @@ function loadDb(dbPath, ensuredFieldName) {
   return loadedDb;
 }
 let listDb = loadDb("src/assets/db/lists.db");
-let listLinkMediaDb = loadDb("src/assets/db/listLinkMedia.db");
-let favoriteDb = loadDb("src/assets/db/favorite.db");
-let bookmarkDb = loadDb("src/assets/db/bookmark.db");
-let playedDb = loadDb("src/assets/db/played.db");
-let progressDb = loadDb("src/assets/db/progress.db", "title");
 
-const { ListsRepository2 } = require("./src/assets/scripts/lists-repository-2");
 const { GeneralRepository } = require("./src/assets/scripts/general-repository");
-// let listsRepository = new ListsRepository2(listDb);
 let listsRepository = new GeneralRepository(listDb);
-let listLinkMediaRepository = new GeneralRepository(listLinkMediaDb);
-let favoriteRepository = new GeneralRepository(favoriteDb);
 // USER DATA
 ipcMain.on("user-data", function (event, rawData) {
   // data = {"data": data}
   let data = JSON.parse(rawData);
-  const headers = data["headers"];
-  const body = data["body"];
+  const headers = data.headers;
+  const body = data.body;
   DEBUG.log("headers ", headers);
   DEBUG.log("body ", body);
   DEBUG.log("headers TO ", typeof headers);
@@ -550,23 +541,18 @@ ipcMain.on("user-data", function (event, rawData) {
     DEBUG.error(`errorMessage ${JSON.stringify(err)}`);
     sendContents(`user-data-${uuid}`, `${JSON.stringify(err)}`);
   }
-
-  // let myProcUserData = forkChildProcess(
-  //   "src/assets/scripts/user-db-service.js",
-  //   dataStr,
-  //   {
-  //     cwd: __dirname,
-  //     silent: false,
-  //   }
-  // );
-  // myProcUserData.on("data", (data) => printData(data));
-  // myProcUserData.on("exit", function () {
-  //   DEBUG.log("myProcUserData process ended");
-  //   myProcUserData = null;
-  // });
-  // myProcUserData.on("message", (m) => sendContents(m[0], m[1]));
 });
 
+let OPERATIONS = Object.freeze({
+  FIND: "find",
+  FIND_ONE: "find-one",
+  FIND_IN_LIST: "find-in-list",
+  UPDATE: "update",
+  SAVE: "save",
+  REMOVE: "remove",
+  GET_BY_PAGE: "get-by-page",
+  COUNT: "count"
+});
 //  * @param {listsRepository} myFunc
 /**
  *
@@ -574,22 +560,22 @@ ipcMain.on("user-data", function (event, rawData) {
  */
 async function handleUserData(myFunc, headers, body) {
   DEBUG.log("headers", headers);
-  const operation = headers["operation"];
+  const operation = headers.operation;
   DEBUG.log("operation", operation);
   let hasError = false;
   let errorMessage = "";
-  const uuid = headers["uuid"];
+  const uuid = headers.uuid;
   let result;
   switch (operation) {
-    case "save":
+    case OPERATIONS.SAVE:
       result = await myFunc.save(body);
       break;
-    case "find-one":
-      result = await myFunc.findOneById(body);
+    case OPERATIONS.FIND_ONE:
+      result = await myFunc.findOne(body);
       // result = await myFunc.findOneByTmdbId(body);
       break;
-    case "find-in-list":
-      // getUserMovieDataInList(body.idList);
+    case OPERATIONS.FIND_IN_LIST:
+      result = myFunc.getInList(body.idList);
       break;
     default:
       hasError = true;

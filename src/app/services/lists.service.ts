@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './firebase.service';
+import { FirebaseService, CollectionName } from './firebase.service';
 import { IUserSavedData } from '@models/interfaces';
 import { environment } from '@environments/environment';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '@services/ipc.service';
@@ -26,7 +26,7 @@ export class ListsService {
    * @returns
    */
   createList(listObject: MediaList): Observable<MediaList> {
-    return this.dataService.postHandle(this.bffService.saveMediaList(listObject), this.ipcService.userDataNew({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
+    return this.dataService.postHandle(this.bffService.saveMediaList(listObject), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
       listObject));
   }
 
@@ -36,27 +36,31 @@ export class ListsService {
    * @returns
    */
   getList(listId: number | string): Observable<any> {
-    return this.dataService.getHandle(null, this.ipcService.userDataNew({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND_ONE },
+    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND_ONE },
       { _id: listId }));
-    // if (environment.runConfig.firebaseMode) {
-    //   return this.firebaseService.getFromFirestore(CollectionName.Watched, FieldName.TmdbId, FirebaseOperator.Equal, id);
-    // } else {
-    //   return this.ipcService.getMediaList(id);
-    // }
+  }
+
+  /**
+   *
+   * @param limit
+   * @param offset
+   * @param sortBy
+   * @param type
+   */
+  getLists(limit: number, offset: number, sortBy: string, type: string): Observable<IUserDataPaginated> {
+    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND_ONE },
+      { limit, offset, sortBy, type }));
   }
 
   /**
    * Deletes the list.
    * @param idList
    */
-  deleteList(list: string): any {
-
-    // const myFunction = environment.runConfig.firebaseMode ?
-    //   this.firebaseService.getFromFirestoreMultiple(CollectionName.Watched, FieldName.TmdbId, idList) :
-    // this.ipcService.getWatchedInList(idList);
-
-    // return myFunction
+  deleteList(listId: string): any {
+    return this.dataService.deleteHandle(null, this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.REMOVE },
+      { _id: listId }));
   }
+
 
   /**
    * Updates the list details.
