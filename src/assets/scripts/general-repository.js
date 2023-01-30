@@ -152,7 +152,6 @@ class GeneralRepository {
     return new Promise(function (resolve, reject) {
       root.currentDbLocal.remove(query, function (err, n) {
         if (!err) {
-          let n = [];
           DEBUG.log("number of deleted: ", n);
           resolve(n);
         } else {

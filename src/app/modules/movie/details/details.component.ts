@@ -5,7 +5,6 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { MDBTorrent } from '@models/interfaces';
-import { TEST_TMDB_MOVIE_DETAILS } from '../../../mock-data';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DataService } from '@services/data.service';
 import { MovieService } from '@services/movie/movie.service';
@@ -14,11 +13,11 @@ import { IpcService } from '@services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TROUBLE_QUOTES } from '@shared/constants';
 import { UserDataService } from '@services/user-data/user-data.service';
-import { WatchedService, IWatched } from '@services/watched.service';
+import { PlayedService, IWatched } from '@services/media/played.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { basename } from 'path';
-import { FavoriteService } from '@services/favorite.service';
+import { FavoriteService } from '@services/media/favorite.service';
 import { IProfileData } from '@models/profile-data.model';
 import { BffService } from '@services/mdb-api.service';
 import { MDBMovie } from '@models/mdb-movie.model';
@@ -39,8 +38,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   movieBackdrop;
   torrents: MDBTorrent[] = [];
-  testSelectedMovie = TEST_TMDB_MOVIE_DETAILS;
-  testMovieBackdrop = './assets/test-assets/wall-e_backdrop.jpg';
   isAvailable = false;
   hasData = false;
   streamLink = '';
@@ -78,7 +75,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private torrentService: TorrentService,
     private userDataService: UserDataService,
     private libraryService: LibraryService,
-    private watchedService: WatchedService,
+    private watchedService: PlayedService,
     private favoriteService: FavoriteService,
     private router: Router,
     private mdbApiService: BffService,

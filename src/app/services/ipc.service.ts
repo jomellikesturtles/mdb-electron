@@ -11,7 +11,7 @@ import * as IPCMainChannel from '../../assets/IPCMainChannel.json';
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, from } from 'rxjs';
-import { IpcRenderer, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import { IRawLibrary } from './library.service';
 import { LoggerService } from '@core/logger.service';
 
@@ -24,7 +24,7 @@ export class IpcService {
   libraryMovie = new BehaviorSubject<string[]>([]);
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([]);
   movieIdentified = new BehaviorSubject<any>({ id: 0 });
-  searchList = new BehaviorSubject<any>([]);
+  search = new BehaviorSubject<any>([]);
   torrentVideo = new BehaviorSubject<string[]>([]);
   preferences = new BehaviorSubject<any>([]);
   streamLink = new BehaviorSubject<any>('');
@@ -143,8 +143,7 @@ export class IpcService {
 
   userData(headers: Headers, body: Body, params?: Object) {
     const theUuid = uuidv4();
-    const channel = 'user-data';
-    // const channel = IPCRendererChannel.USER_DATA;
+    const channel = IPCRendererChannel.USER_DATA;
     headers.uuid = theUuid;
     this.sendToMainNew(channel, headers,
       body, params);
@@ -183,25 +182,23 @@ export class IpcService {
   }
 
   getPreferences() {
-
-    this.sendToMain(IPCRendererChannel.PREFERENCES_GET);
-    // this.ipcRenderer.addListener(IPCMainChannel.PREFERENCES_GET_COMPLETE, this.pref)
-
-    // (event, data: any) => {
-    // console.log('IPCMainChannel.PREFERENCES_COMPLETE ', data)
-    // this.pref()
-    // this.preferences.next(data)
-    // this.ipcRenderer.removeListener(IPCMainChannel.PREFERENCES_GET_COMPLETE, e => { })
-    // })
+    const theUuid = uuidv4();
+    const channel = IPCRendererChannel.PREFERENCES;
+    const headers: Headers = { uuid: '', operation: IpcOperations.FIND };
+    headers.uuid = theUuid;
+    this.sendToMainNew(channel, headers,
+      null, null);
+    return from(this.listenOnceWithTimeout(`${channel}-${theUuid}`));
   }
 
   savePreferences(val) {
-    this.sendToMain(IPCRendererChannel.PREFERENCES_SET, val);
-    // this.ipcRenderer.on(IPCMainChannel.PREFERENCES_SET_COMPLETE, (event, data: any) => {
-    //   console.log('IPCMainChannel.PREFERENCES_SET_COMPLETE ', data)
-    //   this.preferences.next(data)
-    //   this.ipcRenderer.removeListener(IPCMainChannel.PREFERENCES_SET_COMPLETE, d => { })
-    // })
+    const theUuid = uuidv4();
+    const channel = IPCRendererChannel.PREFERENCES;
+    const headers: Headers = { uuid: '', operation: IpcOperations.UPDATE };
+    headers.uuid = theUuid;
+    this.sendToMainNew(channel, headers,
+      val, null);
+    return from(this.listenOnceWithTimeout(`${channel}-${theUuid}`));
   }
 
   generalOperation(channel: typeof IPCRendererChannel, data: any): Promise<any> {
@@ -266,17 +263,6 @@ export class IpcService {
   }
 
   private listenOnceWithTimeout(channel: string, timeoutMillis = 30) {
-    // return new Promise<any>((resolve, reject) => {
-    //   try {
-    //     this.ipcRenderer.once(channel, (event, arg) => {
-    //       this.loggerService.info(`channel:  ${channel}  arg: ${arg}`);
-    //       resolve(arg);
-    //     });
-    //   } catch {
-    //     this.loggerService.error(`listen ${channel} failed`);
-    //     resolve(null);
-    //   }
-    // });
     const promise = new Promise<any>((resolve, reject) => {
       try {
         this.ipcRenderer.once(channel, (event, arg) => {
@@ -290,7 +276,12 @@ export class IpcService {
     });
     const timeout = new Promise((resolve, reject) =>
       setTimeout(
-        () => reject(`Timed out after ${timeoutMillis} ms.`),
+        () => {
+          this.ipcRenderer.removeListener(channel, e => {
+            this.loggerService.warn(`Removed ipc listener ${channel}`);
+          });
+          reject(`Timed out after ${timeoutMillis} ms.`);
+        },
         timeoutMillis));
     return Promise.race([
       promise,
@@ -317,7 +308,7 @@ interface Headers {
 
 interface Body {
   tmdbId?: number;
-  idList?: number[];
+  idList?: number[] | string;
   _id?: string | number;
   [x: string]: any;
 }

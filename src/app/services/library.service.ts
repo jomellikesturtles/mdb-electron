@@ -3,25 +3,21 @@ import { environment } from '@environments/environment';
 import { Injectable } from '@angular/core';
 import { IpcService } from './ipc.service';
 import { FirebaseService, CollectionName, FieldName, FirebaseOperator } from './firebase.service';
+import { BaseLibraryService } from './base-library.service';
 
 @Injectable({ providedIn: 'root' })
-export class LibraryService {
+export class LibraryService extends BaseLibraryService {
 
   constructor(
     private ipcService: IpcService,
     private firebaseService: FirebaseService,
   ) {
-
+    super();
   }
 
-  /**
-   * Opens a video stream to watch.
-   * @param id library id to open stream
-   * @returns stream link/url
-   */
-  async openVideoStream(id) {
+  async openVideoStream(id): Promise<any> {
     // this.ipcService.playOfflineVideo(id) // commented to make way for torrent-play
-    return this.ipcService.playOfflineVideo(id)
+    return this.ipcService.playOfflineVideo(id);
     // return new Promise((resolve, reject) => {
     //   if (environment.runConfig.firebaseMode) {
     //     this.firebaseService.getFromFirestore(CollectionName.Library, FieldName.TmdbId, FirebaseOperator.Equal, id).then(e => {
@@ -38,48 +34,33 @@ export class LibraryService {
     // })
   }
 
-  /**
-   * Gets movie library.
-   * @param id - tmdbId or imdbId
-   */
   getMovieFromLibrary(id: number | string): Promise<any> {
     const myFunction = environment.runConfig.firebaseMode ?
       this.firebaseService.getFromFirestore(CollectionName.Library, FieldName.TmdbId, FirebaseOperator.Equal, id) :
-      this.ipcService.getMovieFromLibrary(id)
-    return myFunction
+      this.ipcService.getMovieFromLibrary(id);
+    return myFunction;
   }
 
-  /**
-   * Gets multiple library using list. Movie(s) eventually becomes available in status.
-   * @param idList
-   */
   getMoviesFromLibraryInList(idList: number[]): Promise<any> {
     console.log('getting multiplevideos...', idList);
     const myFunction = environment.runConfig.firebaseMode ?
       this.firebaseService.getFromFirestoreMultiple(CollectionName.Library, FieldName.TmdbId, idList) :
-      this.ipcService.getMoviesFromLibraryInList(idList)
-    return myFunction
+      this.ipcService.getMoviesFromLibraryInList(idList);
+    return myFunction;
   }
 
-  /**
-   * Gets first page of list. Gets multiple videos. Movie(s) eventually becomes available in status.
-   */
   getLibraryPaginatedFirstPage(): Promise<any> {
-    const myFunction = environment.runConfig.firebaseMode ? null : this.ipcService.getMultiplePaginatedFirst(CollectionName.Library, FieldName.TmdbId, 20)
+    const myFunction = environment.runConfig.firebaseMode ? null : this.ipcService.getMultiplePaginatedFirst(CollectionName.Library, FieldName.TmdbId, 20);
     // this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20)
-    return myFunction
+    return myFunction;
   }
 
-  /**
-   * Gets multiple library.
-   * @param lastVal the last value to start with.
-   */
   getLibraryPaginated(lastVal: string | number): Promise<any> {
     console.log('getVideoPaginated...', lastVal);
     const myFunction = environment.runConfig.firebaseMode ?
       this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20, lastVal) :
-      this.ipcService.getMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20, lastVal)
-    return myFunction
+      this.ipcService.getMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20, lastVal);
+    return myFunction;
   }
 
 }
@@ -101,12 +82,12 @@ export interface IRawLibrary {
   title: string,
   year: number,
   tmdbId: number,
-  _id: string
+  _id: string;
 }
 
 interface Library {
   type: 'movie' | 'video' | 'audio' | 'music' | 'podcast' | 'videogame',
   source: 'local' | 'online',
   id: string,
-  title: string
+  title: string;
 }

@@ -17,6 +17,8 @@ const configDb = new Datastore({
   autoload: true
 });
 let { onUserData } = require("./src/assets/scripts/user-media-db");
+const { onLibrary } = require("./src/assets/scripts/library-db-service");
+const { onPreferences } = require("./src/assets/scripts/preferences-service");
 
 let procLibraryDb;
 let procSearch;
@@ -310,6 +312,7 @@ ipcMain.on("open-link-external", function (event, url) {
   shell.openExternal(url);
 });
 
+// Library
 /**
  * Initializes scan-library.js
  */
@@ -339,15 +342,12 @@ ipcMain.on(IPCRendererChannel.SCAN_LIBRARY_STOP, function (event) {
   }
 });
 
-// !UNUSED
-ipcMain.on("search-query", function (event, data) {
-  if (!procSearch) {
-    // if process search is not yet running
-    procSearch = forkChildProcess("src/assets/scripts/search-movie.js", [], PROC_OPTION);
-    procSearch.stdout.on("data", (data) => printData(data));
-  } else {
-    DEBUG.log("One Search process is already running");
-  }
+/**
+ * currently using libraryFiles.db
+ */
+ipcMain.on("library", function (event, data) {
+  DEBUG.log("on library", data);
+  onLibrary(data, mainWindow);
 });
 
 /**
@@ -368,6 +368,17 @@ ipcMain.on("retrieve-library-folders", function (event, data) {
       }
     }
   );
+});
+
+// !UNUSED
+ipcMain.on("search-query", function (event, data) {
+  if (!procSearch) {
+    // if process search is not yet running
+    procSearch = forkChildProcess("src/assets/scripts/search-movie.js", [], PROC_OPTION);
+    procSearch.stdout.on("data", (data) => printData(data));
+  } else {
+    DEBUG.log("One Search process is already running");
+  }
 });
 
 /**
@@ -393,6 +404,13 @@ ipcMain.on("get-search-list", function (event, data) {
 /* Preferences
 ----------------------*/
 /* Logger */
+
+// preferences: changeable by user or config: not changeable by user
+ipcMain.on("preferences", function (event, data) {
+  DEBUG.log("on preferences", data);
+  onPreferences(data, mainWindow);
+});
+
 ipcMain.on(IPCRendererChannel.PREFERENCES_GET, function (event, data) {
   DEBUG.log("preferences-get ", data);
   configDb.findOne({ type: "preferences" }, function (err, dbPref) {
@@ -417,48 +435,6 @@ ipcMain.on(IPCRendererChannel.PREFERENCES_SET, function (event, data) {
   });
 });
 /* Preferences---------------------*/
-
-/**
- * Gets all movies from libraryFiles.db
- */
-ipcMain.on("library", function (event, data) {
-  DEBUG.log("get movies from library..", data);
-  // if (!procLibraryDb) {
-
-  data[0] = JSON.stringify(data[0]);
-  data[1] = JSON.stringify(data[1]);
-  let localProcLibraryDb = forkChildProcess(
-    "src/assets/scripts/library-db-service-2.js",
-    data,
-    // PROC_OPTION
-    { cwd: __dirname, silent: false }
-  );
-  localProcLibraryDb.on("exit", function () {
-    DEBUG.log("get-library-movies process ended");
-    localProcLibraryDb = null;
-  });
-  localProcLibraryDb.on("message", (m) => sendContents(m[0], m[1]));
-});
-
-/**
- * Gets the movie from libraryFiles.db
- */
-ipcMain.on("get-library-movie", function (event, data) {
-  DEBUG.log("get 1 movie from library..", data);
-  procLibraryDb = forkChildProcess(
-    "src/assets/scripts/library-db-service-2.js",
-    // "src/assets/scripts/library-db-service.js",
-    ["find-one", data[0], data[1]],
-    PROC_OPTION
-  );
-  procLibraryDb.stdout.on("data", (data) => printData(data));
-  procLibraryDb.on("exit", function () {
-    DEBUG.log("get-library-movie process ended");
-  });
-  procLibraryDb.on("message", (m) => sendContents(m[0], m[1]));
-});
-
-ipcMain.on("get-torrents-title", function (event, data) {});
 
 /**
  * Gets all movies from movieData.db
@@ -630,7 +606,7 @@ function popWarn(msg) {
 }
 
 process.on("uncaughtException", function (error) {
-  console.log(error);
+  DEBUG.log("UncaughtException", error);
   // if (mainWindow){
   // popErr('An unknown error occurred');
   // } else {

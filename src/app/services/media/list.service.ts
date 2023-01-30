@@ -1,34 +1,36 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService, CollectionName } from './firebase.service';
+import { FirebaseService, CollectionName } from '../firebase.service';
 import { IUserSavedData } from '@models/interfaces';
 import { environment } from '@environments/environment';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '@services/ipc.service';
-import { BffService } from './mdb-api.service';
-import { MediaList } from '@models/media-list.model';
-import { DataService } from './data.service';
+import { BffService } from '../mdb-api.service';
+import { IMediaList } from '@models/media-list.model';
+import { DataService } from '../data.service';
 import { Observable } from 'rxjs';
+import { BaseListService } from './base-list.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ListsService {
+export class ListsService extends BaseListService {
 
   constructor(
-    private firebaseService: FirebaseService,
     private ipcService: IpcService,
     private bffService: BffService,
-    private dataService: DataService
-  ) { }
+    dataService: DataService
+  ) {
+    super(dataService);
+  }
 
   /**
    * Creates list
    * @param listObject
    * @returns
    */
-  createList(listObject: MediaList): Observable<MediaList> {
+  createList(listObject: IMediaList): Observable<IMediaList> {
     return this.dataService.postHandle(this.bffService.saveMediaList(listObject), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
       listObject));
-  }
+  };
 
   /**
    * Gets list details
@@ -38,7 +40,7 @@ export class ListsService {
   getList(listId: number | string): Observable<any> {
     return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND_ONE },
       { _id: listId }));
-  }
+  };
 
   /**
    *
@@ -50,7 +52,7 @@ export class ListsService {
   getLists(limit: number, offset: number, sortBy: string, type: string): Observable<IUserDataPaginated> {
     return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND_ONE },
       { limit, offset, sortBy, type }));
-  }
+  };
 
   /**
    * Deletes the list.
@@ -68,10 +70,10 @@ export class ListsService {
    * @param data
    * @returns
    */
-  editListById(id: string, listObject: MediaList): Observable<any> {
+  editListById(id: string, listObject: IMediaList): Observable<any> {
     return this.dataService.postHandle(this.bffService.saveMediaList(listObject), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.UPDATE },
       listObject));
-  }
+  };
 
   /**
    * Adds or removes item from list.
