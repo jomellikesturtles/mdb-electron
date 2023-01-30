@@ -1,17 +1,15 @@
 /**
  * Preview for movie details.
  */
-import { Component, OnInit, AfterViewInit, OnDestroy, Pipe, PipeTransform, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from '@services/data.service';
-import { GenreCodes } from '@models/interfaces';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MovieService } from '@services/movie/movie.service';
 import { UserDataService } from '@services/user-data/user-data.service';
-import { WatchedService } from '@services/watched.service';
+import { PlayedService } from '@services/media/played.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util';
-import { TMDB_FULL_MOVIE_DETAILS } from 'app/mock-data-movie-details';
 
 @Component({
   selector: 'app-preview',
@@ -23,7 +21,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private dataService: DataService,
-    private watchedService: WatchedService,
+    private watchedService: PlayedService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private userDataService: UserDataService,
@@ -32,43 +30,43 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     private domSanitizer: DomSanitizer,
   ) { }
 
-  previewMovie: MDBMovie
-  clipSrc = null
-  youtubeUrl = ''
+  previewMovie: MDBMovie;
+  clipSrc = null;
+  youtubeUrl = '';
   player;
-  globalPlayerApiScript
+  globalPlayerApiScript;
   hasAlreadySelected: boolean;
-  isYTReady = false
-  hasInitialSelected = false
-  isHide = true
-  playedTmdbId = 0
-  isMute = false
-  isYTPlaying = false
-  hasTrailerClip = false
-  isAvailable = false
-  procBookmark = false
-  procWatched = false
-  procHighlight = false
-  showPreviewOverlayContext = false
+  isYTReady = false;
+  hasInitialSelected = false;
+  isHide = true;
+  playedTmdbId = 0;
+  isMute = false;
+  isYTPlaying = false;
+  hasTrailerClip = false;
+  isAvailable = false;
+  procBookmark = false;
+  procWatched = false;
+  procHighlight = false;
+  showPreviewOverlayContext = false;
   isTrailerOnly = false;
 
   ngOnInit() {
-    this.frameReady()
+    this.frameReady();
   }
 
   ngAfterViewInit(): void {
 
     this.dataService.previewMovie.subscribe((e: MDBMovie) => {
-    //   console.log('PREVIEWMOVIE:', e)
+      //   console.log('PREVIEWMOVIE:', e)
       // this.getVideoClip(new MDBMovie(TMDB_FULL_MOVIE_DETAILS))
-      this.getVideoClip(new MDBMovie(e))
-      this.showPreviewOverlayContext = this.router.url.includes('/details/') ? false : true
-      this.cdr.detectChanges()
-    })
+      this.getVideoClip(new MDBMovie(e));
+      this.showPreviewOverlayContext = this.router.url.includes('/details/') ? false : true;
+      this.cdr.detectChanges();
+    });
   }
 
   ngOnDestroy() {
-    this.removeYoutube()
+    this.removeYoutube();
   }
 
   frameReady() {
@@ -89,7 +87,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
           disablekb: 1
         }
       });
-    }
+    };
   }
 
   onPlayerReady(event) {
@@ -119,22 +117,22 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     console.log('onPlayerStateChange: ', event.data);
     if (event.data === 1) {
-      this.isYTReady = true
-      this.isYTPlaying = true
+      this.isYTReady = true;
+      this.isYTPlaying = true;
     }
     if (event.data === -1 || event.data === 5 || event.data === 0) {
-      this.isYTReady = false
-      this.isYTPlaying = false
+      this.isYTReady = false;
+      this.isYTPlaying = false;
     }
     if (event.data === 2) {
-      const root = this
-      console.log('paused')
+      const root = this;
+      console.log('paused');
       // setTimeout(() => {
       //   root.player.playVideo()
       //   console.log('settoplay')
       // }, 3000);
     }
-    this.cdr.detectChanges()
+    this.cdr.detectChanges();
 
   }
 
@@ -144,34 +142,34 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param movie the selected movie
    */
   async getVideoClip(movie: MDBMovie) {
-    this.previewMovie = movie
-    this.isHide = false
+    this.previewMovie = movie;
+    this.isHide = false;
     if (movie.tmdbId === this.playedTmdbId) {
-      return
+      return;
     }
-    this.playedTmdbId = this.previewMovie.tmdbId
-    this.hasInitialSelected = true
-    let videoId = ''
-    const results = []
-    let title = this.previewMovie.title.toLowerCase()
-    const query = `${this.previewMovie.title} ${this.getYear(this.previewMovie.releaseDate)}`
-    title = title.replace(/[.…]+/g, '')
+    this.playedTmdbId = this.previewMovie.tmdbId;
+    this.hasInitialSelected = true;
+    let videoId = '';
+    const results = [];
+    let title = this.previewMovie.title.toLowerCase();
+    const query = `${this.previewMovie.title} ${this.getYear(this.previewMovie.releaseDate)}`;
+    title = title.replace(/[.…]+/g, '');
 
-    let theRes = await this.movieService.getRelatedClips(this.previewMovie.tmdbId).toPromise()
+    let theRes = await this.movieService.getRelatedClips(this.previewMovie.tmdbId).toPromise();
 
     if (theRes.results.length === 0) {
-      this.clipSrc = null
-      return
+      this.clipSrc = null;
+      return;
     }
 
-    theRes = theRes.results.find(e => e.type.toLowerCase() === 'trailer')
+    theRes = theRes.results.find(e => e.type.toLowerCase() === 'trailer');
     if (theRes) {
-      this.hasTrailerClip = true
-      theRes = theRes.key
+      this.hasTrailerClip = true;
+      theRes = theRes.key;
     } else {
-      this.clipSrc = null
-      this.hasTrailerClip = false
-      return
+      this.clipSrc = null;
+      this.hasTrailerClip = false;
+      return;
     }
     // const index = Math.round(Math.random() * (theRes.results.length - 1))
     // theRes = theRes.results[index].key
@@ -186,23 +184,23 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     // const index = Math.round(Math.random() * (results.length - 1))
     // console.log('clips list length: ', results.length, ' clip index: ', index, results[index]);
 
-    videoId = theRes
+    videoId = theRes;
     // videoId = results[index].videoId
-    this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`)
-    this.clipSrc = `https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`
-    this.youtubeUrl = videoId
-    console.log('CLIPSRC', this.clipSrc)
+    this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`);
+    this.clipSrc = `https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`;
+    this.youtubeUrl = videoId;
+    console.log('CLIPSRC', this.clipSrc);
     // if results[index].snippet.channelTitle  === 'Movieclips' ---- cut the video by 30seconds
     if (!this.hasAlreadySelected) {
-      this.generateYoutube()
-      this.hasAlreadySelected = true
+      this.generateYoutube();
+      this.hasAlreadySelected = true;
     }
 
-    const root = this
+    const root = this;
     setTimeout(() => {
       // root.setVideo(videoId)
-      this.cdr.detectChanges()
-    }, 5000)
+      this.cdr.detectChanges();
+    }, 5000);
     // })
   }
 
@@ -219,43 +217,43 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     const playerApiScript = doc.createElement('script');
     playerApiScript.type = 'text/javascript';
     playerApiScript.src = 'https://www.youtube.com/iframe_api';
-    this.globalPlayerApiScript = playerApiScript
+    this.globalPlayerApiScript = playerApiScript;
     doc.body.appendChild(this.globalPlayerApiScript);
   }
 
   removeYoutube() {
     const doc = (window as any).document;
     if (this.globalPlayerApiScript) {
-      doc.body.removeChild(this.globalPlayerApiScript)
-      this.globalPlayerApiScript = null
+      doc.body.removeChild(this.globalPlayerApiScript);
+      this.globalPlayerApiScript = null;
     }
   }
 
   async toggleBookmark(): Promise<any> {
-    this.procBookmark = true
-    let bmDoc
-    bmDoc = await this.userDataService.toggleBookmark(this.previewMovie)
-    console.log('BOOKMARKADD/remove:', bmDoc)
-    this.procBookmark = false
+    this.procBookmark = true;
+    let bmDoc;
+    bmDoc = await this.userDataService.toggleBookmark(this.previewMovie);
+    console.log('BOOKMARKADD/remove:', bmDoc);
+    this.procBookmark = false;
     // this.cdr.detectChanges()
   }
 
   async toggleWatched() {
-    this.procWatched = true
-    let wDocId
-    wDocId = await this.watchedService.toggleWatched(this.previewMovie)
-    console.log('WATCHEDADD/remove:', wDocId)
-    this.procBookmark = false
+    this.procWatched = true;
+    let wDocId;
+    wDocId = await this.watchedService.toggleWatched(this.previewMovie);
+    console.log('WATCHEDADD/remove:', wDocId);
+    this.procBookmark = false;
     // this.cdr.detectChanges()
   }
 
   toggleMute() {
     if (this.isMute) {
-      this.player.setVolume(100)
-      this.isMute = false
+      this.player.setVolume(100);
+      this.isMute = false;
     } else {
-      this.player.setVolume(0)
-      this.isMute = true
+      this.player.setVolume(0);
+      this.isMute = true;
     }
   }
   /**
@@ -267,8 +265,8 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.dataService.updateHighlightedMovie(id);
     this.router.navigate([`/details/${id}`], { relativeTo: this.activatedRoute });
-    this.isHide = true
-    this.onHidePlayer()
+    this.isHide = true;
+    this.onHidePlayer();
   }
 
   /**
@@ -276,7 +274,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param releaseDate release date with format YYYY-MM-DD
    */
   getYear(releaseDate: string) {
-    return GeneralUtil.getYear(releaseDate)
+    return GeneralUtil.getYear(releaseDate);
   }
 
   /**
@@ -285,10 +283,10 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param id value to discover
    */
   goToDiscover(type: string, id: string, name?: string) {
-    this.dataService.updateDiscoverQuery({ type: type, value: id, name: name })
+    this.dataService.updateDiscoverQuery({ type: type, value: id, name: name });
     this.router.navigate([`/discover`], { relativeTo: this.activatedRoute });
-    this.isHide = true
-    this.onHidePlayer()
+    this.isHide = true;
+    this.onHidePlayer();
   }
 
   playPreview() {
@@ -302,10 +300,10 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onHidePlayer() {
-    console.log(this.player)
-    this.isHide = true
-    this.clipSrc = null
-    this.stopPreview()
+    console.log(this.player);
+    this.isHide = true;
+    this.clipSrc = null;
+    this.stopPreview();
   }
 
   playMovie() {

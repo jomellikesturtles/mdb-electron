@@ -1,12 +1,13 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { BookmarkService, IBookmark } from '@services/bookmark.service';
-import { WatchedService, IWatched } from '@services/watched.service';
+import { BookmarkService, IBookmark } from '@services/media/bookmark.service';
+import { PlayedService, IWatched } from '@services/media/played.service';
 import { LibraryService } from '@services/library.service';
 import { environment } from '@environments/environment';
 import { UserDataService } from '@services/user-data/user-data.service';
 import { IProfileData } from '@models/profile-data.model';
 import { MDBMovie } from '@models/mdb-movie.model';
 import ObjectUtil from '@utils/object.utils';
+import { MediaUserDataService } from '@services/media/media-user-data.service';
 
 @Component({
   selector: 'app-card-list',
@@ -35,8 +36,9 @@ export class CardListComponent implements OnInit, OnChanges {
 
   constructor(
     private bookmarkService: BookmarkService,
-    private watchedService: WatchedService,
+    private watchedService: PlayedService,
     private libraryService: LibraryService,
+    private mediaUserDataService: MediaUserDataService,
     private userDataService: UserDataService
   ) { }
 
@@ -104,19 +106,19 @@ export class CardListComponent implements OnInit, OnChanges {
         });
       } else {
         if (this.listType !== 'bookmark') {
-          this.bookmarkService.getBookmarksInList(queryList).subscribe(docs => {
+          this.mediaUserDataService.getMediaDataPaginated(queryList).subscribe(docs => {
             const dataType = 'bookmark';
             this.curateUserData(dataType, docs);
           });
         }
         if (this.listType !== 'watched') {
-          this.watchedService.getWatchedInList(queryList).subscribe(docs => {
+          this.mediaUserDataService.getMediaDataPaginated(queryList).subscribe(docs => {
             const dataType = 'watched';
             this.curateUserData(dataType, docs);
           });
         }
         if (this.listType !== 'library') {
-          this.libraryService.getMoviesFromLibraryInList(queryList).then(docs => {
+          this.mediaUserDataService.getMediaDataPaginated(queryList).then(docs => {
             const dataType = 'library';
             this.curateUserData(dataType, docs);
           });

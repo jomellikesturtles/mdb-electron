@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnDestroy, AfterViewInit, ElementRef, OnChang
 import { Subject } from 'rxjs';
 import { IpcService } from '@services/ipc.service';
 import { MovieService } from '@services/movie/movie.service';
-import { WatchedService } from '@services/watched.service';
+import { PlayedService } from '@services/media/played.service';
 import SubtitlesUtil from '@utils/subtitles.utils';
 import { Subtitle } from '@models/subtitle.model';
 import { UserIdleService } from "angular-user-idle";
@@ -23,22 +23,22 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./video-player.component.scss']
 })
 export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
-  @Input() streamLink: string
-  @Input() id: string
-  @Input() tmdbId: number
-  @Input() imdbId: string
+  @Input() streamLink: string;
+  @Input() id: string;
+  @Input() tmdbId: number;
+  @Input() imdbId: string;
 
-  @ViewChild('videoPlayer1', { static: true }) videoPlayer1: ElementRef
+  @ViewChild('videoPlayer1', { static: true }) videoPlayer1: ElementRef;
   @ViewChild(VideoPlayerControlsComponent, { static: true }) child;
-  @ViewChild('tooltipSpan', { static: false }) tooltipSpan: ElementRef
+  @ViewChild('tooltipSpan', { static: false }) tooltipSpan: ElementRef;
 
-  DEFAULT_VOLUME = 50
-  isPlaying = false
-  isMuted = false
-  volume = this.DEFAULT_VOLUME
+  DEFAULT_VOLUME = 50;
+  isPlaying = false;
+  isMuted = false;
+  volume = this.DEFAULT_VOLUME;
   videoPlayerElement;
-  isShowStatus = false
-  isShowSubtitles = true
+  isShowStatus = false;
+  isShowSubtitles = true;
   statsForNerds: Stats = {
     bufferhealth: '',
     connectionSpeed: '',
@@ -51,16 +51,16 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     source: '',
     size: '',
     resolution: ''
-  }
+  };
   videoTime = {
     elapsed: 0,
     duration: 0,
     remaining: 0
-  }
+  };
   progressBar: IProgressBar = {
     buffered: '0%',
     played: '0%',
-  }
+  };
   subtitleMap = new Map<number, Subtitle>();
 
   subtitleLine1 = this.sanitizeSubtitle('<i>Subtitle line 1 look like this.</i>');
@@ -69,29 +69,29 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   // subtitleLine1 = 'Subtitle line 1 look like this.';
   // subtitleLine2 = 'Subtitle line 2 look like this.';
   isUserInactive = false;
-  subtitleDisplaySettings: ISubtitlePreferences = this.preferencesService.getPreferences().subtitle
-  playbackSettings: IPlaybackPreferences = this.preferencesService.getPreferences().playBack
-  fontColorsList = COLOR_LIST
+  subtitleDisplaySettings: ISubtitlePreferences = this.preferencesService.getPreferences().subtitle;
+  playbackSettings: IPlaybackPreferences = this.preferencesService.getPreferences().playBack;
+  fontColorsList = COLOR_LIST;
   subtitleSpanElementsList: any[];
-  fontSizeList = FONT_SIZE_LIST
-  canPlay = false
-  isMetadataLoaded = false
-  isSeeking = false
-  toSeek: number = 0
+  fontSizeList = FONT_SIZE_LIST;
+  canPlay = false;
+  isMetadataLoaded = false;
+  isSeeking = false;
+  toSeek: number = 0;
   private ngUnsubscribe = new Subject();
 
   constructor(
     private ipcService: IpcService,
-    private watchedService: WatchedService,
+    private watchedService: PlayedService,
     private movieService: MovieService,
     private elementRef: ElementRef,
     private userIdleService: UserIdleService,
     private preferencesService: PreferencesService,
     private sanitizer: DomSanitizer
-  ) { GeneralUtil.DEBUG.log('VIDEOPLAYER CONSTRUCTOR') }
+  ) { GeneralUtil.DEBUG.log('VIDEOPLAYER CONSTRUCTOR'); }
 
   onNotIdle() {
-    this.userIdleService.resetTimer()
+    this.userIdleService.resetTimer();
     this.isUserInactive = false;
   }
 
@@ -100,37 +100,37 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     // this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4' // 320p sample
     // this.streamLink = 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4' // 1080p sample
     // this.streamLink = '../../../../assets/sample movie/Ratatouille (2007) [1080p]/Ratatouille.2007.1080p.BrRip.x264.YIFY.mp4'
-    this.userIdleService.startWatching()
-    this.userIdleService.onTimerStart().pipe(takeUntil(this.ngUnsubscribe)).subscribe((_count) => { GeneralUtil.DEBUG.log('start! ', _count) });
+    this.userIdleService.startWatching();
+    this.userIdleService.onTimerStart().pipe(takeUntil(this.ngUnsubscribe)).subscribe((_count) => { GeneralUtil.DEBUG.log('start! ', _count); });
     this.userIdleService.onIdleStatusChanged().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
-      GeneralUtil.DEBUG.log("changed!", e)
-    })
+      GeneralUtil.DEBUG.log("changed!", e);
+    });
     this.userIdleService.onTimeout().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
-      GeneralUtil.DEBUG.log("TIMEOUT!OUT!", e)
+      GeneralUtil.DEBUG.log("TIMEOUT!OUT!", e);
       // this.isUserInactive = true;
-    })
+    });
 
     const root = this;
     // setTimeout(() => {
     //   root.isShowSubtitles = false;
     // }, 5000);
 
-    GeneralUtil.DEBUG.log('1. VIDEOPLAYER ngOnInit')
+    GeneralUtil.DEBUG.log('1. VIDEOPLAYER ngOnInit');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const cs = changes.streamLink
+    const cs = changes.streamLink;
     if (cs) {
-      GeneralUtil.DEBUG.log('2. cs:', cs)
-      GeneralUtil.DEBUG.log('this.streamLink:', this.streamLink)
+      GeneralUtil.DEBUG.log('2. cs:', cs);
+      GeneralUtil.DEBUG.log('this.streamLink:', this.streamLink);
       // if (cs && !cs.firstChange) {
       this.statsForNerds.source = this.streamLink;
-      this.isMetadataLoaded = true
-      GeneralUtil.DEBUG.log('isMetadataLoaded true')
+      this.isMetadataLoaded = true;
+      GeneralUtil.DEBUG.log('isMetadataLoaded true');
 
-      const root = this
+      const root = this;
       let checkExist = setInterval(function () {
-        root.videoPlayerElement = root.elementRef.nativeElement.querySelectorAll('#videoPlayer')
+        root.videoPlayerElement = root.elementRef.nativeElement.querySelectorAll('#videoPlayer');
         if (root.videoPlayerElement.length > 0) {
           GeneralUtil.DEBUG.log("3. videoPlayer Exists!");
           root.videoPlayerEvents();
@@ -145,50 +145,50 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
     if (environment.runConfig.isElectron) {
       this.ipcService.statsForNerdsSubscribable.pipe(takeUntil(this.ngUnsubscribe)).subscribe(stats => {
-        GeneralUtil.DEBUG.log(stats)
+        GeneralUtil.DEBUG.log(stats);
         if (stats) {
-          this.statsForNerds.downSpeed = stats.downSpeed
-          this.statsForNerds.upSpeed = stats.upSpeed
-          this.statsForNerds.downloadedPieces = stats.downloadedPieces
-          this.statsForNerds.ratio = stats.ratio
+          this.statsForNerds.downSpeed = stats.downSpeed;
+          this.statsForNerds.upSpeed = stats.upSpeed;
+          this.statsForNerds.downloadedPieces = stats.downloadedPieces;
+          this.statsForNerds.ratio = stats.ratio;
         }
-      })
+      });
     }
   }
 
   ngOnDestroy(): void {
-    GeneralUtil.DEBUG.log('ondestroy')
-    this.canPlay = false
-    this.ngUnsubscribe.next()
-    this.ngUnsubscribe.complete()
-    this.ipcService.stopStream()
-    GeneralUtil.DEBUG.log('DESTROYED')
+    GeneralUtil.DEBUG.log('ondestroy');
+    this.canPlay = false;
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+    this.ipcService.stopStream();
+    GeneralUtil.DEBUG.log('DESTROYED');
   }
 
   videoPlayerEvents() {
 
     // this.videoPlayerElement = this.videoPlayer1.nativeElement as HTMLVideoElement
-    GeneralUtil.DEBUG.log('4. videoPlayerEvents, videoPlayerElement: ', this.videoPlayerElement)
-    this.videoPlayerElement = this.videoPlayerElement[0]
+    GeneralUtil.DEBUG.log('4. videoPlayerEvents, videoPlayerElement: ', this.videoPlayerElement);
+    this.videoPlayerElement = this.videoPlayerElement[0];
     // GeneralUtil.DEBUG.log(this.videoPlayer1)
 
 
     //   // Mute/Unmute
     //   // this.videoPlayerElement.muted = true
     this.videoPlayerElement.addEventListener('canplay', (e) => {
-      this.subtitleSpanElementsList = this.elementRef.nativeElement.querySelectorAll('.subtitle-span')
-      GeneralUtil.DEBUG.log('EVENT: canplay', e)
-      this.canPlay = true
-      this.videoTime.duration = this.videoPlayerElement.duration
+      this.subtitleSpanElementsList = this.elementRef.nativeElement.querySelectorAll('.subtitle-span');
+      GeneralUtil.DEBUG.log('EVENT: canplay', e);
+      this.canPlay = true;
+      this.videoTime.duration = this.videoPlayerElement.duration;
       this.togglePlay();
-      this.isSeeking = false
-    })
+      this.isSeeking = false;
+    });
     this.videoPlayerElement.addEventListener('durationchange', (e) => {
-      GeneralUtil.DEBUG.log('EVENT: durationchange', e)
-    })
+      GeneralUtil.DEBUG.log('EVENT: durationchange', e);
+    });
     this.videoPlayerElement.addEventListener('ended', (e) => {
-      this.isPlaying = false
-      GeneralUtil.DEBUG.log('EVENT: ended', e)
+      this.isPlaying = false;
+      GeneralUtil.DEBUG.log('EVENT: ended', e);
       // this.watchedService.saveWatched({
       //   id: '',
       //   tmdbId: this.tmdbId,
@@ -196,109 +196,109 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       //   title: '',
       //   percentage: 100,
       //   year: 0});
-    })
+    });
     this.videoPlayerElement.addEventListener('error', (e) => {
-      GeneralUtil.DEBUG.log('EVENT: error', e)
-    })
+      GeneralUtil.DEBUG.log('EVENT: error', e);
+    });
     this.videoPlayerElement.addEventListener('pause', (e) => {
-      this.isPlaying = false
-      GeneralUtil.DEBUG.log('EVENT: pause', e)
-    })
+      this.isPlaying = false;
+      GeneralUtil.DEBUG.log('EVENT: pause', e);
+    });
     this.videoPlayerElement.addEventListener('play', (e) => {
-      this.isPlaying = true
-      GeneralUtil.DEBUG.log('EVENT: play', e)
-    })
+      this.isPlaying = true;
+      GeneralUtil.DEBUG.log('EVENT: play', e);
+    });
     this.videoPlayerElement.addEventListener('playing', (e) => {
-      this.isPlaying = true
-      GeneralUtil.DEBUG.log('EVENT: playing', e)
-    })
+      this.isPlaying = true;
+      GeneralUtil.DEBUG.log('EVENT: playing', e);
+    });
     this.videoPlayerElement.addEventListener('progress', (e) => {
       // GeneralUtil.DEBUG.log('progress', e)
-    })
+    });
     this.videoPlayerElement.addEventListener('seeked', (e) => {
-      GeneralUtil.DEBUG.log('EVENT: seeked', e)
-      this.updateProgressBar()
-      this.isSeeking = false
-    })
+      GeneralUtil.DEBUG.log('EVENT: seeked', e);
+      this.updateProgressBar();
+      this.isSeeking = false;
+    });
     this.videoPlayerElement.addEventListener('seeking', (e) => {
-      GeneralUtil.DEBUG.log('EVENT: seeking', e)
-      this.isSeeking = true
-    })
+      GeneralUtil.DEBUG.log('EVENT: seeking', e);
+      this.isSeeking = true;
+    });
     this.videoPlayerElement.addEventListener('stalled', (e) => {
-      GeneralUtil.DEBUG.log('EVENT: stalled', e)
-      this.isSeeking = true
-    })
+      GeneralUtil.DEBUG.log('EVENT: stalled', e);
+      this.isSeeking = true;
+    });
     this.videoPlayerElement.addEventListener('suspend', (e) => {
       // GeneralUtil.DEBUG.log('onSuspend', e)
-    })
+    });
     this.videoPlayerElement.addEventListener('timeupdate', (e) => {
-      this.videoTime.elapsed = this.videoPlayerElement.currentTime
+      this.videoTime.elapsed = this.videoPlayerElement.currentTime;
       for (let entry of this.subtitleMap.entries()) {
         if (this.videoTime.elapsed >= this.convertToSeconds(entry[1].startTime) && this.videoTime.elapsed <= this.convertToSeconds(entry[1].endTime)) {
-          this.updateDisplaySubtitle(entry[1].captionText1, entry[1].captionText2)
+          this.updateDisplaySubtitle(entry[1].captionText1, entry[1].captionText2);
           break;
         } else {
-          this.updateDisplaySubtitle('', '')
+          this.updateDisplaySubtitle('', '');
           // this.updateDisplaySubtitle('\uD83D\uDE00', '\uD83D\uDE00') // emoji test
         }
       }
-    })
+    });
     this.videoPlayerElement.addEventListener('loadedmetadata', (e) => {
-      GeneralUtil.DEBUG.log('EVENT: loadedmetadata', e)
-      this.isMetadataLoaded = true
-      this.statsForNerds.resolution = this.videoPlayerElement.videoWidth + 'x' + this.videoPlayerElement.videoHeight
-    })
+      GeneralUtil.DEBUG.log('EVENT: loadedmetadata', e);
+      this.isMetadataLoaded = true;
+      this.statsForNerds.resolution = this.videoPlayerElement.videoWidth + 'x' + this.videoPlayerElement.videoHeight;
+    });
 
     // MIGRATED
-    const root = this
+    const root = this;
     setInterval((e) => {
       if (root.isPlaying) {
-        root.updateProgressBar()
+        root.updateProgressBar();
         // this.updateWatchedStatus(e)
       }
-    }, 500)
+    }, 500);
     // END OF MIGRATED
   }
 
   onKeyPress(val: KeyboardEvent) {
-    const key = val.key.toLowerCase()
-    GeneralUtil.DEBUG.log(val)
+    const key = val.key.toLowerCase();
+    GeneralUtil.DEBUG.log(val);
     if (!val.shiftKey && !val.altKey && !val.ctrlKey && !val.metaKey) {
 
       switch (key) {
         case 'm':
           // toggle mute
-          this.toggleMute()
+          this.toggleMute();
           break;
         case 'f':
-          this.toggleFullScreen()
+          this.toggleFullScreen();
           break;
         case 'k':
         case ' ':
           // toggle pause/play
-          this.togglePlay()
+          this.togglePlay();
           break;
         case 'arrowup':
           try {
-            this.videoPlayerElement.volume += .2
+            this.videoPlayerElement.volume += .2;
           } catch (e) {
-            this.videoPlayerElement.volume = 1
+            this.videoPlayerElement.volume = 1;
           }
           // keyCode: 38
           break;
         case 'arrowdown':
           try {
-            this.videoPlayerElement.volume -= .2
+            this.videoPlayerElement.volume -= .2;
           } catch (e) {
-            this.videoPlayerElement.volume = 0
+            this.videoPlayerElement.volume = 0;
           }
           // keyCode: 40
           break;
         case 'arrowleft':
           try {
-            this.videoPlayerElement.currentTime -= 10
+            this.videoPlayerElement.currentTime -= 10;
           } catch (e) {
-            this.videoPlayerElement.currentTime = 0
+            this.videoPlayerElement.currentTime = 0;
           }
 
           // keyCode: 37
@@ -306,17 +306,17 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
           break;
         case 'arrowright':
           try {
-            this.videoPlayerElement.currentTime += 10
+            this.videoPlayerElement.currentTime += 10;
           } catch (e) {
-            this.videoPlayerElement.currentTime = this.videoPlayerElement.duration
+            this.videoPlayerElement.currentTime = this.videoPlayerElement.duration;
           }
           // keyCode: 39
           break;
         case 'pageup':
-          this.videoPlayerElement.volume = '1'
+          this.videoPlayerElement.volume = '1';
           break;
         case 'pagedown':
-          this.videoPlayerElement.volume = '0'
+          this.videoPlayerElement.volume = '0';
           break;
         case '1':
         case '2':
@@ -328,19 +328,19 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
         case '8':
         case '9':
           // duration selector, 1 for 10% of duration, 2 20%, etc.
-          this.videoPlayerElement.currentTime = parseFloat('.' + key) * this.videoPlayerElement.duration
+          this.videoPlayerElement.currentTime = parseFloat('.' + key) * this.videoPlayerElement.duration;
           break;
         case '0':
         case 'home':
           // start of the video
-          this.videoPlayerElement.currentTime = '0'
+          this.videoPlayerElement.currentTime = '0';
           break;
         case 'end':
           // end of the video
-          this.videoPlayerElement.currentTime = this.videoPlayerElement.duration
+          this.videoPlayerElement.currentTime = this.videoPlayerElement.duration;
           break;
         default:
-          GeneralUtil.DEBUG.log('no hotkey')
+          GeneralUtil.DEBUG.log('no hotkey');
           break;
       }
     }
@@ -365,15 +365,15 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       percentage: this.videoPlayerElement.currentTime,
       year: 0
       // percentage: Math.floor(this.videoPlayerElement.currentTime / this.videoPlayerElement.duration * 100)
-    }
+    };
     GeneralUtil.DEBUG.log('updating watched', watchedObj);
-    this.watchedService.saveWatched(watchedObj);
+    this.watchedService.savePlayed(watchedObj);
   }
 
   togglePlay() {
     const isPlaying = this.videoPlayerElement.currentTime > 0 && !this.videoPlayerElement.paused && !this.videoPlayerElement.ended
       && this.videoPlayerElement.readyState > 2;
-    GeneralUtil.DEBUG.log('5. togglePlay, isPlaying: ', isPlaying)
+    GeneralUtil.DEBUG.log('5. togglePlay, isPlaying: ', isPlaying);
     // safely autoplay
     // if (!isPlaying && this.canPlay) {
     //   this.videoPlayerElement.play();
@@ -388,7 +388,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
    */
   toggleFullScreen() {
 
-    const playerOuter = this.elementRef.nativeElement.querySelector('#videoPlayerOuter')
+    const playerOuter = this.elementRef.nativeElement.querySelector('#videoPlayerOuter');
     // if (playerOuter.fullscreenElement) {
     if (document['webkitIsFullScreen']) {
       document.exitFullscreen();
@@ -414,60 +414,60 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
    */
   async onChangeCc(filePath) {
 
-    const fileStr = await this.movieService.getSubtitleFileString(filePath).toPromise()
-    let encodingStr = 'UTF-8'
+    const fileStr = await this.movieService.getSubtitleFileString(filePath).toPromise();
+    let encodingStr = 'UTF-8';
     try {
-      encodingStr = jschardet.detect(fileStr, { minimumThreshold: 0 }).encoding // errors with subs with `ó`
+      encodingStr = jschardet.detect(fileStr, { minimumThreshold: 0 }).encoding; // errors with subs with `ó`
     } catch {
-      const encodingAlt = chardet.analyse(fileStr)
-      GeneralUtil.DEBUG.log(encodingAlt)
+      const encodingAlt = chardet.analyse(fileStr);
+      GeneralUtil.DEBUG.log(encodingAlt);
       if (encodingAlt.length > 1) {
-        encodingStr = encodingAlt[0].name
+        encodingStr = encodingAlt[0].name;
         //   encodingStr = encodingAlt[1].name
         // } else if (encodingAlt.length === 1) {
         //   encodingStr = encodingAlt[0].name
       }
     }
-    const file = await this.movieService.getSubtitleFile(filePath).toPromise()
+    const file = await this.movieService.getSubtitleFile(filePath).toPromise();
 
-    let resultFileStr
-    const fileReader = new FileReader()
+    let resultFileStr;
+    const fileReader = new FileReader();
 
     fileReader.readAsText(file, encodingStr);
-    const root = this
+    const root = this;
     fileReader.onloadend = function (x) {
-      resultFileStr = fileReader.result
-      GeneralUtil.DEBUG.log(resultFileStr)
-      resultFileStr = resultFileStr.replace(/[\r]+/g, '')
-      root.subtitleMap = SubtitlesUtil.mapSubtitle(resultFileStr)
-      GeneralUtil.DEBUG.log("subtitleMap!", root.subtitleMap)
+      resultFileStr = fileReader.result;
+      GeneralUtil.DEBUG.log(resultFileStr);
+      resultFileStr = resultFileStr.replace(/[\r]+/g, '');
+      root.subtitleMap = SubtitlesUtil.mapSubtitle(resultFileStr);
+      GeneralUtil.DEBUG.log("subtitleMap!", root.subtitleMap);
     };
   }
 
   changeVolume(source: number) {
-    this.volume = source
-    this.videoPlayerElement.volume = this.volume * 0.01
+    this.volume = source;
+    this.videoPlayerElement.volume = this.volume * 0.01;
   }
 
   toggleMute() {
-    this.videoPlayerElement.muted = !this.videoPlayerElement.muted
+    this.videoPlayerElement.muted = !this.videoPlayerElement.muted;
   }
 
   updateProgressBar() {
-    const DURATION = this.videoPlayerElement.duration
-    const BUFFERED = this.videoPlayerElement.buffered
+    const DURATION = this.videoPlayerElement.duration;
+    const BUFFERED = this.videoPlayerElement.buffered;
 
-    this.progressBar.played = GeneralUtil.getPercentage(this.videoPlayerElement.currentTime, DURATION) + '%'
+    this.progressBar.played = GeneralUtil.getPercentage(this.videoPlayerElement.currentTime, DURATION) + '%';
     if (BUFFERED.length > 0) {
       this.progressBar.buffered = GeneralUtil.getPercentage(BUFFERED.end(0), DURATION) + '%';
-      let currentBufferHealth = 0
+      let currentBufferHealth = 0;
       for (let index = 0; index < BUFFERED.length; index++) {
         const bufferStart = BUFFERED.start(index);
         const bufferEnd = BUFFERED.end(index);
         currentBufferHealth += bufferEnd - bufferStart;
       }
       this.statsForNerds.bufferhealth = currentBufferHealth + 's | ' +
-        GeneralUtil.getPercentage(currentBufferHealth, DURATION) + '%'
+        GeneralUtil.getPercentage(currentBufferHealth, DURATION) + '%';
     }
   }
 
@@ -477,12 +477,12 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   }
 
   private sanitizeSubtitle(value: string) {
-    value.includes('Luke')
+    value.includes('Luke');
     return this.sanitizer.bypassSecurityTrustHtml(value);
   }
 
   // referenceWords
-  referenceWords = ['Luke']
+  referenceWords = ['Luke'];
   /**
    * converts HH:mm:ss format to seconds float.
    * @param hms time in HH:mm:ss format
@@ -493,26 +493,26 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     const a = hms.split(':'); // split it at the colons
     // minutes are worth 60 seconds. Hours are worth 60 minutes.
     const seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
-    return seconds
+    return seconds;
   }
 
   savePreferences() {
-    this.preferencesService.preferences['subtitle'] = this.subtitleDisplaySettings
-    this.preferencesService.preferences['playBack'] = this.playbackSettings
+    this.preferencesService.preferences['subtitle'] = this.subtitleDisplaySettings;
+    this.preferencesService.preferences['playBack'] = this.playbackSettings;
   }
 
   changeFontSize(size: string) {
-    this.setProperties('font-size', size)
-    this.subtitleDisplaySettings.fontSize = size
+    this.setProperties('font-size', size);
+    this.subtitleDisplaySettings.fontSize = size;
   }
   changeFontColor(color: string) {
     this.setProperties('color', 'rgba(' + color + ',1)');
-    this.subtitleDisplaySettings.fontColor = color
+    this.subtitleDisplaySettings.fontColor = color;
   }
   // font outline, shadow, family,
   changeBackgroundColor(color: string) {
-    this.setProperties('background-color', 'rgba(' + color + ',' + this.subtitleDisplaySettings.backgroundOpacity + ')')
-    this.subtitleDisplaySettings.backgroundColor = color
+    this.setProperties('background-color', 'rgba(' + color + ',' + this.subtitleDisplaySettings.backgroundOpacity + ')');
+    this.subtitleDisplaySettings.backgroundColor = color;
   }
   changeBackgroundOpacity(percentage: string) {
     this.setProperties('background-color', 'rgba(' + this.subtitleDisplaySettings.backgroundColor + ',' + percentage + ')');
@@ -522,23 +522,23 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   // window
   private setProperties(propName: string, propValue: string) {
     this.subtitleSpanElementsList.forEach(element => {
-      element.style.setProperty(propName, propValue)
+      element.style.setProperty(propName, propValue);
     });
   }
 }
 
 interface Stats {
-  bufferhealth: string // in seconds
-  connectionSpeed: string // might remove
-  downloadedPieces: number // (pieces have.)
-  downSpeed: string // leech speed
-  upSpeed: string // seed speed
-  ratio: string // downloaded/uploaded ratio
+  bufferhealth: string; // in seconds
+  connectionSpeed: string; // might remove
+  downloadedPieces: number; // (pieces have.)
+  downSpeed: string; // leech speed
+  upSpeed: string; // seed speed
+  ratio: string; // downloaded/uploaded ratio
   // codec
-  id: string // hash/id
+  id: string; // hash/id
   source: string; // stream link
   size: string;
-  resolution: string
+  resolution: string;
 }
 
 
@@ -549,6 +549,6 @@ interface Stats {
 
 
 // function addRef(val) {
-    
+
 //     `<span style="cursor: pointer; color: blue"><b cursor="pointer">${val}</b></span>`
 // }

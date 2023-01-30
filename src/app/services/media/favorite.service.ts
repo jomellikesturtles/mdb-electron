@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService, CollectionName, FieldName } from './firebase.service';
+import { FirebaseService, CollectionName, FieldName } from '../firebase.service';
 import { environment } from '@environments/environment';
-import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from './ipc.service';
-import { BffService as BffService } from './mdb-api.service';
+import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '../ipc.service';
+import { BffService as BffService } from '../mdb-api.service';
 import GeneralUtil from '@utils/general.util';
-import { DataService } from './data.service';
+import { DataService } from '../data.service';
 import { Observable } from 'rxjs';
 
 @Injectable({

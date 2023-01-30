@@ -1,119 +1,89 @@
+/*jshint esversion: 6 */
+
+const { GeneralRepository } = require("./general-repository");
+const { OPERATIONS } = require("./shared/constants");
+const { DEBUG } = require("./shared/util"); // remove to trigger unhandled promise rejection warning
+
+const preferencesRepository = new GeneralRepository("preferences");
+
 /**
- * service for user's data, watchlist, watched; for happy path, we will use TMDB for now.
+ * TODO: add unhandled exception handler
+ * @param {*} rawData
+ * @param {import('electron').BrowserWindow} mainWindow
  */
-/*jshint esversion: 8 */
-let args = process.argv.slice(2);
-let headers = args[0];
-let body = args[1];
-
-const path = require("path");
-const DataStore = require("nedb");
-
-let DEBUG = (() => {
-  let timestamp = () => {};
-  timestamp.toString = () => {
-    return "[DEBUG " + new Date().toLocaleString() + "]";
-  };
-  return {
-    log: console.log.bind(console, "%s", timestamp),
-  };
-})();
-
-const preferencesDb = new DataStore({
-  // filename: path.join(__dirname, "..", "db", "bookmarks.db"), // for node only
-  filename: path.join(process.cwd(), "src", "assets", "db", "preferences.db"),
-  autoload: true,
-});
-
-process.on("uncaughtException", function (error) {
-  console.log(error);
-  // process.send(['operation-failed', 'general']);
-});
-
-process.send =
-  process.send ||
-  function (...args) {
-    DEBUG.log("SIMULATING process.send", ...args);
-  };
-
-process.on("uncaughtException", function (error) {
-  console.log(error);
-  process.send(["operation-failed", "general"]);
-});
+function onPreferences(rawData, mainWindow) {
+  let data = JSON.parse(rawData);
+  const headers = data.headers;
+  const query = data.query;
+  const body = data.body;
+  const uuid = headers.uuid;
+  DEBUG.log("headers ", headers);
+  DEBUG.log("body ", body);
+  handleData(preferencesRepository, headers, query, body)
+    .then((e) => {
+      sendContents(`preferences-${uuid}`, response, mainWindow);
+    })
+    .catch((err) => {
+      DEBUG.log(`allSettled error:`, err);
+      sendContents(`preferences-${uuid}`, ["error", err], mainWindow);
+    });
+}
 
 /**
  *
- * @param {string} id
+ * @param {GeneralRepository} dbRepo
+ * @param {{operation?: string,uuid?: string,subChannel?: string}} headers
+ * @param {*} query
+ * @param {*} body
+ * @returns
  */
-async function findPreferenceById(id) {
-  await preferencesDb.findOne({ _id: id }, function (err, doc) {});
-}
-
-async function getAllPreferences() {
-  // preferencesDb.
-}
-
-function mapObjList(type, objList, userMovieDataList) {
-  objList.forEach((watchedObj) => {
-    const res = userMovieDataList.find(
-      (umd) => umd.tmdbId === watchedObj.tmdbId
-    );
-    if (!res) {
-      userMovieDataList.push({
-        tmdbId: watchedObj.tmdbId,
-        [type]: mapSinglObj(type, watchedObj),
-      });
-    } else {
-      res[type] = mapSinglObj(type, watchedObj);
-    }
-    if (watchedObj.tmdbId === 123) {
-      console.log(userMovieDataList);
-    }
-  });
-}
-
-function mapSinglObj(type, obj) {
-  let retObj = { id: obj.id };
-  switch (type) {
-    case "watched":
-      retObj.percentage = obj.percentage;
+async function handleData(dbRepo, headers, query, body) {
+  DEBUG.log("handling user data...");
+  const operation = headers.operation;
+  let hasError = false;
+  let errorMessage = "";
+  let result;
+  switch (operation) {
+    case OPERATIONS.SAVE:
+      result = dbRepo.save(body);
       break;
-    case "bookmark":
+    case OPERATIONS.FIND_ONE:
+      result = dbRepo.findOne(query);
       break;
-    case "library":
-      retObj.fullFilePath = obj.fullFilePath;
+    case OPERATIONS.FIND_IN_LIST:
+      result = dbRepo.getInList(query.tmdbIdList);
       break;
-
-    default:
+    case OPERATIONS.REMOVE:
+      result = dbRepo.remove(query, body);
       break;
-  }
-  return retObj;
-}
-
-function initializeService() {
-  const myHeaders = JSON.parse(headers);
-  const dataArgs = JSON.parse(body);
-  const command = myHeaders.operation;
-  const prefId = myHeaders.prefId;
-  console.log("myHeaders", myHeaders);
-  console.log("dataArgs", dataArgs);
-  // "tmdbId":10681,"imdbId":"tt0910970"
-  // console.log("user-db-service initializeService",
-  //   command, tmdbIdArg, imdbIdArg);
-  switch (command) {
-    case "find-by-id":
-      findPreferenceById(dataArgs.tmdbId).then((value) => {
-        process.send([`preferences-${prefId}`, value]);
-      });
-      break;
-    case "get-all":
-      getAllPreferences().then((value) => {
-        process.send([`preferences`, value]);
-      });
+    case OPERATIONS.UPDATE:
+      result = dbRepo.update(query, body);
       break;
     default:
+      hasError = true;
+      errorMessage += "no command";
+      DEBUG.error(`errorMessage`);
       break;
   }
+  return result;
 }
 
-initializeService();
+/**
+ *
+ * @param {string} channel
+ * @param {any} args
+ * @param {import('electron').BrowserWindow} theWindow
+ */
+function sendContents(channel, args, theWindow) {
+  DEBUG.log("sending...", channel, " | ", args);
+  if (theWindow) theWindow.webContents.send(channel, args); // reply
+}
+
+module.exports = {
+  onPreferences
+};
+
+/**
+ *  add/remove directory
+ *  change movie in directory
+ *  */

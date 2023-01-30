@@ -11,7 +11,6 @@ class ListLinkMediaRepository extends GeneralRepository {
   save(body) {
     DEBUG.log(`ListLinkMediaRepository saving body in ${this.currentDbLocalName}`, body);
     const root = this;
-    // this.currentDbLocal.find({ tmdbId: body.tmdbId, listId: body.listId });
     return new Promise(function (resolve, reject) {
       root.findOne({ tmdbId: body.tmdbId, listId: body.listId }).then((e) => {
         if (!e) {
