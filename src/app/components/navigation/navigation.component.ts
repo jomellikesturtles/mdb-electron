@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { NavigationService, Navigation } from '@services/navigation.service';
-import { ListsService } from '@services/lists.service';
+import { ListsService } from '@services/media/list.service';
 import { LoggerService } from '@core/logger.service';
-import { MediaUserDataService } from '@services/media-user-data.service';
+import { MediaUserDataService } from '@services/media/media-user-data.service';
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',

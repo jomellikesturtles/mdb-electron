@@ -5,7 +5,7 @@ import { PersonService } from '@services/person.service';
 import { UtilsService } from '@services/utils.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { PERSON_DETAILS, PERSON_DETAILS_FULL, PERSON_COMBINED_CREDITS } from '../../../mock-data-person-details';
+import { PERSON_DETAILS, PERSON_COMBINED_CREDITS } from '../../../mock-data-person-details';
 import { environment } from 'environments/environment';
 
 @Component({
@@ -17,8 +17,8 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   @Input() data: Observable<any>;
   hasData = false;
   person: any;
-  creditsCast
-  creditsCrew
+  creditsCast;
+  creditsCrew;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -30,14 +30,14 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (environment.runConfig.useTestData === true) {
-      this.person = PERSON_DETAILS
-      this.creditsCast = PERSON_COMBINED_CREDITS.cast
-      this.creditsCrew = PERSON_COMBINED_CREDITS.crew
-      this.hasData = true
+      this.person = PERSON_DETAILS;
+      this.creditsCast = PERSON_COMBINED_CREDITS.cast;
+      this.creditsCrew = PERSON_COMBINED_CREDITS.crew;
+      this.hasData = true;
     } else {
 
-      const id = this.activatedRoute.snapshot.paramMap.get('id')
-      this.getPersonDetails(id)
+      const id = this.activatedRoute.snapshot.paramMap.get('id');
+      this.getPersonDetails(id);
       // this.activatedRoute.params.subscribe(params => {
       //   console.log('activatedRoute.params', params);
       //   if (params.id) {
@@ -56,16 +56,16 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   getPersonDetails(val: number | string): void {
     console.log('getting person details');
     this.personService.getPersonDetails(val).subscribe(data => {
-      console.log('got from getMovieOnline ', data)
+      console.log('got from getMovieOnline ', data);
       this.person = data;
-      this.creditsCast = data.movie_credits.cast
-      this.creditsCrew = data.movie_credits.crew
-      this.hasData = true
+      this.creditsCast = data.movie_credits.cast;
+      this.creditsCrew = data.movie_credits.crew;
+      this.hasData = true;
     });
   }
 
   goToMovie(val): void {
-    const highlightedId = val
+    const highlightedId = val;
     this.dataService.updateHighlightedMovie(highlightedId);
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
   }

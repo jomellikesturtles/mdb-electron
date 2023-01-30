@@ -7,7 +7,7 @@ const { DEBUG } = require("./shared/util"); // remove to trigger unhandled promi
 
 // find-in-list
 // load repositories
-const bookmarksRepository = new GeneralRepository(COLLECTION_NAME.BOOKMARK, "tmdbId");
+const bookmarksRepository = new GeneralRepository(COLLECTION_NAME.BOOKMARK, "tmdbId"); // save
 const favoritesRepository = new GeneralRepository(COLLECTION_NAME.FAVORITE, "tmdbId"); // GOOD findone add remove
 const listsRepository = new GeneralRepository(COLLECTION_NAME.LIST, "title"); // add update findone remove
 const listLinksMediaRepository = new ListLinkMediaRepository(COLLECTION_NAME.LIST_LINK_MEDIA);
@@ -58,17 +58,6 @@ function onUserData(rawData, mainWindow) {
         break;
       case COLLECTION_NAME.PROGRESS:
         functionCalls.push(handleUserData(progressRepository, headers, query, body));
-        if (isAutoPlayToggle(headers, query, body)) {
-          const customHeaders = { operation: OPERATIONS.SAVE, subChannel: COLLECTION_NAME.PLAYED };
-          const customBody = { tmdbId: body.tmdbId };
-          handleUserData(playedRepository, customHeaders, null, customBody)
-            .then((playedResponse) => {
-              DEBUG.log(`autoToggled saved to play.db with value ${JSON.stringify(playedResponse)}`);
-            })
-            .catch((err) => {
-              DEBUG.log(`ERR autoToggle to play.db ${err}`);
-            });
-        }
         break;
       case COLLECTION_NAME.REVIEW:
         functionCalls.push(handleUserData(reviewsRepository, headers, query, body));
@@ -84,27 +73,6 @@ function onUserData(rawData, mainWindow) {
       .then((returnData) => {
         DEBUG.log(`allSettled returns: ${JSON.stringify(returnData)}`);
 
-        // if (headers.operation == OPERATIONS.FIND_IN_LIST) {
-        //   let resMap = new Map();
-
-        //   Object.keys(returnData).forEach((key) => {
-        //     DEBUG.log(key);
-        //     returnData[key].forEach((e) => {
-        //       // resMap.set(e.tmdbId, { [key]: e });
-        //       if (resMap.get(e.tmdbId)) {
-        //         resMap.set(e.tmdbId, Object.assign(resMap.get(e.tmdbId), { [key]: e }));
-        //       } else {
-        //         resMap.set(e.tmdbId, { [key]: e });
-        //       }
-        //     });
-        //   });
-        //   // console.log(resMap);
-        //   const myJson = {};
-        //   let myString;
-        //   myJson.myMap = mapToObj(resMap);
-        //   myJson.myString = myString;
-        //   response = JSON.stringify(myJson);
-        // } else {
         response = {
           bookmark: mapPromise(returnData[0]),
           favorite: mapPromise(returnData[1]),
@@ -199,19 +167,6 @@ async function handleUserData(dbRepo, headers, query, body) {
 
 /**
  *
- * @param {{operation?: OPERATIONS,uuid?: string,subChannel?: string}} headers
- * @param {*} query
- * @param {*} body
- **/
-function isAutoPlayToggle(headers, query, body) {
-  if (headers.operation == OPERATIONS.SAVE && (body.current / body.total) * 100 >= 99) {
-    return true;
-  }
-  return false;
-}
-
-/**
- *
  * @param {{status:'rejected'|'fulfilled',reason:string,value:Object|null}} promiseResponse
  * @returns
  */
@@ -240,5 +195,6 @@ function sendContents(channel, args, theWindow) {
 }
 
 module.exports = {
-  onUserData
+  onUserData,
+  playedRepository
 };

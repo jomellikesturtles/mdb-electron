@@ -1,13 +1,14 @@
 import { LibraryService } from '../library.service';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { IBookmark, BookmarkService } from '../bookmark.service';
+import { IBookmark, BookmarkService } from '../media/bookmark.service';
 import { MovieService } from '../movie/movie.service';
-import { WatchedService, IWatched } from '../watched.service';
+import { PlayedService, IWatched } from '../media/played.service';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '../ipc.service';
 import { CollectionName } from '../firebase.service';
 import { BffService } from '../mdb-api.service';
 import { DataService } from '@services/data.service';
+import { MediaUserDataService } from '@services/media/media-user-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +20,9 @@ export class UserDataService {
     private bffService: BffService,
     private dataService: DataService,
     private movieService: MovieService,
-    private watchedService: WatchedService,
+    private watchedService: PlayedService,
     private libraryService: LibraryService,
+    private mediaUserData: MediaUserDataService,
     private ipcService: IpcService,
   ) { }
 
@@ -65,7 +67,7 @@ export class UserDataService {
     let data: IUserDataPaginated | any = [];
     switch (dataType) {
       case 'bookmark':
-        const bookmarksList = await this.bookmarkService.getBookmarksPaginatedFirstPage();
+        const bookmarksList = await this.mediaUserData.getMediaDataPaginated('');
         data = bookmarksList;
         break;
       case 'watched':

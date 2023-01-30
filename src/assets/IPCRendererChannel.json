@@ -28,9 +28,9 @@
   "GetBookmarkChanges": "get-bookmark-changes",
   "SearchTorrent": "torrent-search",
   "ModalFileExplorer": "modal-file-explorer",
-  "GetTorrentsTitle": "get-torrents-title",
   "GetImage": "get-image",
   "GetSearchList": "get-search-list",
   "USER_DATA_NEW": "user-data-new",
-  "USER_DATA": "user-data"
+  "USER_DATA": "user-data",
+  "PREFERENCES": "preferences"
 }

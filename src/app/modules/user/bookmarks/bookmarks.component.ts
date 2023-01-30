@@ -2,7 +2,7 @@
  * Bookmarked by user
  */
 import { UserDataService } from '@services/user-data/user-data.service';
-import { IBookmark } from '@services/bookmark.service';
+import { IBookmark } from '@services/media/bookmark.service';
 import { environment } from '@environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
@@ -15,31 +15,27 @@ import { CollectionName } from '@services/firebase.service';
 })
 export class BookmarksComponent implements OnInit {
 
-  procSync = false
+  procSync = false;
 
-  bookmarksList
-  moviesDisplayList = []
-  hasResults = false
-  cardWidth = '130px'
-  bookmarksSubscription
-  lastVal = 0
-  hasMoreResults = false
-  orderBy = 'tmdbId'
-  listType = CollectionName.Bookmark
+  bookmarksList;
+  moviesDisplayList = [];
+  hasResults = false;
+  cardWidth = '130px';
+  bookmarksSubscription;
+  lastVal = 0;
+  hasMoreResults = false;
+  orderBy = 'tmdbId';
+  listType = CollectionName.Bookmark;
 
   constructor(
     private userDataService: UserDataService,
   ) { }
 
   ngOnInit() {
-    this.getBookmarkedMovies()
+    this.getBookmarkedMovies();
   }
 
   onSync() {
-    // this.firebaseService.synchronizeBookmarks()
-    // this.bookmarksList.forEach(element => {
-    //   this.movieService.getFindMovie(element.imdbId)
-    // });
   }
 
   /**
@@ -47,16 +43,16 @@ export class BookmarksComponent implements OnInit {
    */
   async getBookmarkedMovies() {
     if (environment.runConfig.useTestData) {
-      this.moviesDisplayList = TMDB_SEARCH_RESULTS.results
+      this.moviesDisplayList = TMDB_SEARCH_RESULTS.results;
     } else {
       // commented for TEST
-      const res = await this.userDataService.getUserDataFirstPage(this.listType)
+      const res = await this.userDataService.getUserDataFirstPage(this.listType);
       if (res.length) {
-        this.moviesDisplayList = res
-        this.lastVal = res[res.length - 1][this.listType][this.orderBy]
-        this.hasResults = true
+        this.moviesDisplayList = res;
+        this.lastVal = res[res.length - 1][this.listType][this.orderBy];
+        this.hasResults = true;
         if (res.length === 20) {
-          this.hasMoreResults = true
+          this.hasMoreResults = true;
         }
       }
     }
@@ -64,16 +60,16 @@ export class BookmarksComponent implements OnInit {
 
   async getMoreResults() {
     if (environment.runConfig.useTestData) {
-      this.moviesDisplayList = TMDB_SEARCH_RESULTS.results
+      this.moviesDisplayList = TMDB_SEARCH_RESULTS.results;
     } else {
       // commented for TEST
 
-      const res = await this.userDataService.getUserDataPagination(this.listType, this.lastVal)
+      const res = await this.userDataService.getUserDataPagination(this.listType, this.lastVal);
       if (res.length) {
-        this.moviesDisplayList.push.apply(this.moviesDisplayList, res)
-        this.lastVal = res[res.length - 1][this.listType][this.orderBy]
+        this.moviesDisplayList.push.apply(this.moviesDisplayList, res);
+        this.lastVal = res[res.length - 1][this.listType][this.orderBy];
         if (res.length < 20) {
-          this.hasMoreResults = false
+          this.hasMoreResults = false;
         }
       }
 

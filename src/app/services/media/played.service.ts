@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from './firebase.service';
+import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from '../firebase.service';
 import { IUserSavedData } from '@models/interfaces';
 import { environment } from '@environments/environment';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '@services/ipc.service';
 import GeneralUtil from '@utils/general.util';
-import { BffService } from './mdb-api.service';
-import { DataService } from './data.service';
+import { BffService } from '../mdb-api.service';
+import { DataService } from '../data.service';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class WatchedService {
+export class PlayedService {
 
   constructor(private firebaseService: FirebaseService,
     private ipcService: IpcService,
@@ -31,12 +31,12 @@ export class WatchedService {
         year: releaseYear ? releaseYear : 0,
         percentage: 100
       };
-      wDocId = await this.saveWatched(data);
+      wDocId = await this.savePlayed(data);
       movie.watched = wDocId;
     } else {
       const type = movie.watched && movie.watched.id ? 'id' : 'tmdbId';
       const id = type === 'id' ? movie.watched.id : movie.tmdbId;
-      wDocId = await this.removeWatched(type, id);
+      wDocId = await this.removePlayed(type, id);
       movie.watched.id = '';
     }
     return wDocId;
@@ -56,7 +56,7 @@ export class WatchedService {
    * Gets multiple watched movies.
    * @param idList
    */
-  getWatchedInList(idList: number[]): Observable<any> {
+  getPlayedInList(idList: number[]): Observable<any> {
 
     // const myFunction = environment.runConfig.firebaseMode ?
     //   this.firebaseService.getFromFirestoreMultiple(CollectionName.Watched, FieldName.TmdbId, idList) :
@@ -68,7 +68,7 @@ export class WatchedService {
       { tmdbId: 0 }));
   }
 
-  saveWatched(data: IWatched): Observable<any> {
+  savePlayed(data: IWatched): Observable<any> {
     // if (environment.runConfig.firebaseMode) {
     //   return this.firebaseService.insertIntoFirestore(CollectionName.Watched, data)
     // } else {
@@ -83,7 +83,7 @@ export class WatchedService {
    * @param type
    * @param id watched id/_id/tmdbId to remove.
    */
-  removeWatched(type: 'id' | 'tmdbId', id: string | number) {
+  removePlayed(type: 'id' | 'tmdbId', id: string | number) {
     // if (environment.runConfig.firebaseMode) {
     //   return this.firebaseService.deleteFromFirestore(CollectionName.Watched, id)
     // } else {

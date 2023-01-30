@@ -5,9 +5,10 @@ const { onUserData } = require("./src/assets/scripts/user-media-db");
 
 onUserData(
   JSON.stringify({
-    headers: { operation: OPERATIONS.SAVE, subChannel: COLLECTION_NAME.LIST_LINK_MEDIA, uuid: uuidv4() },
-    // query: { tmdbId: 122 }
-    body: { listId: "Bl8zwPAwNhvby8Hq", tmdbId: 124 }
+    headers: { operation: OPERATIONS.REMOVE, subChannel: COLLECTION_NAME.BOOKMARK, uuid: uuidv4() },
+    // body: { tmdbId: 122 }
+    query: { tmdbId: 122 }
+    // body: { listId: "Bl8zwPAwNhvby8Hq", tmdbId: 124 }
     // body: { current: 3022, total: 2000 }
     // headers: { operation: OPERATIONS.REMOVE, subChannel: COLLECTION_NAME.PROGRESS, uuid: uuidv4() },
     // query: { tmdbId: 122 }

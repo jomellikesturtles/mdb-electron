@@ -39,6 +39,7 @@ import { VideoPlayerModule } from '@modules/watch/video-player.module';
 import { YoutubePlayerComponent } from '@shared/components/youtube-player/youtube-player.component';
 import { MdbButtonComponent } from './core/elements/mdb-button/mdb-button.component';
 import { CoreEnvironmentService } from '@services/core-environment.service';
+import { MockCoreServicesModule } from '@core/dev/mock-core-services.module';
 
 @NgModule({
   declarations: [
@@ -79,7 +80,8 @@ import { CoreEnvironmentService } from '@services/core-environment.service';
     MatTabsModule,
     MatDialogModule,
     MatAutocompleteModule,
-    VideoPlayerModule
+    VideoPlayerModule,
+    MockCoreServicesModule
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   entryComponents: [ImagePreviewComponent],

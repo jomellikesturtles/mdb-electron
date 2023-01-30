@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { MediaProgress } from '@models/media-progress';
 import { IReview } from '@models/review.model';
-import { DataService } from './data.service';
-import { IpcOperations, IpcService, SubChannel } from './ipc.service';
-import { BffService } from './mdb-api.service';
+import { Observable } from 'rxjs';
+import { DataService } from '../data.service';
+import { IpcOperations, IpcService, SubChannel } from '../ipc.service';
+import { BffService } from '../mdb-api.service';
+import { BaseMediaUserDataService } from './base-media-user-data.service';
 
 /**
  * Service for user service per media id.
@@ -11,13 +13,17 @@ import { BffService } from './mdb-api.service';
 @Injectable({
   providedIn: 'root'
 })
-export class MediaUserDataService {
+export class MediaUserDataService extends BaseMediaUserDataService {
 
   constructor(
+    dataService: DataService,
     private bffService: BffService,
     private ipcService: IpcService,
-    private dataService: DataService
-  ) { }
+  ) {
+    super(
+      dataService,
+    );
+  }
 
   /**
    *
@@ -28,7 +34,13 @@ export class MediaUserDataService {
     return this.dataService.getHandle(this.bffService.getMediaUserData(tmdbId), this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
       { tmdbId: tmdbId }));
   }
-
+  getMediaUserDataMultiple(idList: string): Observable<any> {
+    return this.dataService.getHandle(this.bffService.getMediaUserDataInList([123]), this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+      { idList: idList }));
+  }
+  getMediaDataPaginated(type: string) {
+    return null;
+  }
   getMediaProgress(mediaId: number, currentUserOnly: boolean = true) {
     return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.PROGRESS, operation: IpcOperations.FIND_ONE },
       { tmdbId: mediaId }));
