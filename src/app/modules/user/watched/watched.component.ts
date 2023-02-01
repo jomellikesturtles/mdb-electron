@@ -2,7 +2,6 @@ import { UserDataService } from '@services/user-data/user-data.service';
 /**
  * Displays movies Watched by user
  */
-import { IWatched } from '@services/media/played.service';
 import { PlayedService } from '@services/media/played.service';
 import { Component, OnInit } from '@angular/core';
 import { environment } from '@environments/environment';
@@ -28,7 +27,7 @@ export class WatchedComponent implements OnInit {
   orderBy = 'tmdbId';
 
   constructor(
-    private watchedService: PlayedService,
+    private playedService: PlayedService,
     private userDataService: UserDataService,
   ) { }
 

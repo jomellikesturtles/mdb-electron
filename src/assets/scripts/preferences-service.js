@@ -20,7 +20,8 @@ function onPreferences(rawData, mainWindow) {
   DEBUG.log("headers ", headers);
   DEBUG.log("body ", body);
   handleData(preferencesRepository, headers, query, body)
-    .then((e) => {
+    .then((response) => {
+      // sendContents(`preferences-${uuid}`, undefinedResponse, mainWindow);
       sendContents(`preferences-${uuid}`, response, mainWindow);
     })
     .catch((err) => {

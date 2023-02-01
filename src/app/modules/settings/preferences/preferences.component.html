@@ -33,7 +33,7 @@
     <div class='form-inline form-group'>
       <button class="btn btn-success" (click)="onOpenFolder(folder)">Open</button>
       <input type='text' class="form-control" data-toggle="tooltip" title="{{folder}}" disabled />
-      <!-- <input type='text' class="form-control" [(ngModel)]='folder' data-toggle="tooltip" title="{{folder}}" disabled /> -->
+      <!-- <input type='text' class="form-control" [(ngModel)]='folder' data-toggle="tooltip" title="{{folder}}" disabled />
       <button class="btn btn-danger" (click)="onDeleteFolder(folder)">Delete</button>
     </div>
   </div> -->
@@ -109,8 +109,8 @@
   <mat-divider></mat-divider>
 
   <!-- preferred quality -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Preferred Quality'"
-    [inputType]="'select'" [optionSelections]='qualityOptions'>
+  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"'
+    [fieldLabel]="'Preferred Quality'" [inputType]="'select'" [optionSelections]='qualityOptions'>
   </app-input-container>
   <!-- preferred mode -->
   <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Preferred Mode'"
@@ -121,8 +121,8 @@
   <mat-divider></mat-divider>
 
   <!-- download speed -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Download speed in bps'"
-    [inputType]="'checkbox'">
+  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"'
+    [fieldLabel]="'Download speed in bps'" [inputType]="'checkbox'">
   </app-input-container>
 
 
@@ -130,8 +130,8 @@
   <mat-divider></mat-divider>
 
   <!-- download speed -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Download speed in bps'"
-    [inputType]="'text'">
+  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"'
+    [fieldLabel]="'Download speed in bps'" [inputType]="'text'">
   </app-input-container>
 
 
@@ -144,14 +144,14 @@
   </app-input-container>
 
   <!-- frequency unit -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"scanFreqUnit"'
-    [fieldLabel]="'Frequency'" [inputType]="'select'" [optionSelections]='frequencyOptions'>
+  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"scanFreqUnit"' [fieldLabel]="'Frequency'"
+    [inputType]="'select'" [optionSelections]='frequencyOptions'>
   </app-input-container>
   <!-- value -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"scanFreqValue"'
-  [fieldLabel]="'Value'" [inputType]="'text'">
-</app-input-container>
-  
+  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"scanFreqValue"' [fieldLabel]="'Value'"
+    [inputType]="'text'">
+  </app-input-container>
+
 
   <h2>Accounts</h2>
   <mat-divider></mat-divider>

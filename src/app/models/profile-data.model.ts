@@ -5,7 +5,8 @@ export class IProfileData {
   tmdbId?: number;
   bookmark?: Bookmark;
   favorite?: Favorite;
-  watched?: Watched;
+  played?: Played;
+  progress?: Played;
   listLinkMovie?: ListLinkMovie;
   review?: IReview;
   isBookmark?: boolean;
@@ -21,7 +22,7 @@ interface Bookmark {
 interface Favorite {
   id: string;
 }
-interface Watched {
+interface Played {
   id?: string;
   percentage: number;
 }

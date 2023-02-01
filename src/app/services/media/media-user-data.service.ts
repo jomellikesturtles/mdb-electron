@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MediaProgress } from '@models/media-progress';
+import { IMediaProgress } from '@models/media-progress';
 import { IReview } from '@models/review.model';
 import { Observable } from 'rxjs';
 import { DataService } from '../data.service';
@@ -32,18 +32,18 @@ export class MediaUserDataService extends BaseMediaUserDataService {
    */
   getMediaUserData(tmdbId: number, currentUserOnly: boolean = true) {
     return this.dataService.getHandle(this.bffService.getMediaUserData(tmdbId), this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
-      { tmdbId: tmdbId }));
+      null, { tmdbId: tmdbId }));
   }
   getMediaUserDataMultiple(idList: string): Observable<any> {
     return this.dataService.getHandle(this.bffService.getMediaUserDataInList([123]), this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
-      { idList: idList }));
+      null, { idList: idList }));
   }
   getMediaDataPaginated(type: string) {
     return null;
   }
   getMediaProgress(mediaId: number, currentUserOnly: boolean = true) {
     return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.PROGRESS, operation: IpcOperations.FIND_ONE },
-      { tmdbId: mediaId }));
+      null, { tmdbId: mediaId }));
   }
 
   getMediaReviews(mediaId: string, currentUserOnly: boolean = true) {
@@ -51,9 +51,9 @@ export class MediaUserDataService extends BaseMediaUserDataService {
       null, { mediaId }));
   }
 
-  putMediaProgress(progressBody: MediaProgress) {
+  putMediaProgress(progressBody: IMediaProgress) {
     return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.PROGRESS, operation: IpcOperations.SAVE },
-      progressBody));
+      progressBody, null));
   }
 
   putMediaReview(tmdbId: number, reviewBody: IReview) {
@@ -63,6 +63,8 @@ export class MediaUserDataService extends BaseMediaUserDataService {
 
   putMediaFavorite(favoriteBody) {
     return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.SAVE },
-      favoriteBody));
+      favoriteBody, null));
   }
+
+
 }

@@ -5,26 +5,26 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { MDBTorrent } from '@models/interfaces';
-import { DomSanitizer } from '@angular/platform-browser';
 import { DataService } from '@services/data.service';
 import { MovieService } from '@services/movie/movie.service';
 import { TorrentService } from '@services/torrent/torrent.service';
 import { IpcService } from '@services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TROUBLE_QUOTES } from '@shared/constants';
-import { UserDataService } from '@services/user-data/user-data.service';
-import { PlayedService, IWatched } from '@services/media/played.service';
+import { PlayedService, IPlayed } from '@services/media/played.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { basename } from 'path';
 import { FavoriteService } from '@services/media/favorite.service';
 import { IProfileData } from '@models/profile-data.model';
-import { BffService } from '@services/mdb-api.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util';
 import { environment } from 'environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { ImagePreviewComponent } from '@shared/components/image-preview/image-preview.component';
+import { BookmarkService } from '@services/media/bookmark.service';
+import { LoggerService } from '@core/logger.service';
+import { MediaUserDataService } from '@services/media/media-user-data.service';
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -55,9 +55,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
   procVideo = false;
   procPlayLink = false;
   showVideo = false;
-  isBookmarked = false;
-  isWatched = false;
-  isFavorite = false;
+  _isBookmarked = false;
+  _isPlayed = false;
+  _isFavorite = false;
   movieTrailer: string;
   hasContinueWatching: boolean;
   playLinks = [];
@@ -67,19 +67,19 @@ export class DetailsComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
 
   constructor(
-    private sanitizer: DomSanitizer,
     private activatedRoute: ActivatedRoute,
     private dataService: DataService,
     private movieService: MovieService,
     private ipcService: IpcService,
     private torrentService: TorrentService,
-    private userDataService: UserDataService,
+    private mediaUserDataService: MediaUserDataService,
     private libraryService: LibraryService,
-    private watchedService: PlayedService,
     private favoriteService: FavoriteService,
     private router: Router,
-    private mdbApiService: BffService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private bookmarkService: BookmarkService,
+    private playedService: PlayedService,
+    private loggerService: LoggerService
   ) { }
 
   ngOnInit() {
@@ -161,61 +161,85 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getUserMovieData() {
     this.procVideo, this.procBookmark, this.procWatched = true;
 
-    this.mdbApiService.getProfileDataByTmdbId(this.movieDetails.tmdbId).subscribe(userMovieData => {
-      GeneralUtil.DEBUG.log('usermoviedata', userMovieData);
-      if (userMovieData.bookmark) {
-        this.userData.bookmark = userMovieData.bookmark;
-        this.isBookmarked = true;
-      }
-      if (userMovieData.watched) {
-        this.userData.watched = userMovieData.watched;
-        this.isWatched = true;
-      }
-      if (userMovieData.favorite) {
-        this.userData.favorite = userMovieData.favorite;
-        this.isFavorite = true;
-      }
-      if (userMovieData.listLinkMovie) {
-        this.isFavorite = true;
-      }
-      if (userMovieData.review) {
-        // this.movieDetails.review = userMovieData.review
+    this.mediaUserDataService.getMediaUserData(this.movieDetails.tmdbId).subscribe((profileData: IProfileData) => {
 
-        // this.isFavorite = true
+      GeneralUtil.DEBUG.log('usermoviedata', profileData);
+      if (profileData.bookmark) {
+        this.userData.bookmark = profileData.bookmark;
+        this._isBookmarked = this.mediaUserDataService.commonSetter(profileData.bookmark);
       }
+      if (profileData.played) {
+        this.userData.played = profileData.played;
+        this._isPlayed = this.mediaUserDataService.commonSetter(profileData.played);
+      }
+      if (profileData.favorite) {
+        this.userData.favorite = profileData.favorite;
+        this._isFavorite = this.mediaUserDataService.commonSetter(profileData.favorite);
+      }
+      if (profileData.listLinkMovie) {
+        this.userData.listLinkMovie = profileData.listLinkMovie;
+      }
+      if (profileData.review) {
+        this.userData.review = profileData.review;
+      }
+      this.procVideo, this.procBookmark, this.procWatched = false;
     });
+  }
+
+  set isBookmarked(val: number | Object) {
+    this.loggerService.info('set isBookmarked called');
+    this._isBookmarked = this.mediaUserDataService.commonSetter(val);
+  }
+
+  set isFavorite(val: number | Object) {
+    this.loggerService.info('set isFavorite called');
+    this._isFavorite = this.mediaUserDataService.commonSetter(val);
+  }
+
+  set isPlayed(val: number | Object) {
+    this.loggerService.info('set isPlayed called');
+    this._isPlayed = this.mediaUserDataService.commonSetter(val);
   }
 
   /**
    * Toggles movie from user's watchlist or bookmarks
    */
   async toggleBookmark() {
-
     this.procBookmark = true;
-    // let bmDoc
-    // bmDoc = await this.userDataService.toggleBookmark(this.movieDetails)
-    // this.isBookmarked = !this.isBookmarked
-    // GeneralUtil.DEBUG.log('BOOKMARKADD/remove:', bmDoc)
+    const tmdbId = this.movieDetails.tmdbId;
+    let res = false;
+    if (this._isBookmarked) {
+      res = await this.bookmarkService.removeBookmark('tmdbId', tmdbId).toPromise();
+    } else {
+      res = await this.bookmarkService.saveBookmark(tmdbId).toPromise();
+    }
+    this.isBookmarked = res;
     this.procBookmark = false;
   }
 
-  async toggleWatched() {
+  async togglePlayed() {
     this.procWatched = true;
-    let wDoc;
-
-    wDoc = await this.watchedService.toggleWatched(this.movieDetails);
-    this.isWatched = !this.isWatched;
-    GeneralUtil.DEBUG.log('WATCHEDADD/remove:', wDoc);
+    const tmdbId = this.movieDetails.tmdbId;
+    let res = false;
+    if (this._isPlayed) {
+      res = await this.playedService.removePlayed('tmdbId', tmdbId).toPromise();
+    } else {
+      res = await this.playedService.savePlayed({ tmdbId }).toPromise();
+    }
+    this.isPlayed = res;
     this.procWatched = false;
   }
 
   async toggleFavorite() {
     this.procFavorite = true;
-    let fDoc;
-    fDoc = await this.favoriteService.toggleFavorite(this.movieDetails);
-    this.userData.favorite = fDoc;
-    // this.isWatched = !this.isWatched
-    GeneralUtil.DEBUG.log('WATCHEDADD/remove:', fDoc);
+    const tmdbId = this.movieDetails.tmdbId;
+    let res;
+    if (this._isFavorite) {
+      res = await this.favoriteService.removeFavorite('tmdbId', tmdbId).toPromise();
+    } else {
+      res = await this.favoriteService.saveFavorite({ tmdbId }).toPromise();
+    }
+    this.isFavorite = res;
     this.procFavorite = false;
   }
 
