@@ -95,7 +95,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
     });
 
     this.preferencesObject = this.preferencesService.getPreferences();
-    this.ipcService.getPreferences().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
+    this.ipcService.getPreferences().pipe(takeUntil(this.ngUnsubscribe)).subscribe((e: IPreferences) => {
       console.log('this.ipcService.preferences ', e);
       this.preferencesObject = e;
     });

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { BookmarkService, IBookmark } from '@services/media/bookmark.service';
-import { PlayedService, IWatched } from '@services/media/played.service';
+import { PlayedService, IPlayed } from '@services/media/played.service';
 import { LibraryService } from '@services/library.service';
 import { environment } from '@environments/environment';
 import { UserDataService } from '@services/user-data/user-data.service';
@@ -36,7 +36,7 @@ export class CardListComponent implements OnInit, OnChanges {
 
   constructor(
     private bookmarkService: BookmarkService,
-    private watchedService: PlayedService,
+    private playedService: PlayedService,
     private libraryService: LibraryService,
     private mediaUserDataService: MediaUserDataService,
     private userDataService: UserDataService
@@ -150,7 +150,7 @@ export class CardListComponent implements OnInit, OnChanges {
           myData = bm;
           break;
         case 'watched':
-          const wtchd: IWatched = {
+          const wtchd: IPlayed = {
             id: doc.id ? doc.id : '',
             tmdbId: dTmdbId ? dTmdbId : 0,
             title: dTitle ? dTitle : '',
@@ -227,7 +227,8 @@ export class CardListComponent implements OnInit, OnChanges {
   collectIds() {
     const idList = [];
     this.movieList.forEach(e => {
-      idList.push(e.id);
+      idList.push(e.tmdbId);
+      // idList.push(e.id);
     }); // lodash is not faster than this.
     return idList;
   }

@@ -11,6 +11,10 @@ import { MDBMovie } from '@models/mdb-movie.model';
 import { IProfileData } from '@models/profile-data.model';
 import ObjectUtil from '@utils/object.utils';
 import GeneralUtil from '@utils/general.util';
+import { BookmarkService } from '@services/media/bookmark.service';
+import { PlayedService } from '@services/media/played.service';
+import { FavoriteService } from '@services/media/favorite.service';
+import { LoggerService } from '@core/logger.service';
 
 @Component({
   selector: 'app-movie-card',
@@ -19,10 +23,10 @@ import GeneralUtil from '@utils/general.util';
 })
 export class MovieCardComponent implements OnInit {
 
-  _movie: MDBMovie
+  _movie: MDBMovie;
   @Input()
   set movie(inputMessage: MDBMovie) {
-    this._movie = new MDBMovie(inputMessage)
+    this._movie = new MDBMovie(inputMessage);
 
     if (this.preferencesService.isGetTorrentFromMovieCard) {
       // UNCOMMENT BELOW to get external_id and torrent one by one
@@ -30,44 +34,44 @@ export class MovieCardComponent implements OnInit {
         if (externalId && externalId.imdb_id) {
           this.torrentService.getTorrentsOnline(externalId.imdb_id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
             if (e.status === 'ok' && e.data.movie_count > 0) {
-              const firstTorrent = e.data.movies[0].torrents[0]
+              const firstTorrent = e.data.movies[0].torrents[0];
               // this._movie.library = firstTorrent
               // this._movie.library.id = firstTorrent.hash
             }
-          })
+          });
         }
-      })
+      });
     }
   }
   get movie(): MDBMovie {
     return this._movie;
   }
 
-  _cardWidth = '130px'
+  _cardWidth = '130px';
   @Input()
   set cardWidth(inputMessage: any) {
-    this._cardWidth = inputMessage
+    this._cardWidth = inputMessage;
   }
   get cardWidth(): any {
     return this._cardWidth;
   }
 
-  _library: any
+  _library: any;
   @Input()
   set library(inputVideo: any) {
-    this._library = inputVideo
+    this._library = inputVideo;
   }
   get library(): any {
     return this._library;
   }
 
-  _userData: IProfileData
+  _userData: IProfileData;
   @Input()
   set userData(inputData: IProfileData) {
-    this._userData = inputData
+    this._userData = inputData;
     if (!ObjectUtil.isEmpty(inputData)) {
-      if (inputData.watched) {
-        this.watchedPercentage = inputData.watched.percentage + '%'
+      if (inputData.played) {
+        this.watchedPercentage = inputData.played.percentage + '%';
       }
     }
   }
@@ -75,17 +79,18 @@ export class MovieCardComponent implements OnInit {
     return this._userData;
   }
 
-
-  isAdminMode = false
-  procFavorite = false
-  procBookmark = false
-  procWatched = false
-  procHighlight = false
-  isWatched = false
-  isBookmarked = false
-  isAvailable = false
-  watchedPercentage = '0%'
-  isSingleClick: any
+  isAdminMode = false;
+  procFavorite = false;
+  procBookmark = false;
+  procWatched = false;
+  procHighlight = false;
+  isWatched = false;
+  _isBookmarked = false;
+  _isFavorite = false;
+  _isPlayed = false;
+  isAvailable = false;
+  watchedPercentage = '0%';
+  isSingleClick: any;
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -96,14 +101,18 @@ export class MovieCardComponent implements OnInit {
     private userDataService: UserDataService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
+    private bookmarkService: BookmarkService,
+    private favoriteService: FavoriteService,
+    private playedService: PlayedService,
+    private loggerService: LoggerService
   ) { }
 
   ngOnInit(): void {
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next()
-    this.ngUnsubscribe.complete()
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   /**
@@ -111,14 +120,14 @@ export class MovieCardComponent implements OnInit {
    * @param movie current selected movie
    */
   onHighlight(): void {
-    this.procHighlight = true
+    this.procHighlight = true;
     // this._movie.isHighlighted = !this._movie.isHighlighted
     // if (this._movie.isHighlighted) {
     //   this.store.dispatch(new AddMovie(this._movie))
     // } else {
     //   this.store.dispatch(new RemoveMovie(this._movie))
     // }
-    this.procHighlight = false
+    this.procHighlight = false;
   }
 
   /**
@@ -143,49 +152,73 @@ export class MovieCardComponent implements OnInit {
     this.isSingleClick = true;
     setTimeout(() => {
       if (this.isSingleClick) {
-        this.dataService.updatePreviewMovie(this._movie)
+        this.dataService.updatePreviewMovie(this._movie);
       }
-    }, 300)
+    }, 300);
   }
 
-  async onToggleBookmark(): Promise<any> {
-    this.procBookmark = true
-    setTimeout(() => {
-      this.isBookmarked = !this.isBookmarked
-      this.procBookmark = false
-    }, 500);
-    // this.procBookmark = true
-    // let bmDoc: any
-    // bmDoc = await this.userDataService.toggleBookmark(this._movie)
-    // this.isBookmarked = !this.isBookmarked
-    // console.log('BOOKMARKADD/remove:', bmDoc)
-    // this.procBookmark = false
+  set isBookmarked(val: number | Object) {
+    this.loggerService.info('set isBookmarked called');
+    this._isBookmarked = this.userDataService.commonSetter(val);
   }
 
-  async onToggleWatched() {
-    this.procWatched = true
-    setTimeout(() => {
-      this.isWatched = !this.isWatched
-      // this.userData.watched.percentage = 100
-      // this.watchedPercentage = 100 + '%'
-      this.procWatched = false
-    }, 500);
-    // this.procWatched = true
-    // let wDocId: any
-    // wDocId = await this.watchedService.toggleWatched(this._movie)
-    // this.isWatched = !this.isWatched
-    // this.procWatched = false
+  set isFavorite(val: number | Object) {
+    this.loggerService.info('set isFavorite called');
+    this._isFavorite = this.userDataService.commonSetter(val);
   }
 
-  toggleFavorites(): void {
-    this.isSingleClick = false
+  set isPlayed(val: number | Object) {
+    this.loggerService.info('set isPlayed called');
+    this._isPlayed = this.userDataService.commonSetter(val);
+  }
+
+  /**
+   * Toggles movie from user's watchlist or bookmarks
+   */
+  async toggleBookmark() {
+    this.procBookmark = true;
+    const tmdbId = this._movie.tmdbId;
+    let res = false;
+    if (this._isBookmarked) {
+      res = await this.bookmarkService.removeBookmark('tmdbId', tmdbId).toPromise();
+    } else {
+      res = await this.bookmarkService.saveBookmark(tmdbId).toPromise();
+    }
+    this.isBookmarked = res;
+    this.procBookmark = false;
+  }
+
+  async togglePlayed() {
+    this.procWatched = true;
+    const tmdbId = this._movie.tmdbId;
+    let res = false;
+    if (this._isPlayed) {
+      res = await this.playedService.removePlayed('tmdbId', tmdbId).toPromise();
+    } else {
+      res = await this.playedService.savePlayed({ tmdbId }).toPromise();
+    }
+    this.isPlayed = res;
+    this.procWatched = false;
+  }
+
+  async toggleFavorite() {
+    this.procFavorite = true;
+    const tmdbId = this._movie.tmdbId;
+    let res;
+    if (this._isFavorite) {
+      res = await this.favoriteService.removeFavorite('tmdbId', tmdbId).toPromise();
+    } else {
+      res = await this.favoriteService.saveFavorite({ tmdbId }).toPromise();
+    }
+    this.isFavorite = res;
+    this.procFavorite = false;
   }
   /**
    * Gets the year.
    * @param releaseDate release date with format YYYY-MM-DD
    */
   getYear(releaseDate: string): string {
-    return GeneralUtil.getYear(releaseDate)
+    return GeneralUtil.getYear(releaseDate);
   }
 
   /**
@@ -194,11 +227,11 @@ export class MovieCardComponent implements OnInit {
    * TODO: Fetch from offline or generate canvass.
    */
   getPoster(poster: string): string {
-    return ''
+    return '';
   }
 
   goToYear(year: string): void {
-    this.dataService.updateDiscoverQuery({ type: 'year', value: year, name: null })
+    this.dataService.updateDiscoverQuery({ type: 'year', value: year, name: null });
     this.router.navigate([`/discover`], {
       relativeTo: this.activatedRoute, queryParams: { type: 'year', year: year }
     });

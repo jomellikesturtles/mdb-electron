@@ -141,7 +141,7 @@ export class IpcService {
     return this.listenOnce(`library-${theUuid}`);
   }
 
-  userData(headers: Headers, body: Body, params?: Object) {
+  userData(headers: Headers, body: Body, params: Object) {
     const theUuid = uuidv4();
     const channel = IPCRendererChannel.USER_DATA;
     headers.uuid = theUuid;
@@ -187,15 +187,14 @@ export class IpcService {
     const headers: Headers = { uuid: '', operation: IpcOperations.FIND };
     headers.uuid = theUuid;
     this.sendToMainNew(channel, headers,
-      null, null);
+      null, {});
     return from(this.listenOnceWithTimeout(`${channel}-${theUuid}`));
   }
 
   savePreferences(val) {
     const theUuid = uuidv4();
     const channel = IPCRendererChannel.PREFERENCES;
-    const headers: Headers = { uuid: '', operation: IpcOperations.UPDATE };
-    headers.uuid = theUuid;
+    const headers: Headers = { uuid: theUuid, operation: IpcOperations.UPDATE };
     this.sendToMainNew(channel, headers,
       val, null);
     return from(this.listenOnceWithTimeout(`${channel}-${theUuid}`));
@@ -252,25 +251,25 @@ export class IpcService {
     return new Promise<any>((resolve, reject) => {
       try {
         this.ipcRenderer.once(channel, (event, arg) => {
-          this.loggerService.info(`channel:  ${channel}  arg: ${arg}`);
+          this.loggerService.info(`channel: ${JSON.stringify(channel)}  arg: ${arg}`);
           resolve(arg);
         });
       } catch {
-        this.loggerService.error(`listen ${channel} failed`);
+        this.loggerService.error(`listen ${JSON.stringify(channel)}  failed`);
         resolve(null);
       }
     });
   }
 
-  private listenOnceWithTimeout(channel: string, timeoutMillis = 30) {
+  private listenOnceWithTimeout(channel: string, timeoutMillis = 300000) {
     const promise = new Promise<any>((resolve, reject) => {
       try {
         this.ipcRenderer.once(channel, (event, arg) => {
-          this.loggerService.info(`channel:  ${channel}  arg: ${arg}`);
+          this.loggerService.info(`channel: ${JSON.stringify(channel)} arg: ${arg}`);
           resolve(arg);
         });
       } catch {
-        this.loggerService.error(`listen ${channel} failed`);
+        this.loggerService.error(`listen ${JSON.stringify(channel)} failed`);
         reject(null);
       }
     });
@@ -280,6 +279,7 @@ export class IpcService {
           this.ipcRenderer.removeListener(channel, e => {
             this.loggerService.warn(`Removed ipc listener ${channel}`);
           });
+          this.loggerService.error(`removed ${JSON.stringify(channel)} listener`);
           reject(`Timed out after ${timeoutMillis} ms.`);
         },
         timeoutMillis));

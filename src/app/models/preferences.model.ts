@@ -1,37 +1,37 @@
 
 export interface IPreferences {
-  isDarkMode: boolean
-  isEnableCache: boolean
-  libraryFolders: string[]
-  torrentSeedRatio: number
-  torrentRatio?: any
-  autoPlayTrailer: boolean
-  playTrailerBeforeShow: boolean
-  subtitle: ISubtitlePreferences
-  hotKeys: IHotkeys
-  playBack: IPlaybackPreferences
+  isDarkMode: boolean;
+  isEnableCache: boolean;
+  libraryFolders: string[];
+  /** torrent ratio until delete */
+  torrentSeedRatio: number;
+  autoPlayTrailer: boolean;
+  playTrailerBeforeShow: boolean;
+  subtitle: ISubtitlePreferences;
+  hotKeys: IHotkeys;
+  playBack: IPlaybackPreferences;
   library: ILibraryPreferences,
-  streamPreferences?: IStreamPreferences
-  autoScan : {
-    enable: boolean
-    frequencyUnit?: "day"|"minute"|"hour"|"week"
-    frequencyValue?: number
-  }
+  streamPreferences?: IStreamPreferences;
+  autoScan: {
+    enable: boolean;
+    frequencyUnit?: "day" | "minute" | "hour" | "week";
+    frequencyValue?: number;
+  };
 }
 
 interface IStreamPreferences {
-  downloadSpeed: number // in bps
+  downloadSpeed: number; // in bps
 }
 interface ILibraryPreferences {
-  libraryPathList: string[]
-  scanFrenquency: IScanFrequency
+  libraryPathList: string[];
+  scanFrenquency: IScanFrequency;
 }
 
 export interface IPlaybackPreferences {
-  preferredQuality: Quality
-  preferredMode: 'torrent' | 'offline'
-  repeat: boolean
-  volume: number
+  preferredQuality: Quality;
+  preferredMode: 'torrent' | 'offline';
+  repeat: boolean;
+  volume: number;
 }
 
 export enum Quality {
@@ -41,13 +41,15 @@ export enum Quality {
   FourK = '4k'
 }
 interface IScanFrequency {
-  isScanAutomatically: boolean
-  frequencyUnit: string
-  frequencyValue: number
+  isScanAutomatically: boolean;
+  frequencyUnit: string;
+  frequencyValue: number;
 }
 
 interface IHotkeys {
-  playerHotkeys?: any
+  playerHotkeys?: {
+    [x: string]: any;
+  };
 
 }
 

@@ -30,13 +30,13 @@ export class ProgressService extends BaseProgressService {
   postProgress(progressBody: IMediaProgress): Observable<IMediaProgress> {
     return this.dataService.postHandle(
       this.http.post<any>(this.httpUrlProvider.getBffAPI('/progress'), progressBody), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
-        progressBody));
+        progressBody, null));
   }
 
   setProgressMultiple(idList: string): Observable<any> {
     return this.dataService.postHandle(
       this.http.post<any>(this.httpUrlProvider.getBffAPI('/progress'), idList), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
-        { idList }));
+        { idList }, null));
 
   }
 
@@ -48,7 +48,7 @@ export class ProgressService extends BaseProgressService {
    * @param type
    */
   getProgressesMultiple(limit: number, offset: number, sortBy: string, type: string): Observable<IUserDataPaginated> {
-    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND },
+    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND }, null,
       { limit, offset, sortBy, type }));
   }
 
@@ -57,7 +57,7 @@ export class ProgressService extends BaseProgressService {
    * @param idList
    */
   deleteProgress(listId: string): any {
-    return this.dataService.deleteHandle(null, this.ipcService.userData({ subChannel: SubChannel.PROGRESS, operation: IpcOperations.REMOVE },
+    return this.dataService.deleteHandle(null, this.ipcService.userData({ subChannel: SubChannel.PROGRESS, operation: IpcOperations.REMOVE }, null,
       { _id: listId }));
   }
 
@@ -67,7 +67,7 @@ export interface IWatched extends IUserSavedData {
   id?: string; // also use in Doc Id
   tmdbId: number,
   imdbId?: string,
-  title: string,
-  year: number,
+  // title: string,
+  // year: number,
   percentage?: number,
 }

@@ -125,6 +125,29 @@ class GeneralRepository {
       });
     });
   }
+  /**
+   *
+   * @param {*} query
+   * @returns
+   */
+  find(query) {
+    let root = this;
+    DEBUG.log(`GeneralRepository find in ${root.currentDbLocalName}`, query);
+    return new Promise(function (resolve, reject) {
+      root.currentDbLocal.find(query, function (err, doc) {
+        if (!err) {
+          DEBUG.log(`${root.currentDbLocalName} found`, doc);
+          if (!err) {
+            // doc = root.map(doc);
+            resolve(doc);
+          }
+        } else {
+          reject(err);
+          DEBUG.log(err);
+        }
+      });
+    });
+  }
 
   /**
    * Gets watched movies in list.

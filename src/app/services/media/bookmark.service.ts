@@ -28,9 +28,9 @@ export class BookmarkService extends BaseBookmarkService {
    * Removes bookmark.
    * @param id watched id/_id/tmdbId to remove.
    */
-  removeBookmark(type: 'id' | 'tmdbId', id: string | number) {
+  removeBookmark(type: 'id' | 'tmdbId', id: string | number): Observable<any> {
     return this.dataService.getHandle(this.bffService.deleteBookmark(id), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.REMOVE },
-      null));
+      null, { tmdbId: id }));
   }
 
   saveBookmarkMulti(data: object[]) {

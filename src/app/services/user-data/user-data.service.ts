@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IBookmark, BookmarkService } from '../media/bookmark.service';
 import { MovieService } from '../movie/movie.service';
-import { PlayedService, IWatched } from '../media/played.service';
+import { PlayedService, IPlayed } from '../media/played.service';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '../ipc.service';
 import { CollectionName } from '../firebase.service';
 import { BffService } from '../mdb-api.service';
@@ -20,13 +20,17 @@ export class UserDataService {
     private bffService: BffService,
     private dataService: DataService,
     private movieService: MovieService,
-    private watchedService: PlayedService,
+    private playedService: PlayedService,
     private libraryService: LibraryService,
     private mediaUserData: MediaUserDataService,
     private ipcService: IpcService,
   ) { }
 
   toggleBookmark(id) {
+
+  }
+
+  toggleUserData(type: 'bookmark' | 'favorite' | 'played', id: number) {
 
   }
   /**
@@ -44,7 +48,7 @@ export class UserDataService {
    */
   getMovieUserDataInList(idList: any[]): Observable<any> {
     return this.dataService.getHandle(this.bffService.getMediaUserDataInList(idList), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.FIND_IN_LIST },
-      null, idList));
+      null, { tmdbIdList: idList }));
   }
 
   getUserDataMultiple(dataType: 'library' | 'bookmark' | 'watched', data: object) {
@@ -71,7 +75,7 @@ export class UserDataService {
         data = bookmarksList;
         break;
       case 'watched':
-        const watchedList = await this.watchedService.getWatchedPaginatedFirstPage();
+        const watchedList = await this.playedService.getPlayedPaginatedFirstPage();
         data = watchedList;
         break;
       case 'library':
@@ -98,7 +102,7 @@ export class UserDataService {
         dataList = await this.bookmarkService.getBookmarksPaginated(lastValue);
         break;
       case 'watched':
-        dataList = await this.watchedService.getWatchedPaginated(lastValue);
+        dataList = await this.playedService.getPlayedPaginated(lastValue);
         break;
       case 'library':
         dataList = await this.libraryService.getLibraryPaginated(lastValue);
@@ -118,6 +122,15 @@ export class UserDataService {
 
       resolve(e);
     });
+  }
+
+  commonSetter(val: number | Object) {
+    if (val >= 1) {
+      return false;
+    }
+    if (val && val['_id']) {
+      return true;
+    }
   }
 
   /**
@@ -180,7 +193,7 @@ export class UserDataService {
         userData = bm;
         break;
       case 'watched':
-        const w: IWatched = {
+        const w: IPlayed = {
           id: docDataId,
           title: docData.title,
           year: docData.year,

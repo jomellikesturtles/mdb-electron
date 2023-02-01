@@ -2,10 +2,10 @@
  * Mock data and Defaults. For pre-defined lists and offline data
  */
 
-import { ITmdbResultObject, ILibraryMovie, MDBTorrent, IOmdbMovieDetail } from '@models/interfaces'
-import { Injectable } from '@angular/core'
-import { IYTSSingleQuery } from '@models/yts-torrent.model'
-import { IProfileData } from '@models/profile-data.model'
+import { ITmdbResultObject, ILibraryMovie, MDBTorrent, IOmdbMovieDetail } from '@models/interfaces';
+import { Injectable } from '@angular/core';
+import { IYTSSingleQuery } from '@models/yts-torrent.model';
+import { IProfileData } from '@models/profile-data.model';
 
 export const TEST_LIBRARY_MOVIES: ILibraryMovie[] = [
   {
@@ -29,7 +29,7 @@ export const TEST_LIBRARY_MOVIES: ILibraryMovie[] = [
     year: 1994,
     directory: ['D:\\media server\\movies\\pulp fiction.mp4']
   }
-]
+];
 
 export const TEST_OMDB_MOVIE_DETAIL = {
   Title: 'WALL·E',
@@ -73,7 +73,7 @@ export const TEST_OMDB_MOVIE_DETAIL = {
   Production: 'Walt Disney Pictures',
   Website: 'http://www.wall-e.com/',
   Response: 'True'
-}
+};
 
 export const MOCK_MOVIE_DETAIL = {
   id: 1,
@@ -91,7 +91,7 @@ export const MOCK_MOVIE_DETAIL = {
   Poster: '',
   torrents: '',
   backgroundImageDirectory: ''
-}
+};
 
 export const MOCK_BULK_DOWNLOAD_TORRENTS = [
   {
@@ -136,7 +136,7 @@ export const MOCK_BULK_DOWNLOAD_TORRENTS = [
     hash: '5FEFAC61C0F42FFC43946B3379A540D1A38F6480',
     checked: false
   }
-]
+];
 
 export const MOVIEGENRES = [
   { id: 1, code: 'ACT', description: 'Action', isChecked: true },
@@ -146,7 +146,7 @@ export const MOVIEGENRES = [
   { id: 5, code: 'HOR', description: 'Horror', isChecked: false },
   { id: 6, code: 'SCI', description: 'Sci-Fi', isChecked: true },
   { id: 7, code: 'THR', description: 'Thriller', isChecked: false }
-]
+];
 
 export let DISPLAYEDMOVIES = [
   {
@@ -230,7 +230,7 @@ export let DISPLAYEDMOVIES = [
     torrents: [],
     id: 771
   }
-]
+];
 // used in top-nav for search
 export const MOVIES: IOmdbMovieDetail[] = [
   // { id: 1, Title: 'Face Off', Year: 1997, Plot: '', genre: 'Action', isAvailable: false, imageDirectory: './assets/images/1997-face-off-poster1.jpg', Runtime: '156', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' },
@@ -241,7 +241,7 @@ export const MOVIES: IOmdbMovieDetail[] = [
   // { id: 6, Title: 'Paper Towns', Year: 2015, Plot: '', genre: 'Drama', isAvailable: true, imageDirectory: './assets/images/2015-paper_towns.jpg', Runtime: '120', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' },
   // { id: 7, Title: 'Good Morning Vietnam', Year: 1987, Plot: '', genre: 'Action', isAvailable: false, imageDirectory: './assets/images/1987-good_morning_vietnam.jpg', Runtime: '120', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' },
   // { id: 8, Title: 'Three Musketeers', Year: 2011, Plot: '', genre: 'Action', isAvailable: true, imageDirectory: './assets/images/2011-three_musketeers.jpg', Runtime: '180', Genre: '', Director: '', Writer: '', Poster: '', imdbID: '' }
-]
+];
 
 export const TORRENTS: MDBTorrent[] = [
   //   {
@@ -267,54 +267,54 @@ export const TORRENTS: MDBTorrent[] = [
   //   size: 1827526513,
   //   hash: 'lop06WdSY2yjNig+yeQrj1wm6jY='
   // },
-]
+];
 
 @Injectable()
 export class StartTimeStamp {
-  private startTimeStamp: number
+  private startTimeStamp: number;
   setStartTimeStamp(val: number): void {
-    this.startTimeStamp = val
+    this.startTimeStamp = val;
   }
   getStartTimeStamp(): number {
-    return this.startTimeStamp
+    return this.startTimeStamp;
   }
 }
 
 @Injectable()
 export class DisplayedTorrents {
-  private myDisplayedTorrents: DisplayedTorrent[]
+  private myDisplayedTorrents: DisplayedTorrent[];
   // add(val: DisplayedTorrent) {
   //   val = new DisplayedTorrent()
   //   this.myDisplayedTorrents.push(val)
   // }
   getDisplayedTorrents() {
-    return this.myDisplayedTorrents
+    return this.myDisplayedTorrents;
   }
 }
 
 @Injectable()
 export class DisplayedTorrent {
-  private added?: string
-  private hash: string
-  private name: string
-  private size: number
+  private added?: string;
+  private hash: string;
+  private name: string;
+  private size: number;
   constructor(added: string, hash: string, name?: string, size?: number) {
-    this.added = added
-    this.hash = hash
-    this.name = name
-    this.size = size
+    this.added = added;
+    this.hash = hash;
+    this.name = name;
+    this.size = size;
   }
   getAdded(): string {
-    return this.added
+    return this.added;
   }
   getHash(): string {
-    return this.hash
+    return this.hash;
   }
   getName(): string {
-    return this.name
+    return this.name;
   }
   getSize(): number {
-    return this.size
+    return this.size;
   }
 }
 
@@ -666,11 +666,11 @@ export let TMDB_SEARCH_RESULTS: ITmdbResultObject = {
       release_date: '1993-10-09'
     }
   ]
-}
+};
 export const TEST_TMDB_SINGLE_RESULT =
 {
   popularity: 28.872, vote_count: 13772, video: false, poster_path: '\/nk11pvocdb5zbFhX5oq5YiLPYMo.jpg', id: 14160, adult: false, backdrop_path: '\/6fX7NF6IUJCTVssei7Shgl9J6LL.jpg', original_language: 'en', original_title: 'Up', genre_ids: [12, 16, 35, 10751], title: 'Up', vote_average: 7.9, overview: 'Carl Fredricksen spent his entire life dreaming of exploring the globe and experiencing life to its fullest. But at age 78, life seems to have passed him by, until a twist of fate (and a persistent 8-year old Wilderness Explorer named Russell) gives him a new lease on life.', release_date: '2009-05-28'
-}
+};
 export const TEST_TMDB_MOVIE_DETAILS = {
   adult: false,
   backdrop_path: '/wMgbnUVS9wbRGAdki8fqxKU1O0N.jpg',
@@ -717,7 +717,7 @@ export const TEST_TMDB_MOVIE_DETAILS = {
   video: false,
   vote_average: 8.4,
   vote_count: 15996
-}
+};
 
 
 const TEST_TMDB_MOVIE_DETAIL2 = {
@@ -807,7 +807,7 @@ const TEST_TMDB_MOVIE_DETAIL2 = {
   video: false,
   vote_average: 8.4,
   vote_count: 17355
-}
+};
 
 
 export const YTS_TORRENT_SINGLE_RESULT: IYTSSingleQuery = {
@@ -895,20 +895,20 @@ export const YTS_TORRENT_SINGLE_RESULT: IYTSSingleQuery = {
     "api_version": 2,
     "execution_time": "0 ms"
   }
-}
+};
 
 export const MOCK_USER_DATA_LIST: IProfileData[] = [
   {
     tmdbId: 597, //titanic
     isFavorite: true,
-    watched: {
+    played: {
       percentage: 100
     }
   },
   {
     tmdbId: 857, // svpr
     isFavorite: true,
-    watched: {
+    progress: {
       percentage: 100
     }
   },
@@ -923,13 +923,13 @@ export const MOCK_USER_DATA_LIST: IProfileData[] = [
   {
     tmdbId: 769, // goodfellas
     isBookmark: true,
-    watched: {
+    progress: {
       percentage: 51
     }
   },
   {
     tmdbId: 775996, // goodfellas
-    watched: {
+    progress: {
       percentage: 75
     },
     review: {
@@ -938,4 +938,4 @@ export const MOCK_USER_DATA_LIST: IProfileData[] = [
       id: 213
     }
   },
-]
+];
