@@ -20,7 +20,7 @@ function onLibrary(rawData, mainWindow) {
   DEBUG.log("headers ", headers);
   DEBUG.log("body ", body);
   handleUserData(libraryRepository, headers, query, body)
-    .then((e) => {
+    .then((response) => {
       sendContents(`library-${uuid}`, response, mainWindow);
     })
     .catch((err) => {
@@ -47,6 +47,9 @@ async function handleUserData(dbRepo, headers, query, body) {
     case OPERATIONS.SAVE:
       result = dbRepo.save(body);
       break;
+    case OPERATIONS.FIND:
+      result = dbRepo.find(query);
+      break;
     case OPERATIONS.FIND_ONE:
       result = dbRepo.findOne(query);
       break;
@@ -61,8 +64,8 @@ async function handleUserData(dbRepo, headers, query, body) {
       break;
     default:
       hasError = true;
-      errorMessage += "no command";
-      DEBUG.error(`errorMessage`);
+      errorMessage += "no command found";
+      DEBUG.error(`errorMessage ${errorMessage}`);
       break;
   }
   return result;

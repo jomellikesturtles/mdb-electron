@@ -10,6 +10,9 @@ import { UserDataService } from '@services/user-data/user-data.service';
 import { PlayedService } from '@services/media/played.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util';
+import { LoggerService } from '@core/logger.service';
+import { BookmarkService } from '@services/media/bookmark.service';
+import { FavoriteService } from '@services/media/favorite.service';
 
 @Component({
   selector: 'app-preview',
@@ -28,6 +31,10 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private movieService: MovieService,
     private domSanitizer: DomSanitizer,
+    private loggerService: LoggerService,
+    private bookmarkService: BookmarkService,
+    private favoriteService: FavoriteService,
+    private playedService: PlayedService,
   ) { }
 
   previewMovie: MDBMovie;
@@ -229,22 +236,62 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  async toggleBookmark(): Promise<any> {
-    this.procBookmark = true;
-    let bmDoc;
-    bmDoc = await this.userDataService.toggleBookmark(this.previewMovie);
-    console.log('BOOKMARKADD/remove:', bmDoc);
-    this.procBookmark = false;
-    // this.cdr.detectChanges()
+  _isBookmarked = false;
+  _isPlayed = false;
+  _isFavorite = false;
+  procPlayed = false;
+  procFavorite = false;
+  set isBookmarked(val: number | Object) {
+    this.loggerService.info('set isBookmarked called');
+    this._isBookmarked = this.userDataService.commonSetter(val);
   }
 
-  async toggleWatched() {
-    this.procWatched = true;
-    let wDocId;
-    wDocId = await this.watchedService.toggleWatched(this.previewMovie);
-    console.log('WATCHEDADD/remove:', wDocId);
+  set isFavorite(val: number | Object) {
+    this.loggerService.info('set isFavorite called');
+    this._isFavorite = this.userDataService.commonSetter(val);
+  }
+
+  set isPlayed(val: number | Object) {
+    this.loggerService.info('set isPlayed called');
+    this._isPlayed = this.userDataService.commonSetter(val);
+  }
+
+  async toggleBookmark(): Promise<any> {
+    this.procBookmark = true;
+    const tmdbId = this.previewMovie.tmdbId;
+    let res = false;
+    if (this._isBookmarked) {
+      res = await this.bookmarkService.removeBookmark('tmdbId', tmdbId).toPromise();
+    } else {
+      res = await this.bookmarkService.saveBookmark(tmdbId).toPromise();
+    }
+    this.isBookmarked = res;
     this.procBookmark = false;
-    // this.cdr.detectChanges()
+  }
+
+  async toggleFavorite() {
+    this.procFavorite = true;
+    const tmdbId = this.previewMovie.tmdbId;
+    let res;
+    if (this._isFavorite) {
+      res = await this.favoriteService.removeFavorite('tmdbId', tmdbId).toPromise();
+    } else {
+      res = await this.favoriteService.saveFavorite(tmdbId).toPromise();
+    }
+    this.isFavorite = res;
+    this.procFavorite = false;
+  }
+  async togglePlayed() {
+    this.procPlayed = true;
+    const tmdbId = this.previewMovie.tmdbId;
+    let res = false;
+    if (this._isPlayed) {
+      res = await this.playedService.removePlayed('tmdbId', tmdbId).toPromise();
+    } else {
+      res = await this.playedService.savePlayed(tmdbId).toPromise();
+    }
+    this.isPlayed = res;
+    this.procPlayed = false;
   }
 
   toggleMute() {

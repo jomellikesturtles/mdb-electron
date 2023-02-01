@@ -28,8 +28,9 @@ export class ListsService extends BaseListService {
    * @returns
    */
   createList(listObject: IMediaList): Observable<IMediaList> {
-    return this.dataService.postHandle(this.bffService.saveMediaList(listObject), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
-      listObject));
+    return this.dataService.postHandle(this.bffService.saveMediaList(listObject),
+      this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
+        listObject, null));
   };
 
   /**
@@ -38,8 +39,9 @@ export class ListsService extends BaseListService {
    * @returns
    */
   getList(listId: number | string): Observable<any> {
-    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND_ONE },
-      { _id: listId }));
+    return this.dataService.getHandle(null,
+      this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND_ONE },
+        null, { _id: listId }));
   };
 
   /**
@@ -50,8 +52,9 @@ export class ListsService extends BaseListService {
    * @param type
    */
   getLists(limit: number, offset: number, sortBy: string, type: string): Observable<IUserDataPaginated> {
-    return this.dataService.getHandle(null, this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND_ONE },
-      { limit, offset, sortBy, type }));
+    return this.dataService.getHandle(null,
+      this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND_ONE },
+        null, { limit, offset, sortBy, type }));
   };
 
   /**
@@ -59,8 +62,9 @@ export class ListsService extends BaseListService {
    * @param idList
    */
   deleteList(listId: string): any {
-    return this.dataService.deleteHandle(null, this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.REMOVE },
-      { _id: listId }));
+    return this.dataService.deleteHandle(null,
+      this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.REMOVE },
+        null, { _id: listId }));
   }
 
 
@@ -71,8 +75,9 @@ export class ListsService extends BaseListService {
    * @returns
    */
   editListById(id: string, listObject: IMediaList): Observable<any> {
-    return this.dataService.postHandle(this.bffService.saveMediaList(listObject), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.UPDATE },
-      listObject));
+    return this.dataService.postHandle(this.bffService.saveMediaList(listObject),
+      this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.UPDATE },
+        listObject, null));
   };
 
   /**
@@ -94,7 +99,7 @@ export interface IWatched extends IUserSavedData {
   id?: string; // also use in Doc Id
   tmdbId: number,
   imdbId?: string,
-  title: string,
-  year: number,
+  // title: string,
+  // year: number,
   percentage?: number,
 }

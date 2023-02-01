@@ -17,35 +17,34 @@ overflow: hidden;'>
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);'>
     <div class='row'>
-<!-- style='background-color: #555555' -->
+      <!-- style='background-color: #555555' -->
       <div class='col-xl-4'>
         <div>
           <!-- <div style='background-color: aqua;height:100%'> -->
           <div class='img-container mdb-poster image-cover'
             style='  background-color: white; margin:auto; height: 60vh; width: calc(60vh*.65); max-width: 420px;'
-            [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.posterPath+')'}"
-            >
+            [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.posterPath+')'}">
             <!-- (click)="previewImage()" v1-disabled-->
           </div>
           <div class='container'>
             <div id='userDataControlsContainer'
               style=' margin-left:auto; margin-right: auto; margin-top:1em; width:300px'>
               <div class='row'>
-                <div class='col-4' style="text-align: center;">
+                <div class='col-4' style="text-align: center;" (click)="toggleBookmark()">
                   <button mat-fab color="accent" aria-label="Toggle bookmark" class='details-button'
                     data-toggle='tooltip' title='Toggle Bookmark'>
                     <img style='filter: invert(1); height: 1.3em; cursor: pointer'
                       src='../../../assets/icons/bookmark-add.svg' />
                   </button>
                 </div>
-                <div class='col-4' style="text-align: center;">
+                <div class='col-4' style="text-align: center;" (click)="togglePlayed()">
                   <button mat-fab aria-label="Toggle watched" style='background-color:orange' class='details-button'
                     data-toggle='tooltip' title='Toggle watched'>
                     <img style='filter: invert(1); height: 1.3em; cursor: pointer'
                       src='../../../assets/icons/eye.svg' />
                   </button>
                 </div>
-                <div class='col-4' style="text-align: center;">
+                <div class='col-4' style="text-align: center;" (click)="toggleFavorite()">
                   <button mat-fab color="warn" aria-label="Toggle favorite" class='details-button' data-toggle='tooltip'
                     title='Toggle Bookmark'>
                     <img style='filter: invert(1); height: 1.3em; cursor: pointer'
@@ -58,7 +57,7 @@ overflow: hidden;'>
         </div>
       </div>
       <!-- style='background-color: white' -->
-      <div class='col-xl-8' >
+      <div class='col-xl-8'>
         <div style='height:100%'>
           <div style='display: flex; position:relative'>
             <h2 id="movieTitle" class='movie-title'>{{movieDetails.title}}</h2>&nbsp;
@@ -112,13 +111,14 @@ overflow: hidden;'>
             <div>
               <!-- unified play button -->
               <div class="btn-group">
-                <button class="btn btn-danger mdb-primary play-btn" [disabled]="playLinks.length <= 0" (click)='playBestPlayLink()'>
-                   <span *ngIf='!procPlayLink'>Play </span>
-                  <mat-spinner *ngIf='procPlayLink'
-                    [diameter]='27' style='margin: auto;'></mat-spinner>
+                <button class="btn btn-danger mdb-primary play-btn" [disabled]="playLinks.length <= 0"
+                  (click)='playBestPlayLink()'>
+                  <span *ngIf='!procPlayLink'>Play </span>
+                  <mat-spinner *ngIf='procPlayLink' [diameter]='27' style='margin: auto;'></mat-spinner>
                 </button>
                 <button class="btn btn-danger dropdown-toggle dropdown-toggle-split play-btn-dropdown-toggle"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [disabled]="playLinks.length <= 0">
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  [disabled]="playLinks.length <= 0">
                   <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu">
@@ -164,7 +164,8 @@ overflow: hidden;'>
                   <span class='col-2 color-secondary font-emphasize credit-label'>Produced by</span>
                   <span class='credit-list-wrap col-9'>
                     <span *ngFor="let producer of movieDetailsProducers; let isLast=last">
-                      <span class='text-hyperlink' (click)='goToDiscover("person", producer.id, producer.name)'>{{producer.name}}{{isLast ? ''
+                      <span class='text-hyperlink'
+                        (click)='goToDiscover("person", producer.id, producer.name)'>{{producer.name}}{{isLast ? ''
                         :', '}}</span>
                     </span>
                   </span>

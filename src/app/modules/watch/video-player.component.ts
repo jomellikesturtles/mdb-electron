@@ -82,7 +82,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   constructor(
     private ipcService: IpcService,
-    private watchedService: PlayedService,
+    private playedService: PlayedService,
     private movieService: MovieService,
     private elementRef: ElementRef,
     private userIdleService: UserIdleService,
@@ -189,7 +189,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     this.videoPlayerElement.addEventListener('ended', (e) => {
       this.isPlaying = false;
       GeneralUtil.DEBUG.log('EVENT: ended', e);
-      // this.watchedService.saveWatched({
+      // this.playedService.saveWatched({
       //   id: '',
       //   tmdbId: this.tmdbId,
       //   imdbId: this.imdbId,
@@ -367,7 +367,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       // percentage: Math.floor(this.videoPlayerElement.currentTime / this.videoPlayerElement.duration * 100)
     };
     GeneralUtil.DEBUG.log('updating watched', watchedObj);
-    this.watchedService.savePlayed(watchedObj);
+    this.playedService.savePlayed(watchedObj);
   }
 
   togglePlay() {

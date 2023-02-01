@@ -42,7 +42,7 @@ export class FavoriteService {
 
   saveFavorite(data: any): Observable<any> {
     return this.dataService.postHandle(this.bffService.saveMediaList(data), this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.SAVE },
-      data));
+      data, null));
     // if (environment.runConfig.springMode) {
     //   return this.bffService.saveFavorite(data).toPromise()
     // }
