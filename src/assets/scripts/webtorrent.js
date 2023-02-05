@@ -1,5 +1,6 @@
 // torrent client
 /*jshint esversion: 8 */
+// const WebTorrent = require("webtorrent");
 const WebTorrent = require("webtorrent");
 let moment = require("moment");
 const { prettyBytes, DEBUG, processInit } = require("./shared/util");
@@ -10,7 +11,7 @@ const { canPlayNewTorrent } = require("./trans-play-process");
 let args = process.argv.slice(2);
 
 const TORRENT_CONFIG = {
-  maxConns: 10,
+  maxConns: 10
 };
 
 const MAX_NO_CON = 30;
@@ -78,8 +79,7 @@ function playMovieTorrent(hash) {
 
     let desiredFile = TorrentUtil.getDesiredFile(torrent.files);
     const desiredFileIndex = desiredFile.index;
-    currentStreamLink =
-      "http:\\\\localhost:" + serverPort + "\\" + desiredFileIndex;
+    currentStreamLink = "http://localhost:" + serverPort + "/" + desiredFileIndex;
     DEBUG.log("sending stream-link2", currentStreamLink);
     process.send(["stream-link", currentStreamLink]);
     currentStreamLink = "";
@@ -117,16 +117,16 @@ function stopStream() {
       torrentClient.get(currentStreamHash).removeAllListeners();
     } catch (e) {}
     torrentClient.torrents.forEach((torrent) => {
-      DEBUG.log(
-        "torrent.infoHash(): ",
-        torrent.infoHash(),
-        " torrent.paused: ",
-        torrent.paused
-      );
+      DEBUG.log("torrent.infoHash(): ", torrent.infoHash(), " torrent.paused: ", torrent.paused);
     });
   }
 }
 
+/**
+ *
+ * @param {string} hash
+ * @returns {string}
+ */
 function getTorrentLink(hash) {
   return `magnet:?xt=urn:btih:${hash}`;
 }
@@ -184,7 +184,7 @@ function displayTorrentProgress(torrent) {
   /* END OF TEMPORARY COMMENT */
   const progressReturn = {
     progress: percent + "%",
-    downloadSpeed: torrent.downloadSpeed,
+    downloadSpeed: torrent.downloadSpeed
   };
 
   const toReturn = {
@@ -192,6 +192,8 @@ function displayTorrentProgress(torrent) {
     upSpeed: prettyBytes(torrent.uploadSpeed),
     downloadedPieces: countDownloadedPieces(torrent),
     ratio: torrent.ratio,
+    progress: percent + "%",
+    piecesInProgress: displayTorrentPiecesInProgress(torrent)
   };
 
   process.send(["stats", toReturn]);
@@ -202,6 +204,7 @@ function displayTorrentProgress(torrent) {
  * @param {import("webtorrent").Torrent} torrent
  */
 function countDownloadedPieces(torrent) {
+  // torrent.
   let downloadedPiecesCount = 0;
   torrent.pieces.forEach((piece) => {
     if (!piece) {
@@ -218,18 +221,19 @@ function countDownloadedPieces(torrent) {
  */
 function displayTorrentPiecesInProgress(torrent) {
   let pieceIndex = 0;
+  let res = [];
   torrent.pieces.forEach((piece) => {
     if (piece && piece.missing < piece.length) {
-      DEBUG.log(
-        "Piece Index " +
-          pieceIndex +
-          " - " +
-          ((piece.length - piece.missing) / piece.length) * 100 +
-          "%"
-      );
+      const pieceProgress = ((piece.length - piece.missing) / piece.length) * 100;
+      DEBUG.log("Piece Index " + pieceIndex + " - " + pieceProgress + "%");
+      res.push({
+        index: pieceIndex,
+        progress: pieceProgress
+      });
     }
     pieceIndex++;
   });
+  return res;
 }
 
 /**
@@ -238,10 +242,10 @@ function displayTorrentPiecesInProgress(torrent) {
  * @returns boolean
  */
 function playChecklist(torrentSize) {
-  return cp.fork(path.join(__dirname, "trans-play-process.js"), args, {
+  return fork(path.join(__dirname, "trans-play-process.js"), args, {
     // return cp.fork(path.join(__dirname, modulePath), args, {
     cwd: __dirname,
-    silent: false,
+    silent: false
   });
 }
 
@@ -282,4 +286,6 @@ process.on("message", (m) => {
 
 initializeClient();
 
-module.exports = { initializeClient, playMovieTorrent };
+module.exports = { initializeClient, playMovieTorrent, stopStream };
+
+// export default { initializeClient, playMovieTorrent, stopStream };

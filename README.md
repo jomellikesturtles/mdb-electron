@@ -62,6 +62,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 4. type `npm run electron` to run a built angular ui in an electron **window**
 5. type `electron .` to run as electron project
 6. type `electron-packager .` to build as electron app based on current system
+
 ### Run as angular project
 
 1. type `npm start` to start as angular project
@@ -88,7 +89,8 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
 ## Build
-``electron-packager .``
+
+`electron-packager .`
 
 ## Project Structure
 
@@ -118,7 +120,7 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 - NEDB
   - config (configuration and settings)
   - bookmarks
-  - watched ({_id,tmdbId,imdbId,timestamp,percentage})
+  - watched ({\_id,tmdbId,imdbId,timestamp,percentage})
   - moviedata (movie metadata for offline use)
   - libraryFiles (contains full file path of movie video and its matched tmdb id)
 
@@ -220,21 +222,12 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 ## Todo
 
 - change details data fetch from Component to Guard by using CanActivate
-- ~~Search by title, imdbId~~ or keyword,
 - 'advanced' filters by date, genre, isAvailable, etc.
 - has backup offline search by using torrent_dump and offline-imdb
 - must enable caching
-- ~~electron project~~
-- ~~Scan for movies in user-specified directory~~
-- ~~add originaltitle AND/OR save metadata on identifyMovie script~~
-- ~~torrents from online source~~
-- ~~fix background image in movie-info~~
-- ~~imdbId goes null/undefined if Tmdb doesn't have imdb id(especially on new movies)~~
 - mismatch number of search results because of filters(adults/non-movie) -- omdb source only
-- ~~add individual .js file for major functions~~
   - update offline files
   - ~~torrent~~
-- ~~add offline files into OneDrive~~
 - uncaughtException ipcChild Error: Cannot add duplicate torrent a86b4adb83506bb12ceabac2f42ae480ba44ecfa
 - VideoPlayerComponent.html:27 ERROR TypeError: Failed to set the 'currentTime' property on 'HTMLMediaElement': The provided double value is non-finite.
 
@@ -252,19 +245,18 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
   - preferences
   - library movies
   - stats for nerds{
-  pieces
-  bufferhealth
-  connection speed
-  codec
-  hash/id
-  source
-  size
-  res
-}
+    pieces
+    bufferhealth
+    connection speed
+    codec
+    hash/id
+    source
+    size
+    res
+    }
 
 > minor
 
-- ~~lazy loading~~
 - subtitles apis
 - loading screen
 - shortcut keys
@@ -306,7 +298,7 @@ http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b73
 
 > fonts
 
-- market deco; showtime; futura; helvetica  
+- market deco; showtime; futura; helvetica
 
 ## Offline Assets
 
@@ -414,37 +406,38 @@ https://www.daftlogic.com/projects-online-javascript-obfuscator.htm
   - object mapping/conversion (map/convert object to MDB Objecet from service)
   - electron to ts
 
-
-
 MEDIA
 
 /mediaUser/:mediaId
 mediaUserDataService -> bffService && ipcService (current user only)
 
-
 USER
 /user/:username
-- user info and stuff
-if online:  userService -> bffService && ipcService
-if offline: userService -> ipcService
-bffService -> UserService -> UserInfoService | FavoritesService | BookmarksService | ListsService | etc.. ->
-    UserInfoRepository | FavoritesRepository | BookmarksRepository| ListsService | etc.. -> DB
 
-/user/:username/favorites 
+- user info and stuff
+  if online: userService -> bffService && ipcService
+  if offline: userService -> ipcService
+  bffService -> UserService -> UserInfoService | FavoritesService | BookmarksService | ListsService | etc.. ->
+  UserInfoRepository | FavoritesRepository | BookmarksRepository| ListsService | etc.. -> DB
+
+/user/:username/favorites
+
 - get all favorites
--> bffService -> UserService -> FavoritesService -> FavoritesRepository -> DB
+  -> bffService -> UserService -> FavoritesService -> FavoritesRepository -> DB
 
 /user/:username/bookmarks ->
+
 - get all user bookmarks
--> bffService -> UserService -> BookmarksService -> BookmarksRepository -> DB
+  -> bffService -> UserService -> BookmarksService -> BookmarksRepository -> DB
 
 /user/:username/lists ->
+
 - get all user lists
--> bffService -> UserService -> ListsService -> ListsRepository -> DB
+  -> bffService -> UserService -> ListsService -> ListsRepository -> DB
 
 LIST
 /list/:listId
-if online:  listService -> bffService && ipcService
+if online: listService -> bffService && ipcService
 if offline: listService -> ipcService
 bffService -> ListsService -> ListsRepository -> DB
 
@@ -454,7 +447,6 @@ if offline: favoritesService -> ipcService
 
 bffService -> FavoritesService -> FavoritesRepository -> DB
 ipcService -> favorites-service -> NedDB
-
 
 BOOKMARKS
 

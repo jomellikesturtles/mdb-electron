@@ -1,2 +1,2 @@
-{"$$indexCreated":{"fieldName":"tmdbId","unique":true,"sparse":true}}
 {"tmdbId":10681,"_id":"gTR938Chdmr3aaYz","createdAt":{"$$date":1675268715145},"updatedAt":{"$$date":1675268715145}}
+{"$$indexCreated":{"fieldName":"tmdbId","unique":true,"sparse":true}}

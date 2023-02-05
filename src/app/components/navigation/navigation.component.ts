@@ -4,6 +4,7 @@ import { NavigationService, Navigation } from '@services/navigation.service';
 import { ListsService } from '@services/media/list.service';
 import { LoggerService } from '@core/logger.service';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
+import GeneralUtil from '@utils/general.util';
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
@@ -23,15 +24,20 @@ export class NavigationComponent implements OnInit {
   // navigation = new NavigationService(this, this.location)
   ngOnInit() {
     this.mediaUserDataService.getMediaUserData(122).subscribe(e => {
-      this.loggerService.log(`mediaUserDataService.getMediaUserData ${JSON.stringify(e)}`);
+      GeneralUtil.DEBUG.log(`mediaUserDataService.getMediaUserData ${JSON.stringify(e)}`);
+      // this.loggerService.log(`mediaUserDataService.getMediaUserData ${JSON.stringify(e)}`);
     });
     this.listsService.createList({
       title: "paborito kong pelikula 2",
       description: "deskriptsyon"
     }).subscribe(e => {
-      this.loggerService.log(`listsService.createList ${JSON.stringify(e)}`);
+
+      GeneralUtil.DEBUG.log(`listsService.createList ${e}`);
+      // this.loggerService.log(`listsService.createList ${JSON.stringify(e)}`);
       this.listsService.getList(e['_id']).subscribe(e1 => {
-        this.loggerService.log(`listsService.getList ${JSON.stringify(e1)}`);
+
+        GeneralUtil.DEBUG.log(`listsService.getList ${e1}`);
+        // this.loggerService.log(`listsService.getList ${JSON.stringify(e1)}`);
 
       });
     });
@@ -68,15 +74,15 @@ export class NavigationComponent implements OnInit {
   }
 
   goPreviousPage() {
-    console.log('goPreviousPage');
+    GeneralUtil.DEBUG.log('goPreviousPage');
     // this
     this.location.back();
     // this.navigation.previousPage()
   }
 
   goForwardPage() {
-    console.log('goPreviousPage');
-    console.log(this.location.path());
+    GeneralUtil.DEBUG.log('goPreviousPage');
+    GeneralUtil.DEBUG.log(this.location.path());
     this.location.forward();
     // this.navigation.nextPage()
   }

@@ -181,14 +181,15 @@ function uuidv4() {
   return u;
 }
 module.exports = {
-  sayHello: sayHello,
-  getReleaseYear: getReleaseYear,
-  prettyBytes: prettyBytes,
-  regexify: regexify,
-  getNumberOfPages: getNumberOfPages,
-  getFuncName: getFuncName,
-  DEBUG: DEBUG,
-  processInit: processInit,
-  processSend: processSend,
+  sayHello,
+  getReleaseYear,
+  prettyBytes,
+  regexify,
+  getNumberOfPages,
+  getFuncName,
+  DEBUG,
+  processInit,
+  processSend,
   uuidv4
 };
+// export default uuidv4;

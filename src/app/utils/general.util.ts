@@ -11,32 +11,32 @@ export default class GeneralUtil {
   static getYear(releaseDate: string) {
     const REGEX_OMDB_RELEASE_DATE = new RegExp(STRING_REGEX_OMDB_RELEASE_DATE, `gi`);
     const REGEX_TMDB_RELEASE_DATE = new RegExp(STRING_REGEX_TMDB_RELEASE_DATE, `gi`);
-    const REGEX_YEAR_ONLY = new RegExp(STRING_REGEX_YEAR_ONLY, `gi`)
-    const result1 = REGEX_OMDB_RELEASE_DATE.exec(releaseDate)
-    const result2 = REGEX_TMDB_RELEASE_DATE.exec(releaseDate)
-    const result3 = REGEX_YEAR_ONLY.exec(releaseDate)
-    let toReturn = ''
+    const REGEX_YEAR_ONLY = new RegExp(STRING_REGEX_YEAR_ONLY, `gi`);
+    const result1 = REGEX_OMDB_RELEASE_DATE.exec(releaseDate);
+    const result2 = REGEX_TMDB_RELEASE_DATE.exec(releaseDate);
+    const result3 = REGEX_YEAR_ONLY.exec(releaseDate);
+    let toReturn = '';
     if (result1) {
       toReturn = releaseDate.substr(releaseDate.lastIndexOf(' ') + 1);
     } else if (result2) {
-      toReturn = releaseDate.substring(0, releaseDate.indexOf('-'))
+      toReturn = releaseDate.substring(0, releaseDate.indexOf('-'));
     } else if (result3) {
-      toReturn = releaseDate
+      toReturn = releaseDate;
     }
-    return toReturn
+    return toReturn;
   }
 
   /**
    * Converts seconds to HH:mm:ss format.
    */
   static convertToHHMMSS(value): string {
-    if (!value) return '00:00'
-    const minSec = new Date(value * 1000).toISOString().substr(14, 5)
+    if (!value) return '00:00';
+    const minSec = new Date(value * 1000).toISOString().substr(14, 5);
     if (value < 3600) {
-      return minSec
+      return minSec;
     }
-    const hour = (value / 3600)
-    return Math.floor(hour) + ':' + minSec
+    const hour = (value / 3600);
+    return Math.floor(hour) + ':' + minSec;
   }
 
   /**
@@ -46,7 +46,7 @@ export default class GeneralUtil {
    * @returns percentage
    */
   static getPercentage(timestamp: number, length: number): number {
-    return (timestamp / length) * 100
+    return (timestamp / length) * 100;
   }
 
   /**
@@ -56,7 +56,7 @@ export default class GeneralUtil {
    * @returns timestamp in seconds
    */
   static getTimestamp(percentage: number, length: number): number {
-    return (percentage / 100) * length
+    return (percentage / 100) * length;
   }
   /**
    * Console log with date time.
@@ -66,8 +66,14 @@ export default class GeneralUtil {
     timestamp.toString = () => {
       return "[DEBUG " + new Date().toLocaleString() + "]";
     };
+    let timestamp2 = () => { };
+    timestamp2.toString = () => {
+      return new Date().toLocaleString();
+    };
     return {
-      log: console.log.bind(console, "%s", timestamp),
+      log: console.log.bind(console, "%c [LOG " + timestamp2 + "]", "background:gray; color:#fff; padding:3px; font-size:12px"),
+      warn: console.log.bind(console, "%c [WARN " + timestamp2 + "]", "background:yellow; color:#fff; padding:3px; font-size:12px"),
+      error: console.log.bind(console, "%c [ERROR " + timestamp2 + "]", "background:red; color:#fff; padding:3px; font-size:12px")
     };
   })();
 

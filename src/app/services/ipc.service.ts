@@ -141,7 +141,7 @@ export class IpcService {
     return this.listenOnce(`library-${theUuid}`);
   }
 
-  userData(headers: Headers, body: Body, params: Object) {
+  userData(headers: Headers, body: Body, params: IPCParams) {
     const theUuid = uuidv4();
     const channel = IPCRendererChannel.USER_DATA;
     headers.uuid = theUuid;
@@ -236,7 +236,7 @@ export class IpcService {
     }
   }
 
-  private sendToMainNew(channel: string, headers: Headers, body: Body, params?: any) {
+  private sendToMainNew(channel: string, headers: Headers, body: Body, params?: IPCParams) {
     const ipcContext: IPCContext = { headers, body, params };
     const ipcContextStr: string = JSON.stringify(ipcContext); //serialize
     try {
@@ -314,7 +314,14 @@ interface Body {
 }
 
 export interface IPCParams {
-  limit: number, offset: number, sortBy: string, type: string;
+  query?: Object;
+  sort?: Object;
+  page?: number;
+  size?: number;
+  // skip?: number;
+  // limit?: number;
+  [x: string]: any;
+  // limit: number, offset: number, sortBy: string, type: string;
 }
 
 export enum IpcOperations {
