@@ -3,6 +3,7 @@ import { TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { DataService } from '@services/data.service';
 import { MovieService } from '@services/movie/movie.service';
 import { ISearchQuery } from '@core/components/top-navigation/top-navigation.component';
+import GeneralUtil from '@utils/general.util';
 
 @Component({
   selector: 'app-results',
@@ -29,7 +30,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     private movieService: MovieService) { }
 
   ngOnInit(): void {
-    console.log('inResutlts');
+    GeneralUtil.DEBUG.log('inResutlts');
     this.getData();
   }
 
@@ -41,7 +42,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
    */
   getData() {
     this.dataService.searchQuery.subscribe(data => {
-      console.log('fromdataservice searchQuery: ', data);
+      GeneralUtil.DEBUG.log('fromdataservice searchQuery: ', data);
       this.isProcSearching = true;
       this.searchResults = []; // clear for new search
       this.currentPage = 1;

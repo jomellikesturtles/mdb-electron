@@ -1,7 +1,4 @@
 /*jshint esversion: 6 */
-const PROC_NAMES = {
-  SCAN_LIBRARY: "scan-library"
-};
 const SIZE_LIMIT = 5000000000;
 
 function getUserName() {
@@ -33,7 +30,6 @@ let OPERATIONS = Object.freeze({
 });
 
 module.exports = {
-  PROC_NAMES,
   SIZE_LIMIT,
   WEBTORRENT_FULL_FILE_PATH,
   COLLECTION_NAME,

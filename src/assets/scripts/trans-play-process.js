@@ -1,13 +1,13 @@
+/*jshint esversion: 6 */
 // transtion play process for ..... checks/processes before starting another play
-let cp = require("child_process");
-const path = require("path");
-var { DEBUG, processInit, getFuncName } = require("./shared/util");
+// const path = require("path");
+// var { DEBUG, processInit, getFuncName } = require("./shared/util");
 const { getFreeDiskSpace } = require("./system-disk-service");
 const { WEBTORRENT_FULL_FILE_PATH } = require("./shared/constants");
 const fs = require("fs");
 const rimraf = require("rimraf");
 
-processInit(process);
+// processInit(process);
 
 /**
  * TODO: optional: count all sizes before deleting
@@ -24,9 +24,7 @@ async function canPlayNewTorrent(spaceNeeded) {
   } else {
     // delete earliest modified/added torrent movie
     // if cannot delete or deleting wont be enough, throw error message
-    foldersOrderedByBirthTimeList = getSortedWebtorrentFolders(
-      WEBTORRENT_FULL_FILE_PATH
-    );
+    foldersOrderedByBirthTimeList = getSortedWebtorrentFolders(WEBTORRENT_FULL_FILE_PATH);
     let index = 0;
     do {
       rimraf.sync(foldersOrderedByBirthTimeList[index]);
@@ -74,6 +72,6 @@ function init() {
 // init();
 
 module.exports = {
-  canPlayNewTorrent: canPlayNewTorrent,
+  canPlayNewTorrent
   // scanWebTorrentFolder: scanWebTorrentFolder,
 };

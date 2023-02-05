@@ -33,6 +33,19 @@ let mdbTray;
 let splashWindow;
 const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`;
 
+process.on("uncaughtException", (error) => {
+  DEBUG.log("uncaughtException");
+  sendContents("error", JSON.stringify(error));
+});
+process.on("unhandledRejection", (error) => {
+  DEBUG.log("unhandledRejection");
+  sendContents("error", JSON.stringify(error));
+});
+process.on("error", (error) => {
+  DEBUG.log("error");
+  sendContents("error", JSON.stringify(error));
+});
+
 const PROC_OPTION = {
   cwd: __dirname,
   silent: true
@@ -196,14 +209,6 @@ function showWindow() {
   // if (isMac) {
   //   app.dock.show();
   // }
-}
-
-function playTorrentSample() {
-  procWebTorrent.send(["play-torrent", "2ef6de6be35239d370db76e5b47be49d96bbf4da"]);
-}
-
-function playTorrentSample2() {
-  procWebTorrent.send(["play-torrent", "2f200765bbfa5802ac2afdf0cb71865714e833a2"]);
 }
 
 ipcMain.on(IPCRendererChannel.STOP_STREAM, function (event, args) {
@@ -442,11 +447,7 @@ ipcMain.on(IPCRendererChannel.PREFERENCES_SET, function (event, data) {
  */
 ipcMain.on("movie-metadata", function (event, data) {
   let param2 = "";
-  offlineMovieDataService = forkChildProcess(
-    "src/assets/scripts/offlineMetadataService.js",
-    [data[0], param2],
-    PROC_OPTION
-  );
+  offlineMovieDataService = forkChildProcess("src/assets/scripts/offlineMetadataService.js", [data[0], param2], PROC_OPTION);
   offlineMovieDataService.stdout.on("data", (data) => printData(data));
   offlineMovieDataService.on("exit", function () {
     DEBUG.log("movie-metadata process ended");
@@ -459,11 +460,7 @@ ipcMain.on("movie-metadata", function (event, data) {
  */
 ipcMain.on("get-image", function (event, data) {
   DEBUG.log("image-data-service..", data[0], data[1]);
-  procmovieImageService = forkChildProcess(
-    "src/assets/scripts/image-data-service.js",
-    [data[0], data[1], data[2], data[3]],
-    PROC_OPTION
-  );
+  procmovieImageService = forkChildProcess("src/assets/scripts/image-data-service.js", [data[0], data[1], data[2], data[3]], PROC_OPTION);
   procmovieImageService.stdout.on("data", (data) => printData(data));
   procmovieImageService.on("exit", function () {
     DEBUG.log("image-data process ended");
@@ -604,15 +601,6 @@ function popCritError(msg) {
 function popWarn(msg) {
   mainWindow.webContents.send("notify", [msg, "warning"]);
 }
-
-process.on("uncaughtException", function (error) {
-  DEBUG.log("UncaughtException", error);
-  // if (mainWindow){
-  // popErr('An unknown error occurred');
-  // } else {
-  // app.quit();
-  // }
-});
 
 /**
  * exit codes
