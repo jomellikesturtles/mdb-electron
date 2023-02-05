@@ -8,6 +8,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { MDB_API_URL } from '../shared/constants';
 import { IProfileData } from '../models/profile-data.model';
 import { IMediaList } from '@models/media-list.model';
+import GeneralUtil from '@utils/general.util';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -114,7 +115,7 @@ export class BffService {
    */
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-      console.error(error); // log to console instead
+      GeneralUtil.DEBUG.error(error); // log to console instead
       this.log(`${operation} failed: ${error.message}`);
       // Let the app keep running by returning an empty result.
       return of(result as T);
@@ -122,7 +123,7 @@ export class BffService {
   }
 
   private log(message: string) {
-    console.log(`MovieService: ${message} `);
+    GeneralUtil.DEBUG.error(`MovieService: ${message}`);
   }
 }
 

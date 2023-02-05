@@ -1,17 +1,18 @@
 
 import { Component, OnInit, Input } from '@angular/core';
-import { Observable } from 'rxjs'
+import { Observable } from 'rxjs';
 import { IOmdbMovieDetail, MovieGenre, IGenre } from '@models/interfaces';
 import { MOVIES, MOVIEGENRES } from '../../../mock-data';
 import { STRING_REGEX_IMDB_ID } from '@shared/constants';
-import { DataService } from '@services/data.service'
-import { MovieService } from '@services/movie/movie.service'
-import { IpcService } from '@services/ipc.service'
-import { Router, ActivatedRoute } from '@angular/router'
-import { Location } from '@angular/common'
+import { DataService } from '@services/data.service';
+import { MovieService } from '@services/movie/movie.service';
+import { IpcService } from '@services/ipc.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 import { environment } from '@environments/environment';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
+import GeneralUtil from '@utils/general.util';
 
 @Component({
   selector: 'app-top-navigation',
@@ -19,7 +20,7 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./top-navigation.component.scss']
 })
 export class TopNavigationComponent implements OnInit {
-  @Input() data: Observable<any>
+  @Input() data: Observable<any>;
   constructor(
     private dataService: DataService,
     // private firebaseService: FirebaseService,
@@ -29,12 +30,12 @@ export class TopNavigationComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private location: Location) { }
 
-  isElectron = environment.runConfig.isElectron
-  status = 'LOGIN'
+  isElectron = environment.runConfig.isElectron;
+  status = 'LOGIN';
   browserConnection = navigator.onLine;
-  selectedMovie: IOmdbMovieDetail
+  selectedMovie: IOmdbMovieDetail;
   numbers;
-  currentYear = new Date().getFullYear()
+  currentYear = new Date().getFullYear();
   genres = ['Action', 'Adventure', 'Documentary', 'Drama', 'Horror', 'Sci-Fi', 'Thriller'];
   movieGenres = MOVIEGENRES;
   types = ['TV Series', 'Movie', 'Short'];
@@ -49,32 +50,32 @@ export class TopNavigationComponent implements OnInit {
     sortBy: ''
   };
   movies = MOVIES;
-  selectedMovies = []
-  isHighlighted = false
-  numberOfPages = 1
-  numberOfResults = 0
-  currentPage = 1
-  currentSearchQuery = ''
-  hasSearchResults = false
-  isSearchDirty = false
-  searchHistoryList = []
+  selectedMovies = [];
+  isHighlighted = false;
+  numberOfPages = 1;
+  numberOfResults = 0;
+  currentPage = 1;
+  currentSearchQuery = '';
+  hasSearchResults = false;
+  isSearchDirty = false;
+  searchHistoryList = [];
   filteredOptions: Observable<string[]>;
-  SEARCH_HISTORY_MAX_LENGTH = 8
-  decadesList = []
-  voteAverageList = []
-  isSignedIn = false
-  lastQuery = ''
+  SEARCH_HISTORY_MAX_LENGTH = 8;
+  decadesList = [];
+  voteAverageList = [];
+  isSignedIn = false;
+  lastQuery = '';
 
   myControl = new FormControl();
   ngOnInit() {
-    const e = localStorage.getItem('user')
+    const e = localStorage.getItem('user');
     // this.getSearchHistoryList()
     if (e === null) {
-      this.status = 'LOGIN'
-      this.isSignedIn = false
+      this.status = 'LOGIN';
+      this.isSignedIn = false;
     } else {
-      this.isSignedIn = true
-      this.status = ''
+      this.isSignedIn = true;
+      this.status = '';
     }
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(''),
@@ -92,7 +93,7 @@ export class TopNavigationComponent implements OnInit {
     // this.ipcService.call(this.ipcService.IPCCommand.GetSearchList)
     // this.ipcService.searchList.subscribe(data => {
     //   this.searchHistoryList = data
-    //   console.log('DATA:', data)
+    //   GeneralUtil.DEBUG.log('DATA:', data)
     // })
   }
 
@@ -100,7 +101,7 @@ export class TopNavigationComponent implements OnInit {
    * Go to previous location
    */
   navigateBack() {
-    this.location.back()
+    this.location.back();
   }
 
   /**
@@ -114,20 +115,20 @@ export class TopNavigationComponent implements OnInit {
    * Initialize search
    */
   onSearch(val: string) {
-    val = val.trim()
+    val = val.trim();
     if (this.lastQuery === val && this.router.url === '/results') {
-      return
+      return;
     }
-    this.lastQuery = val
-    this.searchHistoryList.unshift(val)
+    this.lastQuery = val;
+    this.searchHistoryList.unshift(val);
     this.removeDuplicate(val);
-    this.searchHistoryList.splice(this.searchHistoryList.indexOf(val), 1)
-    console.log(this.searchHistoryList);
+    this.searchHistoryList.splice(this.searchHistoryList.indexOf(val), 1);
+    GeneralUtil.DEBUG.log(this.searchHistoryList);
     if (this.searchHistoryList.length >= this.SEARCH_HISTORY_MAX_LENGTH) {
       // this.searchHistoryList = this.searchHistoryList.splice(1)
-      this.searchHistoryList = this.searchHistoryList.slice(0, this.SEARCH_HISTORY_MAX_LENGTH)
+      this.searchHistoryList = this.searchHistoryList.slice(0, this.SEARCH_HISTORY_MAX_LENGTH);
     }
-    const enteredQuery = val
+    const enteredQuery = val;
     // this.isSearchDirty = true
     // this.currentPage = 1
     // this.numberOfPages = 1
@@ -136,11 +137,11 @@ export class TopNavigationComponent implements OnInit {
     // // tt0092099 example
 
     this.searchHistoryList.unshift(val);
-    const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`)
+    const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`);
     if (enteredQuery.match(REGEX_IMDB_ID)) {
-      this.searchByImdbId(enteredQuery)
+      this.searchByImdbId(enteredQuery);
     } else {
-      this.searchByTitle(enteredQuery)
+      this.searchByTitle(enteredQuery);
     }
   }
 
@@ -153,10 +154,10 @@ export class TopNavigationComponent implements OnInit {
       if (data.Response !== 'False') {
         this.router.navigate([`/details/${imdbId}`], { relativeTo: this.activatedRoute });
       } else {
-        this.hasSearchResults = false
+        this.hasSearchResults = false;
         // insert code for not found
       }
-    })
+    });
   }
 
   /**
@@ -166,7 +167,7 @@ export class TopNavigationComponent implements OnInit {
   searchByTitle(enteredQuery: string) {
     // this.dataService.currentSearchQuery = enteredQuery
     if (this.searchQuery && this.searchQuery.query.length > 0) {
-      this.dataService.updateSearchQuery(this.searchQuery)
+      this.dataService.updateSearchQuery(this.searchQuery);
       this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
     }
   }
@@ -180,18 +181,18 @@ export class TopNavigationComponent implements OnInit {
   }
 
   onMinimize() {
-    this.ipcService.minimizeWindow()
+    this.ipcService.minimizeWindow();
   }
   onRestore() {
-    this.ipcService.minimizeRestoreWindow()
+    this.ipcService.minimizeRestoreWindow();
   }
   onExit() {
-    this.ipcService.exitApp()
+    this.ipcService.exitApp();
   }
 
   private removeDuplicate(val: string) {
     let result = this.searchHistoryList.filter((option, index) => {
-      console.log('option: ', option);
+      GeneralUtil.DEBUG.log('option: ', option);
       return this.searchHistoryList.indexOf(option) === index;
     });
     this.searchHistoryList = result;
@@ -215,7 +216,7 @@ export interface ISearchQuery {
 
 export interface ITmdbSearchQuery {
   keywords: string,
-  decade: number
+  decade: number;
   yearTo: number,
   genres: IGenre[],
 }

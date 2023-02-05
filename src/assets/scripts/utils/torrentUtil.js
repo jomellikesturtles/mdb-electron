@@ -1,5 +1,7 @@
 /*jshint esversion: 8 */
 
+const WebTorrent = require("webtorrent");
+
 // const { DEBUG } = require("../util");
 
 let DEBUG = (() => {
@@ -8,7 +10,7 @@ let DEBUG = (() => {
     return "[DEBUG " + new Date().toLocaleString() + "]";
   };
   return {
-    log: console.log.bind(console, "%s", timestamp),
+    log: console.log.bind(console, "%s", timestamp)
   };
 })();
 
@@ -34,32 +36,11 @@ function getSeekedBytesRange(data) {
 
 /**
  * !Not in USE
- * @param {*} torrent
+ * @param {WebTorrent.Torrent} torrent
  */
 function criticalDownloadCycle(torrent) {
   //   let accumulatedTorrentSize = 0;
-
   let desiredFile = getDesiredFile(torrent.files);
-  //   const validFormatsList = [".mp4", ".webm", ".flv", ".avi", ".wmv"];
-  //   for (let index = 0; index < torrent.files.length; index++) {
-  //     const file = torrent.files[index];
-  //     const fileName = file.name;
-  //     DEBUG.log("file.name:", fileName);
-  //     DEBUG.log("file.length:", file.length);
-  //     let hasFound = false;
-  //     validFormatsList.forEach((format) => {
-  //       const len = format.length;
-  //       if (fileName.substr(fileName.length - len, len) === format) {
-  //         // assuming that there is only 1 video file
-  //         movieStartSize = accumulatedTorrentSize + 1;
-  //         endSize = movieStartSize + file.length;
-  //         hasFound = true;
-  //         desiredFileIndex = index;
-  //       }
-  //     });
-  //     if (hasFound) break;
-  //     accumulatedTorrentSize += file.length;
-  //   }
   let movieStartSize = desiredFile.startSize;
   let endSize = desiredFile.endSize;
   DEBUG.log(`movieStartSize: ${movieStartSize}`);
@@ -138,7 +119,7 @@ function getDesiredFile(torrentFiles) {
     file: desiredFile,
     index: desiredFileIndex,
     startSize: startSize,
-    endSize: endSize,
+    endSize: endSize
   };
 }
 

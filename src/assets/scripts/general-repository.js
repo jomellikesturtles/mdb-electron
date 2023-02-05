@@ -68,7 +68,9 @@ class GeneralRepository {
       root.currentDbLocal.insert(body, (err, doc) => {
         if (!err) {
           resolve(doc);
+          DEBUG.log(`GeneralRepository saving body doc ${doc}`);
         } else {
+          DEBUG.log(`GeneralRepository saving body err ${err}`);
           reject(root.handleReject(err));
         }
       });
@@ -125,6 +127,7 @@ class GeneralRepository {
       });
     });
   }
+
   /**
    *
    * @param {*} query
@@ -146,6 +149,36 @@ class GeneralRepository {
           DEBUG.log(err);
         }
       });
+    });
+  }
+
+  /**
+   *
+   * @param {{query:{any},sort:{any},skip:number,limit:number}} params
+   * @returns
+   */
+  getPaginated(params) {
+    let root = this;
+    // query.query;
+    DEBUG.log(`GeneralRepository getPaginated in ${root.currentDbLocalName}`, params);
+    return new Promise(function (resolve, reject) {
+      root.currentDbLocal
+        .find(params.query)
+        .sort(params.sort)
+        .skip(params.skip)
+        .limit(params.limit)
+        .exec(function (err, doc) {
+          if (!err) {
+            DEBUG.log(`${root.currentDbLocalName} found`, doc);
+            if (!err) {
+              // doc = root.map(doc);
+              resolve(doc);
+            }
+          } else {
+            reject(err);
+            DEBUG.log(err);
+          }
+        });
     });
   }
 
@@ -183,6 +216,22 @@ class GeneralRepository {
       });
     });
   }
+
+  count(query) {
+    DEBUG.log(`GeneralRepository count int ${this.currentDbLocalName}`);
+    const root = this;
+    return new Promise(function (resolve, reject) {
+      root.currentDbLocal.count(query, (err, doc) => {
+        if (!err) {
+          resolve(doc);
+          DEBUG.log(`GeneralRepository count doc ${doc}`);
+        } else {
+          DEBUG.log(`GeneralRepository count err ${err}`);
+          reject(root.handleReject(err));
+        }
+      });
+    });
+  }
   map(arg) {
     return {
       id: arg._id,
@@ -194,7 +243,7 @@ class GeneralRepository {
     };
   }
   handleReject(err) {
-    DEBUG.log("repository reject", err.errorType);
+    DEBUG.log(`repository reject ${err} ${JSON.stringify(err)} errType ${err.errorType}`);
     return err.errorType;
   }
 }

@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core'
-import { MovieService } from '@services/movie/movie.service'
-import { DataService } from '@services/data.service'
-import { Router, ActivatedRoute } from '@angular/router'
-import { TmdbParameters, } from '@models/interfaces'
-import { GENRES } from '@shared/constants'
-import { DomSanitizer } from '@angular/platform-browser'
-import GeneralUtil from '@utils/general.util'
+import { Component, OnInit } from '@angular/core';
+import { MovieService } from '@services/movie/movie.service';
+import { DataService } from '@services/data.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { TmdbParameters, } from '@models/interfaces';
+import { GENRES } from '@shared/constants';
+import { DomSanitizer } from '@angular/platform-browser';
+import GeneralUtil from '@utils/general.util';
 import { MDBMovie } from '@models/mdb-movie.model';
-import { LoggerService } from '@core/logger.service'
+import { LoggerService } from '@core/logger.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,13 +25,13 @@ export class DashboardComponent implements OnInit {
     private loggerService: LoggerService
   ) { }
 
-  browserConnection = navigator.onLine
-  dashboardLists = []
-  cardWidth = '130px'
+  browserConnection = navigator.onLine;
+  dashboardLists = [];
+  cardWidth = '130px';
 
   ngOnInit() {
-    this.loggerService.log("HEY HEY HEY")
-    this.getNowShowingMovies()
+    this.loggerService.log("HEY HEY HEY");
+    this.getNowShowingMovies();
     // this.getTopMoviesFromYear()
     // this.getTopGenreMovie()
   }
@@ -40,41 +40,41 @@ export class DashboardComponent implements OnInit {
    * Gets movies showing in theaters in current date
    */
   getNowShowingMovies() {
-    const sDate = new Date()
-    const today = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) + '-' + ('0' + sDate.getDate()).slice(-2)
-    sDate.setDate(sDate.getDate() - 21)
+    const sDate = new Date();
+    const today = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) + '-' + ('0' + sDate.getDate()).slice(-2);
+    sDate.setDate(sDate.getDate() - 21);
     const threeWeeksAgo = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) +
-      '-' + ('0' + sDate.getDate()).slice(-2)
+      '-' + ('0' + sDate.getDate()).slice(-2);
     const paramMap = new Map<TmdbParameters, any>();
     paramMap.set(TmdbParameters.PrimaryReleaseDateGreater, threeWeeksAgo);
     paramMap.set(TmdbParameters.PrimaryReleaseDateLess, today);
-    this.sendToMovieService(paramMap, `New Releases`)
+    this.sendToMovieService(paramMap, `New Releases`);
   }
 
   /**
    * Gets top-rated movies from year
    */
   getTopMoviesFromYear() {
-    const sDate = new Date()
-    const minimumYear = 1940
+    const sDate = new Date();
+    const minimumYear = 1940;
     const randYear = Math.round(
       Math.random() * ((sDate.getFullYear() - 1) - minimumYear) + minimumYear
-    )
+    );
     const paramMap = new Map<TmdbParameters, any>();
     paramMap.set(TmdbParameters.PrimaryReleaseYear, randYear);
-    this.sendToMovieService(paramMap, `Top movies of ${randYear}`)
+    this.sendToMovieService(paramMap, `Top movies of ${randYear}`);
   }
 
   /**
    * Gets top-rated movies by genre.
    */
   getTopGenreMovie() {
-    const TMDB_GENRE_LENGTH = 19 // up to index 19 is valid tmdb genre
-    const GENRE_INDEX = Math.floor(Math.random() * (TMDB_GENRE_LENGTH))
-    const CHOSEN_GENRE = GENRES[GENRE_INDEX]
+    const TMDB_GENRE_LENGTH = 19; // up to index 19 is valid tmdb genre
+    const GENRE_INDEX = Math.floor(Math.random() * (TMDB_GENRE_LENGTH));
+    const CHOSEN_GENRE = GENRES[GENRE_INDEX];
     const paramMap = new Map<TmdbParameters, any>();
     paramMap.set(TmdbParameters.WithGenres, CHOSEN_GENRE.id);
-    this.sendToMovieService(paramMap, `Top ${CHOSEN_GENRE.name}`)
+    this.sendToMovieService(paramMap, `Top ${CHOSEN_GENRE.name}`);
   }
 
   /**
@@ -83,29 +83,29 @@ export class DashboardComponent implements OnInit {
    * @param listName the name of the list
    */
   async sendToMovieService(paramMap: Map<TmdbParameters, any>, listName: string) {
-    const data = await this.movieService.getMoviesDiscover(paramMap).toPromise()
-    let myParam2: { [k: string]: any } = {};
+    const data = await this.movieService.getMoviesDiscover(paramMap).toPromise();
+    let myParam2: { [k: string]: any; } = {};
     for (let entry of paramMap.entries()) {
-      myParam2[entry[0]] = entry[1]
+      myParam2[entry[0]] = entry[1];
     }
     let mappedRes = [];
-    data.results.forEach(e=>{
+    data.results.forEach(e => {
       mappedRes.push(new MDBMovie(e));
-    })
+    });
     const innerList = {
       name: listName,
       data: mappedRes,
       queryParams: paramMap
-    }
-    this.dashboardLists.push(innerList)
-    this.dataService.addDashboardData(innerList.data)
+    };
+    this.dashboardLists.push(innerList);
+    this.dataService.addDashboardData(innerList.data);
   }
 
   /**
    * Gets movies from library
    */
   getMoviesFromLibrary() {
-    console.log('getMoviesFromLibrary dashboard.component')
+    GeneralUtil.DEBUG.log('getMoviesFromLibrary dashboard.component');
   }
 
   /**
@@ -119,13 +119,13 @@ export class DashboardComponent implements OnInit {
   }
 
   scrollPrev() {
-    const container = document.getElementById('topMoviesFromYearPanel')
-    this.sideScroll(container, 'left', 25, 100, 10)
+    const container = document.getElementById('topMoviesFromYearPanel');
+    this.sideScroll(container, 'left', 25, 100, 10);
   }
 
   scrollNext() {
-    const container = document.getElementById('topMoviesFromYearPanel')
-    this.sideScroll(container, 'right', 25, 100, 10)
+    const container = document.getElementById('topMoviesFromYearPanel');
+    this.sideScroll(container, 'right', 25, 100, 10);
   }
 
   /**
@@ -137,18 +137,18 @@ export class DashboardComponent implements OnInit {
    * @param step step
    */
   sideScroll(element, direction, speed, distance, step) {
-    let scrollAmount = 0
+    let scrollAmount = 0;
     const slideTimer = setInterval(() => {
       if (direction === 'left') {
-        element.scrollLeft -= step
+        element.scrollLeft -= step;
       } else {
-        element.scrollLeft += step
+        element.scrollLeft += step;
       }
-      scrollAmount += step
+      scrollAmount += step;
       if (scrollAmount >= distance) {
-        window.clearInterval(Number(slideTimer))
+        window.clearInterval(Number(slideTimer));
       }
-    }, speed)
+    }, speed);
   }
 
   /**
@@ -156,6 +156,6 @@ export class DashboardComponent implements OnInit {
    * @param releaseDate release date with format YYYY-MM-DD
    */
   getYear(releaseDate: string) {
-    return GeneralUtil.getYear(releaseDate)
+    return GeneralUtil.getYear(releaseDate);
   }
 }

@@ -11,6 +11,7 @@ import { DataService } from '@services/data.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import GeneralUtil from '@utils/general.util';
 
 @Component({
   selector: 'advanced-find',
@@ -24,15 +25,15 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
     private movieService: MovieService,
     private dataService: DataService,
     private router: Router,
-    ) { }
+  ) { }
 
   private ngUnsubscribe = new Subject();
-  genresList = GENRES
-  sortByList = SORT_BY
-  browseLists = []
+  genresList = GENRES;
+  sortByList = SORT_BY;
+  browseLists = [];
   Arr = Array; //Array type captured in a variable
   num: number = 20;
-  searchForm: FormGroup
+  searchForm: FormGroup;
   DEFAULT_SEARCH_QUERY: ISearchQuery = {
     query: '',
     yearFrom: 1901,
@@ -44,27 +45,27 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
     ratingAverageFrom: 0,
     ratingAverageTo: 10,
     sortBy: 'popularity.desc'
-  }
-  ratingList = []
-  averageRatingsFromList = []
-  averageRatingsToList = []
-  releaseYearsFromList = []
-  releaseYearsToList = []
-  genreAndOr = '|'
-  genreListVal = {}
-  myVal = true
+  };
+  ratingList = [];
+  averageRatingsFromList = [];
+  averageRatingsToList = [];
+  releaseYearsFromList = [];
+  releaseYearsToList = [];
+  genreAndOr = '|';
+  genreListVal = {};
+  myVal = true;
 
   ngOnInit() {
     let academyWinnersList = {
       name: 'Academy Winners',
       contents: []
-    }
-    this.browseLists.push(academyWinnersList)
+    };
+    this.browseLists.push(academyWinnersList);
 
     this.genresList.forEach((genre: IGenre) => {
-      this.genreListVal[genre.name] = false
-    })
-    console.log(this.genreListVal)
+      this.genreListVal[genre.name] = false;
+    });
+    GeneralUtil.DEBUG.log(this.genreListVal);
     this.searchForm = this.formBuilder.group({
       query: ['', []],
       genres: this.formBuilder.array([]),
@@ -74,7 +75,7 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
       averageRatingTo: [this.DEFAULT_SEARCH_QUERY.ratingAverageTo, [Validators.required]],
       availability: [this.DEFAULT_SEARCH_QUERY.availability, [Validators.required]],
       sortBy: [this.DEFAULT_SEARCH_QUERY.sortBy]
-    }, {})
+    }, {});
   }
 
   ngAfterViewInit(): void {
@@ -84,8 +85,8 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
 
   generateReleaseYears() {
     for (let index = (new Date).getUTCFullYear(); index >= 1901; index--) {
-      this.releaseYearsFromList.push(index)
-      this.releaseYearsToList.push(index)
+      this.releaseYearsFromList.push(index);
+      this.releaseYearsToList.push(index);
     }
     for (let index = (new Date).getUTCFullYear(); index >= 1901; index--) {
     }
@@ -93,8 +94,8 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
 
   generateRatings() {
     for (let index = 0; index <= 10; index += 0.5) {
-      this.averageRatingsFromList.push({ value: index, label: index })
-      this.averageRatingsToList.push({ value: index, label: index })
+      this.averageRatingsFromList.push({ value: index, label: index });
+      this.averageRatingsToList.push({ value: index, label: index });
     }
   }
 
@@ -103,7 +104,7 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
     if (isChecked) {
       genresFormArray.push(new FormControl(genre));
     } else {
-      let index = genresFormArray.controls.findIndex(x => x.value == genre)
+      let index = genresFormArray.controls.findIndex(x => x.value == genre);
       genresFormArray.removeAt(index);
     }
   }
@@ -111,15 +112,15 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
   onAverageRatingChange(source: string, event: MatOptionSelectionChange) {
     if (event.isUserInput) {
       if (source === 'from') {
-        this.averageRatingsToList = []
+        this.averageRatingsToList = [];
         for (let index = 10; index >= event.source.value; index -= 0.5) {
-          this.averageRatingsToList.push({ value: index, label: index })
+          this.averageRatingsToList.push({ value: index, label: index });
         }
       }
       if (source === 'to') {
-        this.averageRatingsFromList = []
+        this.averageRatingsFromList = [];
         for (let index = 0; index <= event.source.value; index += 0.5) {
-          this.averageRatingsFromList.push({ value: index, label: index })
+          this.averageRatingsFromList.push({ value: index, label: index });
         }
       }
     }
@@ -128,52 +129,52 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
   onYearChange(source: string, event: MatOptionSelectionChange) {
     if (event.isUserInput) {
       if (source === 'from') {
-        this.releaseYearsToList = []
+        this.releaseYearsToList = [];
         for (let index = this.DEFAULT_SEARCH_QUERY.yearTo; index >= event.source.value; index--) {
-          this.releaseYearsToList.push(index)
+          this.releaseYearsToList.push(index);
         }
       }
       if (source === 'to') {
-        this.releaseYearsFromList = []
+        this.releaseYearsFromList = [];
         for (let index = 1901; index <= event.source.value; index++) {
-          this.releaseYearsFromList.push(index)
+          this.releaseYearsFromList.push(index);
         }
       }
     }
   }
 
   changeGenreAndOr(isChecked: boolean) {
-    this.genreAndOr = isChecked ? ',' : '|'
+    this.genreAndOr = isChecked ? ',' : '|';
   }
 
   /**
    * TODO: add screen for results.
    */
   goAdvancedSearch() {
-    console.log(this.searchForm.controls)
+    GeneralUtil.DEBUG.log(this.searchForm.controls);
 
     const paramMap = new Map<TmdbParameters, any>();
-    paramMap.set(TmdbParameters.WithKeywords, this.searchForm.get('query').value)
-    paramMap.set(TmdbParameters.WithGenres, this.searchForm.get('genres').value.join(this.genreAndOr))
-    paramMap.set(TmdbParameters.PrimaryReleaseDateGreater, this.searchForm.get('yearFrom').value + '-01-01')
-    paramMap.set(TmdbParameters.PrimaryReleaseDateLess, this.searchForm.get('yearTo').value + '-12-31')
-    paramMap.set(TmdbParameters.VoteAverageGreater, this.searchForm.get('averageRatingFrom').value)
-    paramMap.set(TmdbParameters.VoteAverageLess, this.searchForm.get('averageRatingTo').value)
-    paramMap.set(TmdbParameters.SortBy, this.searchForm.get('sortBy').value)
-  this.dataService.updateDiscoverQuery({name:'', type:'', value:'', paramMap})
-  this.router.navigate([`/discover`]);
+    paramMap.set(TmdbParameters.WithKeywords, this.searchForm.get('query').value);
+    paramMap.set(TmdbParameters.WithGenres, this.searchForm.get('genres').value.join(this.genreAndOr));
+    paramMap.set(TmdbParameters.PrimaryReleaseDateGreater, this.searchForm.get('yearFrom').value + '-01-01');
+    paramMap.set(TmdbParameters.PrimaryReleaseDateLess, this.searchForm.get('yearTo').value + '-12-31');
+    paramMap.set(TmdbParameters.VoteAverageGreater, this.searchForm.get('averageRatingFrom').value);
+    paramMap.set(TmdbParameters.VoteAverageLess, this.searchForm.get('averageRatingTo').value);
+    paramMap.set(TmdbParameters.SortBy, this.searchForm.get('sortBy').value);
+    this.dataService.updateDiscoverQuery({ name: '', type: '', value: '', paramMap });
+    this.router.navigate([`/discover`]);
   }
 
   clearAdvancedSearch() {
-    this.searchForm.reset()
+    this.searchForm.reset();
     this.genresList.forEach((genre: IGenre) => {
-      this.genreListVal[genre.name] = false
-    })
-    this.searchForm.get('yearFrom').setValue(this.DEFAULT_SEARCH_QUERY.yearFrom)
-    this.searchForm.get('yearTo').setValue(this.DEFAULT_SEARCH_QUERY.yearTo)
-    this.searchForm.get('averageRatingFrom').setValue(this.DEFAULT_SEARCH_QUERY.ratingAverageFrom)
-    this.searchForm.get('averageRatingTo').setValue(this.DEFAULT_SEARCH_QUERY.ratingAverageTo)
-    this.searchForm.get('sortBy').setValue(this.DEFAULT_SEARCH_QUERY.sortBy)
+      this.genreListVal[genre.name] = false;
+    });
+    this.searchForm.get('yearFrom').setValue(this.DEFAULT_SEARCH_QUERY.yearFrom);
+    this.searchForm.get('yearTo').setValue(this.DEFAULT_SEARCH_QUERY.yearTo);
+    this.searchForm.get('averageRatingFrom').setValue(this.DEFAULT_SEARCH_QUERY.ratingAverageFrom);
+    this.searchForm.get('averageRatingTo').setValue(this.DEFAULT_SEARCH_QUERY.ratingAverageTo);
+    this.searchForm.get('sortBy').setValue(this.DEFAULT_SEARCH_QUERY.sortBy);
   }
 
   closeAdvancedSearch() {
@@ -182,9 +183,9 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
 
 
   ngOnDestroy(): void {
-    console.log('destroy advanced find')
-    this.ngUnsubscribe.next()
-    this.ngUnsubscribe.complete()
+    GeneralUtil.DEBUG.log('destroy advanced find');
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 }
 
@@ -213,7 +214,7 @@ const VOTE_COUNT = [
     label: '+10,000,000',
     value: 10000000
   },
-]
+];
 
 export enum BROWSE_TITLES {
   COMPLETED_WATCHED,
