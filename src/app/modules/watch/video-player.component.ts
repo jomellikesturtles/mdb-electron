@@ -5,7 +5,7 @@ import { MovieService } from '@services/movie/movie.service';
 import { PlayedService } from '@services/media/played.service';
 import SubtitlesUtil from '@utils/subtitles.utils';
 import { Subtitle } from '@models/subtitle.model';
-import { UserIdleService } from "angular-user-idle";
+// import { UserIdleService } from "angular-user-idle";
 import chardet from "chardet";
 import jschardet from "jschardet";
 import { environment } from 'environments/environment';
@@ -85,13 +85,13 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     private playedService: PlayedService,
     private movieService: MovieService,
     private elementRef: ElementRef,
-    private userIdleService: UserIdleService,
+    // private userIdleService: UserIdleService,
     private preferencesService: PreferencesService,
     private sanitizer: DomSanitizer
   ) { GeneralUtil.DEBUG.log('VIDEOPLAYER CONSTRUCTOR'); }
 
   onNotIdle() {
-    this.userIdleService.resetTimer();
+    // this.userIdleService.resetTimer();
     this.isUserInactive = false;
   }
 
@@ -100,15 +100,15 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     // this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4' // 320p sample
     // this.streamLink = 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4' // 1080p sample
     // this.streamLink = '../../../../assets/sample movie/Ratatouille (2007) [1080p]/Ratatouille.2007.1080p.BrRip.x264.YIFY.mp4'
-    this.userIdleService.startWatching();
-    this.userIdleService.onTimerStart().pipe(takeUntil(this.ngUnsubscribe)).subscribe((_count) => { GeneralUtil.DEBUG.log('start! ', _count); });
-    this.userIdleService.onIdleStatusChanged().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
-      GeneralUtil.DEBUG.log("changed!", e);
-    });
-    this.userIdleService.onTimeout().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
-      GeneralUtil.DEBUG.log("TIMEOUT!OUT!", e);
-      // this.isUserInactive = true;
-    });
+    // this.userIdleService.startWatching();
+    // this.userIdleService.onTimerStart().pipe(takeUntil(this.ngUnsubscribe)).subscribe((_count) => { GeneralUtil.DEBUG.log('start! ', _count); });
+    // this.userIdleService.onIdleStatusChanged().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
+    //   GeneralUtil.DEBUG.log("changed!", e);
+    // });
+    // this.userIdleService.onTimeout().pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
+    //   GeneralUtil.DEBUG.log("TIMEOUT!OUT!", e);
+    //   // this.isUserInactive = true;
+    // });
 
     const root = this;
     // setTimeout(() => {

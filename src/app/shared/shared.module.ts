@@ -12,7 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { HorizontalCardListComponent } from './components/horizontal-card-list/horizontal-card-list.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
-import { UserIdleModule } from 'angular-user-idle';
+// import { UserIdleModule } from 'angular-user-idle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -38,7 +38,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatDividerModule,
     MatProgressSpinnerModule,
     MatMenuModule, MatButtonModule, MatIconModule,
-    UserIdleModule.forRoot({ idle: 1, timeout: 1, ping: 1 })
+    // UserIdleModule.forRoot({ idle: 1, timeout: 1, ping: 1 })
     // UserIdleModule.forRoot({ idle: 3, timeout: 1, ping: 3 })
   ],
   exports: [
