@@ -6,7 +6,7 @@ describe('TorrentService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: TorrentService = TestBed.get(TorrentService);
+    const service: TorrentService = TestBed.inject(TorrentService);
     expect(service).toBeTruthy();
   });
 });
