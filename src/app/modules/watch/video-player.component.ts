@@ -159,7 +159,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   ngOnDestroy(): void {
     GeneralUtil.DEBUG.log('ondestroy');
     this.canPlay = false;
-    this.ngUnsubscribe.next();
+    // this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
     this.ipcService.stopStream();
     GeneralUtil.DEBUG.log('DESTROYED');

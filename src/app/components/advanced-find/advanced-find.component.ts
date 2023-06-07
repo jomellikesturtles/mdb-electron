@@ -184,7 +184,7 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
 
   ngOnDestroy(): void {
     GeneralUtil.DEBUG.log('destroy advanced find');
-    this.ngUnsubscribe.next();
+    // this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
 }

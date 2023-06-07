@@ -1,10 +1,10 @@
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
 /**
  * Data sharing service.
  */
-import { Injectable } from '@angular/core'
-import { BehaviorSubject } from 'rxjs'
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 interface ICacheContent {
   expiry: number;
@@ -35,15 +35,15 @@ export class CacheService {
       const inFlight = this.inFlightObservables.get(key);
       const observersCount = inFlight.observers.length;
       if (this.isEmpty(observersCount)) {
-        return fallback.pipe(tap((value) => { this.set(key, value, maxAge) }));
+        return fallback.pipe(tap((value) => { this.set(key, value, maxAge); }));
       }
       return inFlight;
     } else if (fallback && fallback instanceof Observable) {
       this.inFlightObservables.set(key, new Subject());
       // console.log(`Calling api for ${key}`);
-      return fallback.pipe(tap((value) =>  this.set(key, value, maxAge) ));
+      return fallback.pipe(tap((value) => this.set(key, value, maxAge)));
     } else {
-      return Observable.throw(`Requested key (${key}) is not available in Cache`);
+      return throwError(`Requested key (${key}) is not available in Cache`);
     }
 
   }
@@ -62,7 +62,7 @@ export class CacheService {
       return obj.length === 0;
     }
 
-    switch (typeof(obj)) {
+    switch (typeof (obj)) {
       case 'object':
         return Object.keys(obj).length === 0;
       case 'string':
