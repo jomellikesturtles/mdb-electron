@@ -94,7 +94,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     GeneralUtil.DEBUG.log('DETAILS DESTROY');
-    this.ngUnsubscribe.next();
+    // this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
 
@@ -148,7 +148,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
   playOfflineLibrary(val) {
     this.libraryService.openVideoStream(val).then(e => {
       GeneralUtil.DEBUG.log('streamlink1:', e);
-      if (e != 0 && e != [] && e != '' && e.length > 0) {
+      // if (e != 0 && e != [] && e != '' && e.length > 0) {
+      if (e) {
         this.showVideo = true;
         this.streamLink = e;
       }

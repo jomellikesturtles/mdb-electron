@@ -37,8 +37,8 @@
         <img *ngIf="(!isMuted) || volume <= 0" class='player-controls-icon' src='./assets/icons/volume.svg'
           data-toggle='tooltip' title='Mute'>
       </div>
-      <mat-slider (input)="volumeChange($event.value)" [(value)]="volume" min="0" max="100" step="1"
-        data-toggle='tooltip' title='Change volume'></mat-slider>
+      <mat-slider (input)="volumeChange($event.value)" value="volume" min="0" max="100" step="1" data-toggle='tooltip'
+        title='Change volume'></mat-slider>
     </div>
     <div style='float:right; padding-right: 5px;'>
       <img (click)='isShowStatus=true' class='player-controls-icon' src='./assets/icons/status.svg'

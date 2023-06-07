@@ -292,7 +292,7 @@ export class DisplayedTorrents {
   }
 }
 
-@Injectable()
+// @Injectable()
 export class DisplayedTorrent {
   private added?: string;
   private hash: string;

@@ -21,7 +21,7 @@
   <div [formGroup]="parentForm">
     <mat-form-field appearance="fill">
       <input matInput [formControlName]='mdbFormControlName' type="text" style='color:white' />
-      <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
+      <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="clickClear()">
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>

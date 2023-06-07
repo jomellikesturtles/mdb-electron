@@ -17,55 +17,29 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es2015",
-    "types": ["node","mocha","jest"],
-    "typeRoots": [
-      "node_modules/@types",
-    ],
-    "lib": [
-      "es2018",
-      "dom"
-    ],
+    "types": ["node", "mocha", "jest"],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2018", "dom"],
     "paths": {
-      "@assets/*": [
-        "assets/*"
-      ],
-      "@components/*": [
-        "app/components/*"
-      ],
-      "@constants/*": [
-        "app/constants/*"
-      ],
-      "@core/*": [
-        "app/core/*"
-      ],
-      "@directives/*": [
-        "app/directives/*"
-      ],
-      "@environments/*": [
-        "environments/*"
-      ],
-      "@guards/*": [
-        "app/guards/*"
-      ],
-      "@mocks/*": [
-        "app/mock/*"
-      ],
-      "@models/*": [
-        "app/models/*"
-      ],
-      "@modules/*": [
-        "app/modules/*"
-      ],
-      "@services/*": [
-        "app/services/*"
-      ],
-      "@shared/*": [
-        "app/shared/*"
-      ],
-      "@utils/*": [
-        "app/utils/*"
-      ],
+      "@assets/*": ["assets/*"],
+      "@components/*": ["app/components/*"],
+      "@constants/*": ["app/constants/*"],
+      "@core/*": ["app/core/*"],
+      "@directives/*": ["app/directives/*"],
+      "@environments/*": ["environments/*"],
+      "@guards/*": ["app/guards/*"],
+      "@mocks/*": ["app/mock/*"],
+      "@models/*": ["app/models/*"],
+      "@modules/*": ["app/modules/*"],
+      "@services/*": ["app/services/*"],
+      "@shared/*": ["app/shared/*"],
+      "@utils/*": ["app/utils/*"]
     }
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true,
+    "enableIvy": false
   },
   "exclude": [
     ".git",
@@ -79,5 +53,7 @@
     "subfolder/node_modules",
     "**/dist/*",
     "**/node_modules/*",
+    "src/stories/*",
+    "src/stories"
   ]
 }

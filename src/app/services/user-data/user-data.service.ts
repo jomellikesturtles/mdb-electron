@@ -39,7 +39,7 @@ export class UserDataService {
    */
   getMovieUserData(tmdbId: number) {
     return this.dataService.getHandle(this.bffService.getMediaUserData(tmdbId), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.FIND_ONE },
-      null, tmdbId));
+      null, { query: { tmdbId } }));
   }
 
   /**

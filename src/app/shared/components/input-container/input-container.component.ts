@@ -17,18 +17,18 @@ export class InputContainerComponent extends FormControl implements OnInit {
     static: false
   })
 
-  templateRef: TemplateRef<any>
+  templateRef: TemplateRef<any>;
 
   @ViewChild('select', { static: false }) select: TemplateRef<any>;
   @ViewChild('text', { static: false }) text: TemplateRef<any>;
   @ViewChild('checkbox', { static: false }) checkbox: TemplateRef<any>;
-  @Input() fieldLabel: string
-  @Input() inputType: string = 'text'
-  @Input() defaultVal: string
-  @Input() mdbFormControlName: string
-  @Input() parentForm: FormGroup
-  @Input() optionSelections: IOptionSelections[]
-  @Input() mdbFormGroup: FormGroup
+  @Input() fieldLabel: string;
+  @Input() inputType: string = 'text';
+  @Input() defaultVal: string;
+  @Input() mdbFormControlName: string;
+  @Input() parentForm: FormGroup;
+  @Input() optionSelections: IOptionSelections[];
+  @Input() mdbFormGroup: FormGroup;
   @Output() outputEvent = new EventEmitter<any>();
   @Output() onChange = new EventEmitter<any>();
   @Output() value = new EventEmitter<any>();
@@ -39,7 +39,7 @@ export class InputContainerComponent extends FormControl implements OnInit {
     @Inject('formState') formState: any = null,
     @Inject('validatorOrOpts') validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null,
     @Inject('asyncValidator') asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null
-  ) { super(formState, validatorOrOpts, asyncValidator) }
+  ) { super(formState, validatorOrOpts, asyncValidator); }
 
   ngOnInit() {
   }
@@ -48,8 +48,8 @@ export class InputContainerComponent extends FormControl implements OnInit {
 
     // const value = event
     if (value) {
-      console.log(value)
-      this.onChange.emit(value)
+      console.log(value);
+      this.onChange.emit(value);
     }
     // const value = event.source.value
     // if (event.source.selected) {
@@ -57,9 +57,13 @@ export class InputContainerComponent extends FormControl implements OnInit {
     //   this.onChange.emit(value)
     // }
   }
+
+  clickClear() {
+    this.value.emit('');
+  }
 }
 
 interface IOptionSelections {
   value: any,
-  label: string
+  label: string;
 }

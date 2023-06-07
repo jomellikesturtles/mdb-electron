@@ -53,3 +53,6 @@ firebase.json
 Thumbs.db
 
 *.mp4
+
+# Angular
+.angular/*

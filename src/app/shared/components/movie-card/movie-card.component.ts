@@ -111,7 +111,7 @@ export class MovieCardComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    // this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
 

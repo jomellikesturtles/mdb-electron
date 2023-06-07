@@ -10,7 +10,7 @@
     class='movie-card-image-container' (click)='onHighlight(movie)'> -->
 
     <div class='card-button movie-bookmark' data-toggle='tooltip' title='Toggle Bookmark'>
-      <span class='card-button-icon bookmark-icon' (click)="onToggleBookmark()" *ngIf="!procBookmark"></span>
+      <span class='card-button-icon bookmark-icon' (click)="toggleBookmark()" *ngIf="!procBookmark"></span>
       <!-- <div *ngIf="!procBookmark" (click)='onToggleBookmark()'>
         <img *ngIf="!(_movie.bookmark && _movie.bookmark.id)" style='height:20px; margin-bottom: 4px; margin-right: 2px;'
           src='./assets/icons/bookmark-add.svg' data-toggle='tooltip' title='Add Bookmark' />
@@ -50,14 +50,14 @@
     </div>
 
     <div class="card-button movie-mark-favorite" data-toggle="tooltip" title="Toggle Favorite">
-      <span class="card-button-icon favorite-icon" (click)="toggleFavorites()" *ngIf="!procFavorite"></span>
+      <span class="card-button-icon favorite-icon" (click)="toggleFavorite()" *ngIf="!procFavorite"></span>
       <div *ngIf='procFavorite' class='spinner-border spinner-border-sm' role='status'>
         <span class='sr-only'>Loading...</span>
       </div>
     </div>
 
-    <div class='card-button movie-mark-as-watched' *ngIf='!_userData?.watched'>
-      <div (click)='onToggleWatched()' *ngIf='!procWatched'>
+    <div class='card-button movie-mark-as-watched' *ngIf='!_userData?.played'>
+      <div (click)='togglePlayed()' *ngIf='!procWatched'>
         <img class='card-button-icon' src='./assets/icons/check.svg' data-toggle='tooltip' title='Mark as watched' />
       </div>
       <div *ngIf='procWatched'>
@@ -65,7 +65,7 @@
       </div>
     </div>
     <!-- watched Progress bar -->
-    <div *ngIf="_userData?.watched" [ngStyle]="{'width': watchedPercentage +'%'}" id='watchedProgressBar'
+    <div *ngIf="_userData?.played" [ngStyle]="{'width': watchedPercentage +'%'}" id='watchedProgressBar'
       class='movie-progress-bar'>
     </div>
 

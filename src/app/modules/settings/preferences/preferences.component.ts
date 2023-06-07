@@ -103,7 +103,7 @@ export class PreferencesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    // this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
 

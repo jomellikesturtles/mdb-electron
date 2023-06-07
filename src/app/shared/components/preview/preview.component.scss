@@ -10,20 +10,21 @@
 }
 
 #previewOverlayContext:hover {
-  opacity: 1
+  opacity: 1;
 }
 
 .overlayInvisible {
   opacity: 0;
-  transition: .3s
+  transition: 0.3s;
 }
 
 .overlayInvisible :hover {
-  opacity: 1
+  opacity: 1;
 }
 
 #closeIcon {
-  background-image: url(~/assets/icons/close.svg);position: absolute;
+  background-image: url(~/assets/icons/close.svg);
+  position: absolute;
   filter: invert(1) contrast(0);
   color: #ccc;
   background-position: center;
@@ -33,10 +34,10 @@
   width: 20px;
   right: 8vw;
   margin: auto;
-  transform: translateY(50%);z-index:5000;
+  transform: translateY(50%);
+  z-index: 5000;
 }
 
 #closeIcon :hover {
   filter: invert(1);
 }
-
