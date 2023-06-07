@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 // import { Router, ActivatedRoute } from '@angular/router'
-import { DataService } from '@services/data.service'
+import { DataService } from '@services/data.service';
 // import { Select, Store } from '@ngxs/store';
 // import { ClearList, AddWatched, AddBookmark } from '../../../movie.actions'
 // import { RemoveMovie } from '../../../movie.actions';
@@ -15,15 +15,16 @@ import { Observable, Subscription } from 'rxjs';
 export class SelectedListComponent implements OnInit, OnDestroy {
 
   // @Select(state => state.moviesList) movies$: Observable<any>
-  display = false
-  movieIdList = []
-  moviesListSubscription: Subscription
+  movies$: Observable<any>;
+  display = false;
+  movieIdList = [];
+  moviesListSubscription: Subscription;
   constructor(
     // private activatedRoute: ActivatedRoute,
     // private router: Router,
     // private dataService: DataService,
     // private store: Store
-    ) { }
+  ) { }
 
   ngOnInit() {
     // this.movies$.subscribe((e: any) => {
@@ -42,7 +43,7 @@ export class SelectedListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     console.log('ondestroy');
     if (this.moviesListSubscription !== undefined) {
-      this.moviesListSubscription.unsubscribe()
+      this.moviesListSubscription.unsubscribe();
     }
   }
 

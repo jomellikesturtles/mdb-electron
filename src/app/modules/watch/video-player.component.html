@@ -10,13 +10,13 @@
     <!-- top HUD -->
     <!-- back, title, -->
     <div style='position: absolute; z-index: 21; display:flex;
-    width: 100%; align-items: center; flex-direction: row; 
+    width: 100%; align-items: center; flex-direction: row;
     padding-left: 10px;
     max-height: 20%;
     min-height: 60px;
     font-size: 1.5rem;
     font-weight: bold;
-    text-shadow: -2px 2px 2px #000000; 
+    text-shadow: -2px 2px 2px #000000;
     outline: solid 1px red'>
       <span>-C--</span>
       <!-- <span>Saving Private Ryan</span> -->
@@ -48,31 +48,17 @@
 
     </app-video-player-stats> -->
 
-      <!-- [isPaused]='videoPlayer1.paused' -->
-      <!-- [videoPlayer1]='videoPlayer1' -->
-    <mdb-video-player-controls
-      *ngIf='canPlay'
-      [hidden]='isUserInactive'
-      [isPlaying]='isPlaying'
-      [isMuted]='videoPlayerElement.muted'
-      [isShowSubtitles]='isShowSubtitles'
-      [canPlay]='canPlay'
-      [videoPlayerElement]='videoPlayerElement'
-      [volume]='volume'
-      [videoTime]='videoTime'
-      [progressBar]='progressBar'
-      (onSeekValue)='onSeek($event)'
-      (onTogglePlay)='togglePlay()'
-      (onToggleMute)='toggleMute($event)'
-      (onToggleFullScreen)='toggleFullScreen()'
-      (onToggleSubtitles)='isShowSubtitles = $event'
-      (onChangeVolume)='changeVolume($event)'
-      (onChangeSubtitleFile)='onChangeCc($event)'
-      (onChangeFontColor)='changeFontColor($event)'
-      (onChangeFontSize)='changeFontSize($event)'
+    <!-- [isPaused]='videoPlayer1.paused' -->
+    <!-- [videoPlayer1]='videoPlayer1' -->
+    <mdb-video-player-controls *ngIf='canPlay' [hidden]='isUserInactive' [isPlaying]='isPlaying'
+      [isMuted]='videoPlayerElement.muted' [isShowSubtitles]='isShowSubtitles' [canPlay]='canPlay'
+      [videoPlayerElement]='videoPlayerElement' [volume]='volume' [videoTime]='videoTime' [progressBar]='progressBar'
+      (onSeekValue)='onSeek($event)' (onTogglePlay)='togglePlay()' (onToggleMute)='toggleMute()'
+      (onToggleFullScreen)='toggleFullScreen()' (onToggleSubtitles)='isShowSubtitles = $event'
+      (onChangeVolume)='changeVolume($event)' (onChangeSubtitleFile)='onChangeCc($event)'
+      (onChangeFontColor)='changeFontColor($event)' (onChangeFontSize)='changeFontSize($event)'
       (onChangeBackgroundColor)='changeBackgroundColor($event)'
-      (onChangeBackgroundOpacity)='changeBackgroundOpacity($event)'
-      >
+      (onChangeBackgroundOpacity)='changeBackgroundOpacity($event)'>
     </mdb-video-player-controls>
 
   </div>

@@ -6,8 +6,8 @@
  * Service to communicate to ipc main
  */
 import { environment } from '@environments/environment';
-import * as IPCRendererChannel from '../../assets/IPCRendererChannel.json';
-import * as IPCMainChannel from '../../assets/IPCMainChannel.json';
+import IPCRendererChannel from '../../assets/IPCRendererChannel.json';
+import IPCMainChannel from '../../assets/IPCMainChannel.json';
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, from } from 'rxjs';

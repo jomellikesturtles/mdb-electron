@@ -1,50 +1,49 @@
-@import '~@angular/material/theming';
-@import '../../variables.scss';
-@import '../../../custom-mat-styles.scss';
+// @import "~@angular/material/theming";
+// @import "../../variables.scss";
+// @import "../../../custom-mat-styles.scss";
 
-.genre-selection {
-  width: 150px
-}
+// .genre-selection {
+//   width: 150px;
+// }
 
-#clearButton {
-  ::ng-deep .mat-button-wrapper {
-    color: black !important;
-  }
-}
+// #clearButton {
+//   ::ng-deep .mat-button-wrapper {
+//     color: black !important;
+//   }
+// }
 
-form {
-  ::ng-deep mat-label {
-    color: white
-  }
-}
+// form {
+//   ::ng-deep mat-label {
+//     color: white;
+//   }
+// }
 
-::ng-deep .mat-checkbox-checked .mat-checkbox-background,
-.mat-checkbox-indeterminate .mat-checkbox-background {
-  background-color: $mdb-primary !important;
-}
+// ::ng-deep .mat-checkbox-checked .mat-checkbox-background,
+// .mat-checkbox-indeterminate .mat-checkbox-background {
+//   background-color: $mdb-primary !important;
+// }
 
-// overwrite the ripple overlay on hover and click
-::ng-deep .mat-checkbox:not(.mat-checkbox-disabled) .mat-checkbox-ripple .mat-ripple-element {
-  background-color: $mdb-primary !important;
-}
+// // overwrite the ripple overlay on hover and click
+// ::ng-deep .mat-checkbox:not(.mat-checkbox-disabled) .mat-checkbox-ripple .mat-ripple-element {
+//   background-color: $mdb-primary !important;
+// }
 
+// #closeIcon {
+//   background-image: url(~/assets/icons/close.svg);
+//   position: absolute;
+//   filter: invert(1) contrast(0);
+//   color: #ccc;
+//   background-position: center;
+//   background-size: cover;
+//   cursor: pointer;
+//   height: 20px;
+//   width: 20px;
+//   right: 8vw;
+//   margin: auto;
+//   transform: translateY(50%);
+//   z-index: 5000;
+// }
 
-#closeIcon {
-  background-image: url(~/assets/icons/close.svg);
-  position: absolute;
-  filter: invert(1) contrast(0);
-  color: #ccc;
-  background-position: center;
-  background-size: cover;
-  cursor: pointer;
-  height: 20px;
-  width: 20px;
-  right: 8vw;
-  margin: auto;
-  transform: translateY(50%);
-  z-index: 5000;
-}
-
-.accent-color {
-  // color: mat-color($mdb-primary) !important;
-}
+// .accent-color {
+//   // color: mat-color($mdb-primary) !important;
+// }

@@ -16,42 +16,42 @@ import { UserDataService } from '@services/user-data/user-data.service';
 export class ProfileComponent implements OnInit {
   // @Select(UserState) user$: Observable<any>
   // moviesList = TMDB_SEARCH_RESULTS.results
-  moviesList = []
+  moviesList = [];
   userProfile: IProfile = {
     username: 'peterparker123',
     emailAddress: 'peterparker123@gmail.com',
     watchedCount: 90,
     bookmarkedCount: 9,
     bio: 'movies... I like'
-  }
-  photoUrl = ''
+  };
+  photoUrl = '';
   userStats: {
-    filmsNumber: 54
-  }
-  defaultUserProfile
-  firebaseUser$
+    filmsNumber: 54;
+  };
+  defaultUserProfile;
+  firebaseUser$;
   moviesWatchedList = {
     count: 0,
     data: []
-  }
+  };
   moviesBookmarksList = {
     count: 0,
     data: []
-  }
-  background: ThemePalette = undefined
+  };
+  background: ThemePalette = undefined;
   constructor(
     private userDataService: UserDataService
   ) { }
 
   ngOnInit() {
     // this.countBookmarks()
-    this.getUser()
-    this.treatAll()
-    this.getUserData()
+    this.getUser();
+    this.treatAll();
+    this.getUserData();
   }
 
   ngAfterViewInit(): void {
-    this.background = this.background ? undefined : 'primary'
+    this.background = this.background ? undefined : 'primary';
   }
   treatAll() {
     // this.firebaseService.getEmpty()
@@ -79,7 +79,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onReset() {
-    this.userProfile = this.defaultUserProfile
+    this.userProfile = this.defaultUserProfile;
   }
 
   onSignOut() {
@@ -92,7 +92,7 @@ export class ProfileComponent implements OnInit {
   }
 
   uploadFile(data) {
-    console.log(data)
+    console.log(data);
     // this.firebaseService.uploadToStorage(data.item(0))
   }
 
@@ -102,15 +102,15 @@ export class ProfileComponent implements OnInit {
 
   getUserData() {
     this.userDataService.getUserDataFirstPage('watched').then(e => {
-      console.log('getuserdata watched', e)
-      this.moviesWatchedList.count = e.totalResults
-      this.moviesWatchedList.data = e.results
-    })
+      console.log('getuserdata watched', e);
+      this.moviesWatchedList.count = e.totalResults;
+      this.moviesWatchedList.data = e.results;
+    });
     this.userDataService.getUserDataFirstPage('bookmark').then(e => {
-      console.log('getuserdata bookmark', e)
-      this.moviesBookmarksList.count = e.totalResults
-      this.moviesBookmarksList.data = e.results
-    })
+      console.log('getuserdata bookmark', e);
+      this.moviesBookmarksList.count = e.totalResults;
+      this.moviesBookmarksList.data = e.results;
+    });
   }
 }
 
@@ -119,5 +119,5 @@ export interface IProfile {
   watchedCount: number | 0,
   bookmarkedCount: number | 0,
   emailAddress: string,
-  bio: string
+  bio: string;
 }
