@@ -24,7 +24,7 @@ export class IpcService {
   libraryMovie = new BehaviorSubject<string[]>([]);
   bookmarkChanges = new BehaviorSubject<IBookmarkChanges[]>([]);
   movieIdentified = new BehaviorSubject<any>({ id: 0 });
-  search = new BehaviorSubject<any>([]);
+  search = new BehaviorSubject<any>([]); // searchList
   torrentVideo = new BehaviorSubject<string[]>([]);
   preferences = new BehaviorSubject<any>([]);
   streamLink = new BehaviorSubject<any>('');
