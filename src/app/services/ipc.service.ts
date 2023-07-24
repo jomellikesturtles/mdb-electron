@@ -141,6 +141,12 @@ export class IpcService {
     return this.listenOnce(`library-${theUuid}`);
   }
 
+  getProfile() {
+    const theUuid = uuidv4();
+    this.sendToMain('profile', { operation: IpcOperations.FIND, uuid: theUuid });
+    return this.listenOnce(`profile-${theUuid}`);
+  }
+
   userData(headers: Headers, body: Body, params: IPCParams) {
     const theUuid = uuidv4();
     const channel = IPCRendererChannel.USER_DATA;

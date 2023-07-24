@@ -94,7 +94,6 @@ export const STRING_REGEX_IMAGE_SIZE = `(SX)+([\\d])+(.jpg|.jpeg)`;
 export const STRING_REGEX_YEAR_ONLY = `^([0-9]{4})$`;
 
 export const OMDB_URL = 'http://www.omdbapi.com';
-export const TMDB_URL = 'https://api.themoviedb.org/3';
 export const MDB_API_URL = 'mdb';
 export const FANART_TV_URL = 'http://webservice.fanart.tv/v3/movies';
 export const YTS_URL = 'https://yts.am/api/v2/list_movies.json';
@@ -102,19 +101,17 @@ export const MY_API_FILMS_URL = 'http://www.myapifilms.com/imdb/';
 const testBaseUrl = 'https://jsonplaceholder.typicode.com/todos/1';
 
 export const OMDB_API_KEY = '3a2fe8bf';
-export const TMDB_API_KEY = 'a636ce7bd0c125045f4170644b4d3d25';
 export const MY_API_FILMS_API_KEY = 'c7e516ed-d9fe-4f3f-b1d9-fde33f63c816';
 export const TRAK_TV_API_KEY = 'b4f1b1e56c6b78ed8970ba48ed2b6d1fcc517d09164af8c10e2be56c45f5f9a7';
 export const TRAK_TV_API_KEY_SECRET = '76c26a018cc31652644caf51928efedf75d301eed404b51e218edefdb661dc36';
 export const FANART_TV_API_KEY = '295c36bf9229fd8369928b7360554c9a';
-export const YOUTUBE_API_KEY = 'AIzaSyAC1kcZu_DoO7mbrMxMuCpO57iaDByGKV0';
 
-// https://api.themoviedb.org/3/movie/550/videos?api_key=a636ce7bd0c125045f4170644b4d3d25 --getting trailer 1
+// https://api.themoviedb.org/3/movie/550/videos?api_key={apikey} --getting trailer 1
 // https://api.trakt.tv/?trakt-api-key=b4f1b1e56c6b78ed8970ba48ed2b6d1fcc517d09164af8c10e2be56c45f5f9a7&trakt-api-version=2&query=batman`
 // http://www.omdbapi.com//?i=tt0499549&apikey=3a2fe8bf\
 // /search/:type?query=
 // https://api.trakt.tv/search/text?query=titanic
-// https://api.themoviedb.org/3/movie/550?api_key=a636ce7bd0c125045f4170644b4d3d25
+// https://api.themoviedb.org/3/movie/550?api_key={apikey}
 // http://www.myapifilms.com/imdb/idIMDB?title=matrix&token=c7e516ed-d9fe-4f3f-b1d9-fde33f63c816
 // http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
 

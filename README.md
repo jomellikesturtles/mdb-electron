@@ -39,6 +39,10 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
   - [Resources](#resources)
   - [notes](#notes)
     - [takeaways after watching The Captain](#takeaways-after-watching-the-captain)
+- [NOTES](#notes-1)
+  - [bookmark/favorite/played](#bookmarkfavoriteplayed)
+  - [userMediaData](#usermediadata)
+  - [movie](#movie)
 
 ## Built with
 
@@ -451,3 +455,28 @@ ipcService -> favorites-service -> NedDB
 BOOKMARKS
 
 PREFERENCES
+
+# NOTES
+
+services
+
+mdb-api (bff)
+profile profileService -> mdbApiService -> http | ipcService
+
+### bookmark/favorite/played
+
+bookmark bookmarkService -> mdbApiService | ipcService
+
+### userMediaData
+
+userMediaDataService -> mdbApiService
+
+### movie
+
+movieService -> tmdbService | mdbApiService | ipcService
+
+youtube
+
+ipcService
+
+httpService?

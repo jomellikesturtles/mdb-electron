@@ -1,86 +1,86 @@
 // omdb:"N/A"; tmdb:null
 export interface IMdbMovieDetails {
-  awards?: string
+  awards?: string;
   backgroundPath: string;
-  belongsToCollection?: []
-  boxOffice?: string | number // tmdb:revenue(number)
-  budget?: number
-  country?: string
-  director?: string
-  dvd?: string // dvd release
-  genres?: string[] | string | IGenre[]
-  imdbId?: string
-  imdbRating?: string
-  imdbVotes?: string
+  belongsToCollection?: [];
+  boxOffice?: string | number; // tmdb:revenue(number)
+  budget?: number;
+  country?: string;
+  director?: string;
+  dvd?: string; // dvd release
+  genres?: string[] | string | IGenre[];
+  imdbId?: string;
+  imdbRating?: string;
+  imdbVotes?: string;
   isAdult?: boolean;
   isAvailable?: boolean;
-  languages?: string[]
-  libraryInfo?: ILibraryInfo
-  metascore?: string // metacritic score\
-  originalLanguage?: string // tmdb:"en",omdb:"English"
-  originalTitle?: string
-  plot?: string // plot or overview
-  popularity?: number
-  posterPath: string
-  production?: string // company; i.e. Walt Disney Pictures
-  rated?: string // rated or certificate
-  ratings?: IRating[]
-  releaseDate?: string // omdb:"05 May 2017"; tmdb:"1999-10-15"
-  releaseYear?: number | string
-  response: string
-  runtime?: string
-  starring?: string // Actors field in omdb
-  status?: string // released/Post
+  languages?: string[];
+  libraryInfo?: ILibraryInfo;
+  metascore?: string; // metacritic score\
+  originalLanguage?: string; // tmdb:"en",omdb:"English"
+  originalTitle?: string;
+  plot?: string; // plot or overview
+  popularity?: number;
+  posterPath: string;
+  production?: string; // company; i.e. Walt Disney Pictures
+  rated?: string; // rated or certificate
+  ratings?: IRating[];
+  releaseDate?: string; // omdb:"05 May 2017"; tmdb:"1999-10-15"
+  releaseYear?: number | string;
+  response: string;
+  runtime?: string;
+  starring?: string; // Actors field in omdb
+  status?: string; // released/Post
   tagline?: string;
-  tmdbId?: number
-  title: string
-  type?: string // movie/tvmovie/series
+  tmdbId?: number;
+  title: string;
+  type?: string; // movie/tvmovie/series
   video?: boolean; // unknown
   // voteAverage: number; // tmdb votes
   // voteCount: number; // tmdb votes
-  website?: string
-  writer?: string // omdb
+  website?: string;
+  writer?: string; // omdb
   [propName: string]: any;
 }
 
 export interface IRating {
-  Source: string
-  Value: string
+  Source: string;
+  Value: string;
 }
 
 export interface LibraryInfo {
-  tmdbId?: null | number | string
-  imdbID?: string
-  title?: string
-  year?: number
-  directoryList?: string[]
-  _id: string
+  tmdbId?: null | number | string;
+  imdbID?: string;
+  title?: string;
+  year?: number;
+  directoryList?: string[];
+  _id: string;
 }
 
 export interface MovieGenre {
-  id: number
-  code: string
-  description: string
-  isChecked: boolean
+  id: number;
+  code: string;
+  description: string;
+  isChecked: boolean;
 }
 
 export interface WatchList {
-  id: number
-  movieList: string[]
+  id: number;
+  movieList: string[];
 }
 
 export interface ILibraryInfo {
-  tmdbId?: null | number | string
-  imdbID?: string
-  title?: string
-  year?: number
-  directoryList?: string[]
-  _id: string
+  tmdbId?: null | number | string;
+  imdbID?: string;
+  title?: string;
+  year?: number;
+  directoryList?: string[];
+  _id: string;
 }
 
 export interface ICollection {
   id: number,
-  name: string
+  name: string;
 }
 
 export interface IProductionCompany {
@@ -101,31 +101,31 @@ export interface ISpokenLanguage {
 }
 
 export interface IOmdbMovieDetail {
-  Title: string
-  Year?: string
-  Rated?: string
-  Released?: string // "05 May 2017"
-  Runtime?: string
-  Genre?: string
-  Director?: string
-  Writer?: string
-  Actors?: string
-  Plot?: string
-  Language?: string
-  Country?: string
-  Awards?: string
-  Poster?: string
-  Ratings?: IRating[]
-  Metascore?: string
-  imdbRating?: string
-  imdbVotes?: string
-  imdbID: string
-  Type?: string
-  DVD?: string
-  BoxOffice?: string
-  Production?: string
-  Website?: string
-  Response: string
+  Title: string;
+  Year?: string;
+  Rated?: string;
+  Released?: string; // "05 May 2017"
+  Runtime?: string;
+  Genre?: string;
+  Director?: string;
+  Writer?: string;
+  Actors?: string;
+  Plot?: string;
+  Language?: string;
+  Country?: string;
+  Awards?: string;
+  Poster?: string;
+  Ratings?: IRating[];
+  Metascore?: string;
+  imdbRating?: string;
+  imdbVotes?: string;
+  imdbID: string;
+  Type?: string;
+  DVD?: string;
+  BoxOffice?: string;
+  Production?: string;
+  Website?: string;
+  Response: string;
 }
 
 export interface ITmdbMovieDetail {
@@ -158,33 +158,33 @@ export interface ITmdbMovieDetail {
 
 export interface MdbMovieDetails {
   adult?: boolean;
-  title: string
-  releaseYear?: string
-  releaseDate?: string
-  rated?: string // rated or certificate
-  runtime?: string
-  genres?: string
-  director?: string
-  writer?: string
-  Actors?: string
-  plot?: string // plot or overview
-  Language?: string
-  Country?: string
-  Awards?: string
-  Poster?: string
-  Ratings?: IRating[]
-  Metascore?: string
-  imdbRating?: string
-  imdbVotes?: string
-  imdbID: string
-  tmdbID: number
-  Type?: string
-  DVD?: string
-  BoxOffice?: string
-  Production?: string
-  website?: string
-  response: string
-  libraryInfo?: ILibraryInfo
+  title: string;
+  releaseYear?: string;
+  releaseDate?: string;
+  rated?: string; // rated or certificate
+  runtime?: string;
+  genres?: string;
+  director?: string;
+  writer?: string;
+  Actors?: string;
+  plot?: string; // plot or overview
+  Language?: string;
+  Country?: string;
+  Awards?: string;
+  Poster?: string;
+  Ratings?: IRating[];
+  Metascore?: string;
+  imdbRating?: string;
+  imdbVotes?: string;
+  imdbID: string;
+  tmdbID: number;
+  Type?: string;
+  DVD?: string;
+  BoxOffice?: string;
+  Production?: string;
+  website?: string;
+  response: string;
+  libraryInfo?: ILibraryInfo;
 }
 
 // // adult: boolean;
@@ -221,22 +221,22 @@ export interface ITmdbResultObject {
 }
 
 export interface ITmdbResult {
-  popularity: number
-  vote_count: number
-  video: boolean
-  poster_path: string
-  id: number
-  adult: boolean
-  backdrop_path: string
-  original_language: string
-  original_title: string
-  genre_ids: number[]
-  title: string
-  vote_average: number
-  overview: string
-  release_date: string
-  isAvailable?: boolean
-  isHighlighted?: boolean
+  popularity: number;
+  vote_count: number;
+  video: boolean;
+  poster_path: string;
+  id: number;
+  adult: boolean;
+  backdrop_path: string;
+  original_language: string;
+  original_title: string;
+  genre_ids: number[];
+  title: string;
+  vote_average: number;
+  overview: string;
+  release_date: string;
+  isAvailable?: boolean;
+  isHighlighted?: boolean;
 }
 
 export interface ILibraryMovie {
@@ -244,12 +244,12 @@ export interface ILibraryMovie {
   title: string,
   year: number,
   imdbId?: string,
-  directory: string[]
+  directory: string[];
 }
 
 export interface IGenre {
-  id: number
-  name: string
+  id: number;
+  name: string;
 }
 
 export interface Credits {
@@ -294,33 +294,33 @@ export enum Department {
 }
 
 export class MDBTorrent {
-  id?: string
-  name?: string
-  size?: string
-  hash: string
-  url?: string
-  quality?: string
-  type?: string
-  seeds?: number
-  peers?: number
-  sizeBytes?: number
-  added?: string
-  dateUploaded?: string
-  dateUploadedUnix?: number
-  isYts?: boolean
-  magnetLink?: string
+  id?: string;
+  name?: string;
+  size?: string;
+  hash: string;
+  url?: string;
+  quality?: string;
+  type?: string;
+  seeds?: number;
+  peers?: number;
+  sizeBytes?: number;
+  added?: string;
+  dateUploaded?: string;
+  dateUploadedUnix?: number;
+  isYts?: boolean;
+  magnetLink?: string;
 }
 
 export class ITPBTorrent {
-  id?: number
-  name?: string
-  hash: string
-  sizeBytes?: number
-  added?: string
+  id?: number;
+  name?: string;
+  hash: string;
+  sizeBytes?: number;
+  added?: string;
 }
 
 export interface ISearch {
-  page: number
+  page: number;
 }
 
 export enum OmdbParameters {
@@ -480,10 +480,10 @@ export interface IExternalids {
 
 export interface IImages {
   id?: number;
-  profiles: IProfile[];
+  profiles: IImageProfile[];
 }
 
-export interface IProfile {
+export interface IImageProfile {
   iso_639_1?: any;
   aspect_ratio: number;
   vote_count: number;
@@ -527,7 +527,7 @@ interface ICrew {
   overview: string;
   genre_ids: number[];
   video: boolean;
-  episode_count: number
+  episode_count: number;
   media_type?: string;
   credit_id: string;
   poster_path?: string;

@@ -1,0 +1,65 @@
+{
+  "id": 454626,
+  "results": [
+    {
+      "id": "5dcac05a6e44bf000fef48e7",
+      "iso_639_1": "en",
+      "iso_3166_1": "US",
+      "key": "szby7ZHLnkA",
+      "name": "New Official Trailer",
+      "site": "YouTube",
+      "size": 1080,
+      "type": "Trailer"
+    },
+    {
+      "id": "5e318333326c1900121e540d",
+      "iso_639_1": "en",
+      "iso_3166_1": "US",
+      "key": "MDgs6JRSJvg",
+      "name": "Sonic The Hedgehog (2020) - \"Classic\" - Paramount Pictures",
+      "site": "YouTube",
+      "size": 1080,
+      "type": "Featurette"
+    },
+    {
+      "id": "5e343aa6ac8e6b0018c25fa5",
+      "iso_639_1": "en",
+      "iso_3166_1": "US",
+      "key": "hshTmTjI1Vs",
+      "name": "Sonic The Hedgehog (2020) - Big Game Spot - Paramount Pictures",
+      "site": "YouTube",
+      "size": 1080,
+      "type": "Featurette"
+    },
+    {
+      "id": "5e344b9c43250f0015bf8df7",
+      "iso_639_1": "en",
+      "iso_3166_1": "US",
+      "key": "t-mee176CNk",
+      "name": "Sonic The Hedgehog (2020) - \"Super\" - Paramount Pictures",
+      "site": "YouTube",
+      "size": 1080,
+      "type": "Featurette"
+    },
+    {
+      "id": "5e344b714ca67600144f11d1",
+      "iso_639_1": "en",
+      "iso_3166_1": "US",
+      "key": "hoRLCr5NG3Y",
+      "name": "Sonic The Hedgehog (2020) - \"Drive\" - Paramount Pictures",
+      "site": "YouTube",
+      "size": 1080,
+      "type": "Featurette"
+    },
+    {
+      "id": "5e4507830c271000138457dd",
+      "iso_639_1": "en",
+      "iso_3166_1": "US",
+      "key": "EwgM3sKaO54",
+      "name": "Sonic The Hedgehog - Featurettes - Becoming Robotnik - Texted 1080p",
+      "site": "YouTube",
+      "size": 1080,
+      "type": "Featurette"
+    }
+  ]
+}

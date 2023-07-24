@@ -1,7 +1,4 @@
-/**
- * videos,images,credits,external_ids,recommendations
- */
-export const TMDB_FULL_MOVIE_DETAILS = {
+{
   "adult": false,
   "backdrop_path": "/x7O7oJO7BeXWvqXpLa5YoJd8ZD5.jpg",
   "belongs_to_collection": null,
@@ -2393,12 +2390,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2009-05-28",
         "original_language": "en",
         "original_title": "Up",
-        "genre_ids": [
-          12,
-          16,
-          35,
-          10751
-        ],
+        "genre_ids": [12, 16, 35, 10751],
         "backdrop_path": "/6fX7NF6IUJCTVssei7Shgl9J6LL.jpg",
         "adult": false,
         "overview": "Carl Fredricksen spent his entire life dreaming of exploring the globe and experiencing life to its fullest. But at age 78, life seems to have passed him by, until a twist of fate (and a persistent 8-year old Wilderness Explorer named Russell) gives him a new lease on life.",
@@ -2414,11 +2406,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2001-11-01",
         "original_language": "en",
         "original_title": "Monsters, Inc.",
-        "genre_ids": [
-          16,
-          35,
-          10751
-        ],
+        "genre_ids": [16, 35, 10751],
         "backdrop_path": "/wJOHzjTDhnEUyP0Q8gyp6ggvL4A.jpg",
         "adult": false,
         "overview": "James Sullivan and Mike Wazowski are monsters, they earn their living scaring children and are the best in the business... even though they're more afraid of the children than they are of them. When a child accidentally enters their world, James and Mike suddenly find that kids are not to be afraid of and they uncover a conspiracy that could threaten all children across the world.",
@@ -2434,12 +2422,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2007-06-22",
         "original_language": "en",
         "original_title": "Ratatouille",
-        "genre_ids": [
-          16,
-          35,
-          14,
-          10751
-        ],
+        "genre_ids": [16, 35, 14, 10751],
         "backdrop_path": "/sFpGI08aeHIRKlLi9SxLyYrRyZ8.jpg",
         "adult": false,
         "overview": "A rat named Remy dreams of becoming a great French chef despite his family's wishes and the obvious problem of being a rat in a decidedly rodent-phobic profession. When fate places Remy in the sewers of Paris, he finds himself ideally situated beneath a restaurant made famous by his culinary hero, Auguste Gusteau. Despite the apparent dangers of being an unlikely - and certainly unwanted - visitor in the kitchen of a fine French restaurant, Remy's passion for cooking soon sets into motion a hilarious and exciting rat race that turns the culinary world of Paris upside down.",
@@ -2455,11 +2438,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2010-06-16",
         "original_language": "en",
         "original_title": "Toy Story 3",
-        "genre_ids": [
-          16,
-          35,
-          10751
-        ],
+        "genre_ids": [16, 35, 10751],
         "backdrop_path": "/y2qAjM37QgatWeG84DDtwsZuMW.jpg",
         "adult": false,
         "overview": "Woody, Buzz, and the rest of Andy's toys haven't been played with in years. With Andy about to go to college, the gang find themselves accidentally left at a nefarious day care center. The toys must band together to escape and return home to Andy.",
@@ -2475,10 +2454,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2003-05-30",
         "original_language": "en",
         "original_title": "Finding Nemo",
-        "genre_ids": [
-          16,
-          10751
-        ],
+        "genre_ids": [16, 10751],
         "backdrop_path": "/2Vv4suw1ja7RpnR6FaXAOihI68g.jpg",
         "adult": false,
         "overview": "Nemo, an adventurous young clownfish, is unexpectedly taken from his Great Barrier Reef home to a dentist's office aquarium. It's up to his worrisome father Marlin and a friendly but forgetful fish Dory to bring Nemo home -- meeting vegetarian sharks, surfer dude turtles, hypnotic jellyfish, hungry seagulls, and more along the way.",
@@ -2494,11 +2470,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "1995-10-30",
         "original_language": "en",
         "original_title": "Toy Story",
-        "genre_ids": [
-          16,
-          35,
-          10751
-        ],
+        "genre_ids": [16, 35, 10751],
         "backdrop_path": "/dji4Fm0gCDVb9DQQMRvAI8YNnTz.jpg",
         "adult": false,
         "overview": "Led by Woody, Andy's toys live happily in his room until Andy's birthday brings Buzz Lightyear onto the scene. Afraid of losing his place in Andy's heart, Woody plots against Buzz. But when circumstances separate Buzz and Woody from their owner, the duo eventually learns to put aside their differences.",
@@ -2514,12 +2486,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2004-11-05",
         "original_language": "en",
         "original_title": "The Incredibles",
-        "genre_ids": [
-          28,
-          12,
-          16,
-          10751
-        ],
+        "genre_ids": [28, 12, 16, 10751],
         "backdrop_path": "/wiDGnsn9RtNglgKQy4J1jZQBG5v.jpg",
         "adult": false,
         "overview": "Bob Parr has given up his superhero days to log in time as an insurance adjuster and raise his three children with his formerly heroic wife in suburbia. But when he receives a mysterious assignment, it's time to get back into costume.",
@@ -2535,11 +2502,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "1999-10-30",
         "original_language": "en",
         "original_title": "Toy Story 2",
-        "genre_ids": [
-          16,
-          35,
-          10751
-        ],
+        "genre_ids": [16, 35, 10751],
         "backdrop_path": "/9Kjxr4VCU0Y4DAuXkzR2moAy7DK.jpg",
         "adult": false,
         "overview": "Andy heads off to Cowboy Camp, leaving his toys to their own devices. Things shift into high gear when an obsessive toy collector named Al McWhiggen, owner of Al's Toy Barn kidnaps Woody. Andy's toys mount a daring rescue mission, Buzz Lightyear meets his match and Woody has to decide where he and his heart truly belong.",
@@ -2555,12 +2518,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2006-06-08",
         "original_language": "en",
         "original_title": "Cars",
-        "genre_ids": [
-          12,
-          16,
-          35,
-          10751
-        ],
+        "genre_ids": [12, 16, 35, 10751],
         "backdrop_path": "/a1MlbLBk5Sy6YvMbSuKfwGlDVlb.jpg",
         "adult": false,
         "overview": "Lightning McQueen, a hotshot rookie race car driven to succeed, discovers that life is about the journey, not the finish line, when he finds himself unexpectedly detoured in the sleepy Route 66 town of Radiator Springs. On route across the country to the big Piston Cup Championship in California to compete against two seasoned pros, McQueen gets to know the town's offbeat characters.",
@@ -2576,12 +2534,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2008-06-04",
         "original_language": "en",
         "original_title": "Kung Fu Panda",
-        "genre_ids": [
-          12,
-          16,
-          35,
-          10751
-        ],
+        "genre_ids": [12, 16, 35, 10751],
         "backdrop_path": "/pmLEmMLYCreFAxfdCt5uO1wDgSi.jpg",
         "adult": false,
         "overview": "When the Valley of Peace is threatened, lazy Po the panda discovers his destiny as the \"chosen one\" and trains to become a kung fu hero, but transforming the unsleek slacker into a brave warrior won't be easy. It's up to Master Shifu and the Furious Five -- Tigress, Crane, Mantis, Viper and Monkey -- to give it a try.",
@@ -2597,12 +2550,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2010-03-10",
         "original_language": "en",
         "original_title": "How to Train Your Dragon",
-        "genre_ids": [
-          12,
-          16,
-          14,
-          10751
-        ],
+        "genre_ids": [12, 16, 14, 10751],
         "backdrop_path": "/mxPvA8cj0Eqa1A13DcT5NzFq7Ta.jpg",
         "adult": false,
         "overview": "As the son of a Viking leader on the cusp of manhood, shy Hiccup Horrendous Haddock III faces a rite of passage: he must kill a dragon to prove his warrior mettle. But after downing a feared dragon, he realizes that he no longer wants to destroy it, and instead befriends the beast – which he names Toothless – much to the chagrin of his warrior father",
@@ -2618,12 +2566,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2006-03-29",
         "original_language": "en",
         "original_title": "Ice Age: The Meltdown",
-        "genre_ids": [
-          12,
-          16,
-          35,
-          10751
-        ],
+        "genre_ids": [12, 16, 35, 10751],
         "backdrop_path": "/lxNCa4FifUuLeUkWUQl2yuf9JnJ.jpg",
         "adult": false,
         "overview": "Diego, Manny and Sid return in this sequel to the hit animated movie Ice Age. This time around, the deep freeze is over, and the ice-covered earth is starting to melt, which will destroy the trio's cherished valley. The impending disaster prompts them to reunite and warn all the other beasts about the desperate situation.",
@@ -2639,12 +2582,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "1998-11-25",
         "original_language": "en",
         "original_title": "A Bug's Life",
-        "genre_ids": [
-          12,
-          16,
-          35,
-          10751
-        ],
+        "genre_ids": [12, 16, 35, 10751],
         "backdrop_path": "/bHMHpXNjeKRxcjWcpbIAD5f0aIK.jpg",
         "adult": false,
         "overview": "On behalf of \"oppressed bugs everywhere,\" an inventive ant named Flik hires a troupe of warrior bugs to defend his bustling colony from a horde of freeloading grasshoppers led by the evil-minded Hopper.",
@@ -2660,13 +2598,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2001-05-16",
         "original_language": "en",
         "original_title": "Shrek",
-        "genre_ids": [
-          12,
-          16,
-          35,
-          14,
-          10751
-        ],
+        "genre_ids": [12, 16, 35, 14, 10751],
         "backdrop_path": "/2l5UHZBcp9cx1PwKLdisJ0gV9jB.jpg",
         "adult": false,
         "overview": "It ain't easy bein' green -- especially if you're a likable (albeit smelly) ogre named Shrek. On a mission to retrieve a gorgeous princess from the clutches of a fire-breathing dragon, Shrek teams up with an unlikely compatriot -- a wisecracking donkey.",
@@ -2682,12 +2614,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2002-03-10",
         "original_language": "en",
         "original_title": "Ice Age",
-        "genre_ids": [
-          12,
-          16,
-          35,
-          10751
-        ],
+        "genre_ids": [12, 16, 35, 10751],
         "backdrop_path": "/oDqbewoFuIEWA7UWurole6MzDGn.jpg",
         "adult": false,
         "overview": "With the impending ice age almost upon them, a mismatched trio of prehistoric critters – Manny the woolly mammoth, Diego the saber-toothed tiger and Sid the giant sloth – find an orphaned infant and decide to return it to its human parents. Along the way, the unlikely allies become friends but, when enemies attack, their quest takes on far nobler aims.",
@@ -2703,10 +2630,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2005-05-25",
         "original_language": "en",
         "original_title": "Madagascar",
-        "genre_ids": [
-          16,
-          10751
-        ],
+        "genre_ids": [16, 10751],
         "backdrop_path": "/wUetiqu2EFhHW94yTP0pWABfyUG.jpg",
         "adult": false,
         "overview": "Alex the lion is the king of the urban jungle, the main attraction at New York’s Central Park Zoo. He and his best friends—Marty the zebra, Melman the giraffe and Gloria the hippo—have spent their whole lives in blissful captivity before an admiring public and with regular meals provided for them. Not content to leave well enough alone, Marty lets his curiosity get the better of him and makes his escape—with the help of some prodigious penguins—to explore the world.",
@@ -2722,14 +2646,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2012-06-21",
         "original_language": "en",
         "original_title": "Brave",
-        "genre_ids": [
-          28,
-          12,
-          16,
-          35,
-          14,
-          10751
-        ],
+        "genre_ids": [28, 12, 16, 35, 14, 10751],
         "backdrop_path": "/sfRCA9g3CunpnZO3QurHSIRcsUq.jpg",
         "adult": false,
         "overview": "Brave is set in the mystical Scottish Highlands, where Mérida is the princess of a kingdom ruled by King Fergus and Queen Elinor. An unruly daughter and an accomplished archer, Mérida one day defies a sacred custom of the land and inadvertently brings turmoil to the kingdom. In an attempt to set things right, Mérida seeks out an eccentric old Wise Woman and is granted an ill-fated wish. Also figuring into Mérida’s quest — and serving as comic relief — are the kingdom’s three lords: the enormous Lord MacGuffin, the surly Lord Macintosh, and the disagreeable Lord Dingwall.",
@@ -2745,11 +2662,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "1994-05-07",
         "original_language": "en",
         "original_title": "The Lion King",
-        "genre_ids": [
-          16,
-          18,
-          10751
-        ],
+        "genre_ids": [16, 18, 10751],
         "backdrop_path": "/kZ9CKeZeKMUtrjZ7RuArjVMTDF4.jpg",
         "adult": false,
         "overview": "A young lion prince is cast out of his pride by his cruel uncle, who claims he killed his father. While the uncle rules with an iron paw, the prince grows up beyond the Savannah, living by a philosophy: No worries for the rest of your days. But when his past comes to haunt him, the young prince must decide his fate: Will he remain an outcast or face his demons and become what he needs to be?",
@@ -2765,13 +2678,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2004-05-19",
         "original_language": "en",
         "original_title": "Shrek 2",
-        "genre_ids": [
-          12,
-          16,
-          35,
-          14,
-          10751
-        ],
+        "genre_ids": [12, 16, 35, 14, 10751],
         "backdrop_path": "/gdFAYLb5NR5HqcEKnPloOM6fX4B.jpg",
         "adult": false,
         "overview": "Shrek, Fiona and Donkey set off to Far, Far Away to meet Fiona's mother and father. But not everyone is happy. Shrek and the King find it hard to get along, and there's tension in the marriage. The fairy godmother discovers that Shrek has married Fiona instead of her Son Prince Charming and sets about destroying their marriage.",
@@ -2787,10 +2694,7 @@ export const TMDB_FULL_MOVIE_DETAILS = {
         "release_date": "2013-06-20",
         "original_language": "en",
         "original_title": "Monsters University",
-        "genre_ids": [
-          16,
-          10751
-        ],
+        "genre_ids": [16, 10751],
         "backdrop_path": "/5mDCKKS7M8aUZKdShnCa7lLbzmH.jpg",
         "adult": false,
         "overview": "A look at the relationship between Mike and Sulley during their days at Monsters University — when they weren't necessarily the best of friends.",
@@ -2800,7 +2704,8 @@ export const TMDB_FULL_MOVIE_DETAILS = {
     ],
     "total_pages": 2,
     "total_results": 40
-  }, "release_dates": {
+  },
+  "release_dates": {
     "results": [
       {
         "iso_3166_1": "KR",

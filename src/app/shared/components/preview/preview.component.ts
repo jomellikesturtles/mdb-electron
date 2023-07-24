@@ -58,7 +58,6 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.dataService.previewMovie.subscribe((e: MDBMovie) => {
       //   console.log('PREVIEWMOVIE:', e)
-      // this.getVideoClip(new MDBMovie(TMDB_FULL_MOVIE_DETAILS))
       this.getVideoClip(new MDBMovie(e));
       this.showPreviewOverlayContext = this.router.url.includes('/details/') ? false : true;
       this.cdr.detectChanges();

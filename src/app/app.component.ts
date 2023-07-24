@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FirebaseService } from './services/firebase.service';
 
 @Component({
   selector: 'app-root',
@@ -8,11 +7,11 @@ import { FirebaseService } from './services/firebase.service';
 })
 export class AppComponent implements OnInit {
   title = 'mdb-electron';
-  constructor(private firebaseService: FirebaseService) { }
+  constructor() { }
 
   ngOnInit() {
     // this.getCurrentUser()
-    this.syncTime()
+    this.syncTime();
   }
 
   getCurrentUser() {
