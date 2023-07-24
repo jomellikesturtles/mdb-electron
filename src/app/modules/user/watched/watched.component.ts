@@ -5,7 +5,6 @@ import { UserDataService } from '@services/user-data/user-data.service';
 import { PlayedService } from '@services/media/played.service';
 import { Component, OnInit } from '@angular/core';
 import { environment } from '@environments/environment';
-import { TMDB_SEARCH_RESULTS } from '../../../mock-data';
 import { CollectionName } from '@services/firebase.service';
 
 @Component({
@@ -39,32 +38,24 @@ export class WatchedComponent implements OnInit {
    * Gets all watched movies by user.
    */
   async getWatchedMovies() {
-    if (environment.runConfig.useTestData) {
-      this.moviesDisplayList = TMDB_SEARCH_RESULTS.results;
-    } else {
-      const res = await this.userDataService.getUserDataFirstPage(this.listType);
-      if (res.length) {
-        this.moviesDisplayList = res;
-        this.lastVal = res[res.length - 1][this.listType][this.orderBy];
-        this.hasResults = true;
-        if (res.length === 20) {
-          this.hasMoreResults = true;
-        }
+    const res = await this.userDataService.getUserDataFirstPage(this.listType);
+    if (res.length) {
+      this.moviesDisplayList = res;
+      this.lastVal = res[res.length - 1][this.listType][this.orderBy];
+      this.hasResults = true;
+      if (res.length === 20) {
+        this.hasMoreResults = true;
       }
     }
   }
 
   async getMoreResults() {
-    if (environment.runConfig.useTestData) {
-      this.moviesDisplayList = TMDB_SEARCH_RESULTS.results;
-    } else {
-      const res = await this.userDataService.getUserDataPagination(this.listType, this.lastVal);
-      if (res.length) {
-        this.moviesDisplayList.push.apply(this.moviesDisplayList, res);
-        this.lastVal = res[res.length - 1][this.listType][this.orderBy];
-        if (res.length < 20) {
-          this.hasMoreResults = false;
-        }
+    const res = await this.userDataService.getUserDataPagination(this.listType, this.lastVal);
+    if (res.length) {
+      this.moviesDisplayList.push.apply(this.moviesDisplayList, res);
+      this.lastVal = res[res.length - 1][this.listType][this.orderBy];
+      if (res.length < 20) {
+        this.hasMoreResults = false;
       }
     }
   }

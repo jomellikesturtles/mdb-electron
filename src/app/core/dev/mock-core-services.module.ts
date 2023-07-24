@@ -16,6 +16,10 @@ import { MockMovieService } from "./services/mock-movie.service";
 import { MockPlayedService } from "./services/mock-played.service";
 import { MockProgressService } from "./services/mock-progress.service";
 import { MockUserDataService } from "./services/mock-user-data.service";
+import { ProfileService } from "@services/profile/profile.service";
+import { MockProfileService } from "./services/mock-profile.service";
+import { MockTorrentService } from "./services/mock-torrent.service";
+import { TorrentService } from "@services/torrent/torrent.service";
 
 @NgModule({
   imports: [HttpClientModule],
@@ -27,6 +31,8 @@ import { MockUserDataService } from "./services/mock-user-data.service";
     // { provide: PlayedService, useExisting: MockPlayedService },
     // { provide: ProgressService, useExisting: MockProgressService },
     { provide: MovieService, useExisting: MockMovieService },
+    { provide: ProfileService, useExisting: MockProfileService },
+    { provide: TorrentService, useExisting: MockTorrentService },
     // { provide: LibraryService, useExisting: MockLibraryService },
 
     // { provide: HTTP_INTERCEPTORS, useClass: MockInterceptorService, multi: true },

@@ -2,10 +2,7 @@ import {
   Component, OnInit,
 } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
-// import { Observable } from 'rxjs';
-// import { UserState } from '../../../app.state';
-// import { Select } from '@ngxs/store';
-// import { FirebaseService } from 'src/app/services/firebase.service';
+import { ProfileService } from '@services/profile/profile.service';
 import { UserDataService } from '@services/user-data/user-data.service';
 
 @Component({
@@ -17,13 +14,7 @@ export class ProfileComponent implements OnInit {
   // @Select(UserState) user$: Observable<any>
   // moviesList = TMDB_SEARCH_RESULTS.results
   moviesList = [];
-  userProfile: IProfile = {
-    username: 'peterparker123',
-    emailAddress: 'peterparker123@gmail.com',
-    watchedCount: 90,
-    bookmarkedCount: 9,
-    bio: 'movies... I like'
-  };
+  userProfile: IProfile;
   photoUrl = '';
   userStats: {
     filmsNumber: 54;
@@ -40,30 +31,24 @@ export class ProfileComponent implements OnInit {
   };
   background: ThemePalette = undefined;
   constructor(
-    private userDataService: UserDataService
+    private userDataService: UserDataService,
+    private profileService: ProfileService
   ) { }
 
   ngOnInit() {
     // this.countBookmarks()
     this.getUser();
-    this.treatAll();
     this.getUserData();
   }
 
   ngAfterViewInit(): void {
     this.background = this.background ? undefined : 'primary';
   }
-  treatAll() {
-    // this.firebaseService.getEmpty()
-  }
 
   getUser() {
-    // this.firebaseService.getUser().then(e => {
-    //   console.log('fbuser', this.firebaseUser$);
-    //   this.firebaseUser$ = e
-    //   this.defaultUserProfile = e
-    //   this.cdr.detectChanges()
-    // })
+    this.profileService.getProfile().subscribe(e => {
+      this.userProfile = e;
+    });
   }
 
   changePassword() {

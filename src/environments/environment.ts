@@ -25,10 +25,21 @@ export const environment = {
     isElectron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
     useTestData: true,
   },
+  tmdb: {
+    url: 'https://api.themoviedb.org/3',
+    apiKey: 'a636ce7bd0c125045f4170644b4d3d25'
+  },
+  yts: {
+    url: 'https://yts.mx/api/v2/list_movies.json',
+    urlV2: 'https://yts.am/api/v2/list_movies.json'
+  },
+  youtube: {
+    apiKey: 'AIzaSyAC1kcZu_DoO7mbrMxMuCpO57iaDByGKV0'
+  },
   language: 'en',
   location: 'ph',
   dataSource: source.TMDB,
-  
+
 };
 
 

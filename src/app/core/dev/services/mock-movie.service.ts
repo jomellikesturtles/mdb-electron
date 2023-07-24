@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters } from "@models/interfaces";
+import { IOmdbMovieDetail, ITmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from "@models/interfaces";
 import { MDBMovie } from "@models/mdb-movie.model";
 import { IMediaProgress } from "@models/media-progress";
 import { TMDB_External_Id } from "@models/tmdb-external-id.model";
@@ -8,9 +8,8 @@ import { IUserDataPaginated } from "@services/ipc.service";
 import { BaseMovieService } from "@services/movie/base-movie.service";
 import { MDBMovieQuery } from "@services/movie/movie.query";
 import { MDBMovieStore } from "@services/movie/movie.store";
-import { TEST_OMDB_MOVIE_DETAIL, TMDB_SEARCH_RESULTS } from "app/mock-data";
-import { TMDB_FULL_MOVIE_DETAILS } from "app/mock-data-movie-details";
-import { Observable, of } from "rxjs";
+import { TEST_OMDB_MOVIE_DETAIL } from "app/mock-data";
+import { Observable, map, of } from "rxjs";
 
 @Injectable({ providedIn: "root" })
 export class MockMovieService extends BaseMovieService {
@@ -62,17 +61,18 @@ export class MockMovieService extends BaseMovieService {
     return of({ results: [{ type: 'trailer', key: 'I7c1etV7D7g' }] });
   }
   getMovieDetails(id: number, appendToResponse?: string, refresh?: boolean): Observable<MDBMovie> {
-    return of(this.mapMovieDetails(id, TMDB_FULL_MOVIE_DETAILS));
+
+    return this.http.get<any>('assets/mock-data/tmdb-movie-details.json').pipe(map(e => {
+      return this.mapMovieDetails(id, e);
+    }));
   }
-  getMoviesDiscover(paramMap: Map<TmdbParameters, any>): Observable<any> {
-    return of(TMDB_SEARCH_RESULTS);
+  getMoviesDiscover(paramMap: Map<TmdbParameters, any>): Observable<ITmdbResultObject> {
+    return this.http.get<ITmdbResultObject>('assets/mock-data/tmdb-movie-search-result.json');
   }
-  searchMovie(parameters: Map<TmdbParameters | TmdbSearchMovieParameters, any>, refresh?: boolean): Observable<any> {
-    return of(TMDB_SEARCH_RESULTS);
+  searchMovie(parameters: Map<TmdbParameters | TmdbSearchMovieParameters, any>, refresh?: boolean): Observable<ITmdbResultObject> {
+    return this.http.get<ITmdbResultObject>('assets/mock-data/tmdb-movie-search-result.json');
   }
-  getRandomVideoClip(query: string) {
-    throw new Error("Method not implemented.");
-  }
+
   getSubtitleFile(filePath: string): Observable<any> {
     return this.http.get<any>('file:///D:/workspaces/git_repos/mdb-electron/cameron/src/assets/Cinema%20Paradiso-English.srt');
   }

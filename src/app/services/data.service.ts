@@ -48,24 +48,9 @@ export class DataService {
     this.previewMovieSource.next(val);
   }
 
-
-  setDashboardData(data: any[]) {
-    this.dashboardData = data;
-  }
   addDashboardData(data: any[]) {
     console.log('pushing ', data);
     this.dashboardData.push(data);
-  }
-  getDashboardData() {
-    return this.dashboardData;
-  }
-
-  hasDashboardData() {
-    console.log(
-      'dashboard data has value',
-      this.dashboardData && this.dashboardData.length
-    );
-    return this.dashboardData && this.dashboardData.length;
   }
 
   setSearchQuery(val) {

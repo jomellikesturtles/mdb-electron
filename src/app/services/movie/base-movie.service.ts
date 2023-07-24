@@ -80,12 +80,6 @@ export abstract class BaseMovieService {
    */
   protected abstract searchMovie(parameters: Map<TmdbParameters | TmdbSearchMovieParameters, any>, refresh?: boolean): Observable<any>;
 
-  /**
-   * Gets movie clips from YouTube.
-   * @param query query to search
-   */
-  protected abstract getRandomVideoClip(query: string);
-
   protected abstract getSubtitleFile(filePath: string): Observable<any>;
 
   protected abstract getSubtitleFileString(filePath: string): Observable<any>;

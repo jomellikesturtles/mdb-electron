@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { TMDB_FULL_MOVIE_DETAILS } from '../../../mock-data-movie-details';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 
 @Component({
   selector: 'app-credits',
@@ -8,8 +7,14 @@ import { TMDB_FULL_MOVIE_DETAILS } from '../../../mock-data-movie-details';
 })
 export class CreditsComponent implements OnInit, OnDestroy {
 
-  castList = TMDB_FULL_MOVIE_DETAILS.credits.cast
-  crewList = TMDB_FULL_MOVIE_DETAILS.credits.crew
+  castList = {};
+  crewList = {};
+
+  @Input()
+  set credits(val: any) {
+    this.castList = val.cast;
+    this.crewList = val.crew;
+  }
 
   constructor() { }
 

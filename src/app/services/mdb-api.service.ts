@@ -98,6 +98,11 @@ export class BffService {
       catchError(this.handleError<any>('registerUser')));
   }
 
+  getProfile() {
+    return this.http.get<any>(`mdb/user/profile`).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getUserProfile')));
+  }
+
   logout() {
     return this.http.post<any>(`mdb/user/logout`, {}).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('logout')));
