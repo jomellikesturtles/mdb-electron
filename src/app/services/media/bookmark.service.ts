@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { IpcOperations, IpcService, SubChannel } from '../ipc.service';
 import { Observable } from 'rxjs';
 import { DataService } from '../data.service';
-import { BffService } from '../mdb-api.service';
+import { MDBApiService } from '../mdb-api.service';
 import { BaseBookmarkService } from './base-bookmark.service';
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class BookmarkService extends BaseBookmarkService {
 
   constructor(
     dataService: DataService,
-    private bffService: BffService,
+    private bffService: MDBApiService,
     private ipcService: IpcService) {
     super(
       dataService,

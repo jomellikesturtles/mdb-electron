@@ -33,6 +33,16 @@ export const environment = {
     url: 'https://yts.mx/api/v2/list_movies.json',
     urlV2: 'https://yts.am/api/v2/list_movies.json'
   },
+  torrent: {
+    trackers: [`udp://glotorrents.pw:6969/announce`,
+      `udp://tracker.opentrackr.org:1337/announce`,
+      `udp://torrent.gresille.org:80/announce`,
+      `udp://tracker.openbittorrent.com:80`,
+      `udp://tracker.coppersurfer.tk:6969`,
+      `udp://tracker.leechers-paradise.org:6969`,
+      `udp://p4p.arenabg.ch:1337`,
+      `udp://tracker.internetwarriors.net:1337`]
+  },
   youtube: {
     apiKey: 'AIzaSyAC1kcZu_DoO7mbrMxMuCpO57iaDByGKV0'
   },

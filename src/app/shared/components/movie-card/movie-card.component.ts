@@ -32,9 +32,9 @@ export class MovieCardComponent implements OnInit {
       // UNCOMMENT BELOW to get external_id and torrent one by one
       this.movieService.getExternalId(this._movie.tmdbId).pipe(takeUntil(this.ngUnsubscribe)).subscribe(externalId => {
         if (externalId && externalId.imdb_id) {
-          this.torrentService.getTorrentsOnline(externalId.imdb_id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
-            if (e.status === 'ok' && e.data.movie_count > 0) {
-              const firstTorrent = e.data.movies[0].torrents[0];
+          this.torrentService.getTorrents(externalId.imdb_id).pipe(takeUntil(this.ngUnsubscribe)).subscribe(e => {
+            if (e.status === 'ok' && e.torrents.length > 0) {
+              // const firstTorrent = e.data.movies[0].torrents[0];
               // this._movie.library = firstTorrent
               // this._movie.library.id = firstTorrent.hash
             }

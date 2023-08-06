@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { QueryEntity } from '@datorama/akita';
-import { MDBMovie } from '@models/mdb-movie.model';
-import { MDBMovieListModel, MDBMovieModel, TmdbMovieModel } from './interface/movie';
+import { MDBMovieListModel, MDBMovieModel, MDBPaginatedResultModel, TmdbMovieModel } from './interface/movie';
 import { MDBMovieState, MDBMovieStore, TMDBMovieStore, TmdbMovieState as TMDBMovieState, MDBMovieSearchState, MDBMovieSearchStore } from './movie.store';
 
 @Injectable({ providedIn: 'root' })
@@ -18,12 +17,12 @@ export class MDBMovieQuery extends QueryEntity<MDBMovieState, MDBMovieModel> {
   }
 }
 
-// @Injectable({ providedIn: 'root' })
-// export class DiscoverMovieQuery extends QueryEntity<MDBMovieState, TmdbMovieModel> {
-//   constructor(protected store: MDBMovieStore) {
-//     super(store);
-//   }
-// }
+@Injectable({ providedIn: 'root' })
+export class MDBMovieDiscoverQuery extends QueryEntity<MDBMovieState, MDBPaginatedResultModel> {
+  constructor(protected store: MDBMovieStore) {
+    super(store);
+  }
+}
 
 @Injectable({ providedIn: 'root' })
 export class SearchMovieQuery extends QueryEntity<MDBMovieSearchState, MDBMovieListModel> {

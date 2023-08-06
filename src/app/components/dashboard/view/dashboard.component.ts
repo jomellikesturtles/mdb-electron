@@ -4,9 +4,7 @@ import { DataService } from '@services/data.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TmdbParameters, } from '@models/interfaces';
 import { GENRES } from '@shared/constants';
-import { DomSanitizer } from '@angular/platform-browser';
 import GeneralUtil from '@utils/general.util';
-import { MDBMovie } from '@models/mdb-movie.model';
 import { LoggerService } from '@core/logger.service';
 
 @Component({
@@ -21,7 +19,6 @@ export class DashboardComponent implements OnInit {
     private movieService: MovieService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private domSanitizer: DomSanitizer,
     private loggerService: LoggerService
   ) { }
 
@@ -83,22 +80,16 @@ export class DashboardComponent implements OnInit {
    * @param listName the name of the list
    */
   async sendToMovieService(paramMap: Map<TmdbParameters, any>, listName: string) {
-    const data = await this.movieService.getMoviesDiscover(paramMap).toPromise();
-    let myParam2: { [k: string]: any; } = {};
-    for (let entry of paramMap.entries()) {
-      myParam2[entry[0]] = entry[1];
-    }
-    let mappedRes = [];
-    data.results.forEach(e => {
-      mappedRes.push(new MDBMovie(e));
-    });
+    const data = await this.movieService.getMoviesDiscover(paramMap, listName).toPromise();
+    let mappedResults = data.results;
     const innerList = {
       name: listName,
-      data: mappedRes,
+      data: mappedResults,
       queryParams: paramMap
     };
     this.dashboardLists.push(innerList);
     this.dataService.addDashboardData(innerList.data);
+    console.log('data:', data);
   }
 
   /**
@@ -136,7 +127,7 @@ export class DashboardComponent implements OnInit {
    * @param distance how far
    * @param step step
    */
-  sideScroll(element, direction, speed, distance, step) {
+  private sideScroll(element, direction, speed, distance, step) {
     let scrollAmount = 0;
     const slideTimer = setInterval(() => {
       if (direction === 'left') {

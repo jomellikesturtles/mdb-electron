@@ -24,7 +24,7 @@ import { TorrentService } from "@services/torrent/torrent.service";
 @NgModule({
   imports: [HttpClientModule],
   providers: [
-    // { provide: MediaUserDataService, useExisting: MockUserDataService },
+    { provide: MediaUserDataService, useExisting: MockUserDataService },
     // { provide: BookmarkService, useExisting: MockBookmarkService },
     // { provide: FavoriteService, useExisting: MockFavoriteService },
     // { provide: ListsService, useExisting: MockListService },

@@ -12,12 +12,6 @@ export abstract class BaseProgressService {
 
   protected abstract postProgress(progressBody: IMediaProgress): Observable<IMediaProgress>;
 
-  /**
-   *
-   * @param idList separated by comma
-   */
-  protected abstract setProgressMultiple(idList: string): Observable<any>;
-
   protected abstract getProgressesMultiple(limit: number, offset: number, sortBy: string, type: string): Observable<IUserDataPaginated>;
   protected abstract deleteProgress(listId: string): any;
 

@@ -4,7 +4,7 @@ import { IUserSavedData } from '@models/interfaces';
 import { environment } from '@environments/environment';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '@services/ipc.service';
 import GeneralUtil from '@utils/general.util';
-import { BffService } from '../mdb-api.service';
+import { MDBApiService } from '../mdb-api.service';
 import { DataService } from '../data.service';
 import { Observable } from 'rxjs';
 
@@ -16,7 +16,7 @@ export class PlayedService {
   CURRENT_SUBCHANNEL = SubChannel.PLAYED;
   constructor(private firebaseService: FirebaseService,
     private ipcService: IpcService,
-    private bffService: BffService,
+    private bffService: MDBApiService,
     private dataService: DataService
   ) { }
 

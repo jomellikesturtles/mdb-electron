@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { IOmdbMovieDetail, ITmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
+import { IMdbMovieDetails, IOmdbMovieDetail, IRawTmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { MDBMovie } from '@models/mdb-movie.model';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
-import { Observable } from 'rxjs';
-import { MDBMovieQuery } from './movie.query';
-import { MDBMovieStore } from './movie.store';
+import { Observable, of } from 'rxjs';
+import { MDBMovieDiscoverQuery, MDBMovieQuery } from './movie.query';
+import { MDBMovieDiscoverStore, MDBMovieStore } from './movie.store';
+import { MDBPaginatedResultModel } from './interface/movie';
+import { IMdbMoviePaginated } from '@models/media-paginated.model';
 
 export abstract class BaseMovieService {
 
@@ -12,6 +14,8 @@ export abstract class BaseMovieService {
     protected http: HttpClient,
     protected mdbMovieQuery: MDBMovieQuery,
     protected mdbMovieStore: MDBMovieStore,
+    protected mdbMovieDiscoverQuery: MDBMovieDiscoverQuery,
+    protected mdbMovieDiscoverStore: MDBMovieDiscoverStore,
   ) { }
 
   /**
@@ -37,12 +41,6 @@ export abstract class BaseMovieService {
   protected abstract getMovieBackdrop(val: string): Observable<any>;
 
   protected abstract getMoviePoster(posterLink: string);
-
-  /**
-   * Gets movie details from omdb.
-   * @param imdbId the imdb id.
-   */
-  protected abstract getOmdbMovieDetails(imdbId: number): Observable<any>;
 
   /**
    * Gets movie with external id.(IMDb ID, TVDB ID, facebook,twitter,instagram)
@@ -84,7 +82,7 @@ export abstract class BaseMovieService {
 
   protected abstract getSubtitleFileString(filePath: string): Observable<any>;
 
-  protected mapSearchResult(data: ITmdbResultObject) {
+  protected mapSearchResult(data: IRawTmdbResultObject) {
     let newData = [];
     data.results.forEach(e => {
       newData.push(new MDBMovie(e));
@@ -98,7 +96,7 @@ export abstract class BaseMovieService {
     // return this.mdbMovieSearchQuery.getEntity(queryId).movie;
   }
 
-  protected mapMovieDetails(id, data) {
+  protected mapMovieDetails(id, data): MDBMovie {
     let newData = new MDBMovie(data);
     const store = {
       id: id,
@@ -106,5 +104,44 @@ export abstract class BaseMovieService {
     };
     this.mdbMovieStore.add(store);
     return this.mdbMovieQuery.getEntity(id).movie;
+  }
+
+  protected mapPaginatedResult(entityId: string, rawData: IRawTmdbResultObject): IMdbMoviePaginated {
+    let newData: IMdbMoviePaginated = {
+      totalPages: rawData.total_pages,
+      page: rawData.page,
+      totalResults: rawData.total_results,
+      results: []
+    };
+
+    rawData.results.forEach(e => {
+      let movie = new MDBMovie(e);
+      newData.results.push(movie);
+    });
+
+    const store: MDBPaginatedResultModel = {
+      id: entityId,
+      paginatedResult: newData
+    };
+    this.mdbMovieDiscoverStore.add(store);
+    return newData;
+  }
+
+  /**
+   * Error handler.
+   * @param operation the operation
+   * @param result result
+   */
+  protected handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(error); // log to console instead
+      this.log(`${operation} failed: ${error.message}`);
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
+  }
+
+  protected log(message: string) {
+    console.log(`MovieService: ${message} `);
   }
 }

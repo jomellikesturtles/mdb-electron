@@ -10,15 +10,15 @@ import { DataService } from '@services/data.service';
 export class HorizontalCardListComponent implements OnInit {
 
   @Input()
-  moviesList: any
+  moviesList: any;
   @Input()
-  title: string
+  title: string;
   @Input()
-  totalCount: number
+  totalCount: number;
   @Input()
-  seeAllLink: string
+  seeAllLink: string;
   @Input()
-  queryParams: any
+  queryParams: any;
 
   constructor(
     private router: Router,
@@ -30,7 +30,9 @@ export class HorizontalCardListComponent implements OnInit {
   }
 
   seeAll() {
-    this.dataService.updateDiscoverQuery({ type: null, value: null, name: this.title, paramMap: this.queryParams })
+    // queryParams: { type: 'year', year: year; }
+    console.log('this.queryParams', this.queryParams);
+    this.dataService.updateDiscoverQuery({ type: null, value: null, name: this.title, paramMap: this.queryParams });
     this.router.navigate([this.seeAllLink], {
       relativeTo: this.activatedRoute, queryParams: this.queryParams,
     });

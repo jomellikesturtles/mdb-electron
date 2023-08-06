@@ -1,9 +1,7 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { BookmarkService, IBookmark } from '@services/media/bookmark.service';
+import { IBookmark } from '@services/media/bookmark.service';
 import { PlayedService, IPlayed } from '@services/media/played.service';
-import { LibraryService } from '@services/library.service';
 import { environment } from '@environments/environment';
-import { UserDataService } from '@services/user-data/user-data.service';
 import { IProfileData } from '@models/profile-data.model';
 import { MDBMovie } from '@models/mdb-movie.model';
 import ObjectUtil from '@utils/object.utils';
@@ -35,11 +33,7 @@ export class CardListComponent implements OnInit, OnChanges {
   movieAndUserDataList: IMovieAndUserData[] = [];
 
   constructor(
-    private bookmarkService: BookmarkService,
-    private playedService: PlayedService,
-    private libraryService: LibraryService,
     private mediaUserDataService: MediaUserDataService,
-    private userDataService: UserDataService
   ) { }
 
   ngOnInit() {
@@ -53,6 +47,7 @@ export class CardListComponent implements OnInit, OnChanges {
     //Add '${implements OnChanges}' to the class.
 
   }
+
   /**
    * Gets the user data like: bookmark, watched, video.
    */
@@ -67,7 +62,7 @@ export class CardListComponent implements OnInit, OnChanges {
       const queryList = arr2[index];
 
       if (this.listType === 'none') { // all types of user data.
-        this.userDataService.getMovieUserDataInList(queryList).subscribe((docsList: IProfileData[]) => {
+        this.mediaUserDataService.getMediaUserDataMultiple(queryList).subscribe((docsList: IProfileData[]) => {
           // if (docs.isFirebaseData && docs.isFirebaseData === true) {
           //   const localDocs: Array<QueryDocumentSnapshot<any>>[] = docs.data
           //   if (localDocs[0].length > 0) {

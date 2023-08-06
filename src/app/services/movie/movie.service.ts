@@ -6,16 +6,18 @@ import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, first, map, tap } from 'rxjs/operators';
 import { IpcService } from '@services/ipc.service';
-import { IOmdbMovieDetail, TmdbParameters, OmdbParameters, TmdbSearchMovieParameters, ITmdbResultObject } from '@models/interfaces';
+import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters, IRawTmdbResultObject } from '@models/interfaces';
 import { OMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID } from '../../shared/constants';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { CacheService } from '../cache.service';
-import { MDBMovieQuery, SearchMovieQuery } from './movie.query';
+import { MDBMovieDiscoverQuery, MDBMovieQuery } from './movie.query';
 import { environment } from '@environments/environment';
-import { MDBMovieSearchStore, MDBMovieStore } from './movie.store';
+import { MDBMovieDiscoverStore, MDBMovieStore } from './movie.store';
 import { MDBMovie } from '@models/mdb-movie.model';
 import { TmdbService } from '@services/tmdb/tmdb.service';
 import { BaseMovieService } from './base-movie.service';
+import { IMdbMoviePaginated } from '@models/media-paginated.model';
+import { MDBPaginatedResultModel } from './interface/movie';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -23,20 +25,23 @@ const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/
 export class MovieService extends BaseMovieService {
 
   constructor(
-    http: HttpClient,
     private cacheService: CacheService,
     private ipcService: IpcService,
+    private tmdbService: TmdbService,
+    http: HttpClient,
     mdbMovieQuery: MDBMovieQuery,
     mdbMovieStore: MDBMovieStore,
-    private tmdbService: TmdbService,
-  ) {
-    super(http,
+    mdbMovieDiscoverQuery: MDBMovieDiscoverQuery,
+    mdbMovieDiscoverStore: MDBMovieDiscoverStore) {
+    super(
+      http,
       mdbMovieQuery,
-      mdbMovieStore);
+      mdbMovieStore,
+      mdbMovieDiscoverQuery,
+      mdbMovieDiscoverStore);
   }
   TMDB_API_KEY = environment.tmdb.apiKey;
   TMDB_URL = environment.tmdb.url;
-  httpParam = new HttpParams();
 
   getMovieInfo(val: string): Observable<any> {
     let result;
@@ -103,18 +108,6 @@ export class MovieService extends BaseMovieService {
     );
   }
 
-  getOmdbMovieDetails(imdbId: number): Observable<any> {
-    const url = `${OMDB_URL}/`;
-    const httpParam = new HttpParams().append(OmdbParameters.ApiKey, OMDB_API_KEY);
-
-    const myOmdbHttpOptions = {
-      headers: JSON_CONTENT_TYPE_HEADER,
-      params: httpParam
-    };
-    return this.http.get<any>(url, myOmdbHttpOptions).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getOmdbMovieDetails')));
-  }
-
   getFindMovie(val: string | number): Observable<any> {
     return this.tmdbService.getFindMovie(val);
   }
@@ -147,15 +140,35 @@ export class MovieService extends BaseMovieService {
         catchError(this.handleError<any>('getMovieDetails')));
     }
     return of(this.mdbMovieQuery.getEntity(id).movie);
-
   }
 
-  getMoviesDiscover(paramMap: Map<TmdbParameters, any>): Observable<any> {
-    let key = '';
-    for (let entry of paramMap.entries()) {
-      key += entry[0] + '_' + entry[1];
+  getMoviesDiscover(paramMap: Map<TmdbParameters, any>, listName?: string, refresh = false): Observable<IMdbMoviePaginated> {
+    // const paramMap = new Map<string, any>();
+
+    // paramMap.set('withgenres', 'asd')
+
+    // let key = '';
+
+    // for (let entry of paramMap.entries()) {
+    //   key += entry[0] + '_' + entry[1];
+    // }
+
+    // console.log(key);
+    let entityId = listName;
+    if (!this.mdbMovieDiscoverQuery.hasEntity(entityId) || refresh) {
+      let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
+      myHttpParam = this.appendMappedParameters(paramMap, myHttpParam);
+      const tmdbHttpOptions = {
+        headers: JSON_CONTENT_TYPE_HEADER,
+        params: myHttpParam
+      };
+      return this.http.get<any>(`${this.TMDB_URL}/discover/movie`, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+        map((data: IRawTmdbResultObject) => {
+          return this.mapPaginatedResult(entityId, data);
+        }),
+        catchError(this.handleError<any>('getMoviesDiscover')));
     }
-    return this.cacheService.get(key + '_TMDB_DISCOVER', this.movieDiscover(paramMap));
+    return of(this.mdbMovieDiscoverQuery.getEntity(entityId).paginatedResult);
   }
 
   searchMovie(parameters: Map<TmdbParameters | TmdbSearchMovieParameters, any>, refresh: boolean = false): Observable<any> {
@@ -166,7 +179,7 @@ export class MovieService extends BaseMovieService {
         theFunction = this.tmdbService.searchTmdb(parameters);
         return theFunction.pipe(
           first(),
-          map((data: ITmdbResultObject) => {
+          map((data: IRawTmdbResultObject) => {
 
             return this.mapSearchResult(data);
 
@@ -174,8 +187,6 @@ export class MovieService extends BaseMovieService {
           catchError(this.handleError<any>('getMovieDetails')));
       }
     }
-    // return of(this.mdbMovieSearchQuery.getEntity(id).movie);
-    // return [];
   }
 
   /**
@@ -204,34 +215,4 @@ export class MovieService extends BaseMovieService {
       catchError(this.handleError<any>('getExternalId')));
   }
 
-  private movieDiscover(paramMap: Map<TmdbParameters, any>) {
-
-    const url = `${this.TMDB_URL}/discover/movie`;
-    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
-    myHttpParam = this.appendMappedParameters(paramMap, myHttpParam);
-    const tmdbHttpOptions = {
-      headers: JSON_CONTENT_TYPE_HEADER,
-      params: myHttpParam
-    };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMoviesDiscover')));
-  }
-
-  /**
-   * Error handler.
-   * @param operation the operation
-   * @param result result
-   */
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(error); // log to console instead
-      this.log(`${operation} failed: ${error.message}`);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
-  }
-
-  private log(message: string) {
-    console.log(`MovieService: ${message} `);
-  }
 }

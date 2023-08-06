@@ -1,19 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, of, Subscriber, forkJoin } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { MDBTorrent, ITPBTorrent } from '@models/interfaces';
-import { IpcService } from '@services/ipc.service';
+import { MDBTorrent, MDBTorrentAndMovieObject } from '@models/interfaces';
 import { DomSanitizer } from '@angular/platform-browser';
 import { STRING_REGEX_IMDB_ID } from '../../shared/constants';
-import { IYTSSingleQuery, YTSTorrent } from '@models/yts-torrent.model';
-import { CacheService } from '../cache.service';
+import { IYTSSingleQuery } from '@models/yts-torrent.model';
 import GeneralUtil from '@utils/general.util';
 import { environment } from '@environments/environment';
-
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
+import { TorrentQuery } from './torrent.query';
+import { MDBTorrentModel, TorrentStore } from './torrent.store';
 
 @Injectable({
   providedIn: 'root'
@@ -22,18 +18,12 @@ export class TorrentService {
 
   constructor(
     private http: HttpClient,
-    private ipcService: IpcService,
-    private cacheService: CacheService,
-    private sanitizer: DomSanitizer) { }
+    private sanitizer: DomSanitizer,
+    private torrentQuery: TorrentQuery,
+    private torrentStore: TorrentStore
+  ) { }
 
-  trackers = [`udp://glotorrents.pw:6969/announce`,
-    `udp://tracker.opentrackr.org:1337/announce`,
-    `udp://torrent.gresille.org:80/announce`,
-    `udp://tracker.openbittorrent.com:80`,
-    `udp://tracker.coppersurfer.tk:6969`,
-    `udp://tracker.leechers-paradise.org:6969`,
-    `udp://p4p.arenabg.ch:1337`,
-    `udp://tracker.internetwarriors.net:1337`];
+  TRACKERS = environment.torrent.trackers;
   assetsDirectory = '../assets/';
   fileLine: string[];
   torrentsInfo = [];
@@ -41,35 +31,36 @@ export class TorrentService {
   YTS_URL = environment.yts.url;
 
   /**
-   * Gets torrent from online.
-   */
-  getTorrentsOnline(imdbId: string): Observable<IYTSSingleQuery | null> {
-    // tt2015381 - guardians of the galaxy
-    return this.cacheService.get(imdbId + '_YT', this.torrentsOnline(imdbId));
-  }
-  /**
-   * Searches torrents offline
-   * @param val imdb or title
-   * @param year year
-   */
-  async getTorrentsOffline(val: string, year: string | number) {
-    // this.ipcService.call(this.ipcService.IPCCommand.SearchTorrent, [val, year])
-  }
-
-  /**
    * TODO: add checking for online source connnection.
    * @param val `[title, year]`
    */
-  getTorrents(query: string, year?: string | number): Observable<any> {
-    let result;
+  getTorrents(query: string, year?: string | number): Observable<MDBTorrentAndMovieObject> {
     const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`);
-    if (typeof query === 'string' && query.trim().match(REGEX_IMDB_ID)) {
-      result = this.getTorrentsOnline(query);
-    } else {
-      result = this.getTorrentsOffline(query, year);
+    // if (typeof query === 'string' && query.trim().match(REGEX_IMDB_ID)) {
+    return this.getTorrentsOnline(query);;
+  }
+
+  /**
+   * Gets torrent from online.
+   */
+  private getTorrentsOnline(imdbId: string, refresh = false): Observable<MDBTorrentAndMovieObject> {
+    // tt2015381 - guardians of the galaxy
+    let entityId = 'torrent:' + imdbId;
+    if (!this.torrentQuery.hasEntity(entityId) || refresh) {
+      let url = `${this.YTS_URL}?query_term=${imdbId}`;
+      return this.http.get<IYTSSingleQuery>(url).pipe(tap(_ => this.log('')),
+        map((data: IYTSSingleQuery) => {
+          const newData = new MDBTorrentAndMovieObject(data);
+          const store: MDBTorrentModel = {
+            id: entityId,
+            mdbTorrentAndMovieObject: newData
+          };
+          this.torrentStore.add(store);
+          return newData;
+        }),
+        catchError(this.handleError<any>('getTorrentsOnline')));
     }
-    // this.sanitize(result)
-    return result;
+    return of(this.torrentQuery.getEntity(entityId).mdbTorrentAndMovieObject);
   }
 
   searchTorrentsByQuery(val: string): Observable<any> {
@@ -94,14 +85,9 @@ export class TorrentService {
     if (torrent.hash.length !== 40) {
       val = this.getMagnetLinkWithImproperHash(torrent.hash, torrent.name);
     } else {
-      val = this.getMagnetLinkWithProperHash(torrent.hash);
+      val = GeneralUtil.getMagnetLinkWithProperHash(torrent.hash);
     }
     return this.sanitizer.bypassSecurityTrustUrl(val);
-  }
-
-  getMagnetLinkWithProperHash(hash: string) {
-    const base = `magnet:?xt=urn:btih:${hash}`;
-    return base;
   }
 
   // test value: hKhdWMQTrHqcPpmm4oDz+tlixWQ=;"Passengers.2016.1080p.Bluray.x265.10bit-z97"
@@ -149,42 +135,6 @@ export class TorrentService {
   }
 
   /**
-   * Converts trrents to MDB torrent regardless of source. ie thepiratebay, yts
-   */
-  mapTorrent(rawTorrent: ITPBTorrent | YTSTorrent): MDBTorrent {
-    let newTorrent = new MDBTorrent();
-    // check yts properties first
-    newTorrent.hash = rawTorrent.hash;
-    newTorrent.sizeBytes = rawTorrent.hasOwnProperty('size_bytes') ? rawTorrent['size_bytes'] : rawTorrent['sizeBytes'];
-    newTorrent.size = rawTorrent.hasOwnProperty('size') ? rawTorrent['size'] :
-      GeneralUtil.prettyBytes(rawTorrent['sizeBytes']);
-    newTorrent.name = rawTorrent.hasOwnProperty('name') ? rawTorrent['name'] : null;
-    newTorrent.dateUploaded = rawTorrent.hasOwnProperty('date_uploaded') ? rawTorrent['date_uploaded'] : rawTorrent['added'];
-    newTorrent.dateUploadedUnix = rawTorrent.hasOwnProperty('date_uploaded_unix') ? rawTorrent['date_uploaded_unix'] : (new Date(rawTorrent['added']).getTime() / 1000);
-    newTorrent.magnetLink = this.getMagnetLinkWithProperHash(rawTorrent.hash);
-    newTorrent.isYts = rawTorrent.hasOwnProperty('url') ? true : false;
-    newTorrent.url = rawTorrent.hasOwnProperty('url') ? rawTorrent['url'] : this.getMagnetLinkWithProperHash(rawTorrent.hash);
-    newTorrent.quality = rawTorrent.hasOwnProperty('quality') ? rawTorrent['quality'] : 'unknown';
-    newTorrent.seeds = rawTorrent.hasOwnProperty('seeds') ? rawTorrent['seeds'] : null;
-    newTorrent.peers = rawTorrent.hasOwnProperty('peers') ? rawTorrent['peers'] : null;
-    return newTorrent;
-  }
-
-  mapTorrentsList(rawTorrents: YTSTorrent[] | ITPBTorrent[]): MDBTorrent[] {
-    let torrents: (ITPBTorrent | YTSTorrent)[] = [];
-    if (rawTorrents.hasOwnProperty('@meta') && rawTorrents['data'].count > 0) {  // if yts and has count
-      torrents = rawTorrents['data'].movies[0].torrents; // assuming there is only 1 movie or is searched with ID
-    } else if (rawTorrents.length > 0) {
-      torrents = rawTorrents;
-    }
-    let newTorrents = [];
-    torrents.forEach((torrent: ITPBTorrent | YTSTorrent) => {
-      newTorrents.push(this.mapTorrent(torrent));
-    });
-    return newTorrents;
-  }
-
-  /**
    * Gets the straming link with Hash.
    * @param hash hash
    * @returns streaming url
@@ -195,11 +145,6 @@ export class TorrentService {
 
     return this.http.get<string>(url).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getStreamLink')));
-  }
-
-  private torrentsOnline(imdbId: string): Observable<IYTSSingleQuery | null> {
-    let url = `${this.YTS_URL}?query_term=${imdbId}`;
-    return this.http.get<IYTSSingleQuery>(url);
   }
 
   /**

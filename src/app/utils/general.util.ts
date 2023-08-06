@@ -1,5 +1,7 @@
 
+import { ITPBTorrent, MDBTorrent } from '@models/interfaces';
 import { STRING_REGEX_YEAR_ONLY, STRING_REGEX_OMDB_RELEASE_DATE, STRING_REGEX_TMDB_RELEASE_DATE } from '../shared/constants';
+import { YTSTorrent } from '@models/yts-torrent.model';
 
 export default class GeneralUtil {
 
@@ -93,4 +95,32 @@ export default class GeneralUtil {
     unit = units[exponent];
     return (neg ? "-" : "") + num + " " + unit;
   }
+
+  /**
+   * Converts trrents to MDB torrent regardless of source. ie thepiratebay, yts
+   */
+  static mapTorrent(rawTorrent: ITPBTorrent | YTSTorrent): MDBTorrent {
+    let newTorrent = new MDBTorrent();
+    // check yts properties first
+    newTorrent.hash = rawTorrent.hash;
+    newTorrent.sizeBytes = rawTorrent.hasOwnProperty('size_bytes') ? rawTorrent['size_bytes'] : rawTorrent['sizeBytes'];
+    newTorrent.size = rawTorrent.hasOwnProperty('size') ? rawTorrent['size'] :
+      GeneralUtil.prettyBytes(rawTorrent['sizeBytes']);
+    newTorrent.name = rawTorrent.hasOwnProperty('name') ? rawTorrent['name'] : null;
+    newTorrent.dateUploaded = rawTorrent.hasOwnProperty('date_uploaded') ? rawTorrent['date_uploaded'] : rawTorrent['added'];
+    newTorrent.dateUploadedUnix = rawTorrent.hasOwnProperty('date_uploaded_unix') ? rawTorrent['date_uploaded_unix'] : (new Date(rawTorrent['added']).getTime() / 1000);
+    newTorrent.magnetLink = this.getMagnetLinkWithProperHash(rawTorrent.hash);
+    newTorrent.isYts = rawTorrent.hasOwnProperty('url') ? true : false;
+    newTorrent.url = rawTorrent.hasOwnProperty('url') ? rawTorrent['url'] : this.getMagnetLinkWithProperHash(rawTorrent.hash);
+    newTorrent.quality = rawTorrent.hasOwnProperty('quality') ? rawTorrent['quality'] : 'unknown';
+    newTorrent.seeds = rawTorrent.hasOwnProperty('seeds') ? rawTorrent['seeds'] : null;
+    newTorrent.peers = rawTorrent.hasOwnProperty('peers') ? rawTorrent['peers'] : null;
+    return newTorrent;
+  }
+
+  static getMagnetLinkWithProperHash(hash: string) {
+    const base = `magnet:?xt=urn:btih:${hash}`;
+    return base;
+  }
+
 }

@@ -2,32 +2,40 @@
  * Movies from and to web API and offline dump
  */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
+import { HttpClient, HttpParams, } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { MDB_API_URL } from '../shared/constants';
 import { IProfileData } from '../models/profile-data.model';
 import { IMediaList } from '@models/media-list.model';
 import GeneralUtil from '@utils/general.util';
-
-const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
+import { ENDPOINT } from '@shared/endpoint.const';
+import { HttpUrlProviderService } from './http-url.provider.service';
 
 @Injectable({ providedIn: 'root' })
-export class BffService {
+export class MDBApiService {
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private httpUrlProvider: HttpUrlProviderService,
   ) { }
 
-  httpParam = new HttpParams();
-
   getMediaUserData(tmdbId: number): Observable<any> {
-    return this.http.get<any>(`${MDB_API_URL}/media/${tmdbId}`).pipe(tap(_ => this.log('')),
+    return this.http.get<any>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_ID, tmdbId)).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getMediaUserData')));
   }
 
-  getMediaUserDataInList(tmdbIdList: number[]): Observable<any> {
-    return this.http.get<any>(`${MDB_API_URL}/media/${tmdbIdList}`).pipe(tap(_ => this.log('')),
+  /**
+   * 
+   * @param tmdbIdList list of tmdbId separated by comma
+   * @returns 
+   */
+  getMediaUserDataInList(tmdbIdList: string): Observable<any> {
+    let payload = {
+      idList: tmdbIdList
+      // idList: tmdbIdList.join(',')
+    };
+    return this.http.post<any>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_ID), payload).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('getMediaUserDataInList')));
   }
 
@@ -113,6 +121,32 @@ export class BffService {
       catchError(this.handleError<any>('logout')));
   }
 
+
+  get(url: string) {
+    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getUserProfile')));
+  }
+
+  post(url: string, payload: any) {
+    return this.http.post<any>(url, payload).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getUserProfile')));
+  }
+
+  patch(url: string, payload: any) {
+    return this.http.patch<any>(url, payload).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getUserProfile')));
+  }
+
+  put(url: string, payload: any) {
+    return this.http.put<any>(url, payload).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getUserProfile')));
+  }
+
+  delete(url: string, payload: any) {
+    return this.http.delete<any>(url, payload).pipe(tap(_ => this.log('')),
+      catchError(this.handleError<any>('getUserProfile')));
+  }
+
   /**
    * Error handler.
    * @param operation the operation
@@ -148,13 +182,3 @@ export interface RegisterUser {
   contactNumber?: string;
 }
 
-export const ENDPOINT = {
-  ACCOUNT: `/account/`,
-  CONFIG: `/config/`,
-  USER: `/user/`,
-  MEDIA: `/media/`,
-  LIST: `/list/`,
-  FAVORITE: `/preferences/`,
-  PREFERENCES: `/preferences/`,
-  PROGRESS: `/progress/`,
-};

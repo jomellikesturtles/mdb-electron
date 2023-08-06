@@ -1,5 +1,6 @@
 import { ID } from "@datorama/akita";
 import { MDBMovie } from "@models/mdb-movie.model";
+import { IMdbMoviePaginated } from "@models/media-paginated.model";
 
 
 export interface TmdbMovieModel {
@@ -22,4 +23,9 @@ export interface TmdbMovieListModel {
 export interface MDBMovieListModel {
   id: ID,
   movies: MDBMovie[];
+}
+
+export interface MDBPaginatedResultModel {
+  id: ID,
+  paginatedResult: IMdbMoviePaginated;
 }
