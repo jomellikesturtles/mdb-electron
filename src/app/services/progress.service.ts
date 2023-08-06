@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { IUserSavedData } from '@models/interfaces';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '@services/ipc.service';
-import { BffService } from './mdb-api.service';
+import { MDBApiService } from './mdb-api.service';
 import { DataService } from './data.service';
 import { Observable } from 'rxjs';
 import { IMediaProgress } from '@models/media-progress';
@@ -16,7 +15,7 @@ export class ProgressService extends BaseProgressService {
 
   constructor(
     private ipcService: IpcService,
-    private bffService: BffService,
+    private bffService: MDBApiService,
     dataService: DataService,
     private httpUrlProvider: HttpUrlProviderService,
     private http: HttpClient
@@ -31,13 +30,6 @@ export class ProgressService extends BaseProgressService {
     return this.dataService.postHandle(
       this.http.post<any>(this.httpUrlProvider.getBffAPI('/progress'), progressBody), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
         progressBody, null));
-  }
-
-  setProgressMultiple(idList: string): Observable<any> {
-    return this.dataService.postHandle(
-      this.http.post<any>(this.httpUrlProvider.getBffAPI('/progress'), idList), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
-        { idList }, null));
-
   }
 
   /**
@@ -61,13 +53,4 @@ export class ProgressService extends BaseProgressService {
       { _id: listId }));
   }
 
-}
-
-export interface IWatched extends IUserSavedData {
-  id?: string; // also use in Doc Id
-  tmdbId: number,
-  imdbId?: string,
-  // title: string,
-  // year: number,
-  percentage?: number,
 }

@@ -1,3 +1,6 @@
+import GeneralUtil from "@utils/general.util";
+import { IYTSSingleQuery, YTSTorrent } from "./yts-torrent.model";
+
 // omdb:"N/A"; tmdb:null
 export interface IMdbMovieDetails {
   awards?: string;
@@ -213,14 +216,14 @@ export interface MdbMovieDetails {
 // // vote_average: number;
 // // vote_count: number;
 
-export interface ITmdbResultObject {
+export interface IRawTmdbResultObject {
   page: number;
   total_results: number;
   total_pages: number;
-  results: ITmdbResult[];
+  results: IRawTmdbResult[];
 }
 
-export interface ITmdbResult {
+export interface IRawTmdbResult {
   popularity: number;
   vote_count: number;
   video: boolean;
@@ -291,6 +294,33 @@ export enum Department {
   Sound = 'Sound',
   VisualEffects = 'Visual Effects',
   Writing = 'Writing',
+}
+
+export class MDBTorrentAndMovieObject {
+  id: number;
+  imdbId: string;
+  url: string;
+  ytTrailer: string;
+  status: string;
+  torrents: MDBTorrent[];
+
+  constructor(rawObject: IYTSSingleQuery) {
+    this.map(rawObject);
+  }
+
+  map(rawObject: IYTSSingleQuery) {
+    const movie = rawObject.data.movies[0]; // assuming there is only 1 movie or is searched with ID
+    this.id = movie.id;
+    this.status = rawObject.status;
+    this.imdbId = movie.imdb_code;
+    this.url = movie.url;
+    this.ytTrailer = movie.yt_trailer_code;
+    let newTorrents: MDBTorrent[] = [];
+    movie.torrents.forEach((torrent: YTSTorrent) => {
+      newTorrents.push(GeneralUtil.mapTorrent(torrent));
+    });
+    this.torrents = newTorrents;
+  }
 }
 
 export class MDBTorrent {

@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService, CollectionName, FieldName } from '../firebase.service';
-import { environment } from '@environments/environment';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '../ipc.service';
-import { BffService as BffService } from '../mdb-api.service';
+import { MDBApiService as MDBApiService } from '../mdb-api.service';
 import GeneralUtil from '@utils/general.util';
 import { DataService } from '../data.service';
 import { Observable } from 'rxjs';
@@ -14,7 +12,7 @@ export class FavoriteService {
 
   constructor(
     private ipcService: IpcService,
-    private bffService: BffService,
+    private bffService: MDBApiService,
     private dataService: DataService
   ) { }
 
@@ -43,12 +41,6 @@ export class FavoriteService {
   saveFavorite(data: any): Observable<any> {
     return this.dataService.postHandle(this.bffService.saveMediaList(data), this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.SAVE },
       data, null));
-    // if (environment.runConfig.springMode) {
-    //   return this.bffService.saveFavorite(data).toPromise()
-    // }
-    // else {
-    //   return this.ipcService.saveFavorite(data)
-    // }
   }
 
   /**
@@ -64,19 +56,5 @@ export class FavoriteService {
       null, { tmdbId: id });
   }
 
-
-  /**
-   * Gets paginated favorite.
-   * @param lastVal the last value to start with.
-   */
-  getFavoritePaginated(page: number): Promise<any> {
-    console.log('getting multiplewatched page...', page);
-
-    if (environment.runConfig.firebaseMode) {
-    } else {
-      return this.ipcService.getMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20);
-    }
-    return null;
-  }
 
 }

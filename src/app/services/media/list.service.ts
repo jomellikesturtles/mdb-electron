@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService, CollectionName } from '../firebase.service';
-import { IUserSavedData } from '@models/interfaces';
-import { environment } from '@environments/environment';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '@services/ipc.service';
-import { BffService } from '../mdb-api.service';
+import { MDBApiService } from '../mdb-api.service';
 import { IMediaList } from '@models/media-list.model';
 import { DataService } from '../data.service';
 import { Observable } from 'rxjs';
@@ -16,7 +13,7 @@ export class ListsService extends BaseListService {
 
   constructor(
     private ipcService: IpcService,
-    private bffService: BffService,
+    private bffService: MDBApiService,
     dataService: DataService
   ) {
     super(dataService);
@@ -38,7 +35,7 @@ export class ListsService extends BaseListService {
    * @param listId
    * @returns
    */
-  getList(listId: number | string): Observable<any> {
+  getList(listId: number | string): Observable<IMediaList> {
     return this.dataService.getHandle(null,
       this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.FIND_ONE },
         null, { _id: listId }));
@@ -86,20 +83,7 @@ export class ListsService extends BaseListService {
    * @param id watched id/_id/tmdbId to remove.
    */
   addOrRemoveItemFromList(type: 'id' | 'tmdbId', id: string | number) {
-    // if (environment.runConfig.firebaseMode) {
-    //   return this.firebaseService.deleteFromFirestore(CollectionName.Watched, id);
-    // } else {
-    //   return this.ipcService.removeWatched(type, id);
-    // }
+
   }
 
-}
-
-export interface IWatched extends IUserSavedData {
-  id?: string; // also use in Doc Id
-  tmdbId: number,
-  imdbId?: string,
-  // title: string,
-  // year: number,
-  percentage?: number,
 }

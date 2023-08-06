@@ -4,12 +4,17 @@ import { Observable } from 'rxjs';
 import { IBookmark, BookmarkService } from '../media/bookmark.service';
 import { MovieService } from '../movie/movie.service';
 import { PlayedService, IPlayed } from '../media/played.service';
-import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '../ipc.service';
+import { IUserDataPaginated, IpcOperations, IpcService, SubChannel } from '../ipc.service';
 import { CollectionName } from '../firebase.service';
-import { BffService } from '../mdb-api.service';
-import { DataService } from '@services/data.service';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
+import { DataService } from '@services/data.service';
+import { MDBApiService } from '@services/mdb-api.service';
+import { HttpUrlProviderService } from '@services/http-url.provider.service';
+import { ENDPOINT } from '@shared/endpoint.const';
 
+/**
+ * User data only. no media.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -17,52 +22,31 @@ export class UserDataService {
 
   constructor(
     private bookmarkService: BookmarkService,
-    private bffService: BffService,
-    private dataService: DataService,
     private movieService: MovieService,
     private playedService: PlayedService,
     private libraryService: LibraryService,
     private mediaUserData: MediaUserDataService,
+    private dataService: DataService,
+    private bffService: MDBApiService,
     private ipcService: IpcService,
+    private httpUrlProvider: HttpUrlProviderService,
   ) { }
 
-  toggleBookmark(id) {
-
+  getUser(username: string) {
+    return this.dataService.getHandle(
+      this.bffService.get(
+        this.httpUrlProvider.getBffAPI(ENDPOINT.USER_ID, username)),
+      this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+        null, { tmdbId: username }));
   }
 
-  toggleUserData(type: 'bookmark' | 'favorite' | 'played', id: number) {
-
-  }
-  /**
-   * Gets watched, bookmark, library
-   *
-   */
-  getMovieUserData(tmdbId: number) {
-    return this.dataService.getHandle(this.bffService.getMediaUserData(tmdbId), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.FIND_ONE },
-      null, { query: { tmdbId } }));
-  }
-
-  /**
-   * Gets watched, bookmark, library in list
-   * TODO: remove Promise.resolve(null) and add firebase implementation
-   */
-  getMovieUserDataInList(idList: any[]): Observable<any> {
-    return this.dataService.getHandle(this.bffService.getMediaUserDataInList(idList), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.FIND_IN_LIST },
-      null, { tmdbIdList: idList }));
-  }
-
-  getUserDataMultiple(dataType: 'library' | 'bookmark' | 'watched', data: object) {
-    switch (dataType) {
-      case 'library':
-        break;
-      case 'bookmark':
-        break;
-      case 'watched':
-        break;
-
-      default:
-        break;
-    }
+  updateUser(username: string, payload: any) {
+    return this.dataService.postHandle(
+      this.bffService.post(
+        this.httpUrlProvider.getBffAPI(ENDPOINT.USER_ID, username),
+        payload),
+      this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+        null, { tmdbId: username }));
   }
 
   async getUserDataFirstPage(dataType: string): Promise<any> {
@@ -113,12 +97,6 @@ export class UserDataService {
     return new Promise(async (resolve, reject) => {
       const e = await this.getMovieListDetails(dataType, dataList);
       console.log('e:', e);
-      // IUserDataPaginated {
-      //   totalPages: number,
-      //     totalResults: number,
-      //       page: number,
-      //         results: any[]
-      // }
 
       resolve(e);
     });

@@ -19,11 +19,5 @@ export abstract class BaseFavoriteService {
    */
   protected abstract removeFavorite(type: 'id' | 'tmdbId', id: string | number);
 
-
-  /**
-   * Gets paginated favorite.
-   * @param lastVal the last value to start with.
-   */
-  protected abstract getFavoritePaginated(page: number): Promise<any>;
 }
 

@@ -1,7 +1,7 @@
 import { IUserSavedData } from '@models/interfaces';
 import { IMediaProgress } from '@models/media-progress';
 import { Observable } from 'rxjs';
-import { BffService } from '@services/mdb-api.service';
+import { MDBApiService } from '@services/mdb-api.service';
 import { IProfile } from '@modules/user/profile/profile.component';
 import { DataService } from '@services/data.service';
 import { IpcService } from '@services/ipc.service';
@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 export abstract class BaseProfileService {
 
   constructor(
-    protected bffService: BffService,
+    protected bffService: MDBApiService,
     protected dataService: DataService,
     protected ipcService: IpcService,
     protected http: HttpClient,

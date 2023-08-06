@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, first, map, tap } from 'rxjs/operators';
-import { ITmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
+import { IRawTmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { CacheService } from '../cache.service';
 import { TMDBMovieQuery } from '../movie/movie.query';
@@ -95,7 +95,7 @@ export class TmdbService {
    * Searches movie from TMDB api.
    * @param val parameter map
    */
-  searchTmdb(val: Map<TmdbParameters | TmdbSearchMovieParameters, any>): Observable<ITmdbResultObject> {
+  searchTmdb(val: Map<TmdbParameters | TmdbSearchMovieParameters, any>): Observable<IRawTmdbResultObject> {
     const url = `${this.TMDB_URL}/search/movie`;
     let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
     myHttpParam = this.appendMappedParameters(val, myHttpParam);

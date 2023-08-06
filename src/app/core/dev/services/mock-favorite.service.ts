@@ -27,10 +27,6 @@ export class MockFavoriteService extends BaseFavoriteService {
   removeFavorite(type: "id" | "tmdbId", id: string | number) {
     return of(1);
   }
-  getFavoritePaginated(page: number): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
-
 
 
 }

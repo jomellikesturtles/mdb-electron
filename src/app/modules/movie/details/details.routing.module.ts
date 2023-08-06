@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DetailsComponent } from './details.component';
 import { CreditsComponent } from '../credits/credits.component';
-import { DetailsGuard } from './details.guard';
+import { MovieDetailsGuard } from './details.guard';
 
 const routes: Routes = [
   // { path: '', component: DetailsComponent },
   {
-    path: ':id', component: DetailsComponent, canActivate: [DetailsGuard], resolve: {},
+    path: ':id', component: DetailsComponent, canActivate: [MovieDetailsGuard], resolve: {},
     children: [
       { path: 'credits', component: CreditsComponent },
     ]

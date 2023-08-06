@@ -473,7 +473,7 @@ userMediaDataService -> mdbApiService
 
 ### movie
 
-movieService -> tmdbService | mdbApiService | ipcService
+movieService (client cache) -> tmdbService | omdb | mdbApiService | ipcService
 
 youtube
 

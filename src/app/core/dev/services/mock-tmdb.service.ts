@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { ITmdbResultObject } from "@models/interfaces";
+import { IRawTmdbResultObject } from "@models/interfaces";
 import { TMDB_External_Id } from "@models/tmdb-external-id.model";
 import { IProfile } from "@modules/user/profile/profile.component";
 
@@ -23,7 +23,7 @@ export class MockListService {
   }
 
   searchTmdb() {
-    this.http.get<ITmdbResultObject>('assets/mock-data/tmdb-movie-list.json');
+    this.http.get<IRawTmdbResultObject>('assets/mock-data/tmdb-movie-list.json');
   }
 
   getTmdbVideos() {

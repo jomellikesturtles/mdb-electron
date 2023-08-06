@@ -6,10 +6,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from '@services/data.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MovieService } from '@services/movie/movie.service';
-import { UserDataService } from '@services/user-data/user-data.service';
 import { PlayedService } from '@services/media/played.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util';
+import { MediaUserDataService } from '@services/media/media-user-data.service';
 
 @Component({
   selector: 'app-preview',
@@ -24,7 +24,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     private watchedService: PlayedService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private userDataService: UserDataService,
+    private mediaUserDataService: MediaUserDataService,
     private cdr: ChangeDetectorRef,
     private movieService: MovieService,
     private domSanitizer: DomSanitizer,
@@ -231,7 +231,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   async toggleBookmark(): Promise<any> {
     this.procBookmark = true;
     let bmDoc;
-    bmDoc = await this.userDataService.toggleBookmark(this.previewMovie);
+    bmDoc = await this.mediaUserDataService.putMediaFavorite(this.previewMovie); // TODO: change to bookmark
     console.log('BOOKMARKADD/remove:', bmDoc);
     this.procBookmark = false;
     // this.cdr.detectChanges()

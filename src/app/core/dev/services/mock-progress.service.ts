@@ -16,9 +16,6 @@ export class MockProgressService extends BaseProgressService {
   postProgress(progressBody: IMediaProgress): Observable<IMediaProgress> {
     throw new Error("Method not implemented.");
   }
-  setProgressMultiple(idList: string): Observable<any> {
-    throw new Error("Method not implemented.");
-  }
   getProgressesMultiple(limit: number, offset: number, sortBy: string, type: string): Observable<IUserDataPaginated> {
     throw new Error("Method not implemented.");
   }

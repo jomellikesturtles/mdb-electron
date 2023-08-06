@@ -33,6 +33,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
   ) { }
   ngOnInit(): void {
+    console.log('queryparamsA snapshot:', this.activatedRoute.snapshot);
+    console.log('queryparamsA :', this.activatedRoute);
+    // console.log('queryparamsA:', this.activatedRoute.data);
     this.dataService.discoverQuery.pipe(takeUntil(this.ngUnsubscribe)).subscribe((discoverData) => {
       this.discoverQuery(discoverData.type, discoverData.value, discoverData.name, discoverData);
     });
@@ -81,17 +84,17 @@ export class DiscoverComponent implements OnInit, OnDestroy {
         this.discoverResults.push(...data.results);
         this.hasResults = true;
         this.discoverTitle = tempTitle;
-        if (data.total_pages > this.currentPage) {
+        if (data.totalPages > this.currentPage) {
           this.hasMoreResults = true;
         }
       }
     });
   }
 
-  changeSort(val: string) {
+  changeSort(sortByVal: string) {
 
     this.procLoadMoreResults = true;
-    this.paramMap.set(TmdbParameters.SortBy, val);
+    this.paramMap.set(TmdbParameters.SortBy, sortByVal);
     this.hasResults = false;
     this.movieService.getMoviesDiscover(this.paramMap).pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
 
@@ -117,7 +120,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.movieService.getMoviesDiscover(this.paramMap).pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
       this.discoverResults = data.results;
       // this.discoverResults.push(...data.results) // for some reason this doesn't work anymore
-      if (data.total_pages <= this.currentPage) {
+      if (data.totalPages <= this.currentPage) {
         this.hasMoreResults = false;
       }
       this.procLoadMoreResults = false;

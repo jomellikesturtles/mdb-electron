@@ -12,7 +12,6 @@ import { IpcService } from '@services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TROUBLE_QUOTES } from '@shared/constants';
 import { PlayedService, IPlayed } from '@services/media/played.service';
-import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { basename } from 'path';
 import { FavoriteService } from '@services/media/favorite.service';
@@ -245,18 +244,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Gets movie offline
-   * @param val imdb id
-   */
-  getMovieDataOffline(val: any) {
-    // this.ipcService.call(this.ipcService.IPCCommand.MovieMetadata, [this.ipcService.IPCCommand.Get, val])
-  }
-
-  saveMovieDataOffline(val: any) {
-    // this.ipcService.call(this.ipcService.IPCCommand.MovieMetadata, [this.ipcService.IPCCommand.Set, val])
-  }
-
-  /**
    * Gets movie details, torrents
    * @param val tmdb id
    */
@@ -340,11 +327,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
       }
     });
 
-    let query;
-    query = this.movieDetails.externalIds.imdb_id;
-    this.torrentService.getTorrents(query).subscribe(data => {
+    let imdbId = this.movieDetails.externalIds.imdb_id;
+    this.torrentService.getTorrents(imdbId).subscribe(data => {
       if (data) {
-        this.torrents = this.torrentService.mapTorrentsList(data);
+        this.torrents = data.torrents;
         this.torrents.sort(function (a, b) { return b.peers - a.peers; }); // sort by seeders
         this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(this.torrents)];
 
