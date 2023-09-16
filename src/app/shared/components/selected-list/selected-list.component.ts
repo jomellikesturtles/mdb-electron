@@ -1,8 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 // import { Router, ActivatedRoute } from '@angular/router'
 import { DataService } from '@services/data.service';
-// import { Select, Store } from '@ngxs/store';
-// import { ClearList, AddWatched, AddBookmark } from '../../../movie.actions'
 // import { RemoveMovie } from '../../../movie.actions';
 import { Observable, Subscription } from 'rxjs';
 // import { MovieList } from '../../../movie.state';

@@ -29,8 +29,8 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.loggerService.log("HEY HEY HEY");
     this.getNowShowingMovies();
-    // this.getTopMoviesFromYear()
-    // this.getTopGenreMovie()
+    this.getTopMoviesFromYear();
+    this.getTopGenreMovie();
   }
 
   /**

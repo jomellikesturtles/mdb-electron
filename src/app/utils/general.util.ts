@@ -1,7 +1,8 @@
 
-import { ITPBTorrent, MDBTorrent } from '@models/interfaces';
+import { ITPBTorrent, MDBTorrent, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { STRING_REGEX_YEAR_ONLY, STRING_REGEX_OMDB_RELEASE_DATE, STRING_REGEX_TMDB_RELEASE_DATE } from '../shared/constants';
 import { YTSTorrent } from '@models/yts-torrent.model';
+import { HttpParams } from '@angular/common/http';
 
 export default class GeneralUtil {
 
@@ -121,6 +122,36 @@ export default class GeneralUtil {
   static getMagnetLinkWithProperHash(hash: string) {
     const base = `magnet:?xt=urn:btih:${hash}`;
     return base;
+  }
+
+  /**
+   * Copies link to clipboard
+   * @param magnetLink link top copy
+   */
+  static copyToClipboard(magnetLink: string) {
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = magnetLink;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+  }
+
+  /**
+   * Appends parameters list into http param object.
+   * @param paramMap parameters key-value pair list
+   * @param myHttpParam http param to append to
+   */
+  static appendMappedParameters(paramMap: Map<TmdbParameters | TmdbSearchMovieParameters, any>, myHttpParam: HttpParams) {
+    for (let entry of paramMap.entries()) {
+      myHttpParam = myHttpParam.append(entry[0], entry[1]);
+    }
+    return myHttpParam;
   }
 
 }

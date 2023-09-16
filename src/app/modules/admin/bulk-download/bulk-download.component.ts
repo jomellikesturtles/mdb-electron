@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { IpcService } from '@services/ipc.service'
-import { DISPLAYEDMOVIES, MOVIEGENRES } from '../../../mock-data'
-import { Router, ActivatedRoute } from '@angular/router'
-import { DataService } from '@services/data.service'
-import { TorrentService } from '@services/torrent/torrent.service'
+import { DISPLAYEDMOVIES } from '../../../mock-data';
+import { Router, ActivatedRoute } from '@angular/router';
+import { DataService } from '@services/data.service';
 
 @Component({
   selector: 'app-bulk-download',
@@ -12,15 +10,9 @@ import { TorrentService } from '@services/torrent/torrent.service'
 })
 export class BulkDownloadComponent implements OnInit {
 
-  displayedMovies = DISPLAYEDMOVIES
+  displayedMovies = DISPLAYEDMOVIES;
   selectedMovie = null;
-  sampleJson = `{
-    "userId": 1,
-    "id": 1,
-    "title": "delectus aut autem",
-    "completed": false
-  }`
-  result: any
+  result: any;
 
   constructor(
     private router: Router,
@@ -35,12 +27,12 @@ export class BulkDownloadComponent implements OnInit {
         element.year = element.release_date.slice(0, element.release_date.indexOf('-'));
         this.displayedMovies = data;
       });
-    })
+    });
   }
   // getTorrent
 
   getTorrents() {
-    var localDisplayedMovies = this.displayedMovies
+    var localDisplayedMovies = this.displayedMovies;
 
     // localDisplayedMovies.forEach(movie => {
     //   movie.torrents = this.getTorrentByTitle(movie)
@@ -50,7 +42,7 @@ export class BulkDownloadComponent implements OnInit {
   getTorrentByTitle(movie) {
     const title = movie.title;
     const year = movie.year;
-    let torrents = null
+    let torrents = null;
     // assuming getting torrent from file now works
     switch (movie.imdbId) {
       case 'tt2015381':
@@ -69,7 +61,7 @@ export class BulkDownloadComponent implements OnInit {
             hash: '68132C479348C1AA2618D55C8BBEC6EB2597A5BA',
             checked: false
           },
-        ]
+        ];
         break;
       case 'tt5215952':
         torrents = [
@@ -80,7 +72,7 @@ export class BulkDownloadComponent implements OnInit {
             hash: '2F157306E5114EA8044302586A89FDC4E0FAC2A1',
             checked: false
           },
-        ]
+        ];
         break;
       case 'tt1213641':
         torrents = [
@@ -98,7 +90,7 @@ export class BulkDownloadComponent implements OnInit {
             hash: '712837DCAA3F4275B89E640EB21DAE72D2E0C38B',
             checked: false
           },
-        ]
+        ];
         break;
       case 'tt0099785':
         torrents = [
@@ -109,109 +101,12 @@ export class BulkDownloadComponent implements OnInit {
             hash: '5FEFAC61C0F42FFC43946B3379A540D1A38F6480',
             checked: false
           }
-        ]
+        ];
         break;
-      // case 'tt0087538':
-      //   let torrents = [
-      //     {
-      //       id: 1,
-      //       name: 'Guardians of the Galaxy (2014) 1080p BrRip x264 - YIFY',
-      //       size: 1988939229,
-      //       hash: '11A2AC68A11634E980F265CB1433C599D017A759',
-      //       checked: false
-      //     },
-      //   ]
-      //   return torrents
-
-      //   break;
-      // case 'tt0092099':
-      //   let torrents = [
-      //     {
-      //       id: 1,
-      //       name: 'Top Gun (1986) 1080p BrRip x264 - 1.29GB - YIFY',
-      //       size: 1988939229,
-      //       hash: '11A2AC68A11634E980F265CB1433C599D017A759',
-      //       checked: false
-      //     },
-      //     {
-      //       id: 1,
-      //       name: 'Top Gun (1986) 720p BrRip x264 - 750MB - YIFY',
-      //       size: 786726662,
-      //       hash: '1E450B7823C44962D60932EDADF18E07D2B0A663',
-      //       checked: false
-      //     },
-      //   ]
-      //   return torrents
-
-      //   break;
-      // case 'tt0105236':
-      //   let torrents = [
-      //     {
-      //       id: 1,
-      //       name: 'Guardians of the Galaxy (2014) 1080p BrRip x264 - YIFY',
-      //       size: 1988939229,
-      //       hash: '11A2AC68A11634E980F265CB1433C599D017A759',
-      //       checked: false
-      //     },
-      //   ]
-      //   return torrents
-
-      //   break;
-      // case 'tt0145487':
-      //   let torrents = [
-      //     {
-      //       id: 1,
-      //       name: 'Guardians of the Galaxy (2014) 1080p BrRip x264 - YIFY',
-      //       size: 1988939229,
-      //       hash: '11A2AC68A11634E980F265CB1433C599D017A759',
-      //       checked: false
-      //     },
-      //   ]
-      //   return torrents
-
-      //   break;
-      // case 'tt0348150':
-      //   let torrents = [
-      //     {
-      //       id: 1,
-      //       name: 'Guardians of the Galaxy (2014) 1080p BrRip x264 - YIFY',
-      //       size: 1988939229,
-      //       hash: '11A2AC68A11634E980F265CB1433C599D017A759',
-      //       checked: false
-      //     },
-      //   ]
-      //   return torrents
-
-      //   break;
-      // case 'tt1213641':
-      //   let torrents = [
-      //     {
-      //       id: 1,
-      //       name: 'Guardians of the Galaxy (2014) 1080p BrRip x264 - YIFY',
-      //       size: 1988939229,
-      //       hash: '11A2AC68A11634E980F265CB1433C599D017A759',
-      //       checked: false
-      //     },
-      //   ]
-      //   return torrents
-
-      //   break;
-      // case 'tt0099785':
-      //   let torrents = [
-      //     {
-      //       id: 1,
-      //       name: 'Guardians of the Galaxy (2014) 1080p BrRip x264 - YIFY',
-      //       size: 1988939229,
-      //       hash: '11A2AC68A11634E980F265CB1433C599D017A759',
-      //       checked: false
-      //     },
-      //   ]
-      //   return torrents
-      //   break;
       default:
         break;
     }
-    return torrents
+    return torrents;
   }
 
   getTorrentByQuery() {
@@ -219,13 +114,13 @@ export class BulkDownloadComponent implements OnInit {
   }
 
   onSelectMovie(movie: any) {
-    this.selectedMovie = movie
+    this.selectedMovie = movie;
   }
 
   downloadMovie(movie) {
     const torrentsToDownload = movie[0].torrents.filter(obj => {
-      return obj.checked === true
-    })
+      return obj.checked === true;
+    });
   }
 
   /**
@@ -234,11 +129,11 @@ export class BulkDownloadComponent implements OnInit {
    */
   removeMovie(movie) {
     const newDisplayedMovies = this.displayedMovies.filter(obj => {
-      console.log(obj.id != movie.id)
-      return obj.id != movie.id
-    })
+      console.log(obj.id != movie.id);
+      return obj.id != movie.id;
+    });
     console.log('newDisplayedMovies', newDisplayedMovies);
-    this.displayedMovies = newDisplayedMovies
+    this.displayedMovies = newDisplayedMovies;
     // const newDisplayedMovies = this.displayedMovies.filter(obj => {
     //   return obj.imdbId != movie.imdbId
     // })
@@ -250,8 +145,8 @@ export class BulkDownloadComponent implements OnInit {
    * @param movie selected movie object
    */
   goToMovie(movie) {
-    let tmdbId = movie.id
-    this.router.navigate([`/details/${tmdbId}`], { relativeTo: this.activatedRoute })
+    let tmdbId = movie.id;
+    this.router.navigate([`/details/${tmdbId}`], { relativeTo: this.activatedRoute });
   }
   // https://yts.lt/api/v2/movie_suggestions.json?movie_id=10
   /**
@@ -260,14 +155,14 @@ export class BulkDownloadComponent implements OnInit {
   downloadAllChecked() {
     let torrentsToDownload = [];
     this.displayedMovies.forEach(movie => {
-      const movieTorrents = movie.torrents
+      const movieTorrents = movie.torrents;
       if (movieTorrents) {
         // torrentsToDownload.push(movie.torrents.filter(torrent => {
         //   return torrent.checked === true;
         // }));
         movieTorrents.forEach(torrent => {
           if (torrent.checked == true) {
-            torrentsToDownload.push(torrent)
+            torrentsToDownload.push(torrent);
           }
         });
       }
@@ -297,13 +192,13 @@ export class Test1 {
 class SerializationHelper {
   static toInstance<T>(obj: T, json: string): T {
     const jsonObj = JSON.parse(json);
-    const fromJSONString = 'fromJSON'
+    const fromJSONString = 'fromJSON';
     if (typeof obj[fromJSONString] === 'function') {
       obj[fromJSONString](jsonObj);
     }
     else {
       for (var propName in jsonObj) {
-        obj[propName] = jsonObj[propName]
+        obj[propName] = jsonObj[propName];
       }
     }
 

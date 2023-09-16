@@ -10,14 +10,15 @@ import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters, IRawTmdbRe
 import { OMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID } from '../../shared/constants';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { CacheService } from '../cache.service';
-import { MDBMovieDiscoverQuery, MDBMovieQuery } from './movie.query';
+import { MDBMovieDiscoverQuery, MDBMovieQuery, MDBMovieSearchQuery } from './movie.query';
 import { environment } from '@environments/environment';
-import { MDBMovieDiscoverStore, MDBMovieStore } from './movie.store';
+import { MDBMovieDiscoverStore, MDBMovieSearchStore, MDBMovieStore } from './movie.store';
 import { MDBMovie } from '@models/mdb-movie.model';
 import { TmdbService } from '@services/tmdb/tmdb.service';
 import { BaseMovieService } from './base-movie.service';
 import { IMdbMoviePaginated } from '@models/media-paginated.model';
 import { MDBPaginatedResultModel } from './interface/movie';
+import GeneralUtil from '@utils/general.util';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -32,13 +33,18 @@ export class MovieService extends BaseMovieService {
     mdbMovieQuery: MDBMovieQuery,
     mdbMovieStore: MDBMovieStore,
     mdbMovieDiscoverQuery: MDBMovieDiscoverQuery,
-    mdbMovieDiscoverStore: MDBMovieDiscoverStore) {
+    mdbMovieDiscoverStore: MDBMovieDiscoverStore,
+    mdbMovieSearchQuery: MDBMovieSearchQuery,
+    mdbMovieSearchStore: MDBMovieSearchStore
+  ) {
     super(
       http,
       mdbMovieQuery,
       mdbMovieStore,
       mdbMovieDiscoverQuery,
-      mdbMovieDiscoverStore);
+      mdbMovieDiscoverStore,
+      mdbMovieSearchQuery,
+      mdbMovieSearchStore);
   }
   TMDB_API_KEY = environment.tmdb.apiKey;
   TMDB_URL = environment.tmdb.url;
@@ -143,21 +149,12 @@ export class MovieService extends BaseMovieService {
   }
 
   getMoviesDiscover(paramMap: Map<TmdbParameters, any>, listName?: string, refresh = false): Observable<IMdbMoviePaginated> {
-    // const paramMap = new Map<string, any>();
+    let entityId = listName.toLowerCase();
+    GeneralUtil.DEBUG.log(`getMoviesDiscover entityId ${entityId}`);
 
-    // paramMap.set('withgenres', 'asd')
-
-    // let key = '';
-
-    // for (let entry of paramMap.entries()) {
-    //   key += entry[0] + '_' + entry[1];
-    // }
-
-    // console.log(key);
-    let entityId = listName;
     if (!this.mdbMovieDiscoverQuery.hasEntity(entityId) || refresh) {
       let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
-      myHttpParam = this.appendMappedParameters(paramMap, myHttpParam);
+      myHttpParam = GeneralUtil.appendMappedParameters(paramMap, myHttpParam);
       const tmdbHttpOptions = {
         headers: JSON_CONTENT_TYPE_HEADER,
         params: myHttpParam
@@ -173,32 +170,27 @@ export class MovieService extends BaseMovieService {
 
   searchMovie(parameters: Map<TmdbParameters | TmdbSearchMovieParameters, any>, refresh: boolean = false): Observable<any> {
     let theFunction: Observable<any>;
-    let queryId = `${parameters.get(TmdbSearchMovieParameters.Query)}_${parameters.get(TmdbSearchMovieParameters.Page)}`;
+    const page = parameters.get(TmdbSearchMovieParameters.Page) ? parameters.get(TmdbSearchMovieParameters.Page) : 1;
+    let myHttpParam = new HttpParams().append(TmdbParameters.Page, page);
+    let entityId = `movieSearch:${GeneralUtil.appendMappedParameters(parameters, myHttpParam).toString()}`;
+    // let entityId = `${parameters.get(TmdbSearchMovieParameters.Query)}_${parameters.get(TmdbSearchMovieParameters.Page)}`.toLowerCase();
+
     if (environment.dataSource.toString() === "TMDB") {
-      if (!this.mdbMovieQuery.hasEntity(queryId) || refresh) {
+
+      GeneralUtil.DEBUG.log(`searchMovie entityId ${entityId}`);
+      if (!this.mdbMovieSearchQuery.hasEntity(entityId) || refresh) {
         theFunction = this.tmdbService.searchTmdb(parameters);
         return theFunction.pipe(
           first(),
           map((data: IRawTmdbResultObject) => {
-
-            return this.mapSearchResult(data);
-
+            // let res = this.mapSearchResult(data);
+            // return this.mapSearchResult(data);
+            return this.mapPaginatedResult(entityId, data);
           }),
           catchError(this.handleError<any>('getMovieDetails')));
       }
-    }
-  }
-
-  /**
-   * Appends parameters list into http param object.
-   * @param paramMap parameters key-value pair list
-   * @param myHttpParam http param to append to
-   */
-  private appendMappedParameters(paramMap: Map<TmdbParameters | TmdbSearchMovieParameters, any>, myHttpParam: HttpParams) {
-    for (let entry of paramMap.entries()) {
-      myHttpParam = myHttpParam.append(entry[0], entry[1]);
-    }
-    return myHttpParam;
+      return of(this.mdbMovieSearchQuery.getEntity(entityId).movies);
+    } return of([]);
   }
 
   getSubtitleFile(filePath: string): Observable<any> {

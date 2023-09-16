@@ -1,8 +1,8 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
-import { IOmdbMovieDetail, MovieGenre, IGenre } from '@models/interfaces';
-import { MOVIES, MOVIEGENRES } from '../../../mock-data';
+import { MovieGenre, IGenre } from '@models/interfaces';
+import { MOVIEGENRES } from '../../../mock-data';
 import { STRING_REGEX_IMDB_ID } from '@shared/constants';
 import { DataService } from '@services/data.service';
 import { MovieService } from '@services/movie/movie.service';
@@ -23,7 +23,6 @@ export class TopNavigationComponent implements OnInit {
   @Input() data: Observable<any>;
   constructor(
     private dataService: DataService,
-    // private firebaseService: FirebaseService,
     private ipcService: IpcService,
     private movieService: MovieService,
     private router: Router,
@@ -33,23 +32,19 @@ export class TopNavigationComponent implements OnInit {
   isElectron = environment.runConfig.isElectron;
   status = 'LOGIN';
   browserConnection = navigator.onLine;
-  selectedMovie: IOmdbMovieDetail;
-  numbers;
   currentYear = new Date().getFullYear();
   genres = ['Action', 'Adventure', 'Documentary', 'Drama', 'Horror', 'Sci-Fi', 'Thriller'];
-  movieGenres = MOVIEGENRES;
   types = ['TV Series', 'Movie', 'Short'];
   searchQuery: ISearchQuery = {
     query: '',
     yearFrom: 1969,
     yearTo: 2018,
-    genres: this.movieGenres,
+    genres: MOVIEGENRES,
     type: 'TV Series',
     isAvailable: 'true',
     availability: '',
     sortBy: ''
   };
-  movies = MOVIES;
   selectedMovies = [];
   isHighlighted = false;
   numberOfPages = 1;
@@ -57,11 +52,9 @@ export class TopNavigationComponent implements OnInit {
   currentPage = 1;
   currentSearchQuery = '';
   hasSearchResults = false;
-  isSearchDirty = false;
   searchHistoryList = [];
   filteredOptions: Observable<string[]>;
   SEARCH_HISTORY_MAX_LENGTH = 8;
-  decadesList = [];
   voteAverageList = [];
   isSignedIn = false;
   lastQuery = '';
@@ -69,7 +62,7 @@ export class TopNavigationComponent implements OnInit {
   myControl = new FormControl();
   ngOnInit() {
     const e = localStorage.getItem('user');
-    // this.getSearchHistoryList()
+    this.getSearchHistoryList();
     if (e === null) {
       this.status = 'LOGIN';
       this.isSignedIn = false;
@@ -89,6 +82,7 @@ export class TopNavigationComponent implements OnInit {
   }
 
   getSearchHistoryList() {
+    this.searchHistoryList = ['titanic', 'enteng kabisote'];
     // })
     // this.ipcService.call(this.ipcService.IPCCommand.GetSearchList)
     // this.ipcService.searchList.subscribe(data => {
@@ -129,7 +123,6 @@ export class TopNavigationComponent implements OnInit {
       this.searchHistoryList = this.searchHistoryList.slice(0, this.SEARCH_HISTORY_MAX_LENGTH);
     }
     const enteredQuery = val;
-    // this.isSearchDirty = true
     // this.currentPage = 1
     // this.numberOfPages = 1
     // this.numberOfResults = 0

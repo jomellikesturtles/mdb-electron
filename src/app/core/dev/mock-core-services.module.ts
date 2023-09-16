@@ -30,7 +30,7 @@ import { TorrentService } from "@services/torrent/torrent.service";
     // { provide: ListsService, useExisting: MockListService },
     // { provide: PlayedService, useExisting: MockPlayedService },
     // { provide: ProgressService, useExisting: MockProgressService },
-    { provide: MovieService, useExisting: MockMovieService },
+    // { provide: MovieService, useExisting: MockMovieService },
     { provide: ProfileService, useExisting: MockProfileService },
     { provide: TorrentService, useExisting: MockTorrentService },
     // { provide: LibraryService, useExisting: MockLibraryService },
