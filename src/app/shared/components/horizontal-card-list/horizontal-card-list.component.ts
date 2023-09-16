@@ -32,7 +32,7 @@ export class HorizontalCardListComponent implements OnInit {
   seeAll() {
     // queryParams: { type: 'year', year: year; }
     console.log('this.queryParams', this.queryParams);
-    this.dataService.updateDiscoverQuery({ type: null, value: null, name: this.title, paramMap: this.queryParams });
+    // this.dataService.updateDiscoverQuery({ type: null, value: null, name: this.title, paramMap: this.queryParams });
     this.router.navigate([this.seeAllLink], {
       relativeTo: this.activatedRoute, queryParams: this.queryParams,
     });

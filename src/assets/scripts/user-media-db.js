@@ -175,11 +175,6 @@ async function handleUserData(dbRepo, headers, params, body) {
       result = theResult;
       break;
 
-    // page: number;
-    // total_results: number;
-    // total_pages: number;
-    // results: ITmdbResult[];
-
     case OPERATIONS.FIND_IN_LIST:
       result = dbRepo.getInList(params.tmdbIdList);
       break;

@@ -500,22 +500,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
   previewImage() {
     this.dialog.open(ImagePreviewComponent, { data: { imagePath: this.movieDetails.posterPath } });
   }
-  /**
-   * Copies link to clipboard
-   * @param magnetLink link top copy
-   */
+
   copyToClipboard(magnetLink: string) {
-    const selBox = document.createElement('textarea');
-    selBox.style.position = 'fixed';
-    selBox.style.left = '0';
-    selBox.style.top = '0';
-    selBox.style.opacity = '0';
-    selBox.value = magnetLink;
-    document.body.appendChild(selBox);
-    selBox.focus();
-    selBox.select();
-    document.execCommand('copy');
-    document.body.removeChild(selBox);
+    GeneralUtil.copyToClipboard(magnetLink);
   }
 
   /**
@@ -540,28 +527,3 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 }
 
-class PlayLink {
-
-  id?: string;
-  name?: string;
-  type: "torrent" | "offline";
-  [x: string]: any;
-  // size?: string
-  hash?: string;
-  // url?: string
-  // quality?: string
-  // type?: string
-  // seeds?: number
-  // peers?: number
-  // sizeBytes?: number
-  // added?: string
-  // dateUploaded?: string
-  // dateUploadedUnix?: number
-  // isYts?: boolean
-  // magnetLink?: string,
-  // type: 'offline' | 'torrent'
-  // fullFilePath: string,
-  // title: string,
-  // year: number,
-  // tmdbId: number,
-}

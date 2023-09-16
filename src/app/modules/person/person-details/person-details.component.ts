@@ -1,19 +1,15 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, Input, OnInit } from '@angular/core';
 import { DataService } from '@services/data.service';
 import { PersonService } from '@services/person.service';
-import { UtilsService } from '@services/utils.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { PERSON_DETAILS, PERSON_COMBINED_CREDITS } from '../../../mock-data-person-details';
-import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-person-details',
   templateUrl: './person-details.component.html',
   styleUrls: ['./person-details.component.scss']
 })
-export class PersonDetailsComponent implements OnInit, OnDestroy {
+export class PersonDetailsComponent implements OnInit {
   @Input() data: Observable<any>;
   hasData = false;
   person: any;
@@ -21,36 +17,14 @@ export class PersonDetailsComponent implements OnInit, OnDestroy {
   creditsCrew;
 
   constructor(
-    private sanitizer: DomSanitizer,
     private activatedRoute: ActivatedRoute,
     private dataService: DataService,
     private personService: PersonService,
-    private utilsService: UtilsService,
     private router: Router) { }
 
   ngOnInit(): void {
-    if (environment.runConfig.useTestData === true) {
-      this.person = PERSON_DETAILS;
-      this.creditsCast = PERSON_COMBINED_CREDITS.cast;
-      this.creditsCrew = PERSON_COMBINED_CREDITS.crew;
-      this.hasData = true;
-    } else {
-
-      const id = this.activatedRoute.snapshot.paramMap.get('id');
-      this.getPersonDetails(id);
-      // this.activatedRoute.params.subscribe(params => {
-      //   console.log('activatedRoute.params', params);
-      //   if (params.id) {
-      //     this.getPersonDetails(params.id)
-      //   } else {
-      //     this.hasData = false
-      //   }
-      // });
-    }
-  }
-
-  ngOnDestroy(): void {
-
+    const id = this.activatedRoute.snapshot.paramMap.get('id');
+    this.getPersonDetails(id);
   }
 
   getPersonDetails(val: number | string): void {

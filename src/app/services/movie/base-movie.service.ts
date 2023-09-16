@@ -3,8 +3,8 @@ import { IMdbMovieDetails, IOmdbMovieDetail, IRawTmdbResultObject, TmdbParameter
 import { MDBMovie } from '@models/mdb-movie.model';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { Observable, of } from 'rxjs';
-import { MDBMovieDiscoverQuery, MDBMovieQuery } from './movie.query';
-import { MDBMovieDiscoverStore, MDBMovieStore } from './movie.store';
+import { MDBMovieDiscoverQuery, MDBMovieQuery, MDBMovieSearchQuery } from './movie.query';
+import { MDBMovieDiscoverStore, MDBMovieSearchStore, MDBMovieStore } from './movie.store';
 import { MDBPaginatedResultModel } from './interface/movie';
 import { IMdbMoviePaginated } from '@models/media-paginated.model';
 
@@ -16,6 +16,8 @@ export abstract class BaseMovieService {
     protected mdbMovieStore: MDBMovieStore,
     protected mdbMovieDiscoverQuery: MDBMovieDiscoverQuery,
     protected mdbMovieDiscoverStore: MDBMovieDiscoverStore,
+    protected mdbMovieSearchQuery: MDBMovieSearchQuery,
+    protected mdbMovieSearchStore: MDBMovieSearchStore
   ) { }
 
   /**

@@ -37,7 +37,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     console.log('queryparamsA :', this.activatedRoute);
     // console.log('queryparamsA:', this.activatedRoute.data);
     this.dataService.discoverQuery.pipe(takeUntil(this.ngUnsubscribe)).subscribe((discoverData) => {
-      this.discoverQuery(discoverData.type, discoverData.value, discoverData.name, discoverData);
+      this.discoverQuery(discoverData.type, discoverData.value, discoverData.name, discoverData.paramMap, discoverData.name);
     });
   }
 
@@ -53,7 +53,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
    * @param val type value
    * @param val1 (optional) additional context
    */
-  discoverQuery(type: string, val: string | number, val2?: string, discoverData?): void {
+  discoverQuery(type: string, val: string | number, val2: string, paramMap: Map<TmdbParameters, any>, name: string): void {
     let tempTitle = '';
     // cert,year,genre,person
     switch (type) {
@@ -74,8 +74,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
         tempTitle = `Top movies from ${val}`;
         break;
       default:
-        this.paramMap = discoverData.paramMap;
-        tempTitle = discoverData.name;
+        this.paramMap = paramMap;
+        tempTitle = name;
         break;
     }
 

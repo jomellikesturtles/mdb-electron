@@ -14,6 +14,7 @@ import { TMDBMovieStore } from '@services/movie/movie.store';
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
 import { environment } from '@environments/environment';
+import GeneralUtil from '@utils/general.util';
 
 @Injectable({ providedIn: 'root' })
 export class TmdbService {
@@ -98,12 +99,13 @@ export class TmdbService {
   searchTmdb(val: Map<TmdbParameters | TmdbSearchMovieParameters, any>): Observable<IRawTmdbResultObject> {
     const url = `${this.TMDB_URL}/search/movie`;
     let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
-    myHttpParam = this.appendMappedParameters(val, myHttpParam);
+    myHttpParam = GeneralUtil.appendMappedParameters(val, myHttpParam);
 
     let key = '';
     for (let entry of val.entries()) {
       key += entry[0] + '_' + entry[1];
     }
+    GeneralUtil.DEBUG.log(`key ${key}`);
     const tmdbHttpOptions = {
       headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
@@ -128,19 +130,6 @@ export class TmdbService {
     return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
       catchError(this.handleError<any>('tmdbVideos')));
   }
-
-  /**
-   * Appends parameters list into http param object.
-   * @param paramMap parameters key-value pair list
-   * @param myHttpParam http param to append to
-   */
-  private appendMappedParameters(paramMap: Map<TmdbParameters | TmdbSearchMovieParameters, any>, myHttpParam: HttpParams) {
-    for (let entry of paramMap.entries()) {
-      myHttpParam = myHttpParam.append(entry[0], entry[1]);
-    }
-    return myHttpParam;
-  }
-
 
   /**
    * Error handler.
