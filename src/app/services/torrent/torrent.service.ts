@@ -10,6 +10,7 @@ import GeneralUtil from '@utils/general.util';
 import { environment } from '@environments/environment';
 import { TorrentQuery } from './torrent.query';
 import { MDBTorrentModel, TorrentStore } from './torrent.store';
+import { LoggerService } from '@core/logger.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,8 @@ export class TorrentService {
     private http: HttpClient,
     private sanitizer: DomSanitizer,
     private torrentQuery: TorrentQuery,
-    private torrentStore: TorrentStore
+    private torrentStore: TorrentStore,
+    private logger: LoggerService
   ) { }
 
   TRACKERS = environment.torrent.trackers;
@@ -48,7 +50,7 @@ export class TorrentService {
     let entityId = 'torrent:' + imdbId;
     if (!this.torrentQuery.hasEntity(entityId) || refresh) {
       let url = `${this.YTS_URL}?query_term=${imdbId}`;
-      return this.http.get<IYTSSingleQuery>(url).pipe(tap(_ => this.log('')),
+      return this.http.get<IYTSSingleQuery>(url).pipe(tap(_ => this.logger.info('')),
         map((data: IYTSSingleQuery) => {
           const newData = new MDBTorrentAndMovieObject(data);
           const store: MDBTorrentModel = {
@@ -68,7 +70,7 @@ export class TorrentService {
     val = 'tt0499549';
     const url = `${this.YTS_URL}?query_term=${val}`;
     // let result = this.http.get<any>(url).pipe(
-    //   tap(_ => this.log(`searched torrents for ${val}`)),
+    //   tap(_ => this.logger.info(`searched torrents for ${val}`)),
     //   catchError(this.handleError<any>('search torrents fail')))
     const result = this.http.get<any>(url).pipe(map(response => response));
     // console.log('result: ', JSON.parse(result.))
@@ -143,7 +145,7 @@ export class TorrentService {
     // tt2015381 - guardians of the galaxy
     let url = `http://localhost:3000/getStreamLink/${hash}`;
 
-    return this.http.get<string>(url).pipe(tap(_ => this.log('')),
+    return this.http.get<string>(url).pipe(tap(_ => this.logger.info('')),
       catchError(this.handleError<any>('getStreamLink')));
   }
 
@@ -155,13 +157,10 @@ export class TorrentService {
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(error); // log to console instead
-      this.log(`${operation} failed: ${error.message}`);
+      this.logger.error(`${operation} failed: ${error.message}`);
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
   }
 
-  private log(message: string) {
-    console.log(`TorrentService: ${message} `);
-  }
 }

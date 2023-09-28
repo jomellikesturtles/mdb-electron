@@ -29,3 +29,17 @@ export interface MDBPaginatedResultModel {
   id: ID,
   paginatedResult: IMdbMoviePaginated;
 }
+
+export interface MDBMoviePreviewModel {
+  id: ID,
+  moviePreview: any;
+}
+
+export interface MDBMovieDashboardModel {
+  id: ID,
+  movieDashboard: {
+    name: string;
+    data: any;
+    queryParams?: Map<any, any>;
+  };
+}

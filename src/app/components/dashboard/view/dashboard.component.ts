@@ -6,6 +6,8 @@ import { TmdbParameters, } from '@models/interfaces';
 import { GENRES } from '@shared/constants';
 import GeneralUtil from '@utils/general.util';
 import { LoggerService } from '@core/logger.service';
+import { MDBMovieDashboardQuery } from '@services/movie/movie.query';
+import { MDBMovieDashboardStore } from '@services/movie/movie.store';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,59 +21,84 @@ export class DashboardComponent implements OnInit {
     private movieService: MovieService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private loggerService: LoggerService
+    private loggerService: LoggerService,
+    protected mdbMovieDashboardQuery: MDBMovieDashboardQuery,
+    protected mdbMovieDashboardStore: MDBMovieDashboardStore,
   ) { }
 
   browserConnection = navigator.onLine;
-  dashboardLists = [];
+  dashboardLists: { name: string, data: any, queryParams?: any; }[] = [];
   cardWidth = '130px';
 
   ngOnInit() {
-    this.loggerService.log("HEY HEY HEY");
-    this.getNowShowingMovies();
-    this.getTopMoviesFromYear();
-    this.getTopGenreMovie();
+    this.getDashboard();
   }
 
+  getDashboard(refresh = false) {
+    this.getNowShowingMovies(refresh);
+    this.getTopMoviesFromYear(refresh);
+    this.getTopGenreMovie(refresh);
+    // watch later
+    // continue watching
+    // library movies
+  }
   /**
    * Gets movies showing in theaters in current date
    */
-  getNowShowingMovies() {
-    const sDate = new Date();
-    const today = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) + '-' + ('0' + sDate.getDate()).slice(-2);
-    sDate.setDate(sDate.getDate() - 21);
-    const threeWeeksAgo = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) +
-      '-' + ('0' + sDate.getDate()).slice(-2);
-    const paramMap = new Map<TmdbParameters, any>();
-    paramMap.set(TmdbParameters.PrimaryReleaseDateGreater, threeWeeksAgo);
-    paramMap.set(TmdbParameters.PrimaryReleaseDateLess, today);
-    this.sendToMovieService(paramMap, `New Releases`);
+  getNowShowingMovies(refresh: boolean) {
+    const listName = 'New Releases';
+    let entityId = `movie:dashboard:${listName}`.toLowerCase();
+    if (!this.mdbMovieDashboardQuery.hasEntity(entityId) || refresh) {
+      const sDate = new Date();
+      const today = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) + '-' + ('0' + sDate.getDate()).slice(-2);
+      sDate.setDate(sDate.getDate() - 21);
+      const threeWeeksAgo = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) +
+        '-' + ('0' + sDate.getDate()).slice(-2);
+      const paramMap = new Map<TmdbParameters, any>();
+      paramMap.set(TmdbParameters.PrimaryReleaseDateGreater, threeWeeksAgo);
+      paramMap.set(TmdbParameters.PrimaryReleaseDateLess, today);
+      this.sendToMovieService(paramMap, listName, entityId);
+    } else {
+      return this.dashboardLists.push(this.mdbMovieDashboardQuery.getEntity(entityId).movieDashboard);
+    }
   }
 
   /**
    * Gets top-rated movies from year
    */
-  getTopMoviesFromYear() {
-    const sDate = new Date();
-    const minimumYear = 1940;
-    const randYear = Math.round(
-      Math.random() * ((sDate.getFullYear() - 1) - minimumYear) + minimumYear
-    );
-    const paramMap = new Map<TmdbParameters, any>();
-    paramMap.set(TmdbParameters.PrimaryReleaseYear, randYear);
-    this.sendToMovieService(paramMap, `Top movies of ${randYear}`);
+  getTopMoviesFromYear(refresh: boolean) {
+    const listName = 'Top movies of';
+    let entityId = `movie:dashboard:${listName}`.toLowerCase();
+    if (!this.mdbMovieDashboardQuery.hasEntity(entityId) || refresh) {
+      const sDate = new Date();
+      const minimumYear = 1940;
+      const randYear = Math.round(
+        Math.random() * ((sDate.getFullYear() - 1) - minimumYear) + minimumYear
+      );
+      const paramMap = new Map<TmdbParameters, any>();
+      paramMap.set(TmdbParameters.PrimaryReleaseYear, randYear);
+      this.sendToMovieService(paramMap, `Top movies of ${randYear}`, entityId);
+    } else {
+      return this.dashboardLists.push(this.mdbMovieDashboardQuery.getEntity(entityId).movieDashboard);
+    }
   }
 
   /**
    * Gets top-rated movies by genre.
    */
-  getTopGenreMovie() {
-    const TMDB_GENRE_LENGTH = 19; // up to index 19 is valid tmdb genre
-    const GENRE_INDEX = Math.floor(Math.random() * (TMDB_GENRE_LENGTH));
-    const CHOSEN_GENRE = GENRES[GENRE_INDEX];
-    const paramMap = new Map<TmdbParameters, any>();
-    paramMap.set(TmdbParameters.WithGenres, CHOSEN_GENRE.id);
-    this.sendToMovieService(paramMap, `Top ${CHOSEN_GENRE.name}`);
+  getTopGenreMovie(refresh: boolean) {
+    const listName = 'Top Genre';
+    let entityId = `movie:dashboard:${listName}`.toLowerCase();
+    if (!this.mdbMovieDashboardQuery.hasEntity(entityId) || refresh) {
+      const TMDB_GENRE_LENGTH = 19; // up to index 19 is valid tmdb genre
+      const GENRE_INDEX = Math.floor(Math.random() * (TMDB_GENRE_LENGTH));
+      const CHOSEN_GENRE = GENRES[GENRE_INDEX];
+      const paramMap = new Map<TmdbParameters, any>();
+      paramMap.set(TmdbParameters.WithGenres, CHOSEN_GENRE.id);
+      this.sendToMovieService(paramMap, `Top ${CHOSEN_GENRE.name}`, entityId);
+    } else {
+      return this.dashboardLists.push(this.mdbMovieDashboardQuery.getEntity(entityId).movieDashboard);
+    }
   }
 
   /**
@@ -79,7 +106,7 @@ export class DashboardComponent implements OnInit {
    * @param paramMap parameters map to pass to the API
    * @param listName the name of the list
    */
-  async sendToMovieService(paramMap: Map<TmdbParameters, any>, listName: string) {
+  async sendToMovieService(paramMap: Map<TmdbParameters, any>, listName: string, entityId?: string) {
     const data = await this.movieService.getMoviesDiscover(paramMap, listName).toPromise();
     let mappedResults = data.results;
     const innerList = {
@@ -89,7 +116,11 @@ export class DashboardComponent implements OnInit {
     };
     this.dashboardLists.push(innerList);
     this.dataService.addDashboardData(innerList.data);
-    console.log('data:', data);
+    const store = {
+      id: entityId,
+      movieDashboard: innerList
+    };
+    this.mdbMovieDashboardStore.add(store);
   }
 
   /**
@@ -106,7 +137,7 @@ export class DashboardComponent implements OnInit {
   goToMovie(id: any) {
     const highlightedId = id;
     this.dataService.updateHighlightedMovie(highlightedId);
-    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+    this.router.navigate([`/ details / ${highlightedId}`], { relativeTo: this.activatedRoute });
   }
 
   scrollPrev() {
@@ -149,4 +180,4 @@ export class DashboardComponent implements OnInit {
   getYear(releaseDate: string) {
     return GeneralUtil.getYear(releaseDate);
   }
-}
+};
