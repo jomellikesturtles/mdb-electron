@@ -10,42 +10,19 @@ import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters, IRawTmdbRe
 import { OMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID } from '../../shared/constants';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { CacheService } from '../cache.service';
-import { MDBMovieDiscoverQuery, MDBMovieQuery, MDBMovieSearchQuery } from './movie.query';
 import { environment } from '@environments/environment';
-import { MDBMovieDiscoverStore, MDBMovieSearchStore, MDBMovieStore } from './movie.store';
 import { MDBMovie } from '@models/mdb-movie.model';
 import { TmdbService } from '@services/tmdb/tmdb.service';
 import { BaseMovieService } from './base-movie.service';
 import { IMdbMoviePaginated } from '@models/media-paginated.model';
-import { MDBPaginatedResultModel } from './interface/movie';
 import GeneralUtil from '@utils/general.util';
+import { ITmdbVideoResult } from '@models/tmdb.model';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
 @Injectable({ providedIn: 'root' })
 export class MovieService extends BaseMovieService {
 
-  constructor(
-    private cacheService: CacheService,
-    private ipcService: IpcService,
-    private tmdbService: TmdbService,
-    http: HttpClient,
-    mdbMovieQuery: MDBMovieQuery,
-    mdbMovieStore: MDBMovieStore,
-    mdbMovieDiscoverQuery: MDBMovieDiscoverQuery,
-    mdbMovieDiscoverStore: MDBMovieDiscoverStore,
-    mdbMovieSearchQuery: MDBMovieSearchQuery,
-    mdbMovieSearchStore: MDBMovieSearchStore
-  ) {
-    super(
-      http,
-      mdbMovieQuery,
-      mdbMovieStore,
-      mdbMovieDiscoverQuery,
-      mdbMovieDiscoverStore,
-      mdbMovieSearchQuery,
-      mdbMovieSearchStore);
-  }
   TMDB_API_KEY = environment.tmdb.apiKey;
   TMDB_URL = environment.tmdb.url;
 
@@ -118,18 +95,21 @@ export class MovieService extends BaseMovieService {
     return this.tmdbService.getFindMovie(val);
   }
 
-  getRelatedClips(tmdbId: number, refresh: boolean = false): Observable<any> {
+  getRelatedClips(tmdbId: number, refresh: boolean = false): Observable<ITmdbVideoResult> {
     let theFunction: Observable<any>;
-
-    // if (!this.mdbMovieQuery.hasEntity(tmdbId) || refresh) {
-    if (environment.dataSource.toString() === "TMDB") {
-      theFunction = this.tmdbService.getTmdbVideos(tmdbId);
+    let entityId = `movie:video:${tmdbId}`;
+    if (!this.mdbMoviePreviewQuery.hasEntity(entityId) || refresh) {
+      if (environment.dataSource.toString() === "TMDB") {
+        theFunction = this.tmdbService.getTmdbVideos(tmdbId);
+      } return theFunction.pipe(
+        first(),
+        map(data => {
+          return this.mapMovieDetails(entityId, data);
+        }),
+        catchError(this.handleError<any>('getRelatedClips')));
     }
-
-    // }
-    return this.cacheService.get(tmdbId + '_TMDB_VIDEOS', this.tmdbService.getTmdbVideos(tmdbId));
+    return of(this.mdbMoviePreviewQuery.getEntity(entityId).moviePreview);
   }
-
 
   getMovieDetails(id: number, appendToResponse?: string, refresh: boolean = false): Observable<MDBMovie> {
     let theFunction: Observable<any>;
@@ -149,12 +129,14 @@ export class MovieService extends BaseMovieService {
   }
 
   getMoviesDiscover(paramMap: Map<TmdbParameters, any>, listName?: string, refresh = false): Observable<IMdbMoviePaginated> {
-    let entityId = listName.toLowerCase();
+    // let entityId = listName.toLowerCase();
+    const page = paramMap.get(TmdbParameters.Page) ? paramMap.get(TmdbParameters.Page) : 1;
+    let myHttpParam = new HttpParams().append(TmdbParameters.Page, page);
+    myHttpParam = GeneralUtil.appendMappedParameters(paramMap, myHttpParam);
+    let entityId = `movie:discover:${myHttpParam.toString()}`;
     GeneralUtil.DEBUG.log(`getMoviesDiscover entityId ${entityId}`);
-
     if (!this.mdbMovieDiscoverQuery.hasEntity(entityId) || refresh) {
-      let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
-      myHttpParam = GeneralUtil.appendMappedParameters(paramMap, myHttpParam);
+      myHttpParam = myHttpParam.append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
       const tmdbHttpOptions = {
         headers: JSON_CONTENT_TYPE_HEADER,
         params: myHttpParam
@@ -168,18 +150,16 @@ export class MovieService extends BaseMovieService {
     return of(this.mdbMovieDiscoverQuery.getEntity(entityId).paginatedResult);
   }
 
-  searchMovie(parameters: Map<TmdbParameters | TmdbSearchMovieParameters, any>, refresh: boolean = false): Observable<any> {
+  searchMovie(paramMap: Map<TmdbParameters | TmdbSearchMovieParameters, any>, refresh: boolean = false): Observable<any> {
     let theFunction: Observable<any>;
-    const page = parameters.get(TmdbSearchMovieParameters.Page) ? parameters.get(TmdbSearchMovieParameters.Page) : 1;
+    const page = paramMap.get(TmdbSearchMovieParameters.Page) ? paramMap.get(TmdbSearchMovieParameters.Page) : 1;
     let myHttpParam = new HttpParams().append(TmdbParameters.Page, page);
-    let entityId = `movieSearch:${GeneralUtil.appendMappedParameters(parameters, myHttpParam).toString()}`;
-    // let entityId = `${parameters.get(TmdbSearchMovieParameters.Query)}_${parameters.get(TmdbSearchMovieParameters.Page)}`.toLowerCase();
-
+    myHttpParam = GeneralUtil.appendMappedParameters(paramMap, myHttpParam);
+    let entityId = `movie:search:${myHttpParam.toString()}`;
     if (environment.dataSource.toString() === "TMDB") {
-
       GeneralUtil.DEBUG.log(`searchMovie entityId ${entityId}`);
       if (!this.mdbMovieSearchQuery.hasEntity(entityId) || refresh) {
-        theFunction = this.tmdbService.searchTmdb(parameters);
+        theFunction = this.tmdbService.searchTmdb(paramMap);
         return theFunction.pipe(
           first(),
           map((data: IRawTmdbResultObject) => {
@@ -190,7 +170,8 @@ export class MovieService extends BaseMovieService {
           catchError(this.handleError<any>('getMovieDetails')));
       }
       return of(this.mdbMovieSearchQuery.getEntity(entityId).movies);
-    } return of([]);
+    }
+    return of([]);
   }
 
   getSubtitleFile(filePath: string): Observable<any> {

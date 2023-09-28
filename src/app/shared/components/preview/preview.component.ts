@@ -57,7 +57,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): void {
 
     this.dataService.previewMovie.subscribe((e: MDBMovie) => {
-      //   console.log('PREVIEWMOVIE:', e)
+      console.log('PREVIEWMOVIE:', e);
       this.getVideoClip(new MDBMovie(e));
       this.showPreviewOverlayContext = this.router.url.includes('/details/') ? false : true;
       this.cdr.detectChanges();
@@ -161,10 +161,10 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    theRes = theRes.results.find(e => e.type.toLowerCase() === 'trailer');
-    if (theRes) {
+    const trailer = theRes.results.find(e => e.type.toLowerCase() === 'trailer');
+    if (trailer) {
       this.hasTrailerClip = true;
-      theRes = theRes.key;
+      videoId = trailer.key;
     } else {
       this.clipSrc = null;
       this.hasTrailerClip = false;
@@ -183,7 +183,6 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     // const index = Math.round(Math.random() * (results.length - 1))
     // console.log('clips list length: ', results.length, ' clip index: ', index, results[index]);
 
-    videoId = theRes;
     // videoId = results[index].videoId
     this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`);
     this.clipSrc = `https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`;
@@ -198,7 +197,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     const root = this;
     setTimeout(() => {
       // root.setVideo(videoId)
-      this.cdr.detectChanges();
+      root.cdr.detectChanges();
     }, 5000);
     // })
   }

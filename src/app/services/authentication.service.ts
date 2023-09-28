@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { LoggerService } from '@core/logger.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
@@ -9,7 +10,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 export class AuthenticationService {
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private logger: LoggerService
   ) { }
 
   /**
@@ -20,7 +22,7 @@ export class AuthenticationService {
     const url = `/login`;
 
     return this.http.post<string>(url, payload).pipe(map(e => {
-      sessionStorage.setItem('token', e)
+      sessionStorage.setItem('token', e);
     }
     ),
       catchError(this.handleError<any>('login')));
@@ -33,7 +35,7 @@ export class AuthenticationService {
     const url = `/logout`;
 
     return this.http.post<any>(url, {}).pipe(map(e => {
-      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('token');
     }
     ),
       catchError(this.handleError<any>('login')));
@@ -46,16 +48,12 @@ export class AuthenticationService {
    */
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-      console.error(error); // log to console instead
-      this.log(`${operation} failed: ${error.message}`);
+      this.logger.error(`${operation} failed: ${error.message}`);
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
   }
 
-  private log(message: string) {
-    console.log(`MovieService: ${message} `);
-  }
 
 }
 
