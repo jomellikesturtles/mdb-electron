@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { TmdbParameters } from '@models/interfaces';
 import { environment } from '@environments/environment';
+import { LoggerService } from '@core/logger.service';
 
 const jsonContentType = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -17,7 +18,8 @@ export class PersonService {
   omdbUrl = 'http://www.omdbapi.com';
   tmdbUrl = 'https://api.themoviedb.org/3';
   constructor(
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private logger: LoggerService) { }
 
   /**
    * Gets the person details.
@@ -39,20 +41,17 @@ export class PersonService {
       headers: jsonContentType,
       params: myHttpParam
     };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.logger.info('')),
       catchError(this.handleError<any>('getPersonDetails')));
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(error); // log to console instead
-      this.log(`${operation} failed: ${error.message}`);
+      this.logger.error(`${operation} failed: ${error.message}`);
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
   }
 
-  private log(message: string) {
-    console.log(`MovieService: ${message} `);
-  }
 }

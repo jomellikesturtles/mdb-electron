@@ -1,32 +1,15 @@
-import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { IOmdbMovieDetail, IRawTmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from "@models/interfaces";
 import { MDBMovie } from "@models/mdb-movie.model";
 import { IMdbMoviePaginated } from "@models/media-paginated.model";
 import { IMediaProgress } from "@models/media-progress";
 import { TMDB_External_Id } from "@models/tmdb-external-id.model";
-import { IUserDataPaginated } from "@services/ipc.service";
 import { BaseMovieService } from "@services/movie/base-movie.service";
-import { MDBMovieDiscoverQuery, MDBMovieQuery } from "@services/movie/movie.query";
-import { MDBMovieDiscoverStore, MDBMovieStore } from "@services/movie/movie.store";
 import { TEST_OMDB_MOVIE_DETAIL } from "app/mock-data";
 import { Observable, catchError, map, of, tap } from "rxjs";
 
 @Injectable({ providedIn: "root" })
 export class MockMovieService extends BaseMovieService {
-  constructor(
-    http: HttpClient,
-    mdbMovieQuery: MDBMovieQuery,
-    mdbMovieStore: MDBMovieStore,
-    mdbMovieDiscoverQuery: MDBMovieDiscoverQuery,
-    mdbMovieDiscoverStore: MDBMovieDiscoverStore) {
-    super(
-      http,
-      mdbMovieQuery,
-      mdbMovieStore,
-      mdbMovieDiscoverQuery,
-      mdbMovieDiscoverStore);
-  }
   getMovieInfo(val: string): Observable<IMediaProgress> {
     throw new Error("Method not implemented.");
   }

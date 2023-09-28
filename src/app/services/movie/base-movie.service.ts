@@ -3,21 +3,32 @@ import { IMdbMovieDetails, IOmdbMovieDetail, IRawTmdbResultObject, TmdbParameter
 import { MDBMovie } from '@models/mdb-movie.model';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { Observable, of } from 'rxjs';
-import { MDBMovieDiscoverQuery, MDBMovieQuery, MDBMovieSearchQuery } from './movie.query';
-import { MDBMovieDiscoverStore, MDBMovieSearchStore, MDBMovieStore } from './movie.store';
+import { MDBMovieDiscoverQuery, MDBMoviePreviewQuery, MDBMovieQuery, MDBMovieSearchQuery } from './movie.query';
+import { MDBMovieDiscoverStore, MDBMoviePreviewStore, MDBMovieSearchStore, MDBMovieStore } from './movie.store';
 import { MDBPaginatedResultModel } from './interface/movie';
 import { IMdbMoviePaginated } from '@models/media-paginated.model';
+import { Injectable } from '@angular/core';
+import { CacheService } from '@services/cache.service';
+import { IpcService } from '@services/ipc.service';
+import { TmdbService } from '@services/tmdb/tmdb.service';
 
+@Injectable({ providedIn: "root" })
 export abstract class BaseMovieService {
 
   constructor(
+    protected cacheService: CacheService,
+    protected ipcService: IpcService,
+    protected tmdbService: TmdbService,
     protected http: HttpClient,
     protected mdbMovieQuery: MDBMovieQuery,
     protected mdbMovieStore: MDBMovieStore,
     protected mdbMovieDiscoverQuery: MDBMovieDiscoverQuery,
     protected mdbMovieDiscoverStore: MDBMovieDiscoverStore,
     protected mdbMovieSearchQuery: MDBMovieSearchQuery,
-    protected mdbMovieSearchStore: MDBMovieSearchStore
+    protected mdbMovieSearchStore: MDBMovieSearchStore,
+    protected mdbMoviePreviewQuery: MDBMoviePreviewQuery,
+    protected mdbMoviePreviewStore: MDBMoviePreviewStore,
+
   ) { }
 
   /**

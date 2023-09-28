@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { LoggerService } from "@core/logger.service";
 import { OmdbParameters } from "@models/interfaces";
 import { OMDB_API_KEY, OMDB_URL } from "@shared/constants";
 import { Observable, catchError, of, tap } from "rxjs";
@@ -11,7 +12,8 @@ export class TmdbService {
 
 
   constructor(
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private logger: LoggerService) { }
 
   /**
    * Gets movie details from omdb.
@@ -25,7 +27,7 @@ export class TmdbService {
       headers: JSON_CONTENT_TYPE_HEADER,
       params: httpParam
     };
-    return this.http.get<any>(url, myOmdbHttpOptions).pipe(tap(_ => this.log('')),
+    return this.http.get<any>(url, myOmdbHttpOptions).pipe(tap(_ => this.logger.info('')),
       catchError(this.handleError<any>('getOmdbMovieDetails')));
   };
 
@@ -37,13 +39,10 @@ export class TmdbService {
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(error); // log to console instead
-      this.log(`${operation} failed: ${error.message}`);
+      this.logger.error(`${operation} failed: ${error.message}`);
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
   }
 
-  private log(message: string) {
-    console.log(`TmdbService: ${message} `);
-  }
 }

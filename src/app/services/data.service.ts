@@ -34,9 +34,6 @@ export class DataService {
   private discoverMoviesSource = new BehaviorSubject<{ type: string, value: any, name: string, paramMap?: Map<TmdbParameters, any>; }>(null);
   discoverQuery = this.discoverMoviesSource.asObservable();
 
-  private discoverMoviesV2Source = new BehaviorSubject<any>('');
-  discoverQueryV2 = this.discoverMoviesV2Source.asObservable();
-
   constructor() { }
 
 
@@ -88,17 +85,6 @@ export class DataService {
 
   getDiscoverQuery() {
     return this.discoverQuery;
-  }
-  /**
-   *
-   * @param val
-   */
-  updateDiscoverQueryV2(paramMap: Map<TmdbParameters, any>) {
-    this.discoverMoviesV2Source.next(paramMap);
-  }
-
-  getDiscoverQueryV2() {
-    return this.discoverQueryV2;
   }
 
   getHandle(func1: Observable<any>, func2): Observable<any> {
