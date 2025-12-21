@@ -4,7 +4,6 @@ import { tap } from 'rxjs/operators';
  * Data sharing service.
  */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 
 interface ICacheContent {
   expiry: number;

@@ -1,4 +1,7 @@
-window['environment']={
+window["environment"] = {
   production: false,
-  language: 'en'
-}
+  language: "en",
+  publicKey: `
+  
+  `
+};
