@@ -1,4 +1,3 @@
-import { SearchComponent } from '@components/search/search.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
@@ -49,7 +48,6 @@ import { MockCoreServicesModule } from '@core/dev/mock-core-services.module';
     TopNavigationComponent,
     BrowseComponent,
     PersonDetailsComponent,
-    SearchComponent,
     NotificationComponent,
     PreviewComponent,
     FloatingPlayerComponent,

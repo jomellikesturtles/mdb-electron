@@ -28,9 +28,7 @@
     "start:angular-server2": "start npm start && npm run start:server",
     "pack": "electron-packager ./ --overwrite",
     "clean:install": "rm -rf node_modules && rm -rf package-lock.json && npm cache clean --force && install --save --save-exact",
-    "docs:json": "compodoc -p ./tsconfig.json -e json -d .",
-    "storybook": "npm run docs:json && start-storybook -p 6006",
-    "build-storybook": "npm run docs:json && build-storybook"
+    "docs:json": "compodoc -p ./tsconfig.json -e json -d ."
   },
   "dependencies": {
     "@angular/animations": "^15.1.4",
@@ -92,14 +90,6 @@
     "@angular/language-service": "^15.1.4",
     "@babel/core": "^7.18.9",
     "@compodoc/compodoc": "^1.1.19",
-    "@storybook/addon-actions": "^6.5.9",
-    "@storybook/addon-essentials": "^6.5.9",
-    "@storybook/addon-interactions": "^6.5.9",
-    "@storybook/addon-links": "^6.5.9",
-    "@storybook/angular": "^6.5.9",
-    "@storybook/builder-webpack4": "^6.5.9",
-    "@storybook/manager-webpack4": "^6.5.9",
-    "@storybook/testing-library": "0.0.13",
     "@types/electron": "^1.6.10",
     "@types/firebase": "^3.2.1",
     "@types/jasmine": "~3.10.0",

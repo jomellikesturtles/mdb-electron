@@ -1,5 +1,3 @@
-import { IUserSavedData } from '@models/interfaces';
-import { IMediaProgress } from '@models/media-progress';
 import { Observable } from 'rxjs';
 import { MDBApiService } from '@services/mdb-api.service';
 import { IProfile } from '@modules/user/profile/profile.component';

@@ -23,7 +23,7 @@ export const environment = {
     firebaseMode: false,
     springMode: false,
     isElectron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
-    useTestData: true,
+    useTestData: false,
   },
   tmdb: {
     url: 'https://api.themoviedb.org/3',
