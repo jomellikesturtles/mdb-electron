@@ -27,7 +27,7 @@ import { SharedModule } from '@shared/shared.module';
     MatDialogModule,
     MatCheckboxModule
   ],
-  exports:[InputContainerComponent],
+  exports: [InputContainerComponent],
   providers: [
     {
       provide: 'formState',
@@ -43,12 +43,4 @@ import { SharedModule } from '@shared/shared.module';
     },
   ]
 })
-export class InputContainerModule {
-
-  // static forRoot(): ModuleWithProviders {
-  //   return {
-  //     ngModule: InputContainerModule
-  //   }
-  // }
-
-}
+export class InputContainerModule { }

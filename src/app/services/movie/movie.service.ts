@@ -9,10 +9,8 @@ import { IpcService } from '@services/ipc.service';
 import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters, IRawTmdbResultObject } from '@models/interfaces';
 import { OMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID } from '../../shared/constants';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
-import { CacheService } from '../cache.service';
 import { environment } from '@environments/environment';
 import { MDBMovie } from '@models/mdb-movie.model';
-import { TmdbService } from '@services/tmdb/tmdb.service';
 import { BaseMovieService } from './base-movie.service';
 import { IMdbMoviePaginated } from '@models/media-paginated.model';
 import GeneralUtil from '@utils/general.util';
@@ -181,6 +179,24 @@ export class MovieService extends BaseMovieService {
   getSubtitleFileString(filePath: string): Observable<any> {
     return this.http.get<any>(filePath, { responseType: 'text' as 'json' });
   };
+
+  getStreams(movieId: string, refresh: boolean = false): Observable<any> {
+    const entityId = `movie:streams:${movieId}`;
+    GeneralUtil.DEBUG.log(`getStreams movieId: ${movieId}`);
+    if (!this.mdbMovieDiscoverQuery.hasEntity(entityId) || refresh) {
+      const tmdbHttpOptions = {
+        headers: JSON_CONTENT_TYPE_HEADER,
+        params: new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY)
+      };
+      return this.http.get<any>(`mdb/streams/${movieId}`, tmdbHttpOptions).pipe(
+        tap(_ => this.log('')),
+        map((data: IRawTmdbResultObject) => {
+          return this.mapPaginatedResult(entityId, data);
+        }),
+        catchError(this.handleError<any>('getStreams')));
+    }
+    return of(this.mdbMovieDiscoverQuery.getEntity(entityId).paginatedResult);
+  }
 
   private externalId(tmdbId: number): Observable<TMDB_External_Id> {
     const url = `${this.TMDB_URL}/movie/${tmdbId}/external_ids?api_key=${this.TMDB_API_KEY}`;
