@@ -5,7 +5,7 @@ import { IBookmark, BookmarkService } from '../media/bookmark.service';
 import { MovieService } from '../movie/movie.service';
 import { PlayedService, IPlayed } from '../media/played.service';
 import { IUserDataPaginated, IpcOperations, IpcService, SubChannel } from '../ipc.service';
-import { CollectionName } from '../firebase.service';
+import { CollectionName } from '@shared/constants';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
 import { DataService } from '@services/data.service';
 import { MDBApiService } from '@services/mdb-api.service';
@@ -115,26 +115,12 @@ export class UserDataService {
    * TODO: include libraryFile/libaryObj to the list even if not identified.
    */
   private getMovieListDetails(dataType: string, data: IUserDataPaginated | any): Observable<any> | any {
-    // ----------------------------
-    // const fj = forkJoin(obsList)
-    // fj.pipe().subscribe(
-    //   val => {
-    //     console.log('FJ:', val)
-    //     // map(e => { e.bookmark })
-    //     // dataList.forEach(data => {
-    //     map(e => { })
-    //     // });
-    //   },
-    // )
-    // ----------------------------
     return new Promise(resolve => {
       const moviesDisplayList = [];
-      const isFirebase = data.results ? false : true;
-      const dataDocList = isFirebase ? data : data.results;
+      const dataDocList = data.results ? data.results : data;
       const len = dataDocList.length;
       let index = 0;
       dataDocList.forEach(dataDoc => {
-        dataDoc = isFirebase ? dataDoc.data() : dataDoc; // firebaseData or offlineData
         index++;
         if (dataDoc.tmdbId > 0) {
           this.movieService.getMovieDetails(dataDoc.tmdbId, 'videos,images,credits,similar,external_ids,recommendations').pipe().subscribe(movie => {
@@ -157,8 +143,7 @@ export class UserDataService {
    */
   private setDataObject(dataType: string, dataDoc) {
     let userData = null;
-    const isFirebaseData = (typeof dataDoc.data === "function");
-    const docData = (typeof dataDoc.data === "function") ? dataDoc.data() : dataDoc; // firebaseData or offlineData
+    const docData = dataDoc;
     const docDataId = dataDoc.id ? dataDoc.id : dataDoc._id;
     switch (dataType) {
       case 'bookmark':
@@ -177,8 +162,7 @@ export class UserDataService {
           year: docData.year,
           tmdbId: docData.tmdbId,
         };
-        w.percentage = isFirebaseData && docData.percentage ? dataDoc.data().percentage : 100;
-        w.percentage = !isFirebaseData && docData.percentage ? docData.percentage : 100;
+        w.percentage = docData.percentage ? docData.percentage : 100;
         userData = w;
         break;
       case 'library':

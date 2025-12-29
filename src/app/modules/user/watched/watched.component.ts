@@ -5,7 +5,7 @@ import { UserDataService } from '@services/user-data/user-data.service';
 import { PlayedService } from '@services/media/played.service';
 import { Component, OnInit } from '@angular/core';
 import { environment } from '@environments/environment';
-import { CollectionName } from '@services/firebase.service';
+import { CollectionName } from '@shared/constants';
 
 @Component({
   selector: 'app-watched',

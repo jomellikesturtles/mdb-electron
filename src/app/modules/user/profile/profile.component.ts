@@ -20,7 +20,6 @@ export class ProfileComponent implements OnInit {
     filmsNumber: 54;
   };
   defaultUserProfile;
-  firebaseUser$;
   moviesWatchedList = {
     count: 0,
     data: []

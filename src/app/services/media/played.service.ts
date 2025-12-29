@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService, CollectionName, FirebaseOperator, FieldName } from '../firebase.service';
 import { IUserSavedData } from '@models/interfaces';
-import { environment } from '@environments/environment';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '@services/ipc.service';
-import GeneralUtil from '@utils/general.util';
 import { MDBApiService } from '../mdb-api.service';
 import { DataService } from '../data.service';
 import { Observable } from 'rxjs';
+import { CollectionName, FieldName } from '@shared/constants';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +12,7 @@ import { Observable } from 'rxjs';
 export class PlayedService {
 
   CURRENT_SUBCHANNEL = SubChannel.PLAYED;
-  constructor(private firebaseService: FirebaseService,
+  constructor(
     private ipcService: IpcService,
     private bffService: MDBApiService,
     private dataService: DataService
@@ -52,26 +50,14 @@ export class PlayedService {
   }
 
   saveWatchedMulti(data: object[]) {
-    if (environment.runConfig.firebaseMode) {
-      const list = [];
-      data.forEach(element => {
-        list.push({ tmdbId: element });
-      });
-      this.firebaseService.insertIntoFirestoreMulti(CollectionName.Watched, list);
-    } else {
-
-    }
+    // Implementation for IPC or Backend if needed
   }
 
   /**
    * Gets first page of list.
    */
   getPlayedPaginatedFirstPage(): Promise<IUserDataPaginated | any> {
-    if (environment.runConfig.firebaseMode) {
-      return this.firebaseService.getFromFirestoreMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20);
-    } else {
-      return this.ipcService.getMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20);
-    }
+    return this.ipcService.getMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20);
   }
 
   /**
@@ -80,7 +66,7 @@ export class PlayedService {
    */
   getPlayedPaginated(lastVal: string | number): Promise<IUserDataPaginated | any> {
     console.log('getting multiplewatched...', lastVal);
-    return this.firebaseService.getFromFirestoreMultiplePaginated(CollectionName.Watched, FieldName.TmdbId, 20, lastVal);
+    return this.ipcService.getMultiplePaginated(CollectionName.Watched, FieldName.TmdbId, 20, lastVal);
   }
 
 }

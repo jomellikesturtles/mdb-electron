@@ -1,6 +1,5 @@
 // import { Action, State, Selector, StateContext, Store } from '@ngxs/store'
 // import { SetUser, RemoveUser } from './app.actions'
-// import { FirebaseService } from './services/firebase.service'
 // import { UtilsService } from './services/utils.service'
 
 // export class Add {
@@ -40,7 +39,6 @@
 // export class UserState {
 //   constructor(
 //     private store: Store,
-//     private firebaseService: FirebaseService
 //   ) { }
 //   @Selector()
 //   static getUser(state: UserStateModel) {
@@ -64,6 +62,5 @@
 // /**
 //  * SOURCES:
 //  * https://stackblitz.com/edit/ngxs-simple?file=app%2Fapp.state.ts
-//  * https://angularfirebase.com/lessons/ngxs-quick-start-angular-state-management/#Actions
 //  * https://github.com/codediodeio/ngrx-vs-ngxs
 //  */

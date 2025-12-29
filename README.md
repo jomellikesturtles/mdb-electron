@@ -1,482 +1,118 @@
-# MdbElectron
+# MdbElectron (Movie Database UI)
 
-jomellikesturtles mdb-electron
+![Github code size](https://img.shields.io/github/languages/code-size/jomellikesturtles/mdb-electron) ![GitHub repo size](https://img.shields.io/github/repo-size/jomellikesturtles/mdb-electron) ![electron version](https://img.shields.io/npm/v/electron)
 
-![Github code size](https://img.shields.io/github/languages/code-size/jomellikesturtles/mdb-electron) ![GitHub repo size](https://img.shields.io/github/repo-size/jomellikesturtles/mdb-electron) ![GitHub last commit](https://img.shields.io/github/last-commit/jomellikesturtles/mdb-electron) ![electron version](https://img.shields.io/npm/v/electron) ![commit per year](https://img.shields.io/github/commit-activity/y/jomellikesturtles/mdb-electron)
+**MdbElectron** is a feature-rich desktop application for browsing, tracking, and watching movies. Built with **Angular** and **Electron**, it offers a modern user interface to manage your personal media library, discover new titles via various APIs (OMDb, TMDb), and even stream content using WebTorrent.
 
-movie-db-ui on electron framework
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.9.
+## 🚀 Features
 
-## Table of Contents
+*   **Comprehensive Movie Database:** Search and browse detailed information about movies and people using TMDb and OMDb APIs.
+*   **Local Library Management:** Track your favorite, bookmarked, and watched movies.
+*   **Offline Support:** Utilizes `NeDB` for local data storage, allowing access to your library even without an internet connection.
+*   **Cloud Sync:** Optional Firebase integration to sync your library across devices.
+*   **Streaming:** Integrated WebTorrent client for streaming and downloading media.
+*   **Advanced Search:** Filter content by genre, date, availability, and more.
+*   **Video Player:** Built-in video player with subtitle support and floating player mode.
+*   **Custom UI:** tailored interface using Bootstrap 5 and Angular Material.
 
-> This readme may have alot of contents
+## 🛠 Tech Stack
 
-- [MdbElectron](#mdbelectron)
-  - [Table of Contents](#table-of-contents)
-  - [Built with](#built-with)
-  - [How To run](#how-to-run)
-    - [Run as electron project](#run-as-electron-project)
-    - [Run as angular project](#run-as-angular-project)
-    - [Run individual node process](#run-individual-node-process)
-  - [Code scaffolding](#code-scaffolding)
-  - [Build](#build)
-  - [Running unit tests](#running-unit-tests)
-  - [Running end-to-end tests](#running-end-to-end-tests)
-  - [Build](#build-1)
-  - [Project Structure](#project-structure)
-  - [Development Notes](#development-notes)
-    - [APIs](#apis)
-      - [OMDb](#omdb)
-      - [themoviedb](#themoviedb)
-      - [Google](#google)
-      - [YTS](#yts)
-      - [JustWatch](#justwatch)
-      - [Fanart.tv](#fanarttv)
-  - [Todo](#todo)
-  - [Offline Assets](#offline-assets)
-  - [Influenced by](#influenced-by)
-  - [Useful links](#useful-links)
-  - [Resources](#resources)
-  - [notes](#notes)
-    - [takeaways after watching The Captain](#takeaways-after-watching-the-captain)
-- [NOTES](#notes-1)
-  - [bookmark/favorite/played](#bookmarkfavoriteplayed)
-  - [userMediaData](#usermediadata)
-  - [movie](#movie)
+*   **Framework:** [Angular 15](https://angular.io/)
+*   **Desktop Environment:** [Electron 25](https://www.electronjs.org/)
+*   **UI Libraries:** [Bootstrap 5](https://getbootstrap.com/), [Angular Material](https://material.angular.io/)
+*   **State Management:** [Akita](https://datorama.github.io/akita/)
+*   **Database (Local):** [NeDB](https://github.com/louischatriot/nedb)
+*   **Database (Cloud):** [Firebase](https://firebase.google.com/) (Firestore, Auth)
+*   **Utilities:** `webtorrent`, `moment.js`, `papaparse`
 
-## Built with
+## 🏁 Getting Started
 
-- Angular 7
-- Electronjs
-- Bootstrap 4
-- nodejs libraries
-  - Nedb
-  - fast-levenshtein
-  - xml2js
-  - papaparse
-  - nedb
-  - webtorrent
+### Prerequisites
 
-## How To run
+*   [Node.js](https://nodejs.org/) (Recommended: LTS version compatible with Angular 15)
+*   [npm](https://www.npmjs.com/)
 
-### Run as electron project
+### Installation
 
-2. type `npm run start:electron` to build angular project and run as electron project
-3. type `npm run start:electron2` to build angular project as prod and run as electron project
-4. type `npm run electron` to run a built angular ui in an electron **window**
-5. type `electron .` to run as electron project
-6. type `electron-packager .` to build as electron app based on current system
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/jomellikesturtles/mdb-electron.git
+    cd mdb-electron
+    ```
 
-### Run as angular project
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
 
-1. type `npm start` to start as angular project
-2. open localhost:4200 on browser
+## ▶️ Running the Application
 
-### Run individual node process
+You can run the application in two modes: as a standard web application (for UI development) or as a desktop application (Electron).
 
-1. `node <process_name> args`
+### Development Mode (Web)
 
-## Code scaffolding
+Run the Angular application in the browser with hot-reload:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Build
-
-`electron-packager .`
-
-## Project Structure
-
-- Routing
-  - ![routing flowchart](./src/assets/readme-attachments/app-flowchart.png)
-- Services
-  - data
-    - passing/sharing global variables
-  - file
-    - getting torrent info from offline dump
-  - torrent
-    - getting and setting torrents from API and offline file
-  - movie
-    - getting movie info from online API and offline imdb
-- Components
-  - movie-info
-    - ![movie-info-ui](./src/assets/readme-attachments/movie-info-layout.png)
-  - search and results
-  - dashboard
-  - preferences
-- child-procesess
-  - config-db-service
-  - library-db-service
-  - search-movie
-  - search-torrent
-  - scan-library
-- NEDB
-  - config (configuration and settings)
-  - bookmarks
-  - watched ({\_id,tmdbId,imdbId,timestamp,percentage})
-  - moviedata (movie metadata for offline use)
-  - libraryFiles (contains full file path of movie video and its matched tmdb id)
-
-## Development Notes
-
-APIs, image size
-confluence: https://media-database.atlassian.net/wiki/home
-
-### APIs
-
-These are APIs used/will be used in this project
-
-#### OMDb
-
-The OMDb API is a RESTful web service to obtain movie information, all content and images on the site are contributed and maintained by our users
-
-- [How to use](http://www.omdbapi.com/)
-- Key `3a2fe8bf or 2d83dae7-cb8f-41a3-9a08-110f8467c920`
-- Examples
-
+```bash
+npm start
 ```
-http://www.omdbapi.com/?i=tt3896198&apikey=3a2fe8bf
+*Access the app at `http://localhost:4200`.*
+
+### Electron Mode (Desktop)
+
+Build the Angular app and launch it within the Electron shell:
+
+```bash
+npm run start:electron
 ```
 
-```
-http://www.omdbapi.com/?t=guardians+of+the+galaxy
-```
-
-#### themoviedb
-
-The Movie Database (TMDb) is a popular, user editable database for movies and TV shows.
-
-- Key `a636ce7bd0c125045f4170644b4d3d25`
-- [How to use 1](https://developers.themoviedb.org/3/)
-- [How to use 2](https://www.themoviedb.org/documentation/api)
-- Examples
-
-```
-https://api.themoviedb.org/3/movie/550?api_key=a636ce7bd0c125045f4170644b4d3d25
-https://api.themoviedb.org/3/movie/550/videos?api_key=a636ce7bd0c125045f4170644b4d3d25
+*To run with production optimizations:*
+```bash
+npm run start:electron-prod
 ```
 
-#### Google
+### Other Commands
 
-Google API enables the use of Youtube API for trailer previews.
+*   **`npm run electron`**: Launches Electron (requires a pre-built Angular app in `dist/`).
+*   **`npm run lint`**: Run code linting.
+*   **`npm test`**: Run unit tests via Karma.
+*   **`npm run e2e`**: Run end-to-end tests via Protractor.
 
-- Key `AIzaSyDkYv-R1piKWj-SOgUru0zYlc5zXkG9Jy0`
-- [How to use](https://developers.google.com/youtube/v3/getting-started)
-  - Examples
+## 📦 Building & Packaging
+
+To package the application for distribution (creates an executable/app bundle):
+
+```bash
+npm run pack
+```
+*This uses `electron-packager` to bundle the application based on your current OS.*
+
+## 📂 Project Structure
 
 ```
-https://www.googleapis.com/youtube/v3/videos?id=7lCDEYXw3mM&key=YOUR_API_KEY
+src/
+├── app/
+│   ├── core/           # Singleton services, guards, and core logic
+│   ├── modules/        # Feature modules (admin, movie, person, settings, etc.)
+│   ├── shared/         # Reusable components, pipes, and directives
+│   ├── services/       # Data and logic services (Firebase, APIs, etc.)
+│   └── app.module.ts   # Main application module
+├── assets/             # Static assets (images, icons, data dumps)
+├── environments/       # Environment configurations (dev, prod, electron)
+├── main.ts             # Angular entry point
+└── index.html          # Main HTML file
 ```
 
-#### YTS
+## ⚙️ Configuration
 
-yts.ag or yts.am returns movie info with torrent links and youtube trailer url
+The application uses `src/environments` for configuration.
+*   **APIs:** Keys for TMDb, OMDb, and others are managed here.
+*   **Firebase:** Firebase configuration object is required for auth and sync features.
 
-- [How to use](https://yts.mx/api)
-- Examples
+## 🤝 Contributing
 
-```
-https://yts.am/api/v2/movie_details.json?movie_id=10
-```
+Contributions are welcome! Please follow the project's coding standards and submit a pull request.
 
-```
-https://yts.am/api/v2/movie_details.json?movie_id=15&with_images=true&with_cast=true
-```
+## 📄 License
 
-#### JustWatch
-
-```
-https://www.justwatch.com/#### imdb offline database
-```
-
-If online APIs go down, this is the last option. **Note:** this is updated daily by imdb
-
-- [How to use](https://www.imdb.com/interfaces/)
-- [Download](https://datasets.imdbws.com/)
-  - [name.basics](https://datasets.imdbws.com/name.basics.tsv.gz)
-  - [title.akas](https://datasets.imdbws.com/title.akas.tsv.gz)
-  - [title.basics](https://datasets.imdbws.com/title.basics.tsv.gz)
-  - [title.crew](https://datasets.imdbws.com/title.crew.tsv.gz)
-  - [title.episode](https://datasets.imdbws.com/title.episode.tsv.gz)
-  - [title.principals](https://datasets.imdbws.com/title.principals.tsv.gz)
-  - [title.ratings](https://datasets.imdbws.com/title.ratings.tsv.gz)
-
-#### Fanart.tv
-
-Logos, Backgrounds, Posters and more forTV, Movie and Music collections
-
-- personal apikey `e700c5098e329fe9cd5f3fc85ed7fffd`
-- project apikey `295c36bf9229fd8369928b7360554c9a`
-
-```
-http://webservice.fanart.tv/v3/movies/tt0371746?api_key=295c36bf9229fd8369928b7360554c9a
-```
-
-## Todo
-
-- change details data fetch from Component to Guard by using CanActivate
-- 'advanced' filters by date, genre, isAvailable, etc.
-- has backup offline search by using torrent_dump and offline-imdb
-- must enable caching
-- mismatch number of search results because of filters(adults/non-movie) -- omdb source only
-  - update offline files
-  - ~~torrent~~
-- uncaughtException ipcChild Error: Cannot add duplicate torrent a86b4adb83506bb12ceabac2f42ae480ba44ecfa
-- VideoPlayerComponent.html:27 ERROR TypeError: Failed to set the 'currentTime' property on 'HTMLMediaElement': The provided double value is non-finite.
-
-> major
-
-- ~/.dotfiles
-- api search
-- upload offline files
-- handle large http: chunking, pagination, (filter)
-- torrent apis
-- ipcRenderers/main
-  - config db service
-  - library db service
-- ipcRenderers subscriptions
-  - preferences
-  - library movies
-  - stats for nerds{
-    pieces
-    bufferhealth
-    connection speed
-    codec
-    hash/id
-    source
-    size
-    res
-    }
-
-> minor
-
-- subtitles apis
-- loading screen
-- shortcut keys
-- notifications
-
-> unsorted
-
-- integrate movie files scan to imdb search
-- test Plex with following scenarios:
-  - titles with '.' and without dot - both (tho.r becomes thor:ragnarok)
-  - with year and without year - passed
-  - with 's' and without 's' - passed (folder and name) ie. guardian of the galaxy.
-  - mistyped letter in a title - passed
-  - mismatch file size - passed
-  - correct folder, 'filename.mp4' on filename - passed
-  - name with incorrect year - passed
-  - name with parenthesis - passed
-  - incorrect folder and name - failed
-  - un-dash movie title with dash(spider-man) - passed
-  - year first before title - passed
-- browse
-  - top year/genre
-  - mix year/genre
-  - country
-  - studio
-  - awardees
-  - upcoming
-  - decade
-  - now showing
-  - director
-  - language
-- home
-  - recommended
-  - watch again
-  - now showing
-- browse/explore indexing
-- file explorer
-- preferences
-
-> fonts
-
-- market deco; showtime; futura; helvetica
-
-## Offline Assets
-
-extract and import to the assets folder:
-
-Assets
-
-- Icons
-- Images
-  - app
-  - cover
-  - backdrop
-- Offline Dump
-  - [thepiratebay_torrent_dump](https://drive.google.com/open?id=1sMJnk6rWE7mjZ6aal1SgNigca7AcwSs4)
-  - [Imdb_dump](https://drive.google.com/open?id=1pn1HQKkXNsKd2NP95vcH2qvpY_EYpiQw)
-    - **Note:** this is 5/13/2019 query
-- Videos
-  - Sample movies (videos)
-  - sample trailer
-- .config/.db files
-  - user preferences
-  - system
-- XMLs
-  - <imdbId>.xml
-- [other_assets](https://drive.google.com/open?id=122cEkeCWuOB0Zy1ypaHexZx8Y1VYGttd)
-
-## Influenced by
-
-UI and functionalities are influenced by follows: (in descending order)
-
-- [OfflineBay](https://github.com/techtacoriginal/offlinebay)
-- IMDB Mobile
-- Disney+
-- Letterboxd
-- Netflix
-- YTS
-- IMDB
-- Amazon
-- Plex
-- Hulu
-
-## Useful links
-
-- https://morioh.com/p/64c30140144a/build-a-desktop-application-with-angular-and-electron
-- Github readme reference https://github.com/Day8/re-frame https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46#faq
-- https://github.com/thakursc1/IMDB-Movie-DataBase
-- https://raw.githubusercontent.com/thakursc1/IMDB-Movie-DataBase/master/MOVIE%20DATABASE%20USING%20BINARY%20SEARCH%20TREE%20DOC.docx
-
-- possible useful API:
-  - [Cinema and Television Api](https://collectapi.com/api/watching/cinema-and-television-api/moviesImdb). Cinema and television API)
-    - Pricing per Call: 0.001$
-  - https://popcorn-official.github.io/popcorn-api/
-  - https://github.com/sampotts/plyr
-
-## Resources
-
-- [Project Report: IMDB 5000 Movie Dataset](http://rstudio-pubs-static.s3.amazonaws.com/342210_7c8d57cfdd784cf58dc077d3eb7a2ca3.html)
-- http://www.opensubtitles.org/en/downloads#exports
-- https://trac.opensubtitles.org/projects/opensubtitles/wiki/DevReadFirst
-- https://forum.opensubtitles.org/viewtopic.php?f=8&t=16453#p39771
-- https://trello.com/b/VjhTQ9BS/mdb
-
-## notes
-
-- tsv parse search is faster than nedb; ~2s vs ~15s
-- search queries: title, releaseYear, genre/s, rating, ratingcount, language, country origin/region,
-- minify tsv stream has leak
-- tmdb criteria: year,region, language, vote count, vote average.
-- snackbar/toast doesnt work
-- omdb and Imdb has same genre in movies
-
-https://api.themoviedb.org/3/movie/157336?api_key=a636ce7bd0c125045f4170644b4d3d25&append_to_response=videos,images,credits,changes,translations,similar,external_ids,ss
-
-$env:debug=electron-packager . --overwrite --platform=win32 --arch=x64 --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"myapp\"
-
-Possible fix to have oauth2 possible in electron project: C:\Users\Lenovo\AppData\Roaming\npm\node_modules\firebase-tools\lib\auth.js
-
-https://itnext.io/an-oauth-2-0-introduction-for-beginners-6e386b19f7a9
-RE-ADD Jquery
-
-http://javascriptobfuscator.com/javascript-Obfuscator.aspx
-https://www.daftlogic.com/projects-online-javascript-obfuscator.htm
-
-### takeaways after watching The Captain
-
-- fix the encoding proper encoding
-- fix the inactive/idle hide cursor
-- shorten inactive/idle timer to 3/4 seconds
-- make subtitles size relative
-- make subtitles react to player controls
-- add loading indicator when getting play link
-- autoplay first time
-- fix exit program
-- "Cannot add duplicate torrent" error
-
--minor
-
-- tslint to eslint
-- dragable subtitles
-- cleanup
-  - project restructuring
-  - ~~state management migration; ngxs to akita (add app state)~~
-  - FE re-code (not priority)
-  - css variables
-  - object mapping/conversion (map/convert object to MDB Objecet from service)
-  - electron to ts
-
-MEDIA
-
-/mediaUser/:mediaId
-mediaUserDataService -> bffService && ipcService (current user only)
-
-USER
-/user/:username
-
-- user info and stuff
-  if online: userService -> bffService && ipcService
-  if offline: userService -> ipcService
-  bffService -> UserService -> UserInfoService | FavoritesService | BookmarksService | ListsService | etc.. ->
-  UserInfoRepository | FavoritesRepository | BookmarksRepository| ListsService | etc.. -> DB
-
-/user/:username/favorites
-
-- get all favorites
-  -> bffService -> UserService -> FavoritesService -> FavoritesRepository -> DB
-
-/user/:username/bookmarks ->
-
-- get all user bookmarks
-  -> bffService -> UserService -> BookmarksService -> BookmarksRepository -> DB
-
-/user/:username/lists ->
-
-- get all user lists
-  -> bffService -> UserService -> ListsService -> ListsRepository -> DB
-
-LIST
-/list/:listId
-if online: listService -> bffService && ipcService
-if offline: listService -> ipcService
-bffService -> ListsService -> ListsRepository -> DB
-
-FAVORITES
-if online: favoritesService -> bffService && ipcService
-if offline: favoritesService -> ipcService
-
-bffService -> FavoritesService -> FavoritesRepository -> DB
-ipcService -> favorites-service -> NedDB
-
-BOOKMARKS
-
-PREFERENCES
-
-# NOTES
-
-services
-
-mdb-api (bff)
-profile profileService -> mdbApiService -> http | ipcService
-
-### bookmark/favorite/played
-
-bookmark bookmarkService -> mdbApiService | ipcService
-
-### userMediaData
-
-userMediaDataService -> mdbApiService
-
-### movie
-
-movieService (client cache) -> tmdbService | omdb | mdbApiService | ipcService
-
-youtube
-
-ipcService
-
-httpService?
+[MIT](LICENSE)

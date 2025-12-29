@@ -22,7 +22,7 @@ export const environment = {
   runConfig: {
     firebaseMode: false,
     springMode: false,
-    isElectron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
+    electron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
     useTestData: false,
   },
   tmdb: {
@@ -48,8 +48,7 @@ export const environment = {
   },
   language: 'en',
   location: 'ph',
-  dataSource: source.TMDB,
-
+  dataSource: source.TMDB
 };
 
 
