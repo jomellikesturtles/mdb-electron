@@ -10,10 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TopNavigationComponent } from '@core/components/top-navigation/top-navigation.component';
 import { BrowseComponent } from '@modules/user/browse/browse.component';
 import { PersonDetailsComponent } from 'app/modules/person/person-details/person-details.component';
-import { AngularFireModule } from '@angular/fire';
 import { environment } from '@environments/environment';
-import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { NotificationComponent } from 'app/modules/events/notification/notification.component';
 import { PreviewComponent } from '@shared/components/preview/preview.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -62,9 +59,6 @@ import { MockCoreServicesModule } from '@core/dev/mock-core-services.module';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    AngularFireModule.initializeApp(environment.firebase),
-    AngularFireAuthModule,
-    AngularFirestoreModule,
     RouterModule.forRoot([]),
     SharedModule,
     BrowserAnimationsModule,

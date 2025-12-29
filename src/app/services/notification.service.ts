@@ -1,7 +1,6 @@
 import { IUserSavedData } from '@models/interfaces';
 import { environment } from '@environments/environment';
 import { Injectable } from '@angular/core';
-import { FirebaseService, FirebaseOperator, CollectionName, FieldName } from './firebase.service';
 import { IpcService } from './ipc.service';
 import { Observable } from 'rxjs';
 @Injectable({
@@ -12,7 +11,6 @@ export class NotificationService {
   bookmarkObservable = new Observable<any>();
 
   constructor(
-    private firebaseService: FirebaseService,
     private ipcService: IpcService) { }
 
 

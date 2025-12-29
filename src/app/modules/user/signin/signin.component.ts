@@ -3,29 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder, AbstractControl } from '@angular/forms'
 import { repeatPasswordValidator } from '@directives/repeat-password.directive';
 import { CredentialsValidator } from '@directives/credentials.directive';
-import * as firebase from 'firebase/app';
-import { AngularFirestore } from '@angular/fire/firestore'
-import { AngularFireAuth, AngularFireAuthModule } from '@angular/fire/auth'
-import { FirebaseService, CollectionName } from '@services/firebase.service';
 import { UtilsService } from '@services/utils.service';
 import { repeat, debounceTime, take, map } from 'rxjs/operators';
-
-export class CustomValidator {
-  static usernameValidate(afs: AngularFirestore) {
-    return (control: AbstractControl) => {
-
-      const username = control.value.toLowerCase();
-      console.log('control username ', username)
-      return afs.collection('user', ref => ref.where('username', '==', username))
-
-        .valueChanges().pipe(
-          debounceTime(500),
-          take(1),
-          map(arr => arr.length ? { usernameAvailable: false } : null),
-        )
-    }
-  }
-}
 
 @Component({
   selector: 'app-signin',
@@ -60,13 +39,9 @@ export class SigninComponent implements OnInit {
 
   constructor(
     private credentialValidator: CredentialsValidator,
-    private auth: AngularFireAuth,
-    private authModule: AngularFireAuthModule,
-    private firebaseService: FirebaseService,
     private utilsService: UtilsService,
     private formBuilder: FormBuilder,
     private usernameExistValidator: UsernameExistValidator,
-    private afs: AngularFirestore
   ) { }
 
   ngOnInit() {
@@ -76,7 +51,8 @@ export class SigninComponent implements OnInit {
     // }
 
     this.signUpForm = this.formBuilder.group({
-      username: [this.userSignUp.username, [Validators.required, Validators.minLength(4)], UsernameExistingValidator.validateUsername(this.afs)
+      username: [this.userSignUp.username, [Validators.required, Validators.minLength(4)], 
+      // UsernameExistingValidator.validateUsername(this.afs)
       ],
       emailAddress: [this.userSignUp.emailAddress, [Validators.required, Validators.minLength(4), Validators.email]],
 
@@ -103,15 +79,7 @@ export class SigninComponent implements OnInit {
     const username = this.signUpForm.get('username').value
     const emailAddress = this.signUpForm.get('emailAddress').value
     const password = this.signUpForm.get('password').value
-    this.firebaseService.signUp(emailAddress, password).then(e => {
-      console.log(e)
-      // this.firebaseService.insertIntoFirestore(CollectionName.User, { username, emailAddress })
-    }).catch(e => {
-      this.generalError = e
-      // this.signUpForm.
-      // console.log(this.signUpForm.value('username'))
-      this.signUpForm.setErrors({ generalError: e })
-    })
+    
   }
 
   // onSignUpFromLogin() {
@@ -125,14 +93,13 @@ export class SigninComponent implements OnInit {
     console.log('onsignin');
     const emailUsername = this.signInForm.get('usernameEmail').value
     const password = this.signInForm.get('password').value
-    this.firebaseService.signIn(emailUsername, password)
   }
 
   onSignInGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider()
+    // const provider = new firebase.auth.GoogleAuthProvider()
     // this.auth.auth.signInWithRedirect(provider)
     // firebase.auth().getRedirectResult().then((e) => {
-    this.firebaseService.signInWithGoogle(provider)
+    // this.firebaseService.signInWithGoogle(provider)
   }
 
   emailDomainValidator(control: FormControl) {

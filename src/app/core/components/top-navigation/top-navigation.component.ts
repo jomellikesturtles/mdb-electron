@@ -29,7 +29,7 @@ export class TopNavigationComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private location: Location) { }
 
-  isElectron = environment.runConfig.isElectron;
+  isElectron = environment.runConfig.electron;
   status = 'LOGIN';
   browserConnection = navigator.onLine;
   currentYear = new Date().getFullYear();

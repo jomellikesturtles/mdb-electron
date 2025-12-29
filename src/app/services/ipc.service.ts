@@ -35,7 +35,7 @@ export class IpcService {
   constructor(
     private loggerService: LoggerService
   ) {
-    if (environment.runConfig.isElectron) {
+    if (environment.runConfig.electron) {
 
       console.log((window as any).require('electron'));
 
