@@ -125,11 +125,11 @@ export class CardListComponent implements OnInit, OnChanges {
   /**
    * Organizes user data and binds them into movie cards.
    */
-  curateUserData(dataType: string, docs: firebase.firestore.QuerySnapshot | IProfileData[]): void {
+  curateUserData(dataType: string, docs: IProfileData[] | any): void {
     const dataList = [];
 
     docs.forEach(doc => {
-      const docData = environment.runConfig.firebaseMode ? doc.data() : doc;
+      const docData = doc;
       const dTmdbId = docData.tmdbId;
       const dTitle = docData.title;
       const dYear = docData.year;
@@ -238,7 +238,7 @@ export class CardListComponent implements OnInit, OnChanges {
     const toReturn = [];
     let temparray;
     // const chunk = 10; // Firebase's max length in IN query.
-    const chunk = environment.runConfig.firebaseMode ? 10 : 20;
+    const chunk = 20;
     let a = 0;
     for (let i = 0; i < listLength; i += chunk) {
       temparray = idList.slice(i, i + chunk);

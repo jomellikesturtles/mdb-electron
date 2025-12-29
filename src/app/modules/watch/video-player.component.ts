@@ -145,7 +145,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   ngAfterViewInit(): void {
 
-    if (environment.runConfig.isElectron) {
+    if (environment.runConfig.electron) {
       this.ipcService.statsForNerdsSubscribable.pipe(takeUntil(this.ngUnsubscribe)).subscribe(stats => {
         GeneralUtil.DEBUG.log(stats);
         if (stats) {

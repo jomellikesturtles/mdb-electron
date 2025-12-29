@@ -270,3 +270,21 @@ export const QUALITY_LIST = [
   { value: '1440p', label: '1440p' },
   { value: '4k', label: '4k' },
 ];
+
+export enum CollectionName {
+  Bookmark = 'bookmark',
+  UserName = '',
+  Watched = 'watched',
+  User = 'user',
+  Config = 'config',
+  Video = 'video',
+  Library = 'library',
+  Favorite = 'favorite'
+}
+
+export enum FieldName {
+  Bookmark = 'bookmark',
+  Username = 'username',
+  EmailAddress = 'emailAddress',
+  TmdbId = 'tmdbId'
+}

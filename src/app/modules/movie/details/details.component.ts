@@ -398,7 +398,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
         break;
     }
 
-    if (environment.runConfig.isElectron) {
+    if (environment.runConfig.electron) {
       // this.ipcService.call(this.ipcService.IPCCommand.OpenLinkExternal, url)
     } else {
       window.open(url);

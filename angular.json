@@ -127,5 +127,8 @@
       }
     }
   },
-  "defaultProject": "mdb-electron"
+  "defaultProject": "mdb-electron",
+  "cli": {
+    "analytics": false
+  }
 }
