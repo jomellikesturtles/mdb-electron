@@ -14,9 +14,6 @@ import { FormsModule } from '@angular/forms';
     SharedModule,
     DiscoverRoutingModule,
     FormsModule
-  ],
-  entryComponents: [
-    DiscoverComponent
   ]
 })
 export class DiscoverModule { }

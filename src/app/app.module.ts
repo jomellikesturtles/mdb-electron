@@ -76,7 +76,6 @@ import { MockCoreServicesModule } from '@core/dev/mock-core-services.module';
     MockCoreServicesModule
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
-  entryComponents: [ImagePreviewComponent],
   providers: [MdbGuardGuard, backendProvider,
     {
       provide: APP_INITIALIZER,

@@ -25,9 +25,6 @@ import { InputContainerModule } from '@shared/components/input-container/input-c
     MatSelectModule,
     MatDialogModule,
     MatCheckboxModule
-  ],
-  entryComponents: [
-    PreferencesComponent,
   ]
 })
 export class PreferencesModule { }
