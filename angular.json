@@ -66,15 +66,15 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "mdb-electron:build",
-            "proxyConfig": "proxy.conf.json"
+            "proxyConfig": "proxy.conf.json",
+            "buildTarget": "mdb-electron:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "mdb-electron:build:production"
+              "buildTarget": "mdb-electron:build:production"
             },
             "development": {
-              "browserTarget": "mdb-electron:build:development"
+              "buildTarget": "mdb-electron:build:development"
             }
           },
           "defaultConfiguration": "development"
