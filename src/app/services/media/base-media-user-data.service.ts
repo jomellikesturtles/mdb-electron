@@ -20,7 +20,7 @@ export abstract class BaseMediaUserDataService {
   protected abstract getMediaDataPaginated(type: 'id' | 'tmdbId', id: string | number): Observable<any>;
 
   commonSetter(val: number | Object): boolean {
-    if (val >= 1) {
+    if (typeof val === 'number' && val >= 1) {
       return false;
     }
     if (val && val['_id']) {

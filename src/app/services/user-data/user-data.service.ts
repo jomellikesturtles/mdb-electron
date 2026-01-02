@@ -103,7 +103,7 @@ export class UserDataService {
   }
 
   commonSetter(val: number | Object) {
-    if (val >= 1) {
+    if (typeof val === 'number' && val >= 1) {
       return false;
     }
     if (val && val['_id']) {
