@@ -14,9 +14,6 @@ import { FormsModule } from '@angular/forms';
     SharedModule,
     ResultsRoutingModule,
     FormsModule
-  ],
-  entryComponents: [
-    ResultsComponent
   ]
 })
 export class ResultsModule { }

@@ -17,14 +17,7 @@ import { MovieDetailsGuard } from './details.guard';
     CommonModule,
     DetailsRoutingModule,
     SharedModule,
-    VideoPlayerModule, MatTabsModule
+    VideoPlayerModule,MatTabsModule
   ],
-  entryComponents: [
-    DetailsComponent,
-    CreditsComponent,
-  ],
-  providers: [
-    MovieDetailsGuard
-  ]
 })
 export class DetailsModule { }

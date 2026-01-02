@@ -12,9 +12,6 @@ import { WatchedRoutingModule } from './watched.routing.module';
     CommonModule,
     SharedModule,
     WatchedRoutingModule
-  ],
-  entryComponents: [
-    WatchedComponent
   ]
 })
 export class WatchedModule { }

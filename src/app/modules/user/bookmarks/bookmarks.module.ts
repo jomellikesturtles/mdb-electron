@@ -12,9 +12,6 @@ import { BookmarksRoutingModule } from './bookmarks.routing.module';
     CommonModule,
     SharedModule,
     BookmarksRoutingModule
-  ],
-  entryComponents: [
-    BookmarksComponent
   ]
 })
 export class BookmarksModule { }

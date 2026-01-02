@@ -45,12 +45,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatMenuModule,
     MatProgressSpinnerModule,
   ],
-  entryComponents: [
-    VideoPlayerControlsComponent,
-    VideoPlayerComponent
-    // DetailsComponent,
-    // CreditsComponent,
-  ], exports: [VideoPlayerComponent],
+   exports: [VideoPlayerComponent],
   providers: [{provide: OverlayContainer, useClass: FullscreenOverlayContainer}],
 })
 export class VideoPlayerModule { }
