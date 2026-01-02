@@ -7,7 +7,7 @@ export class WebSocketService {
 
   constructor(
   ) {
-    console.log('------------------WEBSOCKET SERVICE----------')
+    console.log('------------------WEBSOCKET SERVICE----------');
     // let socket = new WebSocket("wss://javascript.info/article/websocket/demo/hello");
 
     // socket.onopen = function (e) {
@@ -33,13 +33,16 @@ export class WebSocketService {
     // socket.onerror = function (error) {
     //   alert(`[error] ${error}`);
     // };
-    let socket2 = new WebSocket("ws://localhost:8999");
+    // wss://echo.websocket.org/
+    let socket2 = new WebSocket("ws://localhost:8080/mdb/gs-guide-websocket");
+    // let socket2 = new WebSocket("wss://echo.websocket.org/");
+    // let socket2 = new WebSocket("ws://localhost:8999");
 
     socket2.onopen = function (e) {
       alert("[open] Connection established");
       alert("Sending to server");
       socket2.send("connection");
-    }
+    };
     socket2.onmessage = function (event) {
       alert(`[message] Data received from server: ${event.data}`);
       console.log('[message]: ', event.data);
