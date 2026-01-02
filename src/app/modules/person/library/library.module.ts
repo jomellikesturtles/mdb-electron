@@ -12,9 +12,6 @@ import { LibraryRoutingModule } from './library.routing.module';
     CommonModule,
     SharedModule,
     LibraryRoutingModule
-  ],
-  entryComponents: [
-    LibraryComponent
   ]
 })
 export class LibraryModule { }

@@ -25,10 +25,6 @@ import { SharedModule } from '@shared/shared.module';
     ReactiveFormsModule,
     MatTabsModule,
     SharedModule
-  ],
-  entryComponents: [
-    SigninComponent,
-    ProfileComponent
   ]
 })
 export class UserModule { }

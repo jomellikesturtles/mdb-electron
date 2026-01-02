@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { MovieService } from '@services/movie/movie.service';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class MovieDetailsGuard implements CanActivate {
+export class MovieDetailsGuard  {
   constructor(private movieService: MovieService) { }
   canActivate(
     activatedRouteSnapshot: ActivatedRouteSnapshot,
