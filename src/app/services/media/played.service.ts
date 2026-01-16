@@ -5,6 +5,7 @@ import { MDBApiService } from '../mdb-api.service';
 import { DataService } from '../data.service';
 import { Observable } from 'rxjs';
 import { CollectionName, FieldName } from '@shared/constants';
+import { FeatureToggleService } from '@core/services/feature-toggle.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +16,15 @@ export class PlayedService {
   constructor(
     private ipcService: IpcService,
     private bffService: MDBApiService,
-    private dataService: DataService
+    private dataService: DataService,
+    private featureToggleService: FeatureToggleService
   ) { }
 
   getPlayed(id): Observable<any> {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.FIND_ONE },
+        null, { tmdbId: id });
+    }
     return this.dataService.getHandle(this.bffService.getMediaUserData(id), this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.FIND_ONE },
       null, { tmdbId: id }));
   }
@@ -28,12 +34,20 @@ export class PlayedService {
    * @param idList
    */
   getPlayedInList(idList: number[]): Observable<any> {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.FIND_IN_LIST },
+        null, { tmdbIdList: idList });
+    }
     return this.dataService.getHandle(this.bffService.getMediaUserData(0),
       this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.FIND_IN_LIST },
         null, { tmdbIdList: idList }));
   }
 
   savePlayed(data: Object): Observable<any> {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.SAVE },
+        data, null);
+    }
     return this.dataService.getHandle(this.bffService.getMediaUserData(null),
       this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.SAVE },
         data, null));
@@ -45,6 +59,10 @@ export class PlayedService {
    * @param id watched id/_id/tmdbId to remove.
    */
   removePlayed(type: 'id' | 'tmdbId', id: string | number) {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.REMOVE },
+        null, { [type]: id });
+    }
     return this.dataService.getHandle(this.bffService.getMediaUserData(0), this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.REMOVE },
       null, { [type]: id }));
   }

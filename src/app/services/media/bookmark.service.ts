@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { DataService } from '../data.service';
 import { MDBApiService } from '../mdb-api.service';
 import { BaseBookmarkService } from './base-bookmark.service';
+import { FeatureToggleService } from '@core/services/feature-toggle.service';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -13,13 +15,19 @@ export class BookmarkService extends BaseBookmarkService {
   constructor(
     dataService: DataService,
     private bffService: MDBApiService,
-    private ipcService: IpcService) {
+    private ipcService: IpcService,
+    private featureToggleService: FeatureToggleService
+  ) {
     super(
       dataService,
     );
   }
 
   saveBookmark(id: number): Observable<any> {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
+        { tmdbId: id }, null);
+    }
     return this.dataService.getHandle(this.bffService.saveBookmark(id), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
       { tmdbId: id }, null));
   }
@@ -29,11 +37,19 @@ export class BookmarkService extends BaseBookmarkService {
    * @param id watched id/_id/tmdbId to remove.
    */
   removeBookmark(type: 'id' | 'tmdbId', id: string | number): Observable<any> {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.REMOVE },
+        null, { tmdbId: id });
+    }
     return this.dataService.getHandle(this.bffService.deleteBookmark(id), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.REMOVE },
       null, { tmdbId: id }));
   }
 
   saveBookmarkMulti(data: object[]) {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
+        data, null);
+    }
     return this.dataService.getHandle(this.bffService.saveBookmark(data), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
       data, null));
   }

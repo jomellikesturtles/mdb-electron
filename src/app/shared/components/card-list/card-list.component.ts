@@ -6,6 +6,7 @@ import { IProfileData } from '@models/profile-data.model';
 import { MDBMovie } from '@models/mdb-movie.model';
 import ObjectUtil from '@utils/object.utils';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
+import { FeatureToggleService } from '@core/services/feature-toggle.service';
 
 @Component({
   selector: 'app-card-list',
@@ -34,6 +35,7 @@ export class CardListComponent implements OnInit, OnChanges {
 
   constructor(
     private mediaUserDataService: MediaUserDataService,
+    private featureToggleService: FeatureToggleService
   ) { }
 
   ngOnInit() {
@@ -82,7 +84,7 @@ export class CardListComponent implements OnInit, OnChanges {
           // }
 
           if (!ObjectUtil.isEmpty(docsList)) {
-            if (environment.runConfig.springMode) {
+            if (this.featureToggleService.isEnabled('springMode')) {
               this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
                 const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId);
                 movieAndUserData.userData = doc;
