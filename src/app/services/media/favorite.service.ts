@@ -4,6 +4,7 @@ import { MDBApiService as MDBApiService } from '../mdb-api.service';
 import GeneralUtil from '@utils/general.util';
 import { DataService } from '../data.service';
 import { Observable } from 'rxjs';
+import { FeatureToggleService } from '@core/services/feature-toggle.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,8 @@ export class FavoriteService {
   constructor(
     private ipcService: IpcService,
     private bffService: MDBApiService,
-    private dataService: DataService
+    private dataService: DataService,
+    private featureToggleService: FeatureToggleService
   ) { }
 
   async toggleFavorite(movie) {
@@ -39,6 +41,10 @@ export class FavoriteService {
   }
 
   saveFavorite(data: any): Observable<any> {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.SAVE },
+        data, null);
+    }
     return this.dataService.postHandle(this.bffService.saveMediaList(data), this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.SAVE },
       data, null));
   }
@@ -49,7 +55,10 @@ export class FavoriteService {
    * @param id watched id/_id/tmdbId to remove.
    */
   removeFavorite(type: 'id' | 'tmdbId', id: string | number) {
-
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.REMOVE },
+        null, { tmdbId: id });
+    }
     // return this.dataService.postHandle(this.bffService.deleteFavorite(data), this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.SAVE },
     //   data));
     return this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.REMOVE },

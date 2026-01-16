@@ -1,12 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { IMdbMovieDetails, IOmdbMovieDetail, IRawTmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
+import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { MDBMovie } from '@models/mdb-movie.model';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { Observable, of } from 'rxjs';
-import { MDBMovieDiscoverQuery, MDBMoviePreviewQuery, MDBMovieQuery, MDBMovieSearchQuery } from './movie.query';
-import { MDBMovieDiscoverStore, MDBMoviePreviewStore, MDBMovieSearchStore, MDBMovieStore } from './movie.store';
-import { MDBPaginatedResultModel } from './interface/movie';
-import { IMdbMoviePaginated } from '@models/media-paginated.model';
 import { Injectable } from '@angular/core';
 import { CacheService } from '@services/cache.service';
 import { IpcService } from '@services/ipc.service';
@@ -19,16 +15,7 @@ export abstract class BaseMovieService {
     protected cacheService: CacheService,
     protected ipcService: IpcService,
     protected tmdbService: TmdbService,
-    protected http: HttpClient,
-    protected mdbMovieQuery: MDBMovieQuery,
-    protected mdbMovieStore: MDBMovieStore,
-    protected mdbMovieDiscoverQuery: MDBMovieDiscoverQuery,
-    protected mdbMovieDiscoverStore: MDBMovieDiscoverStore,
-    protected mdbMovieSearchQuery: MDBMovieSearchQuery,
-    protected mdbMovieSearchStore: MDBMovieSearchStore,
-    protected mdbMoviePreviewQuery: MDBMoviePreviewQuery,
-    protected mdbMoviePreviewStore: MDBMoviePreviewStore,
-
+    protected http: HttpClient
   ) { }
 
   /**
@@ -62,7 +49,6 @@ export abstract class BaseMovieService {
   protected abstract getFindMovie(val: string | number): Observable<any>;
 
   /**
-   * TODO: add akita caching
    * Gets related videos from TMDB.
    * @param tmdbId the tmdb id.
    */
@@ -83,7 +69,6 @@ export abstract class BaseMovieService {
   protected abstract getMoviesDiscover(paramMap: Map<TmdbParameters, any>): Observable<any>;
 
   /**
-   * TODO: Create akita caching.
    *
    * @param parameters
    * @param refresh
@@ -94,51 +79,6 @@ export abstract class BaseMovieService {
   protected abstract getSubtitleFile(filePath: string): Observable<any>;
 
   protected abstract getSubtitleFileString(filePath: string): Observable<any>;
-
-  protected mapSearchResult(data: IRawTmdbResultObject) {
-    let newData = [];
-    data.results.forEach(e => {
-      newData.push(new MDBMovie(e));
-    });
-    // const store = {
-    //   id: queryId,
-    //   movie: newData,
-    // };
-    // this.mdbMovieSearchStore.add(store);
-    return data;
-    // return this.mdbMovieSearchQuery.getEntity(queryId).movie;
-  }
-
-  protected mapMovieDetails(id, data): MDBMovie {
-    let newData = new MDBMovie(data);
-    const store = {
-      id: id,
-      movie: newData
-    };
-    this.mdbMovieStore.add(store);
-    return this.mdbMovieQuery.getEntity(id).movie;
-  }
-
-  protected mapPaginatedResult(entityId: string, rawData: IRawTmdbResultObject): IMdbMoviePaginated {
-    let newData: IMdbMoviePaginated = {
-      totalPages: rawData.total_pages,
-      page: rawData.page,
-      totalResults: rawData.total_results,
-      results: []
-    };
-
-    rawData.results.forEach(e => {
-      let movie = new MDBMovie(e);
-      newData.results.push(movie);
-    });
-
-    const store: MDBPaginatedResultModel = {
-      id: entityId,
-      paginatedResult: newData
-    };
-    this.mdbMovieDiscoverStore.add(store);
-    return newData;
-  }
 
   /**
    * Error handler.

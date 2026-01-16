@@ -5,6 +5,7 @@ import { IMediaList } from '@models/media-list.model';
 import { DataService } from '../data.service';
 import { Observable } from 'rxjs';
 import { BaseListService } from './base-list.service';
+import { FeatureToggleService } from '@core/services/feature-toggle.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class ListsService extends BaseListService {
   constructor(
     private ipcService: IpcService,
     private bffService: MDBApiService,
-    dataService: DataService
+    dataService: DataService,
+    private featureToggleService: FeatureToggleService
   ) {
     super(dataService);
   }
@@ -25,6 +27,10 @@ export class ListsService extends BaseListService {
    * @returns
    */
   createList(listObject: IMediaList): Observable<IMediaList> {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
+        listObject, null);
+    }
     return this.dataService.postHandle(this.bffService.saveMediaList(listObject),
       this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
         listObject, null));
@@ -72,6 +78,10 @@ export class ListsService extends BaseListService {
    * @returns
    */
   editListById(id: string, listObject: IMediaList): Observable<any> {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.UPDATE },
+        listObject, null);
+    }
     return this.dataService.postHandle(this.bffService.saveMediaList(listObject),
       this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.UPDATE },
         listObject, null));

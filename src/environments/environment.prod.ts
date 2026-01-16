@@ -15,7 +15,6 @@ export const environment = {
   runConfig: {
 
     // firebaseMode: false,
-    springMode: true,
     // electron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
     // useTestData: true,
     environment: location.protocol,

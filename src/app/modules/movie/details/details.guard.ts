@@ -3,8 +3,8 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/r
 import { MovieService } from '@services/movie/movie.service';
 import { Observable } from 'rxjs';
 
-@Injectable()
-export class MovieDetailsGuard  {
+@Injectable({ providedIn: 'root' })
+export class MovieDetailsGuard {
   constructor(private movieService: MovieService) { }
   canActivate(
     activatedRouteSnapshot: ActivatedRouteSnapshot,

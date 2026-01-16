@@ -1,6 +1,6 @@
 import { LibraryService } from '../library.service';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { IBookmark, BookmarkService } from '../media/bookmark.service';
 import { MovieService } from '../movie/movie.service';
 import { PlayedService, IPlayed } from '../media/played.service';
@@ -11,6 +11,7 @@ import { DataService } from '@services/data.service';
 import { MDBApiService } from '@services/mdb-api.service';
 import { HttpUrlProviderService } from '@services/http-url.provider.service';
 import { ENDPOINT } from '@shared/endpoint.const';
+import { FeatureToggleService } from '@core/services/feature-toggle.service';
 
 /**
  * User data only. no media.
@@ -30,9 +31,14 @@ export class UserDataService {
     private bffService: MDBApiService,
     private ipcService: IpcService,
     private httpUrlProvider: HttpUrlProviderService,
+    private featureToggleService: FeatureToggleService
   ) { }
 
   getUser(username: string) {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+        null, { tmdbId: username });
+    }
     return this.dataService.getHandle(
       this.bffService.get(
         this.httpUrlProvider.getBffAPI(ENDPOINT.USER_ID, username)),
@@ -41,6 +47,10 @@ export class UserDataService {
   }
 
   updateUser(username: string, payload: any) {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+        null, { tmdbId: username });
+    }
     return this.dataService.postHandle(
       this.bffService.post(
         this.httpUrlProvider.getBffAPI(ENDPOINT.USER_ID, username),
