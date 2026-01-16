@@ -6,6 +6,7 @@ import { DataService } from '../data.service';
 import { IpcOperations, IpcService, SubChannel } from '../ipc.service';
 import { MDBApiService } from '../mdb-api.service';
 import { BaseMediaUserDataService } from './base-media-user-data.service';
+import { FeatureToggleService } from '@core/services/feature-toggle.service';
 
 /**
  * Service for user service per media id.
@@ -19,6 +20,7 @@ export class MediaUserDataService extends BaseMediaUserDataService {
     dataService: DataService,
     private bffService: MDBApiService,
     private ipcService: IpcService,
+    private featureToggleService: FeatureToggleService
   ) {
     super(
       dataService,
@@ -31,6 +33,10 @@ export class MediaUserDataService extends BaseMediaUserDataService {
    * @param currentUserOnly
    */
   getMediaUserData(tmdbId: number, currentUserOnly: boolean = true) {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+        null, { tmdbId: tmdbId });
+    }
     return this.dataService.getHandle(this.bffService.getMediaUserData(tmdbId), this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
       null, { tmdbId: tmdbId }));
   }
@@ -41,6 +47,10 @@ export class MediaUserDataService extends BaseMediaUserDataService {
    * @returns 
    */
   getMediaUserDataMultiple(idList: string): Observable<any> {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
+        null, { idList: idList });
+    }
     // let tmdbIdList = idList.join
     return this.dataService.getHandle(this.bffService.getMediaUserDataInList(idList), this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
       null, { idList: idList }));

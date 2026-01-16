@@ -48,26 +48,29 @@ export class MockMovieService extends BaseMovieService {
   }
 
   getMovieDetails(id: number, appendToResponse?: string, refresh?: boolean): Observable<MDBMovie> {
-    if (!this.mdbMovieQuery.hasEntity(id) || refresh) {
-      return this.http.get<any>('assets/mock-responses/tmdb-movie-details.json').pipe(
-        map(data => {
-          return this.mapMovieDetails(id, data);
-        }),
-        catchError(this.handleError<any>('getMovieDetails')));
-    }
-    return of(this.mdbMovieQuery.getEntity(id).movie);
+    return this.http.get<any>('assets/mock-responses/tmdb-movie-details.json').pipe(
+      map(data => {
+        return new MDBMovie(data);
+      }),
+      catchError(this.handleError<any>('getMovieDetails')));
   }
 
   getMoviesDiscover(paramMap: Map<TmdbParameters, any>, listName?: string, refresh = false): Observable<IMdbMoviePaginated> {
-    let entityId = listName;
-    if (!this.mdbMovieDiscoverQuery.hasEntity(entityId) || refresh) {
-      return this.http.get<IRawTmdbResultObject>(`assets/mock-responses/tmdb-movie-search-result.json`).pipe(tap(_ => this.log('')),
-        map((data: IRawTmdbResultObject) => {
-          return this.mapPaginatedResult(entityId, data);
-        }),
-        catchError(this.handleError<any>('getMoviesDiscover')));
-    }
-    return of(this.mdbMovieDiscoverQuery.getEntity(entityId).paginatedResult);
+    return this.http.get<IRawTmdbResultObject>(`assets/mock-responses/tmdb-movie-search-result.json`).pipe(tap(_ => this.log('')),
+      map((data: IRawTmdbResultObject) => {
+        let newData: IMdbMoviePaginated = {
+          totalPages: data.total_pages,
+          page: data.page,
+          totalResults: data.total_results,
+          results: []
+        };
+        data.results.forEach(e => {
+          let movie = new MDBMovie(e);
+          newData.results.push(movie);
+        });
+        return newData;
+      }),
+      catchError(this.handleError<any>('getMoviesDiscover')));
   }
 
   searchMovie(parameters: Map<TmdbParameters | TmdbSearchMovieParameters, any>, refresh?: boolean): Observable<IRawTmdbResultObject> {

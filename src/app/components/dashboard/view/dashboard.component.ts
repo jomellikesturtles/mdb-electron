@@ -6,8 +6,9 @@ import { TmdbParameters, } from '@models/interfaces';
 import { GENRES } from '@shared/constants';
 import GeneralUtil from '@utils/general.util';
 import { LoggerService } from '@core/logger.service';
-import { MDBMovieDashboardQuery } from '@services/movie/movie.query';
-import { MDBMovieDashboardStore } from '@services/movie/movie.store';
+import { Store } from '@ngxs/store';
+import { MovieState } from '../../../store/movie/movie.state';
+import { AddDashboardMovie } from '../../../store/movie/movie.actions';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,8 +23,7 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private loggerService: LoggerService,
-    protected mdbMovieDashboardQuery: MDBMovieDashboardQuery,
-    protected mdbMovieDashboardStore: MDBMovieDashboardStore,
+    private store: Store
   ) { }
 
   browserConnection = navigator.onLine;
@@ -48,7 +48,8 @@ export class DashboardComponent implements OnInit {
   getNowShowingMovies(refresh: boolean) {
     const listName = 'New Releases';
     let entityId = `movie:dashboard:${listName}`.toLowerCase();
-    if (!this.mdbMovieDashboardQuery.hasEntity(entityId) || refresh) {
+    const cached = this.store.selectSnapshot(MovieState.getDashboardMovie(entityId));
+    if (!cached || refresh) {
       const sDate = new Date();
       const today = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) + '-' + ('0' + sDate.getDate()).slice(-2);
       sDate.setDate(sDate.getDate() - 21);
@@ -58,8 +59,8 @@ export class DashboardComponent implements OnInit {
       paramMap.set(TmdbParameters.PrimaryReleaseDateGreater, threeWeeksAgo);
       paramMap.set(TmdbParameters.PrimaryReleaseDateLess, today);
       this.sendToMovieService(paramMap, listName, entityId);
-    } else {
-      return this.dashboardLists.push(this.mdbMovieDashboardQuery.getEntity(entityId).movieDashboard);
+    } else if (cached?.movieDashboard) {
+      return this.dashboardLists.push(cached.movieDashboard);
     }
   }
 
@@ -69,7 +70,8 @@ export class DashboardComponent implements OnInit {
   getTopMoviesFromYear(refresh: boolean) {
     const listName = 'Top movies of';
     let entityId = `movie:dashboard:${listName}`.toLowerCase();
-    if (!this.mdbMovieDashboardQuery.hasEntity(entityId) || refresh) {
+    const cached = this.store.selectSnapshot(MovieState.getDashboardMovie(entityId));
+    if (!cached || refresh) {
       const sDate = new Date();
       const minimumYear = 1940;
       const randYear = Math.round(
@@ -78,8 +80,8 @@ export class DashboardComponent implements OnInit {
       const paramMap = new Map<TmdbParameters, any>();
       paramMap.set(TmdbParameters.PrimaryReleaseYear, randYear);
       this.sendToMovieService(paramMap, `Top movies of ${randYear}`, entityId);
-    } else {
-      return this.dashboardLists.push(this.mdbMovieDashboardQuery.getEntity(entityId).movieDashboard);
+    } else if (cached?.movieDashboard) {
+      return this.dashboardLists.push(cached.movieDashboard);
     }
   }
 
@@ -89,15 +91,16 @@ export class DashboardComponent implements OnInit {
   getTopGenreMovie(refresh: boolean) {
     const listName = 'Top Genre';
     let entityId = `movie:dashboard:${listName}`.toLowerCase();
-    if (!this.mdbMovieDashboardQuery.hasEntity(entityId) || refresh) {
+    const cached = this.store.selectSnapshot(MovieState.getDashboardMovie(entityId));
+    if (!cached || refresh) {
       const TMDB_GENRE_LENGTH = 19; // up to index 19 is valid tmdb genre
       const GENRE_INDEX = Math.floor(Math.random() * (TMDB_GENRE_LENGTH));
       const CHOSEN_GENRE = GENRES[GENRE_INDEX];
       const paramMap = new Map<TmdbParameters, any>();
       paramMap.set(TmdbParameters.WithGenres, CHOSEN_GENRE.id);
       this.sendToMovieService(paramMap, `Top ${CHOSEN_GENRE.name}`, entityId);
-    } else {
-      return this.dashboardLists.push(this.mdbMovieDashboardQuery.getEntity(entityId).movieDashboard);
+    } else if (cached?.movieDashboard) {
+      return this.dashboardLists.push(cached.movieDashboard);
     }
   }
 
@@ -120,7 +123,7 @@ export class DashboardComponent implements OnInit {
       id: entityId,
       movieDashboard: innerList
     };
-    this.mdbMovieDashboardStore.add(store);
+    this.store.dispatch(new AddDashboardMovie(store));
   }
 
   /**
@@ -180,4 +183,4 @@ export class DashboardComponent implements OnInit {
   getYear(releaseDate: string) {
     return GeneralUtil.getYear(releaseDate);
   }
-};
+}

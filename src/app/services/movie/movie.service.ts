@@ -15,6 +15,12 @@ import { BaseMovieService } from './base-movie.service';
 import { IMdbMoviePaginated } from '@models/media-paginated.model';
 import GeneralUtil from '@utils/general.util';
 import { ITmdbVideoResult } from '@models/tmdb.model';
+import { Store } from '@ngxs/store';
+import { MovieState } from '../../store/movie/movie.state';
+import { AddMovie, AddDiscoverMovie } from '../../store/movie/movie.actions';
+import { MDBPaginatedResultModel } from './interface/movie';
+import { CacheService } from '@services/cache.service';
+import { TmdbService } from '@services/tmdb/tmdb.service';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -23,6 +29,16 @@ export class MovieService extends BaseMovieService {
 
   TMDB_API_KEY = environment.tmdb.apiKey;
   TMDB_URL = environment.tmdb.url;
+
+  constructor(
+    protected cacheService: CacheService,
+    protected ipcService: IpcService,
+    protected tmdbService: TmdbService,
+    protected http: HttpClient,
+    private store: Store
+  ) {
+    super(cacheService, ipcService, tmdbService, http);
+  }
 
   getMovieInfo(val: string): Observable<any> {
     let result;
@@ -96,7 +112,8 @@ export class MovieService extends BaseMovieService {
   getRelatedClips(tmdbId: number, refresh: boolean = false): Observable<ITmdbVideoResult> {
     let theFunction: Observable<any>;
     let entityId = `movie:video:${tmdbId}`;
-    if (!this.mdbMoviePreviewQuery.hasEntity(entityId) || refresh) {
+    const cached = this.store.selectSnapshot(MovieState.getPreviewMovie(entityId));
+    if (!cached || refresh) {
       if (environment.dataSource.toString() === "TMDB") {
         theFunction = this.tmdbService.getTmdbVideos(tmdbId);
       } return theFunction.pipe(
@@ -106,13 +123,13 @@ export class MovieService extends BaseMovieService {
         }),
         catchError(this.handleError<any>('getRelatedClips')));
     }
-    return of(this.mdbMoviePreviewQuery.getEntity(entityId).moviePreview);
+    return of(cached.moviePreview);
   }
 
   getMovieDetails(id: number, appendToResponse?: string, refresh: boolean = false): Observable<MDBMovie> {
-    let theFunction: Observable<any>;
-
-    if (!this.mdbMovieQuery.hasEntity(id) || refresh) {
+    const cached = this.store.selectSnapshot(MovieState.getMovie(id));
+    if (!cached || refresh) {
+      let theFunction: Observable<any>;
       if (environment.dataSource.toString() === "TMDB") {
         theFunction = this.tmdbService.getTmdbMovieDetails(id, appendToResponse);
       }
@@ -123,7 +140,7 @@ export class MovieService extends BaseMovieService {
         }),
         catchError(this.handleError<any>('getMovieDetails')));
     }
-    return of(this.mdbMovieQuery.getEntity(id).movie);
+    return of(cached.movie);
   }
 
   getMoviesDiscover(paramMap: Map<TmdbParameters, any>, listName?: string, refresh = false): Observable<IMdbMoviePaginated> {
@@ -133,7 +150,9 @@ export class MovieService extends BaseMovieService {
     myHttpParam = GeneralUtil.appendMappedParameters(paramMap, myHttpParam);
     let entityId = `movie:discover:${myHttpParam.toString()}`;
     GeneralUtil.DEBUG.log(`getMoviesDiscover entityId ${entityId}`);
-    if (!this.mdbMovieDiscoverQuery.hasEntity(entityId) || refresh) {
+    const cached = this.store.selectSnapshot(MovieState.getDiscoverMovie(entityId));
+
+    if (!cached || refresh) {
       myHttpParam = myHttpParam.append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
       const tmdbHttpOptions = {
         headers: JSON_CONTENT_TYPE_HEADER,
@@ -145,18 +164,19 @@ export class MovieService extends BaseMovieService {
         }),
         catchError(this.handleError<any>('getMoviesDiscover')));
     }
-    return of(this.mdbMovieDiscoverQuery.getEntity(entityId).paginatedResult);
+    return of(cached.paginatedResult);
   }
 
   searchMovie(paramMap: Map<TmdbParameters | TmdbSearchMovieParameters, any>, refresh: boolean = false): Observable<any> {
-    let theFunction: Observable<any>;
     const page = paramMap.get(TmdbSearchMovieParameters.Page) ? paramMap.get(TmdbSearchMovieParameters.Page) : 1;
     let myHttpParam = new HttpParams().append(TmdbParameters.Page, page);
     myHttpParam = GeneralUtil.appendMappedParameters(paramMap, myHttpParam);
     let entityId = `movie:search:${myHttpParam.toString()}`;
     if (environment.dataSource.toString() === "TMDB") {
       GeneralUtil.DEBUG.log(`searchMovie entityId ${entityId}`);
-      if (!this.mdbMovieSearchQuery.hasEntity(entityId) || refresh) {
+      const cached = this.store.selectSnapshot(MovieState.getSearchMovie(entityId));
+      if (!cached || refresh) {
+        let theFunction: Observable<any>;
         theFunction = this.tmdbService.searchTmdb(paramMap);
         return theFunction.pipe(
           first(),
@@ -167,7 +187,7 @@ export class MovieService extends BaseMovieService {
           }),
           catchError(this.handleError<any>('getMovieDetails')));
       }
-      return of(this.mdbMovieSearchQuery.getEntity(entityId).movies);
+      return of(cached.movies);
     }
     return of([]);
   }
@@ -183,7 +203,8 @@ export class MovieService extends BaseMovieService {
   getStreams(movieId: string, refresh: boolean = false): Observable<any> {
     const entityId = `movie:streams:${movieId}`;
     GeneralUtil.DEBUG.log(`getStreams movieId: ${movieId}`);
-    if (!this.mdbMovieDiscoverQuery.hasEntity(entityId) || refresh) {
+    const cached = this.store.selectSnapshot(MovieState.getDiscoverMovie(entityId));
+    if (!cached || refresh) {
       const tmdbHttpOptions = {
         headers: JSON_CONTENT_TYPE_HEADER,
         params: new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY)
@@ -195,7 +216,7 @@ export class MovieService extends BaseMovieService {
         }),
         catchError(this.handleError<any>('getStreams')));
     }
-    return of(this.mdbMovieDiscoverQuery.getEntity(entityId).paginatedResult);
+    return of(cached.paginatedResult);
   }
 
   private externalId(tmdbId: number): Observable<TMDB_External_Id> {
@@ -204,4 +225,35 @@ export class MovieService extends BaseMovieService {
       catchError(this.handleError<any>('getExternalId')));
   }
 
+  private mapMovieDetails(id, data): MDBMovie {
+    let newData = new MDBMovie(data);
+    const store = {
+      id: id,
+      movie: newData
+    };
+    this.store.dispatch(new AddMovie(store));
+    return this.store.selectSnapshot(MovieState.getMovie(id)).movie;
+  }
+
+  private mapPaginatedResult(entityId: string, rawData: IRawTmdbResultObject): IMdbMoviePaginated {
+    let newData: IMdbMoviePaginated = {
+      totalPages: rawData.total_pages,
+      page: rawData.page,
+      totalResults: rawData.total_results,
+      results: []
+    };
+
+    rawData.results.forEach(e => {
+      let movie = new MDBMovie(e);
+      newData.results.push(movie);
+    });
+
+    const store: MDBPaginatedResultModel = {
+      id: entityId,
+      paginatedResult: newData
+    };
+    this.store.dispatch(new AddDiscoverMovie(store));
+    return newData;
+  }
 }
+

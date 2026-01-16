@@ -21,7 +21,6 @@ export const environment = {
   bffBaseUrl: 'http://localhost:8080',
   runConfig: {
     firebaseMode: false,
-    springMode: false,
     electron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
     useTestData: false,
   },

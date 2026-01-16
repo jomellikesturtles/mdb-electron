@@ -8,8 +8,6 @@ import { STRING_REGEX_IMDB_ID } from '../../shared/constants';
 import { IYTSSingleQuery } from '@models/yts-torrent.model';
 import GeneralUtil from '@utils/general.util';
 import { environment } from '@environments/environment';
-import { TorrentQuery } from './torrent.query';
-import { MDBTorrentModel, TorrentStore } from './torrent.store';
 import { LoggerService } from '@core/logger.service';
 
 @Injectable({
@@ -20,8 +18,6 @@ export class TorrentService {
   constructor(
     private http: HttpClient,
     private sanitizer: DomSanitizer,
-    private torrentQuery: TorrentQuery,
-    private torrentStore: TorrentStore,
     private logger: LoggerService
   ) { }
 
@@ -47,22 +43,13 @@ export class TorrentService {
    */
   private getTorrentsOnline(imdbId: string, refresh = false): Observable<MDBTorrentAndMovieObject> {
     // tt2015381 - guardians of the galaxy
-    let entityId = 'torrent:' + imdbId;
-    if (!this.torrentQuery.hasEntity(entityId) || refresh) {
-      let url = `${this.YTS_URL}?query_term=${imdbId}`;
-      return this.http.get<IYTSSingleQuery>(url).pipe(tap(_ => this.logger.info('')),
-        map((data: IYTSSingleQuery) => {
-          const newData = new MDBTorrentAndMovieObject(data);
-          const store: MDBTorrentModel = {
-            id: entityId,
-            mdbTorrentAndMovieObject: newData
-          };
-          this.torrentStore.add(store);
-          return newData;
-        }),
-        catchError(this.handleError<any>('getTorrentsOnline')));
-    }
-    return of(this.torrentQuery.getEntity(entityId).mdbTorrentAndMovieObject);
+    let url = `${this.YTS_URL}?query_term=${imdbId}`;
+    return this.http.get<IYTSSingleQuery>(url).pipe(tap(_ => this.logger.info('')),
+      map((data: IYTSSingleQuery) => {
+        const newData = new MDBTorrentAndMovieObject(data);
+        return newData;
+      }),
+      catchError(this.handleError<any>('getTorrentsOnline')));
   }
 
   searchTorrentsByQuery(val: string): Observable<any> {

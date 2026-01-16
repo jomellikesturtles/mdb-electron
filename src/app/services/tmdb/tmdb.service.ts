@@ -8,8 +8,6 @@ import { catchError, first, map, tap } from 'rxjs/operators';
 import { IRawTmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { CacheService } from '../cache.service';
-import { TMDBMovieQuery } from '../movie/movie.query';
-import { TMDBMovieStore } from '@services/movie/movie.store';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -27,8 +25,6 @@ export class TmdbService {
   constructor(
     private http: HttpClient,
     private cacheService: CacheService,
-    private tmdbMovieQuery: TMDBMovieQuery,
-    private tmdbMovieStore: TMDBMovieStore,
     private logger: LoggerService
   ) { }
 
@@ -67,32 +63,24 @@ export class TmdbService {
    * @param refresh refresh cache
    */
   getTmdbMovieDetails(tmdbId: number, appendToResponse?: string, refresh: boolean = false): Observable<any> {
-    if (!this.tmdbMovieQuery.hasEntity(tmdbId) || refresh) {
-      const url = `${this.TMDB_URL}/movie/${tmdbId}`;
-      let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
-      // videos, images, credits, translations, similar, external_ids, alternative_titles,recommendations
-      //   keywords, reviews
-      if (appendToResponse) {
-        myHttpParam = myHttpParam.append(TmdbParameters.AppendToResponse, appendToResponse);
-      }
-      const tmdbHttpOptions = {
-        headers: JSON_CONTENT_TYPE_HEADER,
-        params: myHttpParam
-      };
-      return this.http.get<any>(url, tmdbHttpOptions).pipe(
-        first(),
-        map(data => {
-          const store = {
-            id: tmdbId,
-            movie: data
-          };
-          this.tmdbMovieStore.add(store);
-          return this.tmdbMovieQuery.getEntity(tmdbId).movie;
-        }),
-        catchError(this.handleError<any>('getTmdbMovieDetails2'))
-      );
+    const url = `${this.TMDB_URL}/movie/${tmdbId}`;
+    let myHttpParam = new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
+    // videos, images, credits, translations, similar, external_ids, alternative_titles,recommendations
+    //   keywords, reviews
+    if (appendToResponse) {
+      myHttpParam = myHttpParam.append(TmdbParameters.AppendToResponse, appendToResponse);
     }
-    return of(this.tmdbMovieQuery.getEntity(tmdbId).movie);
+    const tmdbHttpOptions = {
+      headers: JSON_CONTENT_TYPE_HEADER,
+      params: myHttpParam
+    };
+    return this.http.get<any>(url, tmdbHttpOptions).pipe(
+      first(),
+      map(data => {
+        return data;
+      }),
+      catchError(this.handleError<any>('getTmdbMovieDetails2'))
+    );
   }
 
   /**

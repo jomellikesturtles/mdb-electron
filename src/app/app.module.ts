@@ -35,7 +35,14 @@ import { VideoPlayerModule } from '@modules/watch/video-player.module';
 import { YoutubePlayerComponent } from '@shared/components/youtube-player/youtube-player.component';
 import { MdbButtonComponent } from './core/elements/mdb-button/mdb-button.component';
 import { CoreEnvironmentService } from '@services/core-environment.service';
+import { FeatureToggleService } from '@core/services/feature-toggle.service';
 import { MockCoreServicesModule } from '@core/dev/mock-core-services.module';
+
+// NGXS
+import { NgxsModule } from '@ngxs/store';
+import { NgxsStoragePluginModule, StorageOption } from '@ngxs/storage-plugin';
+import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
+import { MovieState } from './store/movie/movie.state';
 
 @NgModule({
   declarations: [
@@ -73,15 +80,24 @@ import { MockCoreServicesModule } from '@core/dev/mock-core-services.module';
     MatDialogModule,
     MatAutocompleteModule,
     VideoPlayerModule,
-    MockCoreServicesModule
+    // MockCoreServicesModule
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    NgxsModule.forRoot([MovieState], {
+      developmentMode: !environment.production
+    }),
+    NgxsStoragePluginModule.forRoot({
+      key: 'movie',
+      storage: StorageOption.LocalStorage
+    }),
+    NgxsReduxDevtoolsPluginModule.forRoot()
   ],
   providers: [MdbGuardGuard, backendProvider,
     {
       provide: APP_INITIALIZER,
       useFactory: AppInitializerFactory,
       deps: [
-        CoreEnvironmentService
+        CoreEnvironmentService,
+        FeatureToggleService
       ],
       multi: true
     }],
@@ -89,10 +105,14 @@ import { MockCoreServicesModule } from '@core/dev/mock-core-services.module';
 })
 export class AppModule { }
 
-export function AppInitializerFactory(coreEnvironmentService: CoreEnvironmentService) {
+export function AppInitializerFactory(
+  coreEnvironmentService: CoreEnvironmentService,
+  featureToggleService: FeatureToggleService
+) {
   return async function init() {
     return Promise.all([
-      await coreEnvironmentService.init(window['environment'])
+      await coreEnvironmentService.init(window['environment']),
+      await featureToggleService.loadConfig()
     ]);
   };
 }

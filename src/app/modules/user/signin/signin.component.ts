@@ -1,10 +1,11 @@
 import { UsernameExistValidator, UsernameExistingValidator } from '@directives/username-exist.directive';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormBuilder, AbstractControl } from '@angular/forms'
+import { FormGroup, FormControl, Validators, FormBuilder, AbstractControl } from '@angular/forms';
 import { repeatPasswordValidator } from '@directives/repeat-password.directive';
 import { CredentialsValidator } from '@directives/credentials.directive';
 import { UtilsService } from '@services/utils.service';
 import { repeat, debounceTime, take, map } from 'rxjs/operators';
+import { addAriaReferencedId } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-signin',
@@ -13,11 +14,11 @@ import { repeat, debounceTime, take, map } from 'rxjs/operators';
 })
 export class SigninComponent implements OnInit {
 
-  ageList = []
+  ageList = [];
   user = {
     emailAddress: '',
     password: ''
-  }
+  };
   userSignUp = {
     username: '',
     emailAddress: '',
@@ -26,16 +27,16 @@ export class SigninComponent implements OnInit {
     authType: '',
     password: '',
     repeatPassword: ''
-  }
+  };
   userSignIn = {
     usernameEmail: '',
     password: ''
-  }
-  signUpForm: FormGroup
-  signInForm: FormGroup
-  isSignIn = false
-  isOAuthValid = false
-  generalError = ''
+  };
+  signUpForm: FormGroup;
+  signInForm: FormGroup;
+  isSignIn = false;
+  isOAuthValid = false;
+  generalError = '';
 
   constructor(
     private credentialValidator: CredentialsValidator,
@@ -51,8 +52,8 @@ export class SigninComponent implements OnInit {
     // }
 
     this.signUpForm = this.formBuilder.group({
-      username: [this.userSignUp.username, [Validators.required, Validators.minLength(4)], 
-      // UsernameExistingValidator.validateUsername(this.afs)
+      username: [this.userSignUp.username, [Validators.required, Validators.minLength(4)],
+        // UsernameExistingValidator.validateUsername(this.afs)
       ],
       emailAddress: [this.userSignUp.emailAddress, [Validators.required, Validators.minLength(4), Validators.email]],
 
@@ -60,13 +61,13 @@ export class SigninComponent implements OnInit {
 
       repeatPassword: [this.userSignUp.repeatPassword, [Validators.required, Validators.minLength(6)]],
     }, { validators: repeatPasswordValidator }
-    )
+    );
 
     this.signInForm = new FormGroup({
       usernameEmail: new FormControl(this.userSignIn.usernameEmail, [Validators.required]),
       password: new FormControl(this.userSignIn.password, [Validators.required])
     },
-    )
+    );
   }
 
   get username() { return this.signUpForm.get('username'); }
@@ -76,23 +77,16 @@ export class SigninComponent implements OnInit {
 
   onSignUp() {
     console.log('submit');
-    const username = this.signUpForm.get('username').value
-    const emailAddress = this.signUpForm.get('emailAddress').value
-    const password = this.signUpForm.get('password').value
-    
-  }
+    const username = this.signUpForm.get('username').value;
+    const emailAddress = this.signUpForm.get('emailAddress').value;
+    const password = this.signUpForm.get('password').value;
 
-  // onSignUpFromLogin() {
-  //   console.log('submit');
-  //   const emailUsername = this.signInForm.get('usernameEmail').value
-  //   const password = this.signInForm.get('password').value
-  //   this.firebaseService.signUp(emailUsername, password)
-  // }
+  }
 
   onSignIn() {
     console.log('onsignin');
-    const emailUsername = this.signInForm.get('usernameEmail').value
-    const password = this.signInForm.get('password').value
+    const emailUsername = this.signInForm.get('usernameEmail').value;
+    const password = this.signInForm.get('password').value;
   }
 
   onSignInGoogle() {
@@ -109,11 +103,11 @@ export class SigninComponent implements OnInit {
       if (domain !== 'codecraft.tv') {
         const emailDomain = {
           parsedDomain: domain
-        }
-        console.log(emailDomain)
+        };
+        console.log(emailDomain);
         return {
           emailDomain
-        }
+        };
       }
     }
     return null;
