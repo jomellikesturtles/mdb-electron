@@ -1,5 +1,5 @@
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MovieGenre, IGenre } from '@models/interfaces';
 import { MOVIEGENRES } from '../../../mock-data';
@@ -21,6 +21,8 @@ import GeneralUtil from '@utils/general.util';
 })
 export class TopNavigationComponent implements OnInit {
   @Input() data: Observable<any>;
+  @Output() toggleSidebar = new EventEmitter<void>();
+
   constructor(
     private dataService: DataService,
     private ipcService: IpcService,

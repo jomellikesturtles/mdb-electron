@@ -1,140 +1,155 @@
-/* The side navigation menu */
+@import '../../variables.scss';
+
+// Layout Container
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: #121212; // Dark Theme Background
+  color: #fff;
+}
+
+// Fixed Top Header
+.top-nav-wrapper {
+  height: 60px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background-color: #000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Main Body (Sidebar + Content)
+.main-body {
+  display: flex;
+  flex: 1;
+  margin-top: 60px; // Offset for fixed header
+  height: calc(100vh - 60px);
+  position: relative;
+}
+
+// Sidebar (Desktop & Mobile Drawer)
 .sidenav {
   height: 100%;
-  /* 100% Full-height */
-  width: 350px;
-  /* 0 width - change this with JavaScript */
-  // position: fixed;
-  /* Stay in place */
-  // z-index: 1;
-  /* Stay on top */
-  // top: 0;
-  /* Stay at the top */
-  // left: 0;
-  background-color: #111;
-  /* Black*/
+  background-color: #050505;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  transition: width 0.2s ease-in-out, transform 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  z-index: 900;
   overflow-x: hidden;
-  /* Disable horizontal scroll */
-  padding-top: 60px;
-  /* Place content 60px from the top */
-  transition: 0.5s;
-  /* 0.5 second transition effect to slide in the sidenav */
+
+  // Desktop Modes
+  width: 72px; // Mini Mode (Default)
+  &.expanded {
+    width: 240px;
+  }
+
+  // Mobile Overlay Mode
+  @media (max-width: 768px) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 240px;
+    transform: translateX(-100%); // Hidden by default
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    
+    &.mobile-open {
+      transform: translateX(0); // Slide in
+      box-shadow: 4px 0 15px rgba(0,0,0,0.5);
+    }
+  }
 }
 
-/* The navigation menu links */
-.sidenav a {
-  padding: 8px 8px 8px 32px;
+// Mobile Backdrop
+.mobile-backdrop {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 60px);
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 899; // Below sidebar, above content
+  backdrop-filter: blur(2px);
+}
+
+// Sidebar Items
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  flex: 1;
+}
+
+.sidenav-option {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 24px; // 24px padding aligns icons in mini mode (72px width)
+  color: #aaa;
   text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
-}
-
-.collapsed a {
-  padding: 8px 8px 8px 0px !important // transition: 0.3s;
-}
-
-/* When you mouse over the navigation links, change their color */
-.sidenav-option:hover * {
   cursor: pointer;
-  transition: .3s
-}
-.sidenav-option:hover span {
-  color: #f1f1f1;
-}
-.sidenav-option:hover .side-nav-icon {
-  filter: invert(1) contrast(1);
-}
+  transition: background-color 0.1s;
+  white-space: nowrap; // Prevent text wrapping
 
-/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
-#main {
-  transition: .5s
-}
-
-#topNav {
-  transition: .5s;
-}
-
-.side-nav-icon {
-  width: 50px;
-  height: 30px;
-  // if icons are dark
-  -webkit-filter: invert(1);
-  filter: invert(1) contrast(0);
-  ;
-}
-
-// film grain
-.grain {
-  // height: 100vh;
-  // background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/9632/northernlights.jpg);
-}
-
-.grain:after {
-  // animation: grain 8s steps(10) infinite;
-  // background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/9632/paper-pattern.png);
-  // content: "";
-  // height: 300%;
-  // left: -50%;
-  // opacity: 0.3;
-  // position: fixed;
-  // top: -110%;
-  // width: 300%;
-}
-
-@keyframes grain {
-
-  0%,
-  100% {
-    transform: translate(0, 0)
+  &:hover, &.router-active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    
+    .side-nav-icon {
+      filter: invert(1); // Ensure icons are bright white on hover/active
+      opacity: 1;
+    }
   }
 
-  10% {
-    transform: translate(-5%, -10%)
+  .side-nav-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 24px;
+    opacity: 0.7;
+    filter: invert(0.8); // Light gray icons
   }
 
-  20% {
-    transform: translate(-15%, 5%)
-  }
-
-  30% {
-    transform: translate(7%, -25%)
-  }
-
-  40% {
-    transform: translate(-5%, 25%)
-  }
-
-  50% {
-    transform: translate(-15%, 10%)
-  }
-
-  60% {
-    transform: translate(15%, 0%)
-  }
-
-  70% {
-    transform: translate(0%, 15%)
-  }
-
-  80% {
-    transform: translate(3%, 35%)
-  }
-
-  90% {
-    transform: translate(-10%, 10%)
+  .nav-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 1;
+    transition: opacity 0.2s;
   }
 }
 
-/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
-// @media screen and (max-height: 450px) {
-//   .sidenav {padding-top: 15px;}
-//   .sidenav a {font-size: 18px;}
-// }
+// Hide labels in mini mode
+.sidenav:not(.expanded):not(.mobile-open) {
+  .nav-label {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+  }
+  
+  .sidenav-option {
+    padding: 0 24px; // Keep icons centered (72px / 2 - 12px)
+  }
+}
 
-.router-active {
-  font-weight: bold;
-  color: orangered !important;
-  transition: .1s
+// Main Content Area
+.main-content {
+  flex: 1;
+  background-color: #181818;
+  overflow-y: auto;
+  padding: 20px;
+  transition: margin-left 0.2s;
+  position: relative;
+  
+  // Custom Scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
 }
