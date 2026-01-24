@@ -1,66 +1,70 @@
-<div style='width:100%;height:100%;position:absolute;overflow-x: hidden;'>
+<div class="layout-container">
 
-  <!-- TOP -->
-  <app-top-navigation style='top:0;height:50px;width:100%;z-index: 5;'></app-top-navigation>
-
-  <div style='position:fixed;top:50px;height:100%;width:100%;display: flex;'>
-
-    <!-- SIDE NAV -->
-    <div id="mySidenav" class="sidenav" style='height:100%;' [ngClass]="{'collapsed':isOpenNav===false}">
-      <div>
-        <div style='display: flex; flex-wrap: wrap; top:0;left:0'>
-
-          <a (click)='goPreviousPage()' class='sidenav-option'>
-            <img class='side-nav-icon' src="./assets/icons/arrow-left.svg" />
-          </a>
-          <a (click)='goForwardPage()' class='sidenav-option'>
-            <img class='side-nav-icon' src="./assets/icons/arrow-right.svg" />
-          </a>
-        </div>
-        <a routerLinkActive='router-active' routerLink="./dashboard" class='sidenav-option'>
-          <img class='side-nav-icon' src="./assets/icons/home.svg" />
-          <span *ngIf="isOpenNav">Home</span>
-        </a>
-        <a routerLinkActive='router-active' routerLink="./browse" class='sidenav-option'>
-          <img class='side-nav-icon' src="./assets/icons/globe.svg" />
-          <span *ngIf="isOpenNav">Browse</span>
-        </a>
-        <a routerLinkActive='router-active' routerLink="./library" class='sidenav-option'>
-          <img class='side-nav-icon' src="./assets/icons/server.svg" />
-          <span *ngIf="isOpenNav">Library</span>
-        </a>
-        <a routerLinkActive='router-active' routerLink="./preferences" class='sidenav-option'>
-          <img class='side-nav-icon' src="./assets/icons/gear.svg" />
-          <span *ngIf="isOpenNav">Preferences</span>
-        </a>
-        <a routerLinkActive='router-active' routerLink="./video" class='sidenav-option'>
-          <img class='side-nav-icon' src="./assets/icons/gear.svg" />
-          <span *ngIf="isOpenNav">VIDEOTEST</span>
-        </a>
-      </div>
-      <div style='overflow: hidden; position: fixed; bottom: 0;' class='sidenav-option'>
-        <a (click)="switchNav()">
-          <span *ngIf="isOpenNav">
-            <img class='side-nav-icon' src="./assets/icons/left-angle.svg" />Collapse</span>
-          <img class='side-nav-icon' src="./assets/icons/right-angle.svg" *ngIf="!isOpenNav" />
-        </a>
-      </div>
-    </div>
-
-    <!-- MAIN -->
-    <div id="main" style='height:100%;width:100%;overflow-y:auto; padding-bottom: 50px;'
-      [ngStyle]="{'width':'calc(100% - '+sideNavWidth+')'}">
-      <!-- <app-video-player [streamLink]="'file:///C:/Users/jomme/Downloads/Anastasia%20[1997][DVDRip][720x304][H.264-AAC]%20~SaaS~/Anastasia%20[1997][DVDRip][720x304][H.264-AAC]%20~SaaS~.mp4'"></app-video-player> -->
-      <!-- <app-video-player [streamLink]="'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4'"></app-video-player> -->
-      <router-outlet></router-outlet>
-      <!-- <app-details></app-details> -->
-      <!-- <app-video-player [streamLink]="'../../../../assets/sample movie/Ratatouille (2007) [1080p]/Ratatouille.2007.1080p.BrRip.x264.YIFY.mp4'"></app-video-player> -->
-      <!-- <advanced-find></advanced-find> -->
-      <!-- <app-floating-player></app-floating-player> -->
-      <!-- <app-preferences></app-preferences> -->
-      <!-- <app-notification></app-notification>
-      <app-notification></app-notification> -->
-    </div>
+  <!-- Fixed Top Header -->
+  <div class="top-nav-wrapper">
+    <app-top-navigation (toggleSidebar)="toggleSideNav()"></app-top-navigation>
   </div>
+
+  <!-- Main Body (Sidebar + Content) -->
+  <div class="main-body">
+
+    <!-- Mobile Backdrop (Click to close) -->
+    <div class="mobile-backdrop" *ngIf="isMobile && isMobileOpen" (click)="toggleSideNav()"></div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidenav" [class.expanded]="isExpanded" [class.mobile-open]="isMobileOpen">
+
+      <!-- Navigation Links -->
+      <div class="nav-links">
+
+        <!-- History / Navigation Control (Optional) -->
+        <div class="sidenav-option" (click)="goPreviousPage()" title="Go Back">
+          <img class="side-nav-icon" src="./assets/icons/arrow-left.svg" alt="Back" />
+          <span class="nav-label">Back</span>
+        </div>
+
+        <div class="sidenav-option" (click)="goForwardPage()" title="Go Forward">
+          <img class="side-nav-icon" src="./assets/icons/arrow-right.svg" alt="Forward" />
+          <span class="nav-label">Forward</span>
+        </div>
+
+        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0;"></div>
+
+        <!-- Main Routes -->
+        <a routerLink="/dashboard" routerLinkActive="router-active" class="sidenav-option" title="Home">
+          <img class="side-nav-icon" src="./assets/icons/home.svg" alt="Home" />
+          <span class="nav-label">Home</span>
+        </a>
+
+        <a routerLink="/browse" routerLinkActive="router-active" class="sidenav-option" title="Browse">
+          <img class="side-nav-icon" src="./assets/icons/globe.svg" alt="Browse" />
+          <span class="nav-label">Browse</span>
+        </a>
+
+        <a routerLink="/library" routerLinkActive="router-active" class="sidenav-option" title="Library">
+          <img class="side-nav-icon" src="./assets/icons/server.svg" alt="Library" />
+          <span class="nav-label">Library</span>
+        </a>
+
+        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0;"></div>
+
+        <a routerLink="/preferences" routerLinkActive="router-active" class="sidenav-option" title="Settings">
+          <img class="side-nav-icon" src="./assets/icons/gear.svg" alt="Settings" />
+          <span class="nav-label">Settings</span>
+        </a>
+
+      </div>
+
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+
+  <!-- Global Modals/Overlays -->
+  <app-preview></app-preview>
 </div>
-<app-preview></app-preview>
