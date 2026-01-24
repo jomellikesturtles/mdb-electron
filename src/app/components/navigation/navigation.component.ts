@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { NavigationService, Navigation } from '@services/navigation.service';
 import { ListsService } from '@services/media/list.service';
 import { LoggerService } from '@core/logger.service';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
 import GeneralUtil from '@utils/general.util';
+
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
@@ -12,78 +12,56 @@ import GeneralUtil from '@utils/general.util';
 })
 export class NavigationComponent implements OnInit {
 
-  constructor(private location: Location,
-    // private navigationService: NavigationService
+  // Sidebar State
+  isExpanded = false; // Default to collapsed (mini) mode
+  isMobile = false;   // Track mobile view
+  isMobileOpen = false; // Track mobile drawer state
+
+  constructor(
+    private location: Location,
     private listsService: ListsService,
     private loggerService: LoggerService,
     private mediaUserDataService: MediaUserDataService
   ) { }
 
-  isOpenNav = false;
-  sideNavWidth;
-  // navigation = new NavigationService(this, this.location)
   ngOnInit() {
+    this.checkScreenSize();
+    window.addEventListener('resize', () => this.checkScreenSize());
+
+    // Existing data initialization (kept as is)
     this.mediaUserDataService.getMediaUserData(122).subscribe(e => {
       GeneralUtil.DEBUG.log(`mediaUserDataService.getMediaUserData ${JSON.stringify(e)}`);
-      // this.loggerService.log(`mediaUserDataService.getMediaUserData ${JSON.stringify(e)}`);
     });
-    this.listsService.createList({
-      title: "paborito kong pelikula 2",
-      description: "deskriptsyon"
-    }).subscribe(e => {
 
-      GeneralUtil.DEBUG.log(`listsService.createList ${e}`);
-      // this.loggerService.log(`listsService.createList ${JSON.stringify(e)}`);
-      this.listsService.getList(e['_id']).subscribe(e1 => {
+    // Test code for lists (kept as is)
+    // this.listsService.createList({...}).subscribe(...)
+  }
 
-        GeneralUtil.DEBUG.log(`listsService.getList ${e1}`);
-        // this.loggerService.log(`listsService.getList ${JSON.stringify(e1)}`);
-
-      });
-    });
-    if (this.isOpenNav) {
-      this.openNav();
-    } else {
-      this.closeNav();
+  // Handle Screen Resize
+  checkScreenSize() {
+    this.isMobile = window.innerWidth <= 768; // Mobile breakpoint
+    if (!this.isMobile) {
+      this.isMobileOpen = false; // Reset mobile drawer if resizing to desktop
     }
   }
 
-  /**
-   * Opens side navigation
-   */
-  openNav() {
-    this.sideNavWidth = '250px';
-    document.getElementById('mySidenav').style.width = this.sideNavWidth;
-  }
-
-  /**
-   * Closes side navigation
-   */
-  closeNav() {
-    this.sideNavWidth = '50px';
-    document.getElementById('mySidenav').style.width = this.sideNavWidth;
-  }
-
-  switchNav() {
-    this.isOpenNav = !this.isOpenNav;
-    if (this.isOpenNav) {
-      this.openNav();
+  // Toggle Sidebar (called from Top Nav)
+  toggleSideNav() {
+    // this.isExpanded = true;
+    // this.isMobileOpen = false;
+    if (this.isMobile) {
+      this.isMobileOpen = !this.isMobileOpen;
     } else {
-      this.closeNav();
+      this.isExpanded = !this.isExpanded;
     }
   }
 
+  // Navigation Helpers
   goPreviousPage() {
-    GeneralUtil.DEBUG.log('goPreviousPage');
-    // this
     this.location.back();
-    // this.navigation.previousPage()
   }
 
   goForwardPage() {
-    GeneralUtil.DEBUG.log('goPreviousPage');
-    GeneralUtil.DEBUG.log(this.location.path());
     this.location.forward();
-    // this.navigation.nextPage()
   }
 }
