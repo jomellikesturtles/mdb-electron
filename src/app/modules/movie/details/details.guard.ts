@@ -10,9 +10,9 @@ export class MovieDetailsGuard {
     activatedRouteSnapshot: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-    this.movieService.getMovieDetails(Number.parseInt(activatedRouteSnapshot.paramMap.get('id')), 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
+    // this.movieService.getMovieDetails(Number.parseInt(activatedRouteSnapshot.paramMap.get('id')), 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
 
-    });
+    // });
     return true;
     // else display details not found
   }

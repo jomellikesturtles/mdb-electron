@@ -2,219 +2,198 @@
   <app-video-player [streamLink]='streamLink'></app-video-player>
 </div>
 
-<div class='image-cover' style='
-background-repeat: no-repeat;
-height: 100%;
-background-attachment: fixed;
-overflow: hidden;'>
-  <!-- overflow-y: hidden; -->
-  <!-- background-color:black -->
-  <!-- [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.backropPath+')'}" v1-disabled -->
+<!-- Backdrop & Overlay -->
+<div class="backdrop-container" 
+     [style.backgroundImage]="'url(https://image.tmdb.org/t/p/original' + movieDetails.backropPath + ')'">
+  <div class="backdrop-overlay"></div>
+  
+  <!-- Content Wrapper -->
+  <div class="container-fluid content-wrapper">
+    <div class="container">
+      <div class="row align-items-start">
+        
+        <!-- Left Column: Poster & Actions -->
+        <div class="col-md-4 col-lg-3 d-flex flex-column align-items-center">
+          
+          <!-- Poster -->
+          <div class="poster-card" 
+               [style.backgroundImage]="'url(https://image.tmdb.org/t/p/w500' + movieDetails.posterPath + ')'">
+          </div>
 
-  <div class='container' style='margin-top: 60px;
-  height: 100%; position: relative;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);'>
-    <div class='row'>
-      <!-- style='background-color: #555555' -->
-      <div class='col-xl-4'>
-        <div>
-          <!-- <div style='background-color: aqua;height:100%'> -->
-          <div class='img-container mdb-poster image-cover'
-            style='  background-color: white; margin:auto; height: 60vh; width: calc(60vh*.65); max-width: 420px;'
-            [ngStyle]="{'background-image':'url(https://image.tmdb.org/t/p/original'+movieDetails.posterPath+')'}">
-            <!-- (click)="previewImage()" v1-disabled-->
+          <!-- User Action Buttons -->
+          <div class="user-actions">
+            <!-- Bookmark -->
+            <button mat-fab color="accent" (click)="toggleBookmark()" 
+                    matTooltip="Toggle Bookmark" aria-label="Toggle bookmark">
+              <img src='assets/icons/bookmark-add.svg' alt="Bookmark">
+            </button>
+            
+            <!-- Watched -->
+            <button mat-fab style="background-color:orange" (click)="togglePlayed()" 
+                    matTooltip="Toggle Watched" aria-label="Toggle watched">
+              <img src='assets/icons/eye.svg' alt="Watched">
+            </button>
+            
+            <!-- Favorite -->
+            <button mat-fab color="warn" (click)="toggleFavorite()" 
+                    matTooltip="Toggle Favorite" aria-label="Toggle favorite">
+              <img src='assets/icons/heart.svg' alt="Favorite">
+            </button>
           </div>
-          <div class='container'>
-            <div id='userDataControlsContainer'
-              style=' margin-left:auto; margin-right: auto; margin-top:1em; width:300px'>
-              <div class='row'>
-                <div class='col-4' style="text-align: center;" (click)="toggleBookmark()">
-                  <button mat-fab color="accent" aria-label="Toggle bookmark" class='details-button'
-                    data-toggle='tooltip' title='Toggle Bookmark'>
-                    <img style='filter: invert(1); height: 1.3em; cursor: pointer'
-                      src='../../../assets/icons/bookmark-add.svg' />
-                  </button>
-                </div>
-                <div class='col-4' style="text-align: center;" (click)="togglePlayed()">
-                  <button mat-fab aria-label="Toggle watched" style='background-color:orange' class='details-button'
-                    data-toggle='tooltip' title='Toggle watched'>
-                    <img style='filter: invert(1); height: 1.3em; cursor: pointer'
-                      src='../../../assets/icons/eye.svg' />
-                  </button>
-                </div>
-                <div class='col-4' style="text-align: center;" (click)="toggleFavorite()">
-                  <button mat-fab color="warn" aria-label="Toggle favorite" class='details-button' data-toggle='tooltip'
-                    title='Toggle Bookmark'>
-                    <img style='filter: invert(1); height: 1.3em; cursor: pointer'
-                      src='../../../assets/icons/heart.svg' />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
-      </div>
-      <!-- style='background-color: white' -->
-      <div class='col-xl-8'>
-        <div style='height:100%'>
-          <div style='display: flex; position:relative'>
-            <h2 id="movieTitle" class='movie-title'>{{movieDetails.title}}</h2>&nbsp;
 
-            <h2 *ngIf="movieDetails.releaseDate" class='text-hyperlink color-secondary'
-              style='padding-top: 1.5rem; padding-left: .5rem;font-size: 2rem'
-              (click)='goToDiscover("year",getYear(movieDetails.releaseDate))'>
-              {{movieDetails.releaseDate|releaseYear}}
-            </h2>
-
-            <div style="position: absolute;top: 0;right: 0; margin-left: auto;cursor: pointer;">
-              <h3 style='display: inline-flex; font-size: 2.5rem;margin-top: 11px;'>{{movieDetails.vote.voteAverage}}
-              </h3>
-              <img id='ratingsIcon' style='height: 3em; display: inline-flex;margin-left:10px;
-              margin-bottom:1.5rem;' src='../../../assets/icons/star-yellow.svg' />
-            </div>
-          </div>
-
-          <p id="movie-runtime" class="color-secondary">{{movieDetails.runtime|runtimeDisplay}}</p>
-
-          <div>
-            <span *ngFor="let item of movieDetails.genres; let isLast=last">
-              <span class='text-hyperlink color-secondary' (click)='goToDiscover("genre",item.id)'
-                style='text-decoration: underline;'>
-                {{item.name}}{{isLast ? '' : ','}}
-              </span>
-              &nbsp;
+        <!-- Right Column: Details Content -->
+        <div class="col-md-8 col-lg-9 ps-md-5">
+          
+          <!-- Title Section -->
+          <h1 class="movie-title">{{ movieDetails.title }}</h1>
+          
+          <!-- Metadata Row -->
+          <div class="metadata-row">
+            <span class="year" *ngIf="movieDetails.releaseDate" 
+                  (click)='goToDiscover("year", getYear(movieDetails.releaseDate))'>
+              {{ movieDetails.releaseDate | releaseYear }}
+            </span>
+            <span *ngIf="movieDetails.releaseDate">•</span>
+            
+            <span class="runtime">{{ movieDetails.runtime | runtimeDisplay }}</span>
+            <span *ngIf="movieDetails.runtime">•</span>
+            
+            <span class="rating">
+              <img src='assets/icons/star-yellow.svg' alt="Rating">
+              {{ movieDetails.vote?.voteAverage || 'N/A' }}
             </span>
           </div>
 
-          <mat-tab-group #detailsTabGroup>
-            <mat-tab #mattab label="OVERVIEW" ngClass='{"active-label":mattab.isActive}'>
-              <ng-container [ngTemplateOutlet]='overviewTemplate'></ng-container>
-            </mat-tab>
-            <mat-tab label="REVIEWS" disabled></mat-tab>
-            <mat-tab label="CREDITS">
-              <ng-container [ngTemplateOutlet]='creditsTemplate'></ng-container>
-            </mat-tab>
-            <mat-tab label="SIMILAR MOVIES" [ngTemplateOutlet]='similarMoviesTemplate'></mat-tab>
-          </mat-tab-group>
+          <!-- Genres -->
+          <div class="genres-list">
+            <span *ngFor="let item of movieDetails.genres" 
+                  class="genre-pill" 
+                  (click)='goToDiscover("genre", item.id)'>
+              {{ item.name }}
+            </span>
+          </div>
 
-          <ng-template #overviewTemplate style='overflow-x: hidden;'>
-            <div style='
-            height: 10rem;
-            overflow-y: scroll;'>
-              <p id="movie-plot" style='overflow-wrap: break-word !important;
-          word-wrap: break-word !important; text-align: justify;
-          white-space: pre-line; padding-top: .75em;'>{{movieDetails.overview}}</p>
-            </div>
-
-            <div>
-              <!-- unified play button -->
-              <div class="btn-group">
-                <button class="btn btn-danger mdb-primary play-btn" [disabled]="playLinks.length <= 0"
-                  (click)='playBestPlayLink()'>
-                  <span *ngIf='!procPlayLink'>Play </span>
-                  <mat-spinner *ngIf='procPlayLink' [diameter]='27' style='margin: auto;'></mat-spinner>
-                </button>
-                <button class="btn btn-danger dropdown-toggle dropdown-toggle-split play-btn-dropdown-toggle"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                  [disabled]="playLinks.length <= 0">
-                  <span class="visually-hidden">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu">
-                  <li *ngFor="let playLink of playLinks">
-                    <a class="dropdown-item" style='cursor: pointer' (click)='playMovie(playLink)'> {{playLink.type}} |
-                      {{playLink.name}}
-                      {{playLink.quality}}</a>
-                  </li>
-                </ul>
-              </div>
-              <button class='btn btn-primary' (click)='continueWatching()' *ngIf='hasContinueWatching'>
-                Continue Watching
+          <!-- Play Controls -->
+          <div class="play-controls">
+            <!-- Play Button Group -->
+            <div class="btn-group">
+              <button class="btn btn-danger play-btn" 
+                      [disabled]="playLinks.length <= 0" 
+                      (click)='playBestPlayLink()'>
+                <mat-spinner *ngIf='procPlayLink' [diameter]='20' color="accent"></mat-spinner>
+                <span *ngIf='!procPlayLink'>PLAY MOVIE</span>
               </button>
-              <button class='btn btn-primary primary play-trailer-btn' (click)='playPreview()' *ngIf='movieTrailer'>
-                Play Trailer
+              
+              <button class="btn btn-danger dropdown-toggle dropdown-toggle-split" 
+                      data-bs-toggle="dropdown" 
+                      aria-haspopup="true" 
+                      aria-expanded="false"
+                      [disabled]="playLinks.length <= 0">
+                <span class="visually-hidden">Toggle Dropdown</span>
               </button>
+              
+              <ul class="dropdown-menu">
+                <li *ngFor="let playLink of playLinks">
+                  <a class="dropdown-item" style='cursor: pointer' (click)='playMovie(playLink)'>
+                    {{playLink.type}} | {{playLink.name}} {{playLink.quality}}
+                  </a>
+                </li>
+              </ul>
             </div>
-            <div>
-              <div *ngIf="movieDetailsDirectors" class='credit-overview-container row'>
-                <span class='col-2 color-secondary font-emphasize credit-label'>Directed by </span>
-                <span class='credit-list-wrap col-8'>
-                  <span *ngFor="let director of movieDetailsDirectors; let isLast=last">
-                    <span class='text-hyperlink' (click)='goToDiscover("person",director.id,director.name)'>
-                      {{director.name}}{{isLast ? '' : ', '}}
-                    </span>
-                  </span>
-                </span>
-              </div>
-              <div *ngIf="movieDetailsWriters" class='credit-overview-container'>
-                <span class='row'>
-                  <span class='col-2 color-secondary font-emphasize credit-label'>Written by </span>
-                  <span class='credit-list-wrap col-8'>
-                    <span *ngFor="let writer of movieDetailsWriters; let isLast=last">
-                      <span class='text-hyperlink' (click)='goToDiscover("person", writer.id, writer.name)'>
-                        {{writer.name}}{{isLast ? '' : ', '}}
-                      </span>
-                    </span>
-                  </span>
-                </span>
-              </div>
-              <div *ngIf="movieDetailsProducers" class='credit-overview-container'>
-                <span class='row'>
-                  <span class='col-2 color-secondary font-emphasize credit-label'>Produced by</span>
-                  <span class='credit-list-wrap col-9'>
-                    <span *ngFor="let producer of movieDetailsProducers; let isLast=last">
-                      <span class='text-hyperlink'
-                        (click)='goToDiscover("person", producer.id, producer.name)'>{{producer.name}}{{isLast ? ''
-                        :', '}}</span>
-                    </span>
-                  </span>
-                </span>
-              </div>
-              <div *ngIf="movieDetailsCast" class='credit-overview-container'>
-                <span class='row'>
-                  <span class='col-2 color-secondary font-emphasize credit-label'>Cast</span>
-                  <span class='credit-list-wrap col-10'>
-                    <span *ngFor="let cast of movieDetailsCast; let isLast=last">
-                      <span class='text-hyperlink' (click)='goToDiscover("person", cast.id, cast.name)'>
-                        {{cast.name}}{{isLast ? '' : ', '}}
-                      </span>
-                    </span>
-                  </span>
-                </span>
-              </div>
-            </div>
-          </ng-template>
 
-          <ng-template #creditsTemplate>
-            CREDITS
-            <div class="row">
-              Cast
-              <!-- (click)='goToFullCredits()' v1-disabled -->
-              <h5 class='text-hyperlink'>See more...</h5>
-              <div id='featuredCastAndCrewDisplay' class='d-inline-flex' style="overflow-y:hidden; overflow-x:auto;">
-                <div *ngFor="let cast of movieDetails.credits.cast" style='margin-right: 20px;'>
-                  <!-- <div (click)='goToPerson(cast.id)' v1-disabled -->
-                  <div class='image-container' style='height: 200px; width: 185px; border-radius: 50%; cursor: pointer;'
-                    [ngStyle]="{'background-image': 'url(https://image.tmdb.org/t/p/w185'+cast.profilePath+')'}">
+            <button class="btn btn-outline-light" *ngIf='hasContinueWatching' (click)='continueWatching()'>
+              Continue Watching
+            </button>
+            
+            <button class="btn btn-outline-light" *ngIf='movieTrailer' (click)='playPreview()'>
+              Play Trailer
+            </button>
+          </div>
+
+          <!-- Tabs Section -->
+          <mat-tab-group #detailsTabGroup animationDuration="0ms">
+            
+            <!-- Overview Tab -->
+            <mat-tab label="OVERVIEW">
+              <div class="py-3">
+                <p class="overview-text">{{ movieDetails.overview }}</p>
+                
+                <div class="credits-section mt-4">
+                  <!-- Directors -->
+                  <div class="credit-group" *ngIf="movieDetailsPersons.directors?.length > 0">
+                    <div class="label">Director</div>
+                    <div class="names">
+                      <span *ngFor="let director of movieDetailsPersons.directors; let last=last">
+                        <span class="name-link" (click)='goToDiscover("person", director.id, director.name)'>
+                          {{ director.name }}
+                        </span>{{ last ? '' : ', ' }}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <!--(click)='goToPerson(cast.id)' v1-disabled -->
-                    <h6 class='text-hyperlink'>{{cast.name}}</h6>
-                    <p>{{cast.character}}</p>
+
+                  <!-- Writers -->
+                  <div class="credit-group" *ngIf="movieDetailsPersons.writers?.length > 0">
+                    <div class="label">Writers</div>
+                    <div class="names">
+                      <span *ngFor="let writer of movieDetailsPersons.writers; let last=last">
+                        <span class="name-link" (click)='goToDiscover("person", writer.id, writer.name)'>
+                          {{ writer.name }}
+                        </span>{{ last ? '' : ', ' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Cast (Short List) -->
+                  <div class="credit-group" *ngIf="movieDetailsPersons.cast?.length > 0">
+                    <div class="label">Cast</div>
+                    <div class="names">
+                      <span *ngFor="let cast of movieDetailsPersons.cast | slice:0:5; let last=last">
+                        <span class="name-link" (click)='goToDiscover("person", cast.id, cast.name)'>
+                          {{ cast.name }}
+                        </span>{{ last ? '' : ', ' }}
+                      </span>
+                      <span class="name-link fst-italic ms-2" (click)="detailsTabGroup.selectedIndex = 2">See All...</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </ng-template>
+            </mat-tab>
 
-          <ng-template #similarMoviesTemplate>
-            SIMILAR MOVIES
-          </ng-template>
+            <!-- Reviews Tab -->
+            <mat-tab label="REVIEWS" disabled>
+              <div class="py-3">No reviews available.</div>
+            </mat-tab>
+
+            <!-- Credits Tab (Full) -->
+            <mat-tab label="CREDITS">
+              <div class="py-3">
+                 <div class="row">
+                   <div class="col-12">
+                     <h5 class="mb-3">Full Cast</h5>
+                     <!-- Placeholder for full cast grid if implemented later -->
+                     <p>Full cast list coming soon.</p>
+                   </div>
+                 </div>
+              </div>
+            </mat-tab>
+
+            <!-- Similar Tab -->
+            <mat-tab label="SIMILAR">
+              <ng-container *ngTemplateOutlet="similarMoviesTemplate"></ng-container>
+            </mat-tab>
+
+          </mat-tab-group>
 
         </div>
       </div>
-
     </div>
   </div>
 </div>
+
+<ng-template #similarMoviesTemplate>
+  <div class="py-3">
+    <p>Similar movies content...</p>
+  </div>
+</ng-template>
