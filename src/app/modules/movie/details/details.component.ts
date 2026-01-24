@@ -41,10 +41,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
   hasData = false;
   streamLink = '';
   troubleQuote;
-  movieDetailsDirectors;
-  movieDetailsWriters;
-  movieDetailsProducers;
-  movieDetailsCast;
+  movieDetailsPersons = {
+    directors: [],
+    writers: [],
+    producers: [],
+    cast: [],
+  };
   movieCertification;
   movieDetails = new MDBMovie();
   userLocation = 'US';
@@ -82,13 +84,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-
-    // this.activatedRoute.snapshot.subscribe(val => {
     this.activatedRoute.params.subscribe(val => {
       this.showVideo = false;
       this.getMovieOnline(val['id']);
     });
-
   }
 
   ngOnDestroy(): void {
@@ -101,13 +100,13 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Loads minor video data.
    */
   loadVideoData() {
-    this.movieDetailsDirectors = this.getDirectors();
-    this.movieDetailsWriters = this.getWriters();
-    this.movieDetailsProducers = this.getProducers();
-    this.movieDetailsCast = this.getCast();
+    this.movieDetailsPersons.directors = this.getDirectors();
+    this.movieDetailsPersons.writers = this.getWriters();
+    this.movieDetailsPersons.producers = this.getProducers();
+    this.movieDetailsPersons.cast = this.getCast();
     // this.movieCertification = this.getMovieCertification()
     this.getUserMovieData();
-    this.getLibrary();
+    // this.getLibrary();
     this.displayBackdrop();
     this.getTrailer();
 
