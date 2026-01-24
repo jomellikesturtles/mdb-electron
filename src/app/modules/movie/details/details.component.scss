@@ -1,143 +1,240 @@
 @import '../../../variables.scss';
-::ng-deep .mat-tab-body-content {
-  overflow-x: hidden;
+
+// Host element should take full height
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
 }
 
-div {
-  outline-style: auto;
-  outline-width: 1px;
-  outline-color: green;
-}
-
-
-* {
-  font-size: 1rem;
-  // font-size: 1.1rem;
-}
-
-.credit-label {
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.credit-list-wrap {
-
-  display: inline-block;
-  // width: 100%;
-  white-space: nowrap;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
-  margin-bottom: 0px;
-}
-
-.mdb-primary {
-  background-color: $mdb-primary;
-}
-
-
-.mdb-button {
-  border-radius: 8px; // or .35em
-}
-
-
-@media only screen and (min-width: 765px) and (max-width: 1449px),
-only screen and (min-width: 1450px) {
-  // p {
-  //   font-size: 4rem;
-  // }
-
-  .movie-title {
-    font-size: 3.25rem;
-  }
-}
-
-@media only screen and (min-width: 400px) and (max-width: 549px),
-only screen and (min-width: 350px) and (max-width: 399px),
-only screen and (max-width: 349px) {
-
-  .movie-title {
-    font-size: 1.625rem;
-  }
-}
-
-.credit-overview-container {
-  padding-top: .5em;
-}
-
-.image-cover {
+// Fixed Backdrop Background
+.backdrop-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  z-index: 0; // Brought up from -1 to be visible over parent backgrounds
 }
 
-.mdb-poster {
-  min-width: calc(280px*.67);
-  min-height: 280px;
+// Dark Gradient Overlay for Readability
+.backdrop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(18, 18, 18, 0.95) 100%);
+  // Add a solid background for mobile fallback or extremely wide screens
+  background-color: rgba(0, 0, 0, 0.7); 
 }
 
-.mdb-poster:hover {
-  // box-shadow: 0 0 10px black;
-  // cursor: pointer; v1-disabled
+// Main Content Wrapper
+.content-wrapper {
+  position: relative;
+  min-height: 100vh;
+  padding-top: 80px; // Space for navbar if needed
+  padding-bottom: 40px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 1; // Ensure content sits on top of the backdrop
 }
 
-.color-secondary {
-  color: #b1b1b1;
-}
-
-.font-emphasize {
-  font-weight: 600;
-}
-
-.details-button {
-  outline: none;
-  cursor: pointer;
-}
-
-.mat-tab-body-content {
-  // color: black !important;
-  overflow-x: hidden !important;
-}
-
-.mat-tab-label {
-  color: white !important
-}
-
-.mat-tab-label-active {
-  opacity: 1 !important;
-}
-
-.mat-ink-bar {
-  background-color: $mdb-primary !important
-}
-
-.active-label {
-  opacity: 0;
-}
-
-.play-trailer-btn {
-  padding-left: 1.5em;
-  padding-right: 1.5em;
-  padding-top: .5em;
-  padding-bottom: .5em;
-  margin-left: 20px;
+// Poster Styling
+.poster-card {
+  width: 100%;
+  max-width: 300px;
   border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  background-size: cover;
+  background-position: center;
+  aspect-ratio: 2/3;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+  }
 }
 
-#ratingsIcon {
-  color: hsl(56, 100%, 50%)
+// User Action Buttons (Icons)
+.user-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  button {
+    transition: transform 0.2s;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  img {
+    filter: invert(1);
+    height: 1.3em;
+  }
 }
 
-.play-btn {
-  padding: 2em;
-  padding-top: .5em;
-  padding-bottom: .5em;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
+// Typography & Text
+.movie-title {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.1;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  
+  // Responsive Font Sizes
+  font-size: 2rem;
+  @media (min-width: 768px) { font-size: 3rem; }
+  @media (min-width: 1200px) { font-size: 3.5rem; }
 }
 
-.play-btn-dropdown-toggle {
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+.metadata-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 1.1rem;
+  color: #ddd;
+  margin-bottom: 1rem;
+
+  .year {
+    font-weight: 600;
+    color: $mdb-primary; // Accent color
+    cursor: pointer;
+    &:hover { text-decoration: underline; }
+  }
+
+  .rating {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    
+    img {
+      height: 1.2em;
+    }
+  }
 }
 
-.mat-divider {
-  border-top-color: rgb(202, 202, 202);
+// Genre Pills
+.genres-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+
+  .genre-pill {
+    background-color: rgba(255, 255, 255, 0.15);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    color: #eee;
+
+    &:hover {
+      background-color: $mdb-primary;
+      color: #fff;
+    }
+  }
+}
+
+// Play Buttons Area
+.play-controls {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .btn-play {
+    background-color: $mdb-primary;
+    border: none;
+    padding: 0.6rem 2rem;
+    font-weight: 600;
+    border-radius: 4px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    &:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Overview Text
+.overview-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #ddd;
+  margin-bottom: 1.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 10px;
+
+  // Custom Scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255,255,255,0.3);
+    border-radius: 3px;
+  }
+}
+
+// Tabs Styling Overrides
+::ng-deep .mat-tab-label {
+  color: #bbb !important;
+  font-weight: 600;
+  
+  &.mat-tab-label-active {
+    color: #fff !important;
+    opacity: 1;
+  }
+}
+
+::ng-deep .mat-ink-bar {
+  background-color: $mdb-primary !important;
+}
+
+// Credits Section
+.credits-section {
+  .credit-group {
+    margin-bottom: 0.5rem;
+    display: flex;
+    
+    .label {
+      width: 100px;
+      font-weight: 600;
+      color: #bbb;
+      flex-shrink: 0;
+    }
+    
+    .names {
+      color: #ddd;
+      
+      .name-link {
+        cursor: pointer;
+        &:hover { color: $mdb-primary; text-decoration: underline; }
+      }
+    }
+  }
+}
+
+// Horizontal Scrolling for Cast (if used in future)
+.cast-scroller {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding-bottom: 1rem;
 }
