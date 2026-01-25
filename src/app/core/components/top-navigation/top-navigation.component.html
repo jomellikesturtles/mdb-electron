@@ -1,116 +1,69 @@
-<div style='user-select: none; -webkit-app-region: drag;height: 55px; background-color:black;
-flex-direction: row;
-flex-grow: 1;
-display: flex;
-position: relative;
-justify-content: space-between;
-align-items: center;'>
-  <!-- <div id='title-drag-region'
-    style='z-index: -1;-webkit-app-region: drag;top: 0;left: 0;display: block;position: absolute;width: 100%;height: 100%;'>
-  </div> -->
-  
-  <div class="nav-items-group d-flex align-items-center" style="margin-left: 10px;">
-    <!-- Hamburger Menu (New) -->
-    <div class="hamburger-btn" (click)="toggleSidebar.emit()" style="cursor: pointer; padding: 10px; margin-right: 10px; -webkit-app-region: no-drag;">
-      <img src="./assets/icons/menu.svg" alt="Menu" style="width: 24px; height: 24px; filter: invert(1);">
+<div class="navbar">
+
+  <!-- LEFT: Hamburger & Logo -->
+  <div class="nav-left">
+    <div class="hamburger-btn" (click)="toggleSidebar.emit()"
+      style="cursor: pointer; padding: 5px; -webkit-app-region: no-drag;">
+      <!-- <img src="./assets/icons/menu.svg" alt="Menu" style="width: 24px; height: 24px; filter: invert(1);"> -->
+      <!-- <mat-icon>close</mat-icon> -->
+      <!-- <mat-icon>menu</mat-icon> -->
+      <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="menu"></mat-icon>
+
+      <!-- <span class="material-symbols-outlined">
+        menu
+      </span> -->
     </div>
 
-    <div id='app-logo' routerLink='/dashboard' style='cursor: pointer; -webkit-app-region: no-drag;'>
-      <h1 style='margin: 0;'>LOGO</h1>
-    </div>
-  </div>
-
-  <div class='search-controls-container nav-items-group'>
-
-    <!-- <div class='btn-group'>
-
-      <input data-toggle='tooltip' title='Search title or IMDb id' #searchBar name="searchBar" class="form-control"
-        [(ngModel)]="searchQuery.query"
-        style='padding-right: 2rem;width:400px;margin-right: 10px; border-radius: .25rem; min-width: 50px;color:black'
-        placeholder="Search" (keyup.enter)="onSearch(searchQuery.query);" list='searchHistory' />
-      <datalist id="searchHistory">
-        <option *ngFor="let item of searchHistoryList">
-          {{item}}
-      </datalist>
-      <div id='searchClear' [style.visibility]="searchBar.value===''? 'hidden': 'visible'" (click)="searchBar.value=''"
-        data-toggle='tooltip' title='Clear' style='
-    background-image: url("./assets/icons/close.svg");'></div>
-    </div> -->
-
-    <!-- <mat-form-field class="example-full-width"> -->
-    <!-- <mat-label>Title or IMDb id</mat-label> -->
-    <!-- <input type="text" placeholder="Search title or IMDb id" aria-label="Search" matInput [matAutocomplete]="auto"
-      [formControl]="myControl"> -->
-    <form class="example-form">
-      <input data-toggle='tooltip' title='Search title or IMDb id' #searchBar name="searchBar" class="form-control"
-        [(ngModel)]="searchQuery.query"
-        style='padding-right: 2rem;width:400px;margin-right: 10px; min-width: 50px; margin-top:2px; color:black'
-        placeholder="Search" (keyup.enter)="onSearch(searchQuery.query);" list='searchHistory'
-        [matAutocomplete]="auto" />
-      <!-- <button mat-button *ngIf="searchQuery.query" matSuffix mat-icon-button aria-label="Clear"
-        (click)="searchQuery.query=''">
-        <mat-icon>close</mat-icon>
-      </button> -->
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-          {{option}}
-        </mat-option>
-      </mat-autocomplete>
-
-    </form>
-
-    <div id='searchEnter' style='background-image: url("./assets/icons/magnifiying-glass.svg"); margin-right: 10px;'
-      (click)="onSearch(searchQuery.query);" data-toggle='tooltip' title='Search'></div>
-
-    <button id='advancedFindButton' class="accent-color" style='margin-left:3px; cursor: pointer;' mat-flat-button
-      color="mdb-primary" (click)='onAdvancedSearch()'>
-      Advanced Search</button>
-  </div>
-
-  <div class='nav-items-group'>
-    <!-- <img style='cursor: pointer;height:80%;width: 80%; transform: translate(13%,12%);' title='Profile options'
-    id='dropdownMenuButton' class='icon-img' data-toggle='dropdown' aria-haspopup="true" aria-expanded="false" href='#'> -->
-    <div class='image-container'
-      style='border-radius: 50%;height:40px;width:40px;     margin-right: 10px; background-image: url("./assets/offline-image/clint-eastwood.jfif"); cursor: pointer;'
-      routerLink='./user/profile' data-toggle='tooltip' title='View profile'>
+    <div id='app-logo' routerLink='/dashboard' style='-webkit-app-region: no-drag;'>
+      <h1>LOGO</h1>
     </div>
   </div>
 
-  <!-- <div>
-    <div *ngIf="!isSignedIn">Sign in</div>
-    <div *ngIf="isSignedIn" class='dropdown' data-toggle='tooltip' style='z-index: 3000;
-  margin-left: auto;
-  position: absolute;
-  right: 138px;
-  height: 40px;
-  width: 40px; -webkit-app-region: no-drag;'>
-      <img style='cursor: pointer;height:80%;width: 80%; transform: translate(13%,12%);' title='Profile options'
-        id='dropdownMenuButton' class='icon-img' src='..svg' data-toggle='dropdown' aria-haspopup="true"
-        aria-expanded="false" href='#'>
+  <!-- CENTER: Cinematic Search Bar -->
+  <div class="search-controls-container">
+    <div class="search-wrapper">
+      <form class="example-form w-100">
+        <input #searchBar type="text" class="form-control" placeholder="Search titles, people, genres..."
+          [(ngModel)]="searchQuery.query" name="searchQuery" (keyup.enter)="onSearch(searchQuery.query)"
+          [matAutocomplete]="auto">
 
-      <div class='dropdown-menu' aria-labelledby="dropdownMenuButton">
-        <a class='dropdown-item' routerLink='./user/profile' href='#'>Profile</a>
-        <a class='dropdown-item' routerLink='./profile' href='#'>Account Settings</a>
-        <a class='dropdown-item' routerLink='./bookmarks' href='#'>Bookmarks</a>
-        <a class='dropdown-item' routerLink='./watched' href='#'>Watched</a>
-        <div class='dropdown-divider'></div>
-        <a class='dropdown-item' style='cursor: pointer;' (click)='signOut()'>Sign out</a>
-        <!-- <a *ngIf="isSignedIn" class='dropdown-item' style='cursor: pointer;' (click)='signOut()'>Sign out</a> -->
-  <!-- <a class='dropdown-item' style='cursor: pointer;' routerLink='./user' href='#'>Sign in</a> -->
-  <!-- <a *ngIf="!isSignedIn" class='dropdown-item' style='cursor: pointer;' routerLink='./user' href='#'>Sign in</a> -->
-  <!-- </div> -->
-  <!-- </div> -->
+        <!-- Search Icon (Clickable) -->
+        <img src="./assets/icons/magnifiying-glass.svg" class="search-icon" (click)="onSearch(searchQuery.query)"
+          matTooltip="Search">
 
-  <!-- </div> -->
-  <div *ngIf="isElectron" class='window-controls-container'>
-    <div class='window-icon-bg' (click)="onMinimize()">
-      <img class='icon-img' src='./assets/icons/minimize.svg'>
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </form>
     </div>
-    <div class='window-icon-bg' (click)="onRestore()">
-      <img class='icon-img' src='./assets/icons/maximize.svg'>
+
+    <!-- Advanced Search Icon Button -->
+    <button class="advanced-search-btn" (click)='onAdvancedSearch()' matTooltip="Advanced Search">
+      <img src="./assets/icons/gear.svg" style="width: 20px; height: 20px; filter: invert(0.8);">
+    </button>
+  </div>
+
+  <!-- RIGHT: Profile & Window Controls -->
+  <div class="nav-right">
+
+    <!-- Profile Avatar -->
+    <div class="profile-avatar" style="background-image: url('./assets/offline-image/clint-eastwood.jfif');"
+      routerLink='./user/profile' matTooltip="View Profile"></div>
+
+    <!-- Window Controls (Electron Only) -->
+    <div *ngIf="isElectron" class="window-controls-container">
+      <div class="window-icon-bg" (click)="onMinimize()">
+        <img class="icon-img" src="./assets/icons/minimize.svg">
+      </div>
+      <div class="window-icon-bg" (click)="onRestore()">
+        <img class="icon-img" src="./assets/icons/maximize.svg">
+      </div>
+      <div class="window-icon-bg window-close" (click)="onExit()">
+        <img class="icon-img" src="./assets/icons/close.svg">
+      </div>
     </div>
-    <div class='window-icon-bg window-close' (click)="onExit()">
-      <img class='icon-img' src='./assets/icons/close.svg'>
-    </div>
+
   </div>
 </div>
