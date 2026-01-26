@@ -1,11 +1,9 @@
-import { UsernameExistValidator, UsernameExistingValidator } from '@directives/username-exist.directive';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder, AbstractControl } from '@angular/forms';
-import { repeatPasswordValidator } from '@directives/repeat-password.directive';
+import { Router } from '@angular/router';
 import { CredentialsValidator } from '@directives/credentials.directive';
+import { AuthenticationService } from '@services/authentication.service';
 import { UtilsService } from '@services/utils.service';
-import { repeat, debounceTime, take, map } from 'rxjs/operators';
-import { addAriaReferencedId } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-signin',
@@ -14,79 +12,50 @@ import { addAriaReferencedId } from '@angular/cdk/a11y';
 })
 export class SigninComponent implements OnInit {
 
-  ageList = [];
-  user = {
-    emailAddress: '',
-    password: ''
-  };
-  userSignUp = {
-    username: '',
-    emailAddress: '',
-    age: 0,
-    gender: '',
-    authType: '',
-    password: '',
-    repeatPassword: ''
-  };
   userSignIn = {
     usernameEmail: '',
     password: ''
   };
-  signUpForm: FormGroup;
   signInForm: FormGroup;
-  isSignIn = false;
   isOAuthValid = false;
   generalError = '';
 
   constructor(
     private credentialValidator: CredentialsValidator,
     private utilsService: UtilsService,
+    private authenticationService: AuthenticationService,
     private formBuilder: FormBuilder,
-    private usernameExistValidator: UsernameExistValidator,
+    private router: Router
   ) { }
 
   ngOnInit() {
-    // const env = this.utilsService.getEnvironment()
-    // if (env === 'web') {
-    //   this.isOAuthValid = true
-    // }
-
-    this.signUpForm = this.formBuilder.group({
-      username: [this.userSignUp.username, [Validators.required, Validators.minLength(4)],
-        // UsernameExistingValidator.validateUsername(this.afs)
-      ],
-      emailAddress: [this.userSignUp.emailAddress, [Validators.required, Validators.minLength(4), Validators.email]],
-
-      password: [this.userSignUp.password, [Validators.required, Validators.minLength(6)]],
-
-      repeatPassword: [this.userSignUp.repeatPassword, [Validators.required, Validators.minLength(6)]],
-    }, { validators: repeatPasswordValidator }
-    );
+    if (this.authenticationService.isAuthenticated()) {
+      this.router.navigate(['/dashboard']);
+      return;
+    }
 
     this.signInForm = new FormGroup({
       usernameEmail: new FormControl(this.userSignIn.usernameEmail, [Validators.required]),
       password: new FormControl(this.userSignIn.password, [Validators.required])
     },
     );
+    this.usernameEmail.setValue('user1');
+    this.password.setValue('Password@54321');
   }
 
-  get username() { return this.signUpForm.get('username'); }
-  get emailAddress() { return this.signUpForm.get('emailAddress'); }
-  get password() { return this.signUpForm.get('password'); }
-  get repeatPassword() { return this.signUpForm.get('repeatPassword'); }
-
-  onSignUp() {
-    console.log('submit');
-    const username = this.signUpForm.get('username').value;
-    const emailAddress = this.signUpForm.get('emailAddress').value;
-    const password = this.signUpForm.get('password').value;
-
-  }
+  get usernameEmail() { return this.signInForm.get('usernameEmail'); }
+  get password() { return this.signInForm.get('password'); }
 
   onSignIn() {
     console.log('onsignin');
-    const emailUsername = this.signInForm.get('usernameEmail').value;
-    const password = this.signInForm.get('password').value;
+    if (this.signInForm.valid) {
+      const emailUsername = this.signInForm.get('usernameEmail').value;
+      const password = this.signInForm.get('password').value;
+      // TODO: Call service to sign in
+      this.authenticationService.login({ email: '', username: emailUsername, password: password }).subscribe({
+
+      });
+    }
   }
 
   onSignInGoogle() {
@@ -94,23 +63,6 @@ export class SigninComponent implements OnInit {
     // this.auth.auth.signInWithRedirect(provider)
     // firebase.auth().getRedirectResult().then((e) => {
     // this.firebaseService.signInWithGoogle(provider)
-  }
-
-  emailDomainValidator(control: FormControl) {
-    const email = control.value;
-    if (email && email.indexOf("@") != -1) {
-      let [_, domain] = email.split('@');
-      if (domain !== 'codecraft.tv') {
-        const emailDomain = {
-          parsedDomain: domain
-        };
-        console.log(emailDomain);
-        return {
-          emailDomain
-        };
-      }
-    }
-    return null;
   }
 
 }

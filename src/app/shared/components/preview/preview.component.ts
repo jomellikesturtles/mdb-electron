@@ -6,7 +6,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from '@services/data.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MovieService } from '@services/movie/movie.service';
-import { PlayedService } from '@services/media/played.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
@@ -21,7 +20,6 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private dataService: DataService,
-    private watchedService: PlayedService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private mediaUserDataService: MediaUserDataService,
@@ -141,6 +139,9 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param movie the selected movie
    */
   async getVideoClip(movie: MDBMovie) {
+    if (!movie || !movie.tmdbId) {
+      return;
+    }
     this.previewMovie = movie;
     this.isHide = false;
     if (movie.tmdbId === this.playedTmdbId) {

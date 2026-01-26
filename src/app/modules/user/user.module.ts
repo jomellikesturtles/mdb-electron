@@ -2,6 +2,8 @@ import { UsernameExistValidatorDirective } from '@directives/username-exist.dire
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SigninComponent } from './signin/signin.component'
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { RegisterComponent } from './register/register.component';
 import { UserRoutingModule } from './user.routing.module';
 import { RepeatPasswordValidatorDirective } from '@directives/repeat-password.directive';
 import { CredentialsDirective } from '@directives/credentials.directive';
@@ -13,6 +15,8 @@ import { SharedModule } from '@shared/shared.module';
 @NgModule({
   declarations: [
     SigninComponent,
+    ResetPasswordComponent,
+    RegisterComponent,
     RepeatPasswordValidatorDirective,
     UsernameExistValidatorDirective,
     CredentialsDirective,
