@@ -1,13 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { LoggerService } from '@core/logger.service';
+import { ENDPOINT } from '@shared/endpoint.const';
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
+
+  private _isAuthenticated = signal<boolean>(!!sessionStorage.getItem('token'));
+  public isAuthenticated = this._isAuthenticated.asReadonly();
 
   constructor(
     private http: HttpClient,
@@ -18,11 +22,11 @@ export class AuthenticationService {
    * Login user
    * @param payload login payload
    */
-  login(payload: LoginPayload): Observable<string> {
-    const url = `/login`;
-
-    return this.http.post<string>(url, payload).pipe(map(e => {
-      sessionStorage.setItem('token', e);
+  login(payload: LoginPayload): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(ENDPOINT.LOGIN, payload).pipe(map((e: LoginResponse) => {
+      sessionStorage.setItem('token', e.authToken);
+      this._isAuthenticated.set(true);
+      return e;
     }
     ),
       catchError(this.handleError<any>('login')));
@@ -32,10 +36,9 @@ export class AuthenticationService {
    * @param payload login payload
    */
   logout(): Observable<any> {
-    const url = `/logout`;
-
-    return this.http.post<any>(url, {}).pipe(map(e => {
+    return this.http.post<any>(ENDPOINT.LOGOUT, {}).pipe(map(e => {
       sessionStorage.removeItem('token');
+      this._isAuthenticated.set(false);
     }
     ),
       catchError(this.handleError<any>('login')));
@@ -61,4 +64,10 @@ export class LoginPayload {
   username: string;
   email: string;
   password: string;
+}
+
+export class LoginResponse {
+  username: string;
+  authToken: string;
+  expiry: string;
 }

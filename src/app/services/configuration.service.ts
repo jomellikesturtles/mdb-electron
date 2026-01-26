@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoggerService } from '@core/logger.service';
+import { ENDPOINT } from '@shared/endpoint.const';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -14,9 +15,9 @@ export class ConfigurationService {
     private logger: LoggerService
   ) { }
   getConfiguration(): Observable<any> {
-    const BFF_URL = '';
-    const url = `${BFF_URL}/config`;
-    return this.http.get<any>(url).pipe(tap(_ => this.logger.info(`getConfiguration`)),
+    // const url = `${BFF_URL}/config`;
+    // const url = `${BFF_URL}/config/versions`;
+    return this.http.get<any>(ENDPOINT.ACTUATOR_HEALTH).pipe(tap(_ => this.logger.info(`getConfiguration`)),
       catchError(this.handleError<any>('getConfiguration')));
   }
 

@@ -6,29 +6,31 @@ import { PersonDetailsComponent } from 'app/modules/person/person-details/person
 import { PreviewComponent } from '@shared/components/preview/preview.component';
 import { MdbGuardGuard } from '../mdb-guard.guard';
 import { AdvancedFindComponent } from '@components/advanced-find/advanced-find.component';
+import { SigninComponent } from '@modules/user/signin/signin.component';
 
 const routes: Routes = [
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // homepage
   // { path: '', redirectTo: '/results', pathMatch: 'full' },
   { path: 'video', loadChildren: () => import('@modules/watch/video-player.module').then(m => m.VideoPlayerModule) },
-  { path: 'browse', component: BrowseComponent },
-  { path: 'preferences', loadChildren: () => import('app/modules/settings/preferences/preferences.module').then(m => m.PreferencesModule) },
-  { path: 'preferences/bulk-download', component: BulkDownloadComponent },
+  { path: 'browse', component: BrowseComponent, canActivate: [MdbGuardGuard] },
+  { path: 'preferences', loadChildren: () => import('app/modules/settings/preferences/preferences.module').then(m => m.PreferencesModule), canActivate: [MdbGuardGuard] },
+  { path: 'preferences/bulk-download', component: BulkDownloadComponent, canActivate: [MdbGuardGuard] },
 
-  { path: 'person-details/:id', component: PersonDetailsComponent },
-  { path: 'person-details', component: PersonDetailsComponent },
+  { path: 'person-details/:id', component: PersonDetailsComponent, canActivate: [MdbGuardGuard] },
+  { path: 'person-details', component: PersonDetailsComponent, canActivate: [MdbGuardGuard] },
   { path: 'preview', component: PreviewComponent },
 
-  { path: 'bookmarks', loadChildren: () => import('@modules/user/bookmarks/bookmarks.module').then(m => m.BookmarksModule), canLoad: [MdbGuardGuard] },
-  { path: 'watched', loadChildren: () => import('@modules/user/watched/watched.module').then(m => m.WatchedModule) },
-  { path: 'dashboard', loadChildren: () => import('@components/dashboard/dashboard.module').then(m => m.DashboardModule) },
-  { path: 'discover', loadChildren: () => import('@modules/movie/discover/discover.module').then(m => m.DiscoverModule) },
-  { path: 'library', loadChildren: () => import('@modules/person/library/library.module').then(m => m.LibraryModule) },
+  { path: 'bookmarks', loadChildren: () => import('@modules/user/bookmarks/bookmarks.module').then(m => m.BookmarksModule), canLoad: [MdbGuardGuard], canActivate: [MdbGuardGuard] },
+  { path: 'watched', loadChildren: () => import('@modules/user/watched/watched.module').then(m => m.WatchedModule), canActivate: [MdbGuardGuard] },
+  { path: 'dashboard', loadChildren: () => import('@components/dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [MdbGuardGuard] },
+  { path: 'discover', loadChildren: () => import('@modules/movie/discover/discover.module').then(m => m.DiscoverModule), canActivate: [MdbGuardGuard] },
+  { path: 'library', loadChildren: () => import('@modules/person/library/library.module').then(m => m.LibraryModule), canActivate: [MdbGuardGuard] },
 
-  { path: 'results', loadChildren: () => import('@components/results/results.module').then(m => m.ResultsModule) },
-  { path: 'details', loadChildren: () => import('@modules/movie/details/details.module').then(m => m.DetailsModule) },
+  { path: 'results', loadChildren: () => import('@components/results/results.module').then(m => m.ResultsModule), canActivate: [MdbGuardGuard] },
+  { path: 'details', loadChildren: () => import('@modules/movie/details/details.module').then(m => m.DetailsModule), canActivate: [MdbGuardGuard] },
   { path: 'user', loadChildren: () => import('@modules/user/user.module').then(m => m.UserModule) },
-  { path: 'advanced-find', component: AdvancedFindComponent },
+  { path: 'advanced-find', component: AdvancedFindComponent, canActivate: [MdbGuardGuard] },
+  { path: 'login', component: SigninComponent },
   { path: '**', redirectTo: '/dashboard', pathMatch: 'full' }, // not found
 
   // new structure:

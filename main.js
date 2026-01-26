@@ -154,8 +154,6 @@ function showSplash() {
     title: "OfflineBay by TechTac"
   });
 
-  // splashWindow.webContents.openDevTools();
-
   splashWindow.loadURL(
     url.format({
       pathname: path.join(__dirname, "WndSplash.html"),
@@ -206,9 +204,9 @@ function setSystemTray() {
 function showWindow() {
   mainWindow.show();
   mainWindow.focus();
-  // if (isMac) {
-  //   app.dock.show();
-  // }
+  if (isMac) {
+    app.dock.show();
+  }
 }
 
 ipcMain.on(IPCRendererChannel.STOP_STREAM, function (event, args) {
@@ -447,7 +445,11 @@ ipcMain.on(IPCRendererChannel.PREFERENCES_SET, function (event, data) {
  */
 ipcMain.on("movie-metadata", function (event, data) {
   let param2 = "";
-  offlineMovieDataService = forkChildProcess("src/assets/scripts/offlineMetadataService.js", [data[0], param2], PROC_OPTION);
+  offlineMovieDataService = forkChildProcess(
+    "src/assets/scripts/offlineMetadataService.js",
+    [data[0], param2],
+    PROC_OPTION
+  );
   offlineMovieDataService.stdout.on("data", (data) => printData(data));
   offlineMovieDataService.on("exit", function () {
     DEBUG.log("movie-metadata process ended");
@@ -460,7 +462,11 @@ ipcMain.on("movie-metadata", function (event, data) {
  */
 ipcMain.on("get-image", function (event, data) {
   DEBUG.log("image-data-service..", data[0], data[1]);
-  procmovieImageService = forkChildProcess("src/assets/scripts/image-data-service.js", [data[0], data[1], data[2], data[3]], PROC_OPTION);
+  procmovieImageService = forkChildProcess(
+    "src/assets/scripts/image-data-service.js",
+    [data[0], data[1], data[2], data[3]],
+    PROC_OPTION
+  );
   procmovieImageService.stdout.on("data", (data) => printData(data));
   procmovieImageService.on("exit", function () {
     DEBUG.log("image-data process ended");

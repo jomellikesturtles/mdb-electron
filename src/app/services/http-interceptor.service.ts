@@ -9,8 +9,21 @@ export class HttpInterceptorService implements HttpInterceptor {
 
   constructor() { }
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    req.headers.set('Authorization', sessionStorage.getItem('token'));
+
+    if (req.url.includes('mdb')) {
+      return next.handle(this.modifyRequest(req) ?? req);
+    }
+
     return next.handle(req);
+  }
+
+  modifyRequest(request: HttpRequest<any>): HttpRequest<any> {
+    let headers = request.headers.set('Authorization', 'Bearer ' + (sessionStorage.getItem('token')));
+
+    return request.clone({
+      headers,
+      withCredentials: false
+    });
   }
 }
 

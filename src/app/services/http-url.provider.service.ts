@@ -17,7 +17,8 @@ export class HttpUrlProviderService {
   }
   getBffAPI(endpoint: string, ...params: any[]) {
     endpoint = this.replaceParams(endpoint, API_TYPE.BFF, params);
-    return `${this.coreEnvironment[API_TYPE.BFF].uri}/${endpoint}`;
+    return endpoint;
+    // return `${this.coreEnvironment[API_TYPE.BFF].uri}/${endpoint}`;
   }
 
   private replaceParams(endpoint: string, apiType: API_TYPE, ...params: any[]): string {
