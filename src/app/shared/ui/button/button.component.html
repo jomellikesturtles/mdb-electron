@@ -1,0 +1,43 @@
+<!-- Primary -->
+<button *ngIf="variant === 'primary'" mat-raised-button color="primary" 
+        [type]="type" [disabled]="disabled || loading" 
+        [ngClass]="buttonClasses" (click)="handleClick($event)">
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</button>
+
+<!-- Secondary -->
+<button *ngIf="variant === 'secondary'" mat-flat-button color="accent" 
+        [type]="type" [disabled]="disabled || loading" 
+        [ngClass]="buttonClasses" (click)="handleClick($event)">
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</button>
+
+<!-- Danger -->
+<button *ngIf="variant === 'danger'" mat-raised-button color="warn" 
+        [type]="type" [disabled]="disabled || loading" 
+        [ngClass]="buttonClasses" (click)="handleClick($event)">
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</button>
+
+<!-- Outline -->
+<button *ngIf="variant === 'outline'" mat-stroked-button 
+        [type]="type" [disabled]="disabled || loading" 
+        [ngClass]="buttonClasses" (click)="handleClick($event)">
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</button>
+
+<!-- Text / Ghost -->
+<button *ngIf="variant === 'text' || variant === 'ghost'" mat-button 
+        [type]="type" [disabled]="disabled || loading" 
+        [ngClass]="buttonClasses" (click)="handleClick($event)">
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</button>
+
+<!-- Shared Content Template -->
+<ng-template #content>
+  <div class="content-wrapper">
+    <mat-spinner *ngIf="loading" [diameter]="size === 'sm' ? 16 : 24" class="spinner"></mat-spinner>
+    <mat-icon *ngIf="icon && !loading" class="btn-icon">{{ icon }}</mat-icon>
+    <span [class.invisible]="loading && !icon"><ng-content></ng-content></span>
+  </div>
+</ng-template>

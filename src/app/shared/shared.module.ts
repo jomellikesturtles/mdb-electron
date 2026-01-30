@@ -16,6 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { UiModule } from './ui/ui.module';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatDividerModule,
     MatProgressSpinnerModule,
     MatMenuModule, MatButtonModule, MatIconModule,
+    UiModule
     // UserIdleModule.forRoot({ idle: 1, timeout: 1, ping: 1 })
     // UserIdleModule.forRoot({ idle: 3, timeout: 1, ping: 3 })
   ],
@@ -49,12 +51,13 @@ import { MatIconModule } from '@angular/material/icon';
     HHMMSSPipe,
     HorizontalCardListComponent,
     MatDividerModule,
-    MatProgressSpinnerModule, MatButtonModule, MatIconModule,
+    MatProgressSpinnerModule, MatButtonModule, MatIconModule, MatTooltipModule,
     RuntimeDisplayPipe,
     CommaSpacePipe,
     SimplifySizePipe,
     MagnetPipe,
     GenrePipe,
+    UiModule
   ]
 })
 export class SharedModule { }
