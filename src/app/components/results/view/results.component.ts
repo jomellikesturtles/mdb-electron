@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
+import { ISearchQuery, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { DataService } from '@services/data.service';
 import { MovieService } from '@services/movie/movie.service';
-import { ISearchQuery } from '@core/components/top-navigation/top-navigation.component';
 import GeneralUtil from '@utils/general.util';
 
 @Component({

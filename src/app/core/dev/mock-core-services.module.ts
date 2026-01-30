@@ -20,10 +20,13 @@ import { ProfileService } from "@services/profile/profile.service";
 import { MockProfileService } from "./services/mock-profile.service";
 import { MockTorrentService } from "./services/mock-torrent.service";
 import { TorrentService } from "@services/torrent/torrent.service";
+import { AuthenticationService } from "@services/authentication.service";
+import { MockAuthenticationService } from "@services/mock-authentication.service";
 
 @NgModule({
   imports: [HttpClientModule],
   providers: [
+    { provide: AuthenticationService, useExisting: MockAuthenticationService },
     { provide: MediaUserDataService, useExisting: MockUserDataService },
     { provide: BookmarkService, useExisting: MockBookmarkService },
     { provide: FavoriteService, useExisting: MockFavoriteService },

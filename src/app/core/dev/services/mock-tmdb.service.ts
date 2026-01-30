@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { IRawTmdbResultObject } from "@models/interfaces";
 import { TMDB_External_Id } from "@models/tmdb-external-id.model";
-import { IProfile } from "@modules/user/profile/profile.component";
+import { IUserProfile } from "@models/user.model";
 
 
 @Injectable({ providedIn: "root" })
@@ -15,11 +15,11 @@ export class MockListService {
   }
 
   getFindMovie() {
-    this.http.get<IProfile>('assets/mock-data/profile.json');
+    this.http.get<IUserProfile>('assets/mock-data/profile.json');
   }
 
   getTmdbMovieDetails() {
-    this.http.get<IProfile>('assets/mock-data/profile.json');
+    this.http.get<IUserProfile>('assets/mock-data/profile.json');
   }
 
   searchTmdb() {
@@ -28,7 +28,7 @@ export class MockListService {
 
   getTmdbVideos() {
     // `..../movie/1234/videos?...
-    this.http.get<IProfile>('assets/mock-data/tmdb-video-list.json');
+    this.http.get<IUserProfile>('assets/mock-data/tmdb-video-list.json');
   }
 
 }
