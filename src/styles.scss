@@ -1,273 +1,264 @@
 @use "@angular/material" as mat;
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
-// @import "~@angular/material/theming";
 
-// Plus imports for other components in your app.
+// =============================================================================
+// NETFLIX-INSPIRED COLOR PALETTE
+// =============================================================================
+$netflix-red: #E50914;
+$netflix-black: #141414;
+$netflix-dark-gray: #181818; // Slightly lighter than black for cards/elements
+$netflix-light-gray: #E5E5E5;
+$netflix-white: #FFFFFF;
+$netflix-gray-text: #B3B3B3;
 
-// // Include the common styles for Angular Material. We include this here so that you only
-// // have to load a single css file for Angular Material in your app.
-// // Be sure that you only ever include this mixin once!
-// @include mat.core();
+// =============================================================================
+// MATERIAL THEME OVERRIDES (Dark Theme Base)
+// =============================================================================
+@include mat.core();
 
-// // Define the palettes for your theme using the Material Design palettes available in palette.scss
-// // (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// // hue. Available color palettes: https://material.io/design/color/
-$mdb-electron-primary: mat.define-palette(mat.$indigo-palette, 500);
-// $mdb-electron-primary: mat.$mat-indigo;
-// // $mdb-electron-primary: mat-palette(mat.$mat-indigo);
-$mdb-electron-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
-// $mdb-electron-accent: mat.$mat-pink, A200, A100, A400;
-// $mdb-electron-accent: mat-palette(mat.$mat-pink, A200, A100, A400);
+// Custom Primary Palette (Red)
+$mdb-primary-palette: mat.define-palette(mat.$red-palette, 700);
+$mdb-accent-palette: mat.define-palette(mat.$grey-palette, A200, A100, A400);
+$mdb-warn-palette: mat.define-palette(mat.$red-palette);
 
-// The warn palette is optional (defaults to red).
-// $mdb-electron-warn: mat-palette($mat-red);
-$mdb-electron-warn: mat.define-palette(mat.$red-palette);
+// Dark Theme Definition
+$mdb-dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $mdb-primary-palette,
+    accent: $mdb-accent-palette,
+    warn: $mdb-warn-palette,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
 
-// Create the theme object (a Sass map containing all of the palettes).
-$mdb-electron-theme: mat.define-light-theme(
-  (
-    (
-      color: (
-        primary: $mdb-electron-primary,
-        accent: $mdb-electron-accent,
-      ),
-    )
-  )
-);
+// Apply the theme
+@include mat.all-component-themes($mdb-dark-theme);
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-// @include angular-material-theme($mdb-electron-theme);
+// =============================================================================
+// GLOBAL RESETS & TYPOGRAPHY
+// =============================================================================
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; // Netflix stack
+  background-color: $netflix-black;
+  color: $netflix-white;
+  -webkit-font-smoothing: antialiased;
+}
 
-// https://coolors.co/ff3e04-007bff-e3c0d3-f1c40f-343330
-/* You can add global styles to this file, and also import other style files */
-@import "bootstrap/dist/css/bootstrap.min.css";
-
+// =============================================================================
+// GLOBAL SCROLLBARS
+// =============================================================================
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 *::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+  background: $netflix-black; 
   box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
-  // t
-  border-radius: 3px;
 }
 
 *::-webkit-scrollbar-thumb {
-  // background-color: darkgrey;
-  // outline: 1px solid slategrey;
-  border-radius: 3px;
-  -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
-  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
   background-color: #555;
+  border-radius: 4px;
 }
 
-.force-overflow {
-  min-height: 350px;
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #888;
 }
 
-* {
-  -webkit-user-select: none;
-  // color: whitesmoke
+// =============================================================================
+// COMMON ELEMENTS
+// =============================================================================
+
+// Buttons (Global Defaults)
+button {
+  cursor: pointer;
+  text-transform: none; // Material defaults to uppercase usually
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
 }
 
-p,
-label,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-span {
-  cursor: context-menu;
-  color: white;
+// Headings
+h1, h2, h3, h4, h5, h6 {
+  color: $netflix-white;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
 }
 
-// snackbar
+p, span, label {
+  color: $netflix-gray-text;
+  
+  &.text-white {
+    color: $netflix-white !important;
+  }
+}
+
+a {
+  color: $netflix-white;
+  text-decoration: none;
+  transition: color 0.2s;
+  
+  &:hover {
+    color: $netflix-gray-text; 
+    text-decoration: underline;
+  }
+}
+
+// =============================================================================
+// UTILITY CLASSES (Replacing Bootstrap Basics)
+// =============================================================================
+.container {
+  width: 100%;
+  padding-right: 4%;
+  padding-left: 4%;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1920px;
+}
+
+.d-flex { display: flex !important; }
+.flex-column { flex-direction: column !important; }
+.align-items-center { align-items: center !important; }
+.justify-content-center { justify-content: center !important; }
+.justify-content-between { justify-content: space-between !important; }
+.gap-1 { gap: 0.25rem !important; }
+.gap-2 { gap: 0.5rem !important; }
+.gap-3 { gap: 1rem !important; }
+.gap-4 { gap: 1.5rem !important; }
+
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }
+.mb-5 { margin-bottom: 3rem !important; }
+
+.mt-1 { margin-top: 0.25rem !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+.mt-3 { margin-top: 1rem !important; }
+.mt-4 { margin-top: 1.5rem !important; }
+
+.me-2 { margin-right: 0.5rem !important; }
+.ms-auto { margin-left: auto !important; }
+
+.p-3 { padding: 1rem !important; }
+.py-3 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.px-3 { padding-left: 1rem !important; padding-right: 1rem !important; }
+
+.w-100 { width: 100% !important; }
+.text-center { text-align: center !important; }
+.fw-bold { font-weight: 700 !important; }
+
+// =============================================================================
+// COMPONENT OVERRIDES
+// =============================================================================
+
+// Snackbar
 #snackbar {
   visibility: hidden;
-  /* Hidden by default. Visible on click */
   min-width: 250px;
-  /* Set a default minimum width */
-  margin-left: -125px;
-  /* Divide value of min-width by 2 */
   background-color: #333;
-  /* Black background color */
   color: #fff;
-  /* White text color */
   text-align: center;
-  /* Centered text */
   border-radius: 2px;
-  /* Rounded borders */
   padding: 16px;
-  /* Padding */
   position: fixed;
-  /* Sit on top of the screen */
   z-index: 5000;
-  /* Add a z-index if needed */
   left: 50%;
-  /* Center the snackbar */
   bottom: 30px;
-  /* 30px from the bottom */
+  transform: translateX(-50%); // Better centering
 }
 
-/* Show the snackbar when clicking on a button (class added with JavaScript) */
 #snackbar.show {
   visibility: visible;
-  /* Show the snackbar */
-  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
-  However, delay the fade out process for 2.5 seconds */
-  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
   animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 
-/* Animations to fade the snackbar in and out */
-@-webkit-keyframes fadein {
-  from {
-    bottom: 0;
-    opacity: 0;
-  }
-
-  to {
-    bottom: 30px;
-    opacity: 1;
-  }
-}
-
 @keyframes fadein {
-  from {
-    bottom: 0;
-    opacity: 0;
-  }
-
-  to {
-    bottom: 30px;
-    opacity: 1;
-  }
-}
-
-@-webkit-keyframes fadeout {
-  from {
-    bottom: 30px;
-    opacity: 1;
-  }
-
-  to {
-    bottom: 0;
-    opacity: 0;
-  }
+  from { bottom: 0; opacity: 0; }
+  to { bottom: 30px; opacity: 1; }
 }
 
 @keyframes fadeout {
-  from {
-    bottom: 30px;
-    opacity: 1;
-  }
-
-  to {
-    bottom: 0;
-    opacity: 0;
-  }
+  from { bottom: 30px; opacity: 1; }
+  to { bottom: 0; opacity: 0; }
 }
 
-.jumbo-message {
-  color: slategray;
-  font-size: 10vh;
-}
-
-body {
-  height: 100%;
-  background-color: rgb(32, 32, 32);
-}
-
-.movie-cards-display-grid {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.overlay {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  width: 100%;
-  opacity: 0;
-  transition: 0.5s ease;
-}
-
-.overlay-add {
-  background-color: #38ec14;
-}
-
-.overlay-remove {
-  background-color: #fc0000;
-}
-
+// Movie Cards
 .movie-card-image-container {
-  background-color: white;
-  box-shadow: 0 0 10px black;
-  position: relative;
-  background-size: cover;
-  background-position: center;
+  background-color: $netflix-dark-gray;
+  transition: transform 0.2s;
   cursor: pointer;
+  
+  &:hover {
+    transform: scale(1.05);
+    z-index: 10;
+  }
 }
 
-.movie-card-image-container:hover img {
-  opacity: 0.5;
+// Material Card Overrides for Dark Theme consistency
+.mat-mdc-card {
+  background-color: $netflix-dark-gray !important;
+  color: $netflix-white !important;
+  border: 1px solid #333;
 }
 
-.overlay:hover {
-  opacity: 0.5;
+.mat-mdc-dialog-container .mat-mdc-dialog-surface {
+
+  background-color: $netflix-dark-gray !important;
+
+  color: $netflix-white !important;
+
 }
 
-.selected-movie-card-image-container {
-  background-color: rgb(32, 32, 32);
-  box-shadow: 0 0 10px black;
-  position: relative;
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
-}
 
-.selected-movie-card-image-container:hover img {
-  opacity: 0.5;
-}
 
-.selected-movie-card-image-container:hover .overlay {
-  opacity: 0.5;
-}
+// Material Tabs Overrides
 
-.text-hyperlink:hover {
-  cursor: pointer;
-  text-decoration: underline;
-}
+.mat-mdc-tab-group {
 
-.image-container {
-  background-size: cover;
-  background-position: center;
-  background-color: white;
-}
+  .mat-mdc-tab-label-container {
 
-.card-list-horizontal {
-  overflow-y: hidden;
-  overflow-x: scroll;
-  padding-top: 10px;
-}
+    border-bottom: 1px solid #333;
 
-html,
-body {
-  height: 100%;
-}
+  }
 
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  
+
+  .mat-mdc-tab {
+
+    color: $netflix-gray-text;
+
+    font-weight: 600;
+
+    font-size: 1rem;
+
+    letter-spacing: 0.5px;
+
+    
+
+    &.mdc-tab--active {
+
+      color: $netflix-white;
+
+    }
+
+  }
+
+  
+
+  .mat-mdc-tab-indicator .mat-mdc-tab-indicator__content {
+
+    border-color: $netflix-red !important;
+
+    border-top-width: 4px !important; // Thicker line like Netflix
+
+  }
+
 }
