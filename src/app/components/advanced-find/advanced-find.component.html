@@ -15,6 +15,14 @@
         </button>
       </mat-form-field>
 
+      <h4>AI Prompt <small>(Beta)</small></h4>
+      <mat-form-field class="example-form-field" style="width: 100%;">
+        <textarea matInput placeholder="Describe what you want to watch..." formControlName='aiPrompt' style='color:white; min-height: 60px;'></textarea>
+        <button mat-button *ngIf="searchForm.controls.aiPrompt.value" matSuffix mat-icon-button aria-label="Clear" (click)="searchForm.controls.aiPrompt.setValue('')">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
       <h4>Genre</h4>
 
       <mat-checkbox class="example-margin" (change)="changeGenreAndOr($event.checked)">AND

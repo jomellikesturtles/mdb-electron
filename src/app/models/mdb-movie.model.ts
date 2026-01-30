@@ -33,12 +33,14 @@ export class MDBMovie {
   video: boolean;
   // to map further
   recommendations: any;
+  similar: any;
   images: any;
   videos: any;
   productionCompanies: any;
   collection: any;
   productionCountries: any;
   releaseDates: any;
+  reviews: any;
 
   constructor(value?: any) {
     if (value != null) {
@@ -99,12 +101,14 @@ export class MDBMovie {
     this.video = value['video'];
 
     this.recommendations = value['recommendations'];
+    this.similar = value['similar'];
     this.images = value['images'];
     this.videos = value['videos'];
     this.productionCompanies = value['production_companies'] || value['productionCompanies'];
     this.collection = value['belongs_to_collection'] || value['collection'];
     this.productionCountries = value['production_countries'] || value['productionCountries'];
     this.releaseDates = value['release_dates'] || value['releaseDates'];
+    this.reviews = value['reviews'];
 
   }
 }

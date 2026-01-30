@@ -1,16 +1,14 @@
 import {
-  AfterViewInit, Component, OnInit
+  AfterViewInit, Component, OnInit, OnDestroy
 } from '@angular/core';
 import { GENRES, SORT_BY } from '@shared/constants';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ISearchQuery } from '@core/components/top-navigation/top-navigation.component';
 import { MovieService } from '@services/movie/movie.service';
-import { IGenre, TmdbParameters } from '@models/interfaces';
+import { IGenre, TmdbParameters, ISearchQuery } from '@models/interfaces';
 import { MatOptionSelectionChange } from '@angular/material/core';
 import { DataService } from '@services/data.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import GeneralUtil from '@utils/general.util';
 
 @Component({
@@ -18,7 +16,7 @@ import GeneralUtil from '@utils/general.util';
   templateUrl: './advanced-find.component.html',
   styleUrls: ['./advanced-find.component.scss']
 })
-export class AdvancedFindComponent implements OnInit, AfterViewInit {
+export class AdvancedFindComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
@@ -31,7 +29,7 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
   genresList = GENRES;
   sortByList = SORT_BY;
   browseLists = [];
-  Arr = Array; //Array type captured in a variable
+  Arr = Array; // Array type captured in a variable
   num: number = 20;
   searchForm: FormGroup;
   DEFAULT_SEARCH_QUERY: ISearchQuery = {
@@ -44,7 +42,8 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
     availability: 'all',
     ratingAverageFrom: 0,
     ratingAverageTo: 10,
-    sortBy: 'popularity.desc'
+    sortBy: 'popularity.desc',
+    aiPrompt: ''
   };
   ratingList = [];
   averageRatingsFromList = [];
@@ -68,6 +67,7 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
     GeneralUtil.DEBUG.log(this.genreListVal);
     this.searchForm = this.formBuilder.group({
       query: ['', []],
+      aiPrompt: ['', []],
       genres: this.formBuilder.array([]),
       yearFrom: [this.DEFAULT_SEARCH_QUERY.yearFrom, [Validators.required]],
       yearTo: [this.DEFAULT_SEARCH_QUERY.yearTo, [Validators.required]],
@@ -87,8 +87,6 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
     for (let index = (new Date).getUTCFullYear(); index >= 1901; index--) {
       this.releaseYearsFromList.push(index);
       this.releaseYearsToList.push(index);
-    }
-    for (let index = (new Date).getUTCFullYear(); index >= 1901; index--) {
     }
   }
 
@@ -154,6 +152,15 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
     GeneralUtil.DEBUG.log(this.searchForm.controls);
 
     const paramMap = new Map<TmdbParameters, any>();
+    const aiPrompt = this.searchForm.get('aiPrompt').value;
+
+    if (aiPrompt) {
+      // Future integration: Process AI prompt here
+      // For now, we can perhaps log it or treat it as keywords if meaningful
+      GeneralUtil.DEBUG.log('AI Prompt:', aiPrompt);
+      // paramMap.set(TmdbParameters.WithKeywords, aiPrompt); // Optional: treat as keywords?
+    }
+
     paramMap.set(TmdbParameters.WithKeywords, this.searchForm.get('query').value);
     paramMap.set(TmdbParameters.WithGenres, this.searchForm.get('genres').value.join(this.genreAndOr));
     paramMap.set(TmdbParameters.PrimaryReleaseDateGreater, this.searchForm.get('yearFrom').value + '-01-01');
@@ -175,12 +182,12 @@ export class AdvancedFindComponent implements OnInit, AfterViewInit {
     this.searchForm.get('averageRatingFrom').setValue(this.DEFAULT_SEARCH_QUERY.ratingAverageFrom);
     this.searchForm.get('averageRatingTo').setValue(this.DEFAULT_SEARCH_QUERY.ratingAverageTo);
     this.searchForm.get('sortBy').setValue(this.DEFAULT_SEARCH_QUERY.sortBy);
+    this.searchForm.get('aiPrompt').setValue('');
   }
 
   closeAdvancedSearch() {
-
+    // Logic to close advanced search if needed
   }
-
 
   ngOnDestroy(): void {
     GeneralUtil.DEBUG.log('destroy advanced find');

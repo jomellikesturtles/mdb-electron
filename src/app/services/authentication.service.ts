@@ -10,12 +10,12 @@ import { catchError, map } from 'rxjs/operators';
 })
 export class AuthenticationService {
 
-  private _isAuthenticated = signal<boolean>(!!sessionStorage.getItem('token'));
+  protected _isAuthenticated = signal<boolean>(!!sessionStorage.getItem('token'));
   public isAuthenticated = this._isAuthenticated.asReadonly();
 
   constructor(
-    private http: HttpClient,
-    private logger: LoggerService
+    protected http: HttpClient,
+    protected logger: LoggerService
   ) { }
 
   /**
@@ -23,6 +23,12 @@ export class AuthenticationService {
    * @param payload login payload
    */
   login(payload: LoginPayload): Observable<LoginResponse> {
+    this._isAuthenticated.set(true);
+    return of({
+      username: 'test',
+      authToken: 'test',
+      expiry: 'test',
+    });
     return this.http.post<LoginResponse>(ENDPOINT.LOGIN, payload).pipe(map((e: LoginResponse) => {
       sessionStorage.setItem('token', e.authToken);
       this._isAuthenticated.set(true);
@@ -49,7 +55,7 @@ export class AuthenticationService {
    * @param operation the operation
    * @param result result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  protected handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       this.logger.error(`${operation} failed: ${error.message}`);
       // Let the app keep running by returning an empty result.

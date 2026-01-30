@@ -610,6 +610,29 @@ export enum GenreCodes {
   Sport = 20006,
 }
 
+export interface ISearchQuery {
+  query: string;
+  yearFrom: number;
+  yearTo: number;
+  genres: MovieGenre[];
+  type: string;
+  isAvailable: string;
+  availability: string; // all, offline, netflix
+  ratingCount?: number;
+  ratingAverage?: number;
+  ratingAverageFrom?: number;
+  ratingAverageTo?: number;
+  sortBy: string;
+  aiPrompt?: string;
+}
+
+export interface ITmdbSearchQuery {
+  keywords: string;
+  decade: number;
+  yearTo: number;
+  genres: IGenre[];
+}
+
 
 
 /**
