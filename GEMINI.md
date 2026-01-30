@@ -66,7 +66,15 @@
 *   Electron scripts are manually forked in `main.js`; ensure error handling and process cleanup are robust.
 
 ## 5. Conventions
+
 *   **Modularization:** New features should reside in `src/app/modules/`.
+
 *   **State:** Use Akita `EntityStore` for data collections.
+
 *   **Background Tasks:** CPU-intensive tasks must be offloaded to child processes in `src/assets/scripts/`.
+
 *   **Communication:** Use typed IPC channels (defined in `src/assets/IPCMainChannel.json` and `IPCRendererChannel.json`).
+
+*   **Verification:** Always check for compilation errors after making code changes (e.g., using `npx ng build --watch=false`).
+
+*   **UI/UX:** Use DevTools MCP (screenshot/snapshot) to verify progress and visual consistency when dealing with UI changes.
