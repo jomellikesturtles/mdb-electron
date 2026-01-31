@@ -13,9 +13,9 @@ export class AppComponent implements OnInit {
   constructor(private webSocketService: WebSocketService, private configService: ConfigurationService) { }
   messageSubscription: Subscription;
   ngOnInit() {
-    this.configService.getConfiguration().subscribe(e => {
-      console.log(e);
-    });
+    // this.configService.getConfiguration().subscribe(e => {
+    //   console.log(e);
+    // });
     // this.messageSubscription = this.webSocketService.get.subscribe(msg => {
     //   console.log("Response from websocket: " + msg);
     // });

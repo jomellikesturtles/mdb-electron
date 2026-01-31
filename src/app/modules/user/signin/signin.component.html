@@ -1,51 +1,37 @@
-<div class='container-fluid' style='height:100%'>
-  <div class='row' style='height:100%'>
-    <!-- sign in -->
-    <div class='col col-6' style='height:100%'>
-      <h3>Sign In</h3>
-      <form [formGroup]="signInForm" #formDir='ngForm' (ngSubmit)="onSignIn()">
-        <div class="cross-validation"
-          [class.cross-validation-error]='signInForm.errors?.isInvalidCredentials && (signInForm.touched || signInForm.dirty)'>
-          <div class='form-group'>
-            <label for='usernameEmail'>Username or Email: </label>
-            <input class='form-control' id='usernameEmail' formControlName='usernameEmail'
-              placeholder="Username or Email" required>
-          </div>
-        </div>
-        <div class='form-group'>
-          <label for='passwordInput'>Password: </label>
-          <input class='form-control' id='passwordInput' formControlName='password' placeholder="Password"
-            type='password' required>
-          <div *ngIf="password.invalid && (password.dirty || password.touched)" class="alert alert-danger">
-            <div *ngIf="password.errors.required">
-              Password is required.
-            </div>
-          </div>
-        </div>
-        <button class='btn btn-success' type='submit' [disabled]='signInForm.invalid' style='width: 100%;
-        border-radius: 50px;'>Sign
-          in</button>
+<div class="signin-container">
+  <!-- Background Image with Overlay -->
+  <div class="background-image"></div>
+  <div class="background-overlay"></div>
+  
+  <div class="signin-content">
+    <mdb-card title="Sign In" padding="lg" class="signin-card">
+        <form [formGroup]="signInForm" (ngSubmit)="onSignIn()" class="signin-form d-flex flex-column gap-3">
+          
+          <mdb-input label="Username or Email" formControlName="usernameEmail" placeholder="Enter your username or email" error="Username or Email is required"></mdb-input>
 
-        <button (click)='onSignInGoogle()' class='btn btn-success'>Sign in with Gooogle</button>
-      </form>
-      <a class='text-hyperlink' routerLink="/user/reset-password">Forgotten your password?</a>
-      Not registered yet? <b class='text-hyperlink' routerLink="/user/register">Sign up</b>
-    </div>
-    <div class='col col-6 image-container'
-      style='height:100%;width:100%;background-image: linear-gradient(to left, rgba(245, 246, 252, 0), rgba(-0, 0, 0, 10.73)), url(./assets/backdrops/gone_with_the_wind-backdrop.jpg);'>
-    </div>
+          <mdb-input label="Password" type="password" formControlName="password" placeholder="Password" error="Password is required"></mdb-input>
+
+          <mdb-button variant="primary" [fullWidth]="true" type="submit" [disabled]="signInForm.invalid" size="lg">
+            Sign In
+          </mdb-button>
+
+          <div class="separator">
+            <span>OR</span>
+          </div>
+
+          <button type="button" class="google-signin-btn" (click)="onSignInGoogle()">
+            <img src="assets/icons/google-logo.png" alt="Google" class="google-icon">
+            <span>Sign in with Google</span>
+          </button>
+
+        </form>
+
+        <div class="signin-footer">
+          <div class="links">
+            <a routerLink="/user/reset-password" class="text-link mb-2 d-block text-center">Forgot password?</a>
+            <p class="signup-text text-center">New to MDB? <a routerLink="/user/register" class="text-link highlight">Sign up now</a></p>
+          </div>
+        </div>
+    </mdb-card>
   </div>
 </div>
-
-<!--
-<label>Gender</label>
-<select [(ngModel)]="userSignIn.gender" class="form-control" style='width: 200px; float:right'>
-  <option value='g'>Gender</option>
-  <option value='m'>Male</option>
-  <option value='f'>Female</option>
-  <option value='n'>Rather not to say</option>
-</select>
-<select class="form-control" style='width: 200px; float:right'>
-  <option *ngFor="let age of ageList" [value]='age'>{{age}}</option>
-</select> -->
-<!-- <button>Sign up anonymously</button> -->

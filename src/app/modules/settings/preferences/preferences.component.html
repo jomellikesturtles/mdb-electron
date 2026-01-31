@@ -13,74 +13,67 @@
       <div class="col-md-6 d-flex flex-column gap-4">
         
         <!-- General Settings -->
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>General</mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="d-flex flex-column gap-3 pt-3">
-             <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"darkMode"' [fieldLabel]="'Dark Mode'" [inputType]="'checkbox'"></app-input-container>
-             <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"enableCache"' [fieldLabel]="'Enable Cache'" [inputType]="'checkbox'" [optionSelections]='frequencyOptions'></app-input-container>
+        <mdb-card title="General">
+             <mdb-checkbox label="Dark Mode" formControlName="darkMode" class="d-block mb-3"></mdb-checkbox>
+             <mdb-checkbox label="Enable Cache" formControlName="enableCache" class="d-block mb-3"></mdb-checkbox>
              
              <div class="d-flex align-items-center justify-content-between mt-2">
                 <span>System Update</span>
                 <mdb-button variant="outline" size="sm">Check Shortcuts</mdb-button>
              </div>
-          </mat-card-content>
-        </mat-card>
+        </mdb-card>
 
         <!-- Library -->
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>Library</mat-card-title>
-            <mat-icon class="ms-auto" matTooltip="Manage your movie folders">folder</mat-icon>
-          </mat-card-header>
-          <mat-card-content class="d-flex flex-column gap-3 pt-3">
-            <div class="d-flex gap-2 flex-wrap">
+        <mdb-card title="Library">
+            <div header-actions>
+               <mat-icon class="ms-auto" matTooltip="Manage your movie folders">folder</mat-icon>
+            </div>
+            
+            <div class="d-flex gap-2 flex-wrap mb-3">
                <mdb-button variant="secondary" icon="add" (onClick)="onOpenModal()" data-toggle="modal" data-target="#addLibraryModal">Add Folder</mdb-button>
                <mdb-button variant="outline" icon="refresh" (onClick)="onScanLibrary()">Scan Library</mdb-button>
                <mdb-button variant="danger" icon="stop" (onClick)="onStopScanLibrary()">Stop Scan</mdb-button>
             </div>
             
-            <mat-divider></mat-divider>
+            <mat-divider class="mb-3"></mat-divider>
             
             <h3 class="mat-h3 mt-2">Auto-scan</h3>
-            <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Enable Auto-scan'" [inputType]="'checkbox'"></app-input-container>
+            <mdb-checkbox label="Enable Auto-scan" formControlName="autoScan" class="d-block mb-3"></mdb-checkbox>
             <div class="row">
                <div class="col-6">
-                 <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"scanFreqValue"' [fieldLabel]="'Value'" [inputType]="'text'"></app-input-container>
+                 <mdb-input label="Value" formControlName="scanFreqValue" type="number"></mdb-input>
                </div>
                <div class="col-6">
-                  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"scanFreqUnit"' [fieldLabel]="'Unit'" [inputType]="'select'" [optionSelections]='frequencyOptions'></app-input-container>
+                  <mdb-select label="Unit" formControlName="scanFreqUnit" [options]="frequencyOptions"></mdb-select>
                </div>
             </div>
             
-            <!-- Download Speed (kept from original, likely placeholder) -->
-            <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Download speed (bps)'" [inputType]="'checkbox'"></app-input-container>
-          </mat-card-content>
-        </mat-card>
+            <!-- Download Speed -->
+            <!-- Note: Binding to 'autoScan' again as per original bug, assuming TS not updated yet -->
+            <!-- Changed to text/number input as per label 'bps' -->
+            <div class="mt-3">
+               <mdb-input label="Download speed (bps)" formControlName="autoScan" type="number"></mdb-input>
+            </div>
+        </mdb-card>
 
         <!-- Offline Data -->
-        <mat-card>
-          <mat-card-header>
-             <mat-card-title>Offline Data</mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="d-flex flex-column gap-3 pt-3">
-             <div class="d-flex justify-content-between align-items-center">
+        <mdb-card title="Offline Data">
+             <div class="d-flex justify-content-between align-items-center mb-2">
                 <div>
                    <h4 class="mat-h4 m-0">Torrent Dump</h4>
                    <small class="text-muted">Last update: Jan 1, 1970</small>
                 </div>
                 <mdb-button variant="outline" size="sm" (onClick)="onUpdateTorrentDump()">Update</mdb-button>
              </div>
-             <mat-divider></mat-divider>
-             <div class="d-flex justify-content-between align-items-center">
+             <mat-divider class="mb-2"></mat-divider>
+             <div class="d-flex justify-content-between align-items-center mb-2">
                 <div>
                    <h4 class="mat-h4 m-0">Metadata</h4>
                    <small class="text-muted">Last update: Jan 1, 1970</small>
                 </div>
                 <mdb-button variant="outline" size="sm" (onClick)="onUpdateOfflineMetadata()">Update</mdb-button>
              </div>
-             <mat-divider></mat-divider>
+             <mat-divider class="mb-2"></mat-divider>
              <div class="d-flex justify-content-between align-items-center">
                 <div>
                    <h4 class="mat-h4 m-0">User Data</h4>
@@ -88,8 +81,7 @@
                 </div>
                 <mdb-button variant="outline" size="sm" (onClick)="onSyncUserData()">Sync</mdb-button>
              </div>
-          </mat-card-content>
-        </mat-card>
+        </mdb-card>
 
       </div>
 
@@ -97,45 +89,38 @@
       <div class="col-md-6 d-flex flex-column gap-4">
         
         <!-- Playback -->
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>Playback</mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="d-flex flex-column gap-3 pt-3">
-             <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Preferred Quality'" [inputType]="'select'" [optionSelections]='qualityOptions'></app-input-container>
-             <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Preferred Mode'" [inputType]="'select'" [optionSelections]='modeOptions'></app-input-container>
+        <mdb-card title="Playback">
+             <mdb-select label="Preferred Quality" formControlName="autoScan" [options]="qualityOptions" class="mb-3"></mdb-select>
+             <mdb-select label="Preferred Mode" formControlName="autoScan" [options]="modeOptions" class="mb-3"></mdb-select>
              
              <div class="row">
                <div class="col-md-12">
                  <mat-divider class="my-3"></mat-divider>
                  <h4 class="mat-h4">Subtitle Appearance</h4>
                </div>
-               <div class="col-6">
-                 <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontColor"' [fieldLabel]="'Color'" [inputType]="'select'" [optionSelections]='colorOptions'></app-input-container>
+               <div class="col-6 mb-3">
+                 <mdb-select label="Color" formControlName="fontColor" [options]="colorOptions"></mdb-select>
                </div>
-               <div class="col-6">
-                 <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontSize"' [fieldLabel]="'Size'" [inputType]="'select'" [optionSelections]='fontSizeOptions'></app-input-container>
+               <div class="col-6 mb-3">
+                 <mdb-select label="Size" formControlName="fontSize" [options]="fontSizeOptions"></mdb-select>
                </div>
-               <div class="col-6">
-                 <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontOpacity"' [fieldLabel]="'Opacity'" [inputType]="'select'" [optionSelections]='frequencyOptions'></app-input-container>
+               <div class="col-6 mb-3">
+                 <mdb-select label="Opacity" formControlName="fontOpacity" [options]="frequencyOptions"></mdb-select>
                </div>
-               <div class="col-6">
-                 <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontFamily"' [fieldLabel]="'Font Family'" [inputType]="'select'" [optionSelections]='frequencyOptions'></app-input-container>
+               <div class="col-6 mb-3">
+                 <mdb-select label="Font Family" formControlName="fontFamily" [options]="frequencyOptions"></mdb-select>
                </div>
                <div class="col-12">
-                 <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"backgroundColor"' [fieldLabel]="'Background Color'" [inputType]="'select'" [optionSelections]='colorOptions'></app-input-container>
+                 <mdb-select label="Background Color" formControlName="backgroundColor" [options]="colorOptions"></mdb-select>
                </div>
              </div>
-          </mat-card-content>
-        </mat-card>
+        </mdb-card>
 
         <!-- Statistics -->
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>Statistics</mat-card-title>
-            <mat-icon matTooltip="System stats">analytics</mat-icon>
-          </mat-card-header>
-          <mat-card-content class="pt-3">
+        <mdb-card title="Statistics">
+            <div header-actions>
+               <mat-icon matTooltip="System stats">analytics</mat-icon>
+            </div>
             <table class="table table-borderless text-white-50 m-0">
               <tbody>
                 <tr>
@@ -152,8 +137,7 @@
                 </tr>
               </tbody>
             </table>
-          </mat-card-content>
-        </mat-card>
+        </mdb-card>
 
       </div>
     </div>
@@ -187,7 +171,7 @@
                   <a class="text-white text-decoration-none pointer" style="cursor: pointer" (click)='onGoToFolder(folder)'>
                     <mat-icon class="align-middle me-2 fs-6">folder</mat-icon> {{folder}}
                   </a>
-                  <mat-checkbox color="primary"></mat-checkbox>
+                  <mdb-checkbox color="primary"></mdb-checkbox>
                 </li>
               </ul>
             </div>
