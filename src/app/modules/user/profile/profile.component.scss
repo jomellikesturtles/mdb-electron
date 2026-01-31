@@ -1,5 +1,9 @@
-// @import "../../../../styles.scss";
-
-// .mat-divider {
-//   border-top-color: rgb(202, 202, 202);
-// }
+.avatar-container {
+  img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 4px solid #333;
+    border-radius: 50%;
+  }
+}

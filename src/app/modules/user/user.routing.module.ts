@@ -5,6 +5,7 @@ import { SigninComponent } from './signin/signin.component';
 import { ProfileComponent } from './profile/profile.component'
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RegisterComponent } from './register/register.component';
+import { EditProfileComponent } from './edit-profile/edit-profile.component';
 
 const routes: Routes = [
 
@@ -25,6 +26,9 @@ const routes: Routes = [
     path: 'profile', component: ProfileComponent,
     // path: 'profile', component: ProfileComponent, canActivate: [MdbGuardGuard]
   },
+  {
+    path: 'edit-profile', component: EditProfileComponent
+  }
 
   // {
   // path: '',

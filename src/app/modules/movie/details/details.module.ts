@@ -7,6 +7,7 @@ import { SharedModule } from '@shared/shared.module';
 import { VideoPlayerModule } from '@modules/watch/video-player.module';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MovieDetailsGuard } from './details.guard';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { MovieDetailsGuard } from './details.guard';
     CommonModule,
     DetailsRoutingModule,
     SharedModule,
-    VideoPlayerModule,MatTabsModule
+    VideoPlayerModule, MatTabsModule,
+    MatMenuModule
   ],
 })
 export class DetailsModule { }

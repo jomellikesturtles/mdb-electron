@@ -30,6 +30,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ImagePreviewComponent } from '@shared/components/image-preview/image-preview.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatMenuModule } from '@angular/material/menu';
 import { KeyboardShortcutsComponent } from '@modules/settings/keyboard-shortcuts/keyboard-shortcuts.component';
 import { VideoPlayerModule } from '@modules/watch/video-player.module';
 import { YoutubePlayerComponent } from '@shared/components/youtube-player/youtube-player.component';
@@ -79,8 +80,9 @@ import { MovieState } from './store/movie/movie.state';
     MatTabsModule,
     MatDialogModule,
     MatAutocompleteModule,
+    MatMenuModule,
     VideoPlayerModule,
-    // MockCoreServicesModule
+    MockCoreServicesModule,
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     NgxsModule.forRoot([MovieState], {
       developmentMode: !environment.production

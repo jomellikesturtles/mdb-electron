@@ -1,0 +1,62 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Edit Profile</mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content class="pt-4">
+          <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="d-flex flex-column gap-3">
+            
+            <div class="d-flex flex-column align-items-center mb-4">
+               <div class="avatar-placeholder mb-3">
+                 <img [src]="userProfile?.photoUrl || 'assets/icons/user.svg'" alt="Avatar" class="avatar-img">
+               </div>
+               <mdb-button variant="outline" size="sm">Change Avatar</mdb-button>
+            </div>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Username</mat-label>
+              <input matInput formControlName="username" placeholder="Username">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="name" placeholder="Full Name">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Email Address</mat-label>
+              <input matInput formControlName="emailAddress" placeholder="Email">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Bio</mat-label>
+              <textarea matInput formControlName="bio" rows="3" placeholder="Tell us about yourself"></textarea>
+            </mat-form-field>
+
+            <mat-divider class="my-3"></mat-divider>
+            <h4 class="mat-h4">Change Password</h4>
+
+            <mat-form-field appearance="outline">
+              <mat-label>New Password</mat-label>
+              <input matInput type="password" formControlName="password">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Confirm Password</mat-label>
+              <input matInput type="password" formControlName="confirmPassword">
+            </mat-form-field>
+
+          </form>
+        </mat-card-content>
+
+        <mat-card-actions align="end" class="gap-2 pb-3 pe-3">
+          <mdb-button variant="outline" (onClick)="onCancel()">Cancel</mdb-button>
+          <mdb-button variant="primary" [loading]="loading" (onClick)="onSubmit()">Save Changes</mdb-button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

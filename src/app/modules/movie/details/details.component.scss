@@ -71,15 +71,18 @@
 
   button {
     transition: transform 0.2s;
+    cursor: pointer;
     
     &:hover {
       transform: scale(1.1);
     }
   }
+}
 
-  img {
-    filter: invert(1);
-    height: 1.3em;
+.pointer {
+  cursor: pointer;
+  &:hover {
+    color: $mdb-primary;
   }
 }
 
@@ -153,6 +156,10 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+
+  button {
+    cursor: pointer;
+  }
 
   .btn-play {
     background-color: $mdb-primary;

@@ -11,6 +11,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProfileComponent } from './profile/profile.component'
 import { MatTabsModule } from '@angular/material/tabs'
 import { SharedModule } from '@shared/shared.module';
+import { EditProfileComponent } from './edit-profile/edit-profile.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -21,6 +26,7 @@ import { SharedModule } from '@shared/shared.module';
     UsernameExistValidatorDirective,
     CredentialsDirective,
     ProfileComponent,
+    EditProfileComponent
   ],
   imports: [
     CommonModule,
@@ -28,7 +34,11 @@ import { SharedModule } from '@shared/shared.module';
     FormsModule,
     ReactiveFormsModule,
     MatTabsModule,
-    SharedModule
+    SharedModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSnackBarModule
   ]
 })
 export class UserModule { }
