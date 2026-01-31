@@ -1,0 +1,28 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  
+  &.sm { padding: 2px 6px; font-size: 10px; }
+  &.md { padding: 4px 8px; font-size: 12px; }
+  
+  &.default {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+  
+  &.primary {
+    background-color: #E50914;
+    color: #fff;
+  }
+  
+  &.outline {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    background: transparent;
+  }
+}

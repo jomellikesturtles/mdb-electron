@@ -1,0 +1,11 @@
+<mat-form-field appearance="outline" class="w-100 mdb-select-field">
+  <mat-label>{{ label }}</mat-label>
+  <mat-select [value]="value" [multiple]="multiple" (selectionChange)="onSelectionChange($event)" [disabled]="isDisabled">
+    <mat-option *ngFor="let option of options" [value]="option.value">
+      {{ option.label }}
+    </mat-option>
+  </mat-select>
+  <mat-error *ngIf="controlDir?.control?.invalid && controlDir?.control?.touched">
+    {{ error || 'Invalid selection' }}
+  </mat-error>
+</mat-form-field>
