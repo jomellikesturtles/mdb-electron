@@ -1,90 +1,46 @@
-<div class='container-fluid' style='height:100%'>
-  <div class='row' style='height:100%'>
-    <div class='col col-6' style='height:100%'>
-      <h3>Sign Up</h3>
-      <form [formGroup]="signUpForm" #formDir='ngForm' (ngSubmit)="onSignUp()">
-        <div class="cross-validation"
-          [class.cross-validation-error]='signUpForm.errors?.isRepeatPassword && (signUpForm.touched || signUpForm.dirty)'>
-          <div class='form-group'>
-            <label for='username'>Username: </label>
-            <input class='form-control' id='username' formControlName='username' placeholder="Username" required>
-            <div *ngIf="username.invalid && (username.dirty || username.touched)" class="alert alert-danger">
-              <div *ngIf="username.errors.required">
-                Username is required.
-              </div>
-              <div *ngIf="username.errors.minlength">
-                Username must be at least 4 characters long.
-              </div>
-              <div *ngIf="username.errors?.usernameUnavailable">
-                Username already exists.
-              </div>
-            </div>
-            <div *ngIf="username.pending">Validating...</div>
-          </div>
-          <div *ngIf="username.errors?.usernameUnavailable">
-            Username already exists.
-          </div>
+<div class="register-container">
+  <div class="background-image"></div>
+  <div class="background-overlay"></div>
+  
+  <div class="register-content">
+    <mdb-card title="Sign Up" padding="lg" class="register-card">
+      <form [formGroup]="signUpForm" (ngSubmit)="onSignUp()" class="register-form d-flex flex-column gap-3">
+        
+        <mdb-input label="Username" formControlName="username" placeholder="Username" 
+                   [error]="username.hasError('required') ? 'Username is required' : 
+                            username.hasError('minlength') ? 'Username must be at least 4 characters' : 
+                            username.hasError('usernameUnavailable') ? 'Username already exists' : ''">
+        </mdb-input>
+
+        <mdb-input label="Email Address" formControlName="emailAddress" type="email" placeholder="Email Address"
+                   [error]="emailAddress.hasError('required') ? 'Email is required' : 
+                            emailAddress.hasError('email') ? 'Invalid email format' : ''">
+        </mdb-input>
+
+        <mdb-input label="Password" formControlName="password" type="password" placeholder="Password"
+                   [error]="password.hasError('required') ? 'Password is required' : 
+                            password.hasError('minlength') ? 'Password must be at least 6 characters' : ''">
+        </mdb-input>
+
+        <mdb-input label="Repeat Password" formControlName="repeatPassword" type="password" placeholder="Repeat Password"
+                   [error]="repeatPassword.hasError('required') ? 'Password is required' : ''">
+        </mdb-input>
+
+        <div *ngIf="signUpForm.errors?.isRepeatPassword && (repeatPassword.dirty || repeatPassword.touched)" class="text-danger small mb-2">
+          Passwords do not match.
         </div>
-        <div class='form-group'>
-          <label for='emailAddress'>Email Address: </label>
-          <input class='form-control' id='emailAddress' formControlName='emailAddress' placeholder="Email Address"
-            type='email' required>
-          <div *ngIf="emailAddress.invalid && (emailAddress.dirty || emailAddress.touched)" class="alert alert-danger">
-            <div *ngIf="emailAddress.errors.required">
-              Email is required.
-            </div>
-            <div *ngIf="emailAddress.errors.minlength">
-              Email must be at least 4 characters long.
-            </div>
-            <div *ngIf="emailAddress.errors.email">
-              Email Format.
-            </div>
-          </div>
-        </div>
-        <div class='form-group'>
-          <label for='passwordInput'>Password: </label>
-          <input class='form-control' id='passwordInput' formControlName='password' placeholder="Password"
-            type='password' required>
-          <div *ngIf="password.invalid && (password.dirty || password.touched)" class="alert alert-danger">
-            <div *ngIf="password.errors.required">
-              Password is required.
-            </div>
-            <div *ngIf="password.errors.minlength">
-              Password must be at least 4 characters long.
-            </div>
-          </div>
-        </div>
-        <div class='form-group'>
-          <label for='repeatPasswordInput'>Repeat Password: </label>
-          <input class='form-control' id='repeatPasswordInput' formControlName='repeatPassword' placeholder="Password"
-            type='password' required>
-          <div *ngIf="repeatPassword.invalid && (repeatPassword.dirty || repeatPassword.touched)"
-            class="alert alert-danger">
-            <div *ngIf="repeatPassword.errors.required">
-              Password is required.
-            </div>
-            <div *ngIf="repeatPassword.errors.minlength">
-              Password must be at least 6 characters long.
-            </div>
-          </div>
-        </div>
-        <div *ngIf="(signUpForm.touched || signUpForm.dirty)" class="alert alert-danger">
-          <div *ngIf="signUpForm.errors?.isRepeatPassword && (repeatPassword.dirty || repeatPassword.touched)">
-            Password must be same.
-          </div>
-          <div *ngIf="signUpForm.errors?.generalError && (signUpForm.touched || signUpForm.dirty)">
-            {{generalError}}
-          </div>
-        </div>
-        <button class='btn btn-success' type='submit' [disabled]='!signUpForm.valid'>Sign
-          up</button>
+
+        <mdb-button variant="primary" [fullWidth]="true" type="submit" [disabled]="!signUpForm.valid" size="lg">
+          Sign Up
+        </mdb-button>
+
       </form>
 
-      <a>Already have an account? <b class='text-hyperlink' routerLink="/user/signin">Click here</b> to Sign in</a>
-    </div>
-    
-    <div class='col col-6 image-container'
-      style='height:100%;width:100%;background-image: linear-gradient(to left, rgba(245, 246, 252, 0), rgba(-0, 0, 0, 10.73)), url(./assets/backdrops/gone_with_the_wind-backdrop.jpg);'>
-    </div>
+      <div class="register-footer">
+        <p class="signin-text text-center">
+          Already have an account? <a routerLink="/user/signin" class="text-link highlight">Sign in</a>
+        </p>
+      </div>
+    </mdb-card>
   </div>
 </div>
