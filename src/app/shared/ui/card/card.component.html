@@ -1,0 +1,14 @@
+<mat-card class="mdb-card" [ngClass]="'padding-' + padding">
+  <mat-card-header *ngIf="title || subtitle">
+    <mat-card-title *ngIf="title">{{ title }}</mat-card-title>
+    <mat-card-subtitle *ngIf="subtitle">{{ subtitle }}</mat-card-subtitle>
+    <span class="spacer"></span>
+    <ng-content select="[header-actions]"></ng-content>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <ng-content></ng-content>
+  </mat-card-content>
+  
+  <ng-content select="mat-card-actions"></ng-content>
+</mat-card>

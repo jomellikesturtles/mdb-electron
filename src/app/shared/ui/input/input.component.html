@@ -1,0 +1,8 @@
+<mat-form-field appearance="outline" class="w-100 mdb-input-field">
+  <mat-label>{{ label }}</mat-label>
+  <mat-icon *ngIf="icon" matPrefix class="me-2">{{ icon }}</mat-icon>
+  <input matInput [type]="type" [placeholder]="placeholder" [value]="value" (input)="onInput($event)" (blur)="onTouched()" [disabled]="isDisabled">
+  <mat-error *ngIf="controlDir?.control?.invalid && controlDir?.control?.touched">
+    {{ error || 'Invalid input' }}
+  </mat-error>
+</mat-form-field>

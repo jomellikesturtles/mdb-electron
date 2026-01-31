@@ -1,0 +1,8 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.padding-none ::ng-deep .mat-mdc-card-content { padding: 0; }
+.padding-sm ::ng-deep .mat-mdc-card-content { padding: 8px; }
+.padding-md ::ng-deep .mat-mdc-card-content { padding: 16px; }
+.padding-lg ::ng-deep .mat-mdc-card-content { padding: 24px; }
