@@ -1,7 +1,7 @@
 
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
-import { MovieGenre, IGenre } from '@models/interfaces';
+// import { MovieGenre, IGenre, ISearchQuery, ITmdbSearchQuery } from '@models/interfaces';
 import { MOVIEGENRES } from '../../../mock-data';
 import { STRING_REGEX_IMDB_ID } from '@shared/constants';
 import { DataService } from '@services/data.service';
@@ -13,6 +13,7 @@ import { environment } from '@environments/environment';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import GeneralUtil from '@utils/general.util';
+import { ISearchQuery } from '@models/interfaces';
 
 @Component({
   selector: 'app-top-navigation',
@@ -167,12 +168,35 @@ export class TopNavigationComponent implements OnInit {
     }
   }
 
-  openProfile() {
+  goToProfile() {
+    this.router.navigate(['/user/profile']);
+  }
 
+  goToSettings() {
+    this.router.navigate(['/preferences']);
   }
 
   signOut() {
-    // this.firebaseService.signOut()
+    localStorage.removeItem('user');
+    this.isSignedIn = false;
+    this.status = 'LOGIN';
+    this.router.navigate(['/user/signin']);
+  }
+
+  signIn() {
+    this.router.navigate(['/user/signin']);
+  }
+
+  goToHelp() {
+    console.log('Navigate to Help');
+  }
+
+  goToAbout() {
+    console.log('Navigate to About');
+  }
+
+  sendFeedback() {
+    console.log('Navigate to Send Feedback');
   }
 
   onMinimize() {
@@ -194,24 +218,5 @@ export class TopNavigationComponent implements OnInit {
   }
 }
 
-export interface ISearchQuery {
-  query: string,
-  yearFrom: number,
-  yearTo: number,
-  genres: MovieGenre[],
-  type: string,
-  isAvailable: string,
-  availability: string, // all, offline, netflix
-  ratingCount?: number,
-  ratingAverage?: number,
-  ratingAverageFrom?: number,
-  ratingAverageTo?: number,
-  sortBy: string,
-}
 
-export interface ITmdbSearchQuery {
-  keywords: string,
-  decade: number;
-  yearTo: number,
-  genres: IGenre[],
-}
+

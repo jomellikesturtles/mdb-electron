@@ -50,7 +50,46 @@
 
     <!-- Profile Avatar -->
     <div class="profile-avatar" style="background-image: url('./assets/offline-image/clint-eastwood.jfif');"
-      routerLink='./user/profile' matTooltip="View Profile"></div>
+      [matMenuTriggerFor]="profileMenu" matTooltip="Account"></div>
+
+    <mat-menu #profileMenu="matMenu" xPosition="before" class="profile-menu">
+      <ng-container *ngIf="isSignedIn; else loggedOutMenu">
+        <button mat-menu-item (click)="goToProfile()">
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </button>
+        <button mat-menu-item (click)="goToSettings()">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
+        <button mat-menu-item (click)="signOut()">
+          <mat-icon>logout</mat-icon>
+          <span>Sign Out</span>
+        </button>
+      </ng-container>
+
+      <ng-template #loggedOutMenu>
+        <button mat-menu-item (click)="signIn()">
+          <mat-icon>login</mat-icon>
+          <span>Sign In</span>
+        </button>
+      </ng-template>
+
+      <mat-divider></mat-divider>
+      
+      <button mat-menu-item (click)="goToHelp()">
+        <mat-icon>help</mat-icon>
+        <span>Help</span>
+      </button>
+      <button mat-menu-item (click)="goToAbout()">
+        <mat-icon>info</mat-icon>
+        <span>About</span>
+      </button>
+      <button mat-menu-item (click)="sendFeedback()">
+        <mat-icon>feedback</mat-icon>
+        <span>Send Feedback</span>
+      </button>
+    </mat-menu>
 
     <!-- Window Controls (Electron Only) -->
     <div *ngIf="isElectron" class="window-controls-container">

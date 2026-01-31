@@ -65,6 +65,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
   bestPlayLink: PlayLink;
   certification: 'PG';
   userData: IProfileData = new IProfileData();
+  userLists = [
+    { id: 1, name: 'Favorites' },
+    { id: 2, name: 'Watchlist' },
+    { id: 3, name: 'Weekend Binge' },
+    { id: 4, name: 'Horror Classics' }
+  ];
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -250,7 +256,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // tt2015381 is Guardians of the galaxy 2014; for testing only
     GeneralUtil.DEBUG.log('getMovie initializing with value...', val);
 
-    this.movieService.getMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
+    this.movieService.getMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations,reviews').subscribe(data => {
       this.movieDetails = data;
       this.loadVideoData();
       this.hasData = true;
@@ -502,6 +508,15 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   copyToClipboard(magnetLink: string) {
     GeneralUtil.copyToClipboard(magnetLink);
+  }
+
+  addToList(list?: any) {
+    if (list) {
+      this.loggerService.info(`Added to list: ${list.name}`);
+      // Implement actual add logic here
+    } else {
+      this.loggerService.info('Open add to list menu');
+    }
   }
 
   /**

@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { InputContainerModule } from '@shared/components/input-container/input-container.module';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [PreferencesComponent],
@@ -24,7 +25,8 @@ import { InputContainerModule } from '@shared/components/input-container/input-c
     MatInputModule,
     MatSelectModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatCardModule
   ]
 })
 export class PreferencesModule { }

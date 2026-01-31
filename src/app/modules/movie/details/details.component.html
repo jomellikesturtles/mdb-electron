@@ -2,188 +2,179 @@
   <app-video-player [streamLink]='streamLink'></app-video-player>
 </div>
 
-<!-- Backdrop & Overlay -->
-<div class="backdrop-container" 
+<div class="backdrop-container"
      [style.backgroundImage]="'url(https://image.tmdb.org/t/p/original' + movieDetails.backropPath + ')'">
   <div class="backdrop-overlay"></div>
-  
-  <!-- Content Wrapper -->
+
   <div class="container-fluid content-wrapper">
     <div class="container">
-      <div class="row align-items-start">
-        
-        <!-- Left Column: Poster & Actions -->
-        <div class="col-md-4 col-lg-3 d-flex flex-column align-items-center">
-          
-          <!-- Poster -->
-          <div class="poster-card" 
+      <div class="row">
+
+        <!-- Left Column -->
+        <div class="col-md-3 d-flex flex-column align-items-center">
+          <div class="poster-card"
                [style.backgroundImage]="'url(https://image.tmdb.org/t/p/w500' + movieDetails.posterPath + ')'">
           </div>
 
-          <!-- User Action Buttons -->
-          <div class="user-actions">
-            <!-- Bookmark -->
-            <button mat-fab color="accent" (click)="toggleBookmark()" 
-                    matTooltip="Toggle Bookmark" aria-label="Toggle bookmark">
-              <img src='assets/icons/bookmark-add.svg' alt="Bookmark">
-            </button>
-            
-            <!-- Watched -->
-            <button mat-fab style="background-color:orange" (click)="togglePlayed()" 
-                    matTooltip="Toggle Watched" aria-label="Toggle watched">
-              <img src='assets/icons/eye.svg' alt="Watched">
-            </button>
-            
-            <!-- Favorite -->
-            <button mat-fab color="warn" (click)="toggleFavorite()" 
-                    matTooltip="Toggle Favorite" aria-label="Toggle favorite">
-              <img src='assets/icons/heart.svg' alt="Favorite">
-            </button>
+          <div class="d-flex justify-content-center gap-3 mb-4 user-actions">
+             <!-- Bookmark -->
+             <button mat-fab (click)="toggleBookmark()" matTooltip="Watchlist" 
+                     [style.backgroundColor]="_isBookmarked ? '#2196F3' : '#424242'" 
+                     [style.color]="'white'">
+                <mat-icon>{{ _isBookmarked ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+             </button>
+             
+             <!-- Watched -->
+             <button mat-fab (click)="togglePlayed()" matTooltip="Mark as Watched" 
+                     [style.backgroundColor]="_isPlayed ? '#FF9800' : '#424242'"
+                     [style.color]="'white'">
+                <mat-icon>{{ _isPlayed ? 'visibility' : 'visibility_off' }}</mat-icon>
+             </button>
+             
+             <!-- Favorite -->
+             <button mat-fab (click)="toggleFavorite()" matTooltip="Favorite" 
+                     [style.backgroundColor]="_isFavorite ? '#f44336' : '#424242'"
+                     [style.color]="'white'">
+                <mat-icon>{{ _isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+             </button>
+             
+             <!-- Add to List -->
+             <button mat-fab [matMenuTriggerFor]="listMenu" matTooltip="Add to List" style="background-color: #424242; color: white">
+                <mat-icon>playlist_add</mat-icon>
+             </button>
+             
+             <mat-menu #listMenu="matMenu">
+                <button mat-menu-item *ngFor="let list of userLists" (click)="addToList(list)">
+                  <mat-icon>list</mat-icon>
+                  <span>{{list.name}}</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="addToList()">
+                  <mat-icon>add</mat-icon>
+                  <span>Create new list</span>
+                </button>
+             </mat-menu>
           </div>
-
         </div>
 
-        <!-- Right Column: Details Content -->
-        <div class="col-md-8 col-lg-9 ps-md-5">
+        <!-- Right Column -->
+        <div class="col-md-9 ps-md-4">
+          <h1 class="display-4 fw-bold mb-2 movie-title">{{ movieDetails.title }}</h1>
           
-          <!-- Title Section -->
-          <h1 class="movie-title">{{ movieDetails.title }}</h1>
-          
-          <!-- Metadata Row -->
-          <div class="metadata-row">
-            <span class="year" *ngIf="movieDetails.releaseDate" 
-                  (click)='goToDiscover("year", getYear(movieDetails.releaseDate))'>
-              {{ movieDetails.releaseDate | releaseYear }}
-            </span>
-            <span *ngIf="movieDetails.releaseDate">•</span>
-            
-            <span class="runtime">{{ movieDetails.runtime | runtimeDisplay }}</span>
-            <span *ngIf="movieDetails.runtime">•</span>
-            
-            <span class="rating">
-              <img src='assets/icons/star-yellow.svg' alt="Rating">
-              {{ movieDetails.vote?.voteAverage || 'N/A' }}
-            </span>
+          <div class="d-flex align-items-center gap-3 text-white-50 mb-3 fs-5 metadata-row">
+             <span *ngIf="movieDetails.releaseDate" class="text-hover-primary" style="cursor:pointer" (click)='goToDiscover("year", getYear(movieDetails.releaseDate))'>
+               {{ movieDetails.releaseDate | releaseYear }}
+             </span>
+             <span *ngIf="movieDetails.runtime">• {{ movieDetails.runtime | runtimeDisplay }}</span>
+             <span *ngIf="movieDetails.vote" class="d-flex align-items-center gap-1 text-warning">
+               <mat-icon style="height:20px; width:20px; font-size:20px;">star</mat-icon> {{ movieDetails.vote.voteAverage }}
+             </span>
           </div>
 
-          <!-- Genres -->
-          <div class="genres-list">
-            <span *ngFor="let item of movieDetails.genres" 
-                  class="genre-pill" 
-                  (click)='goToDiscover("genre", item.id)'>
-              {{ item.name }}
-            </span>
+          <div class="mb-4 genres-list">
+             <span *ngFor="let genre of movieDetails.genres" class="badge rounded-pill bg-white text-dark me-2 mb-2 p-2 px-3 genre-pill" (click)='goToDiscover("genre", genre.id)'>
+               {{ genre.name }}
+             </span>
           </div>
 
-          <!-- Play Controls -->
-          <div class="play-controls">
-            <!-- Play Button Group -->
+          <div class="d-flex flex-wrap gap-3 mb-5 play-controls">
             <div class="btn-group">
-              <button class="btn btn-danger play-btn" 
-                      [disabled]="playLinks.length <= 0" 
-                      (click)='playBestPlayLink()'>
-                <mat-spinner *ngIf='procPlayLink' [diameter]='20' color="accent"></mat-spinner>
-                <span *ngIf='!procPlayLink'>PLAY MOVIE</span>
-              </button>
-              
-              <button class="btn btn-danger dropdown-toggle dropdown-toggle-split" 
-                      data-bs-toggle="dropdown" 
-                      aria-haspopup="true" 
-                      aria-expanded="false"
-                      [disabled]="playLinks.length <= 0">
-                <span class="visually-hidden">Toggle Dropdown</span>
-              </button>
-              
-              <ul class="dropdown-menu">
-                <li *ngFor="let playLink of playLinks">
-                  <a class="dropdown-item" style='cursor: pointer' (click)='playMovie(playLink)'>
-                    {{playLink.type}} | {{playLink.name}} {{playLink.quality}}
-                  </a>
-                </li>
-              </ul>
+                <button mat-raised-button color="warn" class="btn-lg px-4" [disabled]="playLinks.length <= 0" (click)='playBestPlayLink()'>
+                  <mat-icon class="me-2">play_arrow</mat-icon> <span *ngIf='!procPlayLink'>PLAY MOVIE</span><mat-spinner *ngIf='procPlayLink' [diameter]='20' color="accent"></mat-spinner>
+                </button>
+                <button mat-raised-button color="warn" [matMenuTriggerFor]="playMenu" [disabled]="playLinks.length <= 0">
+                   <mat-icon>arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #playMenu="matMenu">
+                   <button mat-menu-item *ngFor="let link of playLinks" (click)='playMovie(link)'>
+                     {{link.type | uppercase}} - {{link.name}} {{link.quality}}
+                   </button>
+                </mat-menu>
             </div>
 
-            <button class="btn btn-outline-light" *ngIf='hasContinueWatching' (click)='continueWatching()'>
-              Continue Watching
+            <button mat-stroked-button color="basic" class="text-white border-white btn-lg" *ngIf='movieTrailer' (click)='playPreview()'>
+               <mat-icon class="me-2">movie</mat-icon> TRAILER
             </button>
-            
-            <button class="btn btn-outline-light" *ngIf='movieTrailer' (click)='playPreview()'>
-              Play Trailer
+            <button mat-stroked-button color="basic" class="text-white border-white btn-lg" *ngIf='hasContinueWatching' (click)='continueWatching()'>
+               Continue Watching
             </button>
           </div>
 
-          <!-- Tabs Section -->
-          <mat-tab-group #detailsTabGroup animationDuration="0ms">
-            
-            <!-- Overview Tab -->
+          <mat-tab-group animationDuration="0ms" class="custom-tabs">
             <mat-tab label="OVERVIEW">
-              <div class="py-3">
-                <p class="overview-text">{{ movieDetails.overview }}</p>
-                
-                <div class="credits-section mt-4">
-                  <!-- Directors -->
-                  <div class="credit-group" *ngIf="movieDetailsPersons.directors?.length > 0">
-                    <div class="label">Director</div>
-                    <div class="names">
-                      <span *ngFor="let director of movieDetailsPersons.directors; let last=last">
-                        <span class="name-link" (click)='goToDiscover("person", director.id, director.name)'>
-                          {{ director.name }}
-                        </span>{{ last ? '' : ', ' }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <!-- Writers -->
-                  <div class="credit-group" *ngIf="movieDetailsPersons.writers?.length > 0">
-                    <div class="label">Writers</div>
-                    <div class="names">
-                      <span *ngFor="let writer of movieDetailsPersons.writers; let last=last">
-                        <span class="name-link" (click)='goToDiscover("person", writer.id, writer.name)'>
-                          {{ writer.name }}
-                        </span>{{ last ? '' : ', ' }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <!-- Cast (Short List) -->
-                  <div class="credit-group" *ngIf="movieDetailsPersons.cast?.length > 0">
-                    <div class="label">Cast</div>
-                    <div class="names">
-                      <span *ngFor="let cast of movieDetailsPersons.cast | slice:0:5; let last=last">
-                        <span class="name-link" (click)='goToDiscover("person", cast.id, cast.name)'>
-                          {{ cast.name }}
-                        </span>{{ last ? '' : ', ' }}
-                      </span>
-                      <span class="name-link fst-italic ms-2" (click)="detailsTabGroup.selectedIndex = 2">See All...</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </mat-tab>
-
-            <!-- Reviews Tab -->
-            <mat-tab label="REVIEWS" disabled>
-              <div class="py-3">No reviews available.</div>
-            </mat-tab>
-
-            <!-- Credits Tab (Full) -->
-            <mat-tab label="CREDITS">
-              <div class="py-3">
-                 <div class="row">
-                   <div class="col-12">
-                     <h5 class="mb-3">Full Cast</h5>
-                     <!-- Placeholder for full cast grid if implemented later -->
-                     <p>Full cast list coming soon.</p>
+              <div class="mt-4">
+                 <p class="fs-5 lh-base text-white-50 overview-text">{{ movieDetails.overview }}</p>
+                 
+                 <div class="row mt-4 credits-section">
+                   <div class="col-md-12">
+                     <div *ngIf="movieDetailsPersons.directors?.length" class="mb-2 credit-group">
+                       <strong class="text-white label">Director: </strong>
+                       <span class="names">
+                         <span *ngFor="let d of movieDetailsPersons.directors; let last=last" class="text-white-50 pointer name-link" (click)='goToDiscover("person", d.id, d.name)'>
+                           {{d.name}}{{!last ? ', ' : ''}}
+                         </span>
+                       </span>
+                     </div>
+                     <div *ngIf="movieDetailsPersons.writers?.length" class="mb-2 credit-group">
+                        <strong class="text-white label">Writers: </strong>
+                        <span class="names">
+                          <span *ngFor="let w of movieDetailsPersons.writers; let last=last" class="text-white-50 pointer name-link" (click)='goToDiscover("person", w.id, w.name)'>
+                            {{w.name}}{{!last ? ', ' : ''}}
+                          </span>
+                        </span>
+                      </div>
+                     <div *ngIf="movieDetailsPersons.cast?.length" class="mb-2 credit-group">
+                       <strong class="text-white label">Cast: </strong>
+                       <span class="names">
+                         <span *ngFor="let c of movieDetailsPersons.cast | slice:0:5; let last=last" class="text-white-50 pointer name-link" (click)='goToDiscover("person", c.id, c.name)'>
+                           {{c.name}}{{!last ? ', ' : ''}}
+                         </span>
+                       </span>
+                     </div>
                    </div>
                  </div>
               </div>
             </mat-tab>
 
-            <!-- Similar Tab -->
-            <mat-tab label="SIMILAR">
-              <ng-container *ngTemplateOutlet="similarMoviesTemplate"></ng-container>
+            <mat-tab label="REVIEWS">
+               <div class="mt-4">
+                 <div *ngIf="movieDetails.reviews?.results?.length; else noReviews">
+                    <div *ngFor="let review of movieDetails.reviews.results" class="card bg-dark mb-3 border-secondary">
+                       <div class="card-body">
+                          <h5 class="card-title text-white">{{ review.author }}</h5>
+                          <p class="card-text text-white-50" [innerHTML]="review.content | slice:0:300"></p>
+                          <a *ngIf="review.content.length > 300" [href]="review.url" target="_blank" class="text-primary">Read full review</a>
+                       </div>
+                    </div>
+                 </div>
+                 <ng-template #noReviews>
+                    <p class="text-white-50">No reviews available.</p>
+                 </ng-template>
+               </div>
             </mat-tab>
 
+            <mat-tab label="CREDITS">
+               <div class="mt-4">
+                  <!-- Credits content -->
+                  <div class="row" *ngIf="movieDetailsPersons.cast?.length">
+                    <div class="col-12">
+                        <h5 class="mb-3 text-white">Full Cast</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span *ngFor="let c of movieDetailsPersons.cast" class="badge bg-secondary pointer" (click)='goToDiscover("person", c.id, c.name)'>
+                                {{ c.name }} <span class="text-warning" *ngIf="c.character">as {{ c.character }}</span>
+                            </span>
+                        </div>
+                    </div>
+                  </div>
+               </div>
+            </mat-tab>
+            
+            <mat-tab label="SIMILAR">
+               <div class="mt-4">
+                 <!-- Similar content -->
+                 <ng-container *ngTemplateOutlet="similarMoviesTemplate"></ng-container>
+               </div>
+            </mat-tab>
           </mat-tab-group>
 
         </div>
@@ -193,7 +184,10 @@
 </div>
 
 <ng-template #similarMoviesTemplate>
-  <div class="py-3">
-    <p>Similar movies content...</p>
-  </div>
+    <div class="py-3" *ngIf="movieDetails.similar?.results?.length > 0; else noSimilar">
+      <app-horizontal-card-list [moviesList]="movieDetails.similar.results" title=""></app-horizontal-card-list>
+    </div>
+    <ng-template #noSimilar>
+       <p class="text-white-50">No similar movies found.</p>
+    </ng-template>
 </ng-template>

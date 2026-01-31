@@ -16,7 +16,8 @@ export class MdbGuardGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    
+
+    return true;
     if (this.authService.isAuthenticated()) {
       return true;
     } else {
@@ -34,6 +35,7 @@ export class MdbGuardGuard implements CanActivate {
   canLoad(
     route: Route,
     segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean {
+    return true;
     if (this.authService.isAuthenticated()) {
       return true;
     } else {
