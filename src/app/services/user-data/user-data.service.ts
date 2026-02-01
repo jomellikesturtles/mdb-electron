@@ -8,10 +8,10 @@ import { IUserDataPaginated, IpcOperations, IpcService, SubChannel } from '../ip
 import { CollectionName } from '@shared/constants';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
 import { DataService } from '@services/data.service';
-import { MDBApiService } from '@services/mdb-api.service';
 import { HttpUrlProviderService } from '@services/http-url.provider.service';
 import { ENDPOINT } from '@shared/endpoint.const';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
+import { HttpBaseService } from '@services/http-base.service';
 
 /**
  * User data only. no media.
@@ -26,12 +26,11 @@ export class UserDataService {
     private movieService: MovieService,
     private playedService: PlayedService,
     private libraryService: LibraryService,
-    private mediaUserData: MediaUserDataService,
     private dataService: DataService,
-    private bffService: MDBApiService,
     private ipcService: IpcService,
     private httpUrlProvider: HttpUrlProviderService,
-    private featureToggleService: FeatureToggleService
+    private featureToggleService: FeatureToggleService,
+    private httpBaseService: HttpBaseService
   ) { }
 
   getUser(username: string) {
@@ -40,7 +39,7 @@ export class UserDataService {
         null, { tmdbId: username });
     }
     return this.dataService.getHandle(
-      this.bffService.get(
+      this.httpBaseService.get(
         this.httpUrlProvider.getBffAPI(ENDPOINT.USER_ID, username)),
       this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
         null, { tmdbId: username }));
@@ -52,7 +51,7 @@ export class UserDataService {
         null, { tmdbId: username });
     }
     return this.dataService.postHandle(
-      this.bffService.post(
+      this.httpBaseService.post(
         this.httpUrlProvider.getBffAPI(ENDPOINT.USER_ID, username),
         payload),
       this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
@@ -65,7 +64,7 @@ export class UserDataService {
     let data: IUserDataPaginated | any = [];
     switch (dataType) {
       case 'bookmark':
-        const bookmarksList = await this.mediaUserData.getMediaDataPaginated('');
+        const bookmarksList = await this.bookmarkService.getBookmarksPaginatedFirstPage();
         data = bookmarksList;
         break;
       case 'watched':
