@@ -2,9 +2,9 @@
  * Movies from and to web API and offline dump
  */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
+import { HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, first, map, tap } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 import { IpcService } from '@services/ipc.service';
 import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters, IRawTmdbResultObject } from '@models/interfaces';
 import { OMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID } from '../../shared/constants';
@@ -21,6 +21,7 @@ import { AddMovie, AddDiscoverMovie } from '../../store/movie/movie.actions';
 import { MDBPaginatedResultModel } from './interface/movie';
 import { CacheService } from '@services/cache.service';
 import { TmdbService } from '@services/tmdb/tmdb.service';
+import { HttpBaseService } from '@services/http-base.service';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -34,10 +35,10 @@ export class MovieService extends BaseMovieService {
     protected cacheService: CacheService,
     protected ipcService: IpcService,
     protected tmdbService: TmdbService,
-    protected http: HttpClient,
+    protected httpBaseService: HttpBaseService,
     private store: Store
   ) {
-    super(cacheService, ipcService, tmdbService, http);
+    super(cacheService, ipcService, tmdbService, httpBaseService);
   }
 
   getMovieInfo(val: string): Observable<any> {
@@ -53,16 +54,13 @@ export class MovieService extends BaseMovieService {
 
   getMovieByImdbId(val: string): Observable<IOmdbMovieDetail> {
     const url = `${OMDB_URL}/?i=${val}&apikey=${OMDB_API_KEY}&plot=full`;
-    return this.http.get<IOmdbMovieDetail>(url).pipe(
+    return this.httpBaseService.get(url, 'getMovie').pipe(
       map(data => {
         console.log(data);
         return data;
       }),
-      tap(_ => this.log(``)),
-      catchError(this.handleError<IOmdbMovieDetail>('getMovie')));
-    // return this.http.get<OmdbMovie>(url).pipe(
-    //   tap(_ => this.log(``)),
-    //   catchError(this.handleError<OmdbMovie>('getMovie')))
+      tap(_ => this.log(``))
+    );
   }
 
   /**
@@ -71,14 +69,12 @@ export class MovieService extends BaseMovieService {
    */
   getMovieByTitle(val: string): Observable<IOmdbMovieDetail> {
     const url = `${OMDB_URL}/?t=${val}&apikey=${OMDB_API_KEY}`;
-    return this.http.get<IOmdbMovieDetail>(url).pipe(tap(_ => this.log(`getMovie ${val}`)),
-      catchError(this.handleError<IOmdbMovieDetail>('getMovie')));
+    return this.httpBaseService.get(url, 'getMovie').pipe(tap(_ => this.log(`getMovie ${val}`)));
   }
 
   getImages(val: any): Observable<any> {
     const url = `${OMDB_URL}/?t=${val}&apikey=${this.TMDB_API_KEY}`;
-    return this.http.get<IOmdbMovieDetail>(url).pipe(tap(_ => this.log(`getMovie ${val}`)),
-      catchError(this.handleError<IOmdbMovieDetail>('getMovie')));
+    return this.httpBaseService.get(url, 'getMovie').pipe(tap(_ => this.log(`getMovie ${val}`)));
   }
 
   searchSubtitleById(val: string) {
@@ -91,17 +87,16 @@ export class MovieService extends BaseMovieService {
 
   getMovieBackdrop(val: string): Observable<any> {
     const url = `${FANART_TV_URL}/${val}?api_key=${FANART_TV_API_KEY}`;
-    return this.http.get<any>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getMovieBackdrop')));
+    return this.httpBaseService.get(url, 'getMovieBackdrop').pipe(tap(_ => this.log('')));
   }
 
   getMoviePoster(posterLink: string) {
     const url = `https://image.tmdb.org/t/p/w600_and_h900_bestv2/biH5hW1BRfEr13oCizuAzpdBf2l.jpg`;
-    return this.http.get<any>(url, {
-      observe: 'response'
-    }).pipe(map(data => {
-      console.log(data);
-    }, catchError(this.handleError('getposter')))
+    return this.httpBaseService.get(url, { observe: 'response' }, 'getposter').pipe(
+      map(data => {
+        console.log(data);
+        return data;
+      })
     );
   }
 
@@ -109,7 +104,7 @@ export class MovieService extends BaseMovieService {
     return this.tmdbService.getFindMovie(val);
   }
 
-  getRelatedClips(tmdbId: number, refresh: boolean = false): Observable<ITmdbVideoResult> {
+  getRelatedClips(tmdbId: number, refresh: boolean = false): Observable<any> {
     let theFunction: Observable<any>;
     let entityId = `movie:video:${tmdbId}`;
     const cached = this.store.selectSnapshot(MovieState.getPreviewMovie(entityId));
@@ -120,8 +115,7 @@ export class MovieService extends BaseMovieService {
         first(),
         map(data => {
           return this.mapMovieDetails(entityId, data);
-        }),
-        catchError(this.handleError<any>('getRelatedClips')));
+        }));
     }
     return of(cached.moviePreview);
   }
@@ -137,8 +131,7 @@ export class MovieService extends BaseMovieService {
         first(),
         map(data => {
           return this.mapMovieDetails(id, data);
-        }),
-        catchError(this.handleError<any>('getMovieDetails')));
+        }));
     }
     return of(cached.movie);
   }
@@ -158,11 +151,11 @@ export class MovieService extends BaseMovieService {
         headers: JSON_CONTENT_TYPE_HEADER,
         params: myHttpParam
       };
-      return this.http.get<any>(`${this.TMDB_URL}/discover/movie`, tmdbHttpOptions).pipe(tap(_ => this.log('')),
+      return this.httpBaseService.get(`${this.TMDB_URL}/discover/movie`, tmdbHttpOptions, 'getMoviesDiscover').pipe(
+        tap(_ => this.log('')),
         map((data: IRawTmdbResultObject) => {
           return this.mapPaginatedResult(entityId, data);
-        }),
-        catchError(this.handleError<any>('getMoviesDiscover')));
+        }));
     }
     return of(cached.paginatedResult);
   }
@@ -184,8 +177,7 @@ export class MovieService extends BaseMovieService {
             // let res = this.mapSearchResult(data);
             // return this.mapSearchResult(data);
             return this.mapPaginatedResult(entityId, data);
-          }),
-          catchError(this.handleError<any>('getMovieDetails')));
+          }));
       }
       return of(cached.movies);
     }
@@ -193,11 +185,11 @@ export class MovieService extends BaseMovieService {
   }
 
   getSubtitleFile(filePath: string): Observable<any> {
-    return this.http.get<any>(filePath, { responseType: 'blob' as 'json' });
+    return this.httpBaseService.get(filePath, { responseType: 'blob' as 'json' });
   };
 
   getSubtitleFileString(filePath: string): Observable<any> {
-    return this.http.get<any>(filePath, { responseType: 'text' as 'json' });
+    return this.httpBaseService.get(filePath, { responseType: 'text' as 'json' });
   };
 
   getStreams(movieId: string, refresh: boolean = false): Observable<any> {
@@ -209,20 +201,18 @@ export class MovieService extends BaseMovieService {
         headers: JSON_CONTENT_TYPE_HEADER,
         params: new HttpParams().append(TmdbParameters.ApiKey, this.TMDB_API_KEY)
       };
-      return this.http.get<any>(`mdb/streams/${movieId}`, tmdbHttpOptions).pipe(
+      return this.httpBaseService.get(`mdb/streams/${movieId}`, tmdbHttpOptions, 'getStreams').pipe(
         tap(_ => this.log('')),
         map((data: IRawTmdbResultObject) => {
           return this.mapPaginatedResult(entityId, data);
-        }),
-        catchError(this.handleError<any>('getStreams')));
+        }));
     }
     return of(cached.paginatedResult);
   }
 
   private externalId(tmdbId: number): Observable<TMDB_External_Id> {
     const url = `${this.TMDB_URL}/movie/${tmdbId}/external_ids?api_key=${this.TMDB_API_KEY}`;
-    return this.http.get<TMDB_External_Id>(url).pipe(tap(_ => this.log('')),
-      catchError(this.handleError<any>('getExternalId')));
+    return this.httpBaseService.get(url, 'getExternalId').pipe(tap(_ => this.log('')));
   }
 
   private mapMovieDetails(id, data): MDBMovie {
@@ -256,4 +246,3 @@ export class MovieService extends BaseMovieService {
     return newData;
   }
 }
-

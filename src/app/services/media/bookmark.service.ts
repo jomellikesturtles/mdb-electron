@@ -6,6 +6,7 @@ import { DataService } from '../data.service';
 import { MDBApiService } from '../mdb-api.service';
 import { BaseBookmarkService } from './base-bookmark.service';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
+import { CollectionName, FieldName } from '@shared/constants';
 
 @Injectable({
   providedIn: 'root'
@@ -55,12 +56,17 @@ export class BookmarkService extends BaseBookmarkService {
   }
 
   /**
+   * Gets first page of bookmarks.
+   */
+  getBookmarksPaginatedFirstPage(): Promise<any> {
+    return this.ipcService.getMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20);
+  }
+
+  /**
    * Gets multiple bookmarks.
    */
   getBookmarksPaginated(lastVal: string | number): Promise<any> {
-    return null;
-    // return this.dataService.getHandle(this.bffService.saveBookmark(data), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
-    //   data, null));
+    return this.ipcService.getMultiplePaginated(CollectionName.Bookmark, FieldName.TmdbId, 20, lastVal);
   }
 
 }

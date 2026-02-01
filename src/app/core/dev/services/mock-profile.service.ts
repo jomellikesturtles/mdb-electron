@@ -7,7 +7,7 @@ import { Observable } from "rxjs";
 export class MockProfileService extends BaseProfileService {
 
   getProfile(refresh = false): Observable<IUserProfile> {
-    return this.http.get<IUserProfile>('assets/mock-responses/profile.json');
+    return this.httpBaseService.get('assets/mock-responses/profile.json');
   }
 
 }

@@ -19,12 +19,11 @@ export class MockAuthenticationService extends AuthenticationService {
   }
 
   logout(): Observable<any> {
-    return this.http.post<any>(ENDPOINT.LOGOUT, {}).pipe(map(e => {
+    return this.httpBaseService.post(ENDPOINT.LOGOUT, {}).pipe(map(e => {
       sessionStorage.removeItem('token');
       this._isAuthenticated.set(false);
     }
-    ),
-      catchError(this.handleError<any>('login')));
+    ));
   }
 
 }

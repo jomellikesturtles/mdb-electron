@@ -8,13 +8,22 @@ import { IUserProfile } from '@models/user.model';
 })
 export class ProfileService extends BaseProfileService {
 
-  getProfile(refresh = false): Observable<IUserProfile> {
-    return this.dataService.getHandle(
-      this.http.get<any>(this.httpUrlProvider.getBffAPI('/profile')), this.ipcService.getProfile());
+    getProfile(refresh = false): Observable<IUserProfile> {
+
+      return this.dataService.getHandle(
+
+        this.httpBaseService.get(this.httpUrlProvider.getBffAPI('/profile')), this.ipcService.getProfile());
+
+    }
+
+  
+
+    updateProfile(data: Partial<IUserProfile>): Observable<any> {
+
+      return this.httpBaseService.put(this.httpUrlProvider.getBffAPI('/profile'), data);
+
+    }
+
   }
 
-  updateProfile(data: Partial<IUserProfile>): Observable<any> {
-    return this.http.put(this.httpUrlProvider.getBffAPI('/profile'), data);
-  }
-
-}
+  

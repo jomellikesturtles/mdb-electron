@@ -2,165 +2,149 @@
  * Movies from and to web API and offline dump
  */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { MDB_API_URL } from '../shared/constants';
 import { IProfileData } from '../models/profile-data.model';
 import { IMediaList } from '@models/media-list.model';
-import GeneralUtil from '@utils/general.util';
 import { ENDPOINT } from '@shared/endpoint.const';
 import { HttpUrlProviderService } from './http-url.provider.service';
 import { LoggerService } from '@core/logger.service';
+import { HttpBaseService } from './http-base.service';
 
 @Injectable({ providedIn: 'root' })
 export class MDBApiService {
 
   constructor(
-    private http: HttpClient,
+    private httpBaseService: HttpBaseService,
     private httpUrlProvider: HttpUrlProviderService,
     private logger: LoggerService
   ) { }
 
   getMediaUserData(tmdbId: number): Observable<any> {
-    return this.http.get<any>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_ID, tmdbId)).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getMediaUserData')));
+    return this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_ID, tmdbId), 'getMediaUserData').pipe(
+      tap(_ => this.logger.info(`getMediaUserData tmdbId=${tmdbId}`))
+    );
   }
 
   /**
-   * 
+   *
    * @param tmdbIdList list of tmdbId separated by comma
-   * @returns 
+   * @returns
    */
   getMediaUserDataInList(tmdbIdList: string): Observable<any> {
     let payload = {
       idList: tmdbIdList
-      // idList: tmdbIdList.join(',')
     };
-    return this.http.post<any>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_ID), payload).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getMediaUserDataInList')));
+    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_ID), payload, 'getMediaUserDataInList').pipe(
+      tap(_ => this.logger.info(`getMediaUserDataInList count=${tmdbIdList.length}`))
+    );
   }
 
   saveBookmark(bookmarkBody: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}/profileData/bookmark`, bookmarkBody).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('saveFavorite')));
+    return this.httpBaseService.post(`${MDB_API_URL}/profileData/bookmark`, bookmarkBody, 'saveBookmark').pipe(
+      tap(_ => this.logger.info(`saveBookmark tmdbId=${bookmarkBody.tmdbId}`))
+    );
   }
 
   deleteBookmark(bookmarkId: any): Observable<any> {
-    let httpParams = new HttpParams().set('id', bookmarkId);
-    return this.http.delete<any>(`${MDB_API_URL}/profileData/bookmark`, { params: httpParams }).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('deleteFavorite')));
+    // HttpBaseService delete takes payload as options
+    let params = { id: bookmarkId };
+    return this.httpBaseService.delete(`${MDB_API_URL}/profileData/bookmark`, { params: params }, 'deleteBookmark').pipe(
+      tap(_ => this.logger.info(`deleteBookmark id=${bookmarkId}`))
+    );
   }
+
   saveFavorite(favBody: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}/profileData/favorite`, favBody).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('saveFavorite')));
+    return this.httpBaseService.post(`${MDB_API_URL}/profileData/favorite`, favBody, 'saveFavorite').pipe(
+      tap(_ => this.logger.info(`saveFavorite tmdbId=${favBody.tmdbId}`))
+    );
   }
+
   deleteFavorite(favId: any): Observable<any> {
-    let httpParams = new HttpParams().set('id', favId);
-    return this.http.delete<any>(`${MDB_API_URL}/profileData/favorite`, { params: httpParams }).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('deleteFavorite')));
+    let params = { id: favId };
+    return this.httpBaseService.delete(`${MDB_API_URL}/profileData/favorite`, { params: params }, 'deleteFavorite').pipe(
+      tap(_ => this.logger.info(`deleteFavorite id=${favId}`))
+    );
   }
+
   saveToList(listLinkMovie: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}/profileData/list/add`, listLinkMovie).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('saveFavorite')));
+    return this.httpBaseService.post(`${MDB_API_URL}/profileData/list/add`, listLinkMovie, 'saveToList').pipe(
+      tap(_ => this.logger.info(`saveToList listId=${listLinkMovie.listId}`))
+    );
   }
 
   removeFromList(listLinkMovie: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}/profileData/list/remove`, listLinkMovie).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('saveFavorite')));
+    return this.httpBaseService.post(`${MDB_API_URL}/profileData/list/remove`, listLinkMovie, 'removeFromList').pipe(
+      tap(_ => this.logger.info(`removeFromList listId=${listLinkMovie.listId}`))
+    );
   }
+
   saveMediaList(listBody: IMediaList): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}/profileData/list`, listBody).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('saveList')));
+    return this.httpBaseService.post(`${MDB_API_URL}/profileData/list`, listBody, 'saveMediaList').pipe(
+      tap(_ => this.logger.info(`saveMediaList name=${listBody.title}`))
+    );
   }
+
   saveProgress(listBody: IMediaList): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}/profileData/list`, listBody).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('saveList')));
+    return this.httpBaseService.post(`${MDB_API_URL}/profileData/list`, listBody, 'saveProgress').pipe(
+      tap(_ => this.logger.info(`saveProgress`))
+    );
   }
+
   deleteList(listId: any): Observable<any> {
-    let httpParams = new HttpParams().set('id', listId);
-    return this.http.delete<any>(`${MDB_API_URL}/profileData/list`, { params: httpParams }).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('deleteFavorite')));
+    let params = { id: listId };
+    return this.httpBaseService.delete(`${MDB_API_URL}/profileData/list`, { params: params }, 'deleteList').pipe(
+      tap(_ => this.logger.info(`deleteList id=${listId}`))
+    );
   }
+
   saveWatched(watchedBody: any): Observable<any> {
-    return this.http.post<any>(`${MDB_API_URL}/profileData/watched`, watchedBody).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('saveFavorite')));
+    return this.httpBaseService.post(`${MDB_API_URL}/profileData/watched`, watchedBody, 'saveWatched').pipe(
+      tap(_ => this.logger.info(`saveWatched tmdbId=${watchedBody.tmdbId}`))
+    );
   }
+
   deleteWatched(watchedBody: any): Observable<any> {
-    return this.http.delete<any>(`${MDB_API_URL}/profileData/watched`, watchedBody).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('deleteFavorite')));
+    return this.httpBaseService.delete(`${MDB_API_URL}/profileData/watched`, watchedBody, 'deleteWatched').pipe(
+      tap(_ => this.logger.info(`deleteWatched`))
+    );
   }
 
   getProfileDataByTmdbId(tmdbId: number): Observable<IProfileData> {
-
-    return this.http.get<any>(`${MDB_API_URL}/profileData/media/${tmdbId}`).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getProfileDataByTmdbId')));
+    return this.httpBaseService.get(`${MDB_API_URL}/profileData/media/${tmdbId}`, 'getProfileDataByTmdbId').pipe(
+      tap(_ => this.logger.info(`getProfileDataByTmdbId tmdbId=${tmdbId}`))
+    );
   }
 
   getProfileDataByTmdbIdList(tmdbIdList: number[]): Observable<IProfileData[]> {
-
-    return this.http.get<any>(`${MDB_API_URL}/profileData/media/list/${tmdbIdList}`).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getProfileDataByTmdbIdList')));
+    return this.httpBaseService.get(`${MDB_API_URL}/profileData/media/list/${tmdbIdList}`, 'getProfileDataByTmdbIdList').pipe(
+      tap(_ => this.logger.info(`getProfileDataByTmdbIdList count=${tmdbIdList.length}`))
+    );
   }
 
   registerUser(payload: RegisterUser) {
-    return this.http.post<any>(`mdb/user/register`, payload).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('registerUser')));
+    return this.httpBaseService.post(`mdb/user/register`, payload, 'registerUser').pipe(
+      tap(_ => this.logger.info(`registerUser username=${payload.userName}`))
+    );
   }
 
   getProfile() {
-    return this.http.get<any>(`mdb/user/profile`).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getUserProfile')));
+    return this.httpBaseService.get(`mdb/user/profile`, 'getProfile').pipe(
+      tap(_ => this.logger.info(`getProfile`))
+    );
   }
 
   logout() {
-    return this.http.post<any>(`mdb/user/logout`, {}).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('logout')));
+    return this.httpBaseService.post(`mdb/user/logout`, {}, 'logout').pipe(
+      tap(_ => this.logger.info(`logout`))
+    );
   }
 
   login(payload: LoginUser) {
-    return this.http.post<any>(`mdb/user/login`, payload).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('logout')));
-  }
-
-
-  get(url: string) {
-    return this.http.get<any>(url).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getUserProfile')));
-  }
-
-  post(url: string, payload: any) {
-    return this.http.post<any>(url, payload).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getUserProfile')));
-  }
-
-  patch(url: string, payload: any) {
-    return this.http.patch<any>(url, payload).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getUserProfile')));
-  }
-
-  put(url: string, payload: any) {
-    return this.http.put<any>(url, payload).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getUserProfile')));
-  }
-
-  delete(url: string, payload: any) {
-    return this.http.delete<any>(url, payload).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getUserProfile')));
-  }
-
-  /**
-   * Error handler.
-   * @param operation the operation
-   * @param result the result
-   */
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      GeneralUtil.DEBUG.error(error); // log to console instead
-      this.logger.error(`${operation} failed: ${error.message}`);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
+    return this.httpBaseService.post(`mdb/user/login`, payload, 'login').pipe(
+      tap(_ => this.logger.info(`login username=${payload.userName}`))
+    );
   }
 
 }
@@ -180,4 +164,3 @@ export interface RegisterUser {
   avatar: string;
   contactNumber?: string;
 }
-

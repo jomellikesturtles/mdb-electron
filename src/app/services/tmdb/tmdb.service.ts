@@ -2,9 +2,9 @@
  * Movies from and to web API and offline dump
  */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, first, map, tap } from 'rxjs/operators';
+import { HttpHeaders, HttpParams, } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { first, map, tap } from 'rxjs/operators';
 import { IRawTmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { CacheService } from '../cache.service';
@@ -15,6 +15,7 @@ import { environment } from '@environments/environment';
 import GeneralUtil from '@utils/general.util';
 import { LoggerService } from '@core/logger.service';
 import { ITmdbVideoResult } from '@models/tmdb.model';
+import { HttpBaseService } from '@services/http-base.service';
 
 @Injectable({ providedIn: 'root' })
 export class TmdbService {
@@ -23,7 +24,7 @@ export class TmdbService {
   TMDB_URL = environment.tmdb.url;
 
   constructor(
-    private http: HttpClient,
+    private httpBaseService: HttpBaseService,
     private cacheService: CacheService,
     private logger: LoggerService
   ) { }
@@ -52,8 +53,9 @@ export class TmdbService {
       headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
     };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getMoviesDiscover')));
+    return this.httpBaseService.get(url, tmdbHttpOptions, 'getMoviesDiscover').pipe(
+      tap(_ => this.logger.info(''))
+    );
   }
 
   /**
@@ -74,12 +76,11 @@ export class TmdbService {
       headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
     };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(
+    return this.httpBaseService.get(url, tmdbHttpOptions, 'getTmdbMovieDetails2').pipe(
       first(),
       map(data => {
         return data;
-      }),
-      catchError(this.handleError<any>('getTmdbMovieDetails2'))
+      })
     );
   }
 
@@ -101,14 +102,16 @@ export class TmdbService {
       headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
     };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('searchTmdbMovie')));
+    return this.httpBaseService.get(url, tmdbHttpOptions, 'searchTmdbMovie').pipe(
+      tap(_ => this.logger.info(''))
+    );
   }
 
   private externalId(tmdbId: number): Observable<TMDB_External_Id> {
     const url = `${this.TMDB_URL}/movie/${tmdbId}/external_ids?api_key=${this.TMDB_API_KEY}`;
-    return this.http.get<TMDB_External_Id>(url).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getExternalId')));
+    return this.httpBaseService.get(url, 'getExternalId').pipe(
+      tap(_ => this.logger.info(''))
+    );
   }
 
   getTmdbVideos(tmdbId: number): Observable<ITmdbVideoResult> {
@@ -118,22 +121,9 @@ export class TmdbService {
       headers: JSON_CONTENT_TYPE_HEADER,
       params: myHttpParam
     };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('tmdbVideos')));
-  }
-
-  /**
-   * Error handler.
-   * @param operation the operation
-   * @param result result
-   */
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(error); // log to console instead
-      this.logger.error(`${operation} failed: ${error.message}`);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
+    return this.httpBaseService.get(url, tmdbHttpOptions, 'tmdbVideos').pipe(
+      tap(_ => this.logger.info(''))
+    );
   }
 
 }
