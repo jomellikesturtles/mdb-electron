@@ -1,80 +1,86 @@
 # MdbElectron - Project Context
 
-**MdbElectron** is a hybrid desktop application for browsing, managing, and streaming movies. It leverages **Angular** for the UI and **Electron** for desktop integration, filesystem access, and heavy background processing.
+**MdbElectron** is a hybrid media management application designed for browsing, organizing, and streaming local and online movies.
+
+## Project Goal
+*   **Multi-Platform:** Supports both **Web-app** and **Desktop application** builds.
+*   **OS Compatibility:** Fully compatible with **Windows** and **macOS**.
+*   **Offline-First:** Designed to function without an internet connection using local metadata and cached data.
+*   **Local Data Architecture:** Desktop build utilizes **IPC communication** to connect with a Node.js backend, storing data locally via **NeDB**.
 
 ## 1. Tech Stack & Environment
 
-*   **Frontend Framework:** Angular 17.3
-    *   **UI Libs:** Bootstrap 5 (beta), Angular Material 17.3.
-    *   **State Management:** Akita (`@datorama/akita` ^7.1.1).
+*   **Frontend Framework:** Angular 17+ (Ivy enabled)
+    *   **UI Libs:** Angular Material (Heavily customized), **No Bootstrap**.
+    *   **State Management:** NGXS (Redux pattern).
 *   **Desktop Runtime:** Electron 25.3
     *   **Builder:** `electron-packager`.
-*   **Database:** `nedb` (Embedded persistent database for local storage).
+*   **Database:** `nedb` (Embedded persistent database).
 *   **Key Dependencies:**
-    *   `webtorrent`: For streaming/downloading torrents.
-    *   `fluent-ffmpeg`: For media processing.
+    *   `webtorrent`: Streaming/downloading.
+    *   `fluent-ffmpeg`: Media processing.
     *   `moment`: Date handling.
-*   **Language:** TypeScript (Angular), JavaScript (Electron Main Process).
 
-## 2. Architecture
+## 2. Architecture & Modules
 
 ### Directory Structure (`src/app`)
-*   **`core/`**: Singleton services, guards, and app-wide logic (e.g., `logger.service.ts`, `crawler.ts`).
-*   **`modules/`**: Feature-based modules enforcing separation of concerns.
-    *   `admin`, `events`, `movie`, `person`, `settings`, `user`, `watch`.
-*   **`shared/`**: Reusable components, pipes, and directives.
-*   **`services/`**: Business logic, API communication, and State Stores (Akita).
-*   **`assets/scripts/`**: Node.js scripts for Electron background processes (e.g., `webtorrent.js`, `scan-library.js`).
+*   **`core/`**: Singletons (Services, Guards, TopNav).
+*   **`shared/`**:
+    *   **`ui/`**: Atomic Design System (`mdb-button`, `mdb-input`, `mdb-card`, etc.). **ALWAYS use these over raw HTML/Material.**
+    *   **`components/`**: Complex shared widgets (`movie-card`, `card-list`).
+*   **`modules/`**: Feature modules (`movie`, `user`, `settings`, `admin`).
+*   **`models/`**: Shared interfaces (e.g., `user.model.ts` for `IUserProfile`).
 
-### State Management (Akita)
-*   The application uses **Akita** for state management, specifically the `EntityStore` pattern.
-*   Stores are located in `src/app/services/{feature}/{feature}.store.ts`.
-*   Examples: `TorrentStore` (`torrentStoreModel`), `MDBMovieStore` (`mdbMovie`), `TMDBMovieStore` (`tmdbMovie`).
-*   *Note:* `src/app/app.state.ts` contains legacy/reference NGXS code and should be ignored/removed.
+### UI/UX Design System ("Netflix Dark")
+*   **Theme:** Dark mode only. Background `#141414`, Primary Red `#E50914`, Text White.
+*   **Styling Source:** `src/styles.scss` contains global variables, utility classes (replacing Bootstrap), and Material overrides.
+*   **Components:**
+    *   **Buttons:** Use `<mdb-button variant="...">`. Primary=Red, Secondary=Gray.
+    *   **Inputs:** Use `<mdb-input>` (Wraps MatFormField + Error handling).
+    *   **Cards:** Use `<mdb-card>` (Dark background, consistent padding).
+    *   **Lists:** `<app-card-list>` defaults to horizontal scrolling.
 
 ### Electron Architecture (`main.js`)
-*   **Main Process:** `main.js` is the entry point.
-*   **IPC Communication:** Extensive use of `ipcMain` and `ipcRenderer` for communication between the Angular UI and Node.js backend.
-*   **Child Processes:** Heavy operations are forked as separate Node.js processes to avoid blocking the UI thread:
-    *   `src/assets/scripts/webtorrent.js` (Torrent Client)
-    *   `src/assets/scripts/scan-library.js` (Library Scanner)
-    *   `src/assets/scripts/search-movie.js` (Search)
-    *   `src/assets/scripts/video-service.js` (Streaming)
-*   **Local Data:** Configuration and user data are stored in `src/assets/config/config.db` and other NeDB files.
+*   **Main Process:** `main.js` serves as the monolithic entry point. It manages window lifecycle (`mainWindow`, `splashWindow`), system tray, and orchestrates background tasks.
+    *   **Security:** Currently uses `nodeIntegration: true` and `webSecurity: false` in `mainWindow` to allow direct Node.js access from Angular. *Note: This is a legacy pattern and a security risk.*
+*   **IPC Communication:**
+    *   **Pattern:** Channel-based communication defined in JSON configs to ensure type safety.
+    *   **Renderer -> Main:** Channels defined in `src/assets/IPCRendererChannel.json` (e.g., `SCAN_LIBRARY_START`, `PLAY_TORRENT`).
+    *   **Main -> Renderer:** Channels defined in `src/assets/IPCMainChannel.json` (e.g., `ScanLibraryResult`, `BookmarkAddSuccess`).
+*   **Child Processes (Background Tasks):**
+    *   Heavy operations are offloaded to separate Node.js processes using `child_process.fork()` to prevent blocking the UI thread.
+    *   **Scripts Location:** `src/assets/scripts/`.
+    *   **Key Scripts:**
+        *   `webtorrent.js`: Handles torrent streaming and downloading.
+        *   `scan-library.js`: Recursively scans local folders for media files and identifies them using regex/TMDB.
+        *   `search-movie.js`: Handles movie search logic.
+        *   `video-service.js`: Spawns a local server to stream video files.
+    *   **Communication:** Child processes send messages back to `main.js` via `process.send()`, which are often forwarded to the Renderer.
+*   **Data Persistence:**
+    *   **NeDB:** Embedded persistent database used by both Main and Child processes.
+    *   **Locations:** `src/assets/config/config.db` (User prefs), `src/assets/scripts/src/assets/db/` (Library, Metadata).
+    *   **Direct Access:** `main.js` and child scripts often instantiate `Datastore` directly.
+*   **Architecture Notes:**
+    *   `src/electron/core/ModuleManager.js` exists but is not yet fully integrated, indicating a partial or planned refactor towards a modular backend. Currently, `main.js` contains significant business logic.
+
+### Desktop Core Features
+*   **Local Library Scanning:** Ability to scan user-specified local folders for video files recursively.
+*   **Media Identification:** Automated parsing of filenames using specified regex patterns to identify movie titles and release years.
+*   **Local Streaming:** Hosts an internal Node.js server to stream local video files to the UI via `localhost`.
 
 ## 3. Developer Guide
 
-### Scripts
-*   **Web Dev (UI only):** `npm start` (Runs `ng serve --proxy-config proxy.conf.json`)
-    *   *Access at:* `http://localhost:4200`
-*   **Electron Dev:** `npm run electron` (Launches Electron with current build)
-*   **Electron Prod Sim:** `npm run start:electron-prod` (Builds Prod Angular + Launches Electron)
-*   **Package App:** `npm run pack` (Creates executable via `electron-packager`)
+### Development
+*   **Web Dev:** `npm start` (Runs `ng serve`). Note: IPC features will fail in browser mode; mocks are used where available.
+*   **Electron Dev:** `npm run electron`.
 
-### Key Locations
-*   **Angular Entry:** `src/main.ts`
-*   **Electron Entry:** `main.js`
-*   **Styles:** `src/styles.scss` (Global), `src/custom-mat-styles.scss` (Material Overrides)
+### Key Workflows
+1.  **Adding a Feature:** Create module in `src/app/modules/`. Register routes. Use `SharedModule` for UI.
+2.  **State Management:** Use NGXS stores (`src/app/store/`).
+3.  **Authentication:** Handled by `AuthenticationService` and `MdbGuard`.
 
-## 4. Active Tasks & Status
-
-**From `todolist.md`:**
-*   [ ] Add "Refine Search" feature after Advanced Find.
-
-**Known Issues/Notes:**
-*   `app.state.ts` appears to be dead code (NGXS) mixed with active Akita usage elsewhere.
-*   Electron scripts are manually forked in `main.js`; ensure error handling and process cleanup are robust.
-
-## 5. Conventions
-
-*   **Modularization:** New features should reside in `src/app/modules/`.
-
-*   **State:** Use Akita `EntityStore` for data collections.
-
-*   **Background Tasks:** CPU-intensive tasks must be offloaded to child processes in `src/assets/scripts/`.
-
-*   **Communication:** Use typed IPC channels (defined in `src/assets/IPCMainChannel.json` and `IPCRendererChannel.json`).
-
-*   **Verification:** Always check for compilation errors after making code changes (e.g., using `npx ng build --watch=false`).
-
-*   **UI/UX:** Use DevTools MCP (screenshot/snapshot) to verify progress and visual consistency when dealing with UI changes.
+## 4. Conventions
+*   **Strict Typing:** Use interfaces from `src/app/models/`.
+*   **UI Components:** Do not use `mat-form-field` or `input` directly; use `mdb-input`. Do not use `bootstrap` classes. Use `d-flex`, `mb-3`, etc., from `styles.scss`.
+*   **Verification:** Always check for compilation errors after changes (`npx ng build --watch=false`).
+*   **Visuals:** Use DevTools MCP to verify UI fidelity.
