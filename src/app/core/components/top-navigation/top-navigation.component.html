@@ -31,7 +31,7 @@
         <img src="./assets/icons/magnifiying-glass.svg" class="search-icon" (click)="onSearch(searchQuery.query)"
           matTooltip="Search">
 
-        <mat-autocomplete #auto="matAutocomplete">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSearch($event.option.value)">
           <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
             {{option}}
           </mat-option>
