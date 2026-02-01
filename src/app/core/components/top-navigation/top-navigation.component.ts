@@ -1,5 +1,5 @@
 
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 // import { MovieGenre, IGenre, ISearchQuery, ITmdbSearchQuery } from '@models/interfaces';
 import { MOVIEGENRES } from '../../../mock-data';
@@ -23,6 +23,17 @@ import { ISearchQuery } from '@models/interfaces';
 export class TopNavigationComponent implements OnInit {
   @Input() data: Observable<any>;
   @Output() toggleSidebar = new EventEmitter<void>();
+  @ViewChild('searchBar') searchBar: ElementRef;
+
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent) {
+    if (event.key === '/') {
+      event.preventDefault();
+      if (this.searchBar) {
+        this.searchBar.nativeElement.focus();
+      }
+    }
+  }
 
   constructor(
     private dataService: DataService,
@@ -112,32 +123,28 @@ export class TopNavigationComponent implements OnInit {
    * Initialize search
    */
   onSearch(val: string) {
+    if (!val || !val.trim()) {
+      return;
+    }
     val = val.trim();
+
     if (this.lastQuery === val && this.router.url === '/results') {
       return;
     }
     this.lastQuery = val;
+
+    // Update search history: move to front and maintain max length
+    this.searchHistoryList = this.searchHistoryList.filter(q => q !== val);
     this.searchHistoryList.unshift(val);
-    this.removeDuplicate(val);
-    this.searchHistoryList.splice(this.searchHistoryList.indexOf(val), 1);
-    GeneralUtil.DEBUG.log(this.searchHistoryList);
-    if (this.searchHistoryList.length >= this.SEARCH_HISTORY_MAX_LENGTH) {
-      // this.searchHistoryList = this.searchHistoryList.splice(1)
+    if (this.searchHistoryList.length > this.SEARCH_HISTORY_MAX_LENGTH) {
       this.searchHistoryList = this.searchHistoryList.slice(0, this.SEARCH_HISTORY_MAX_LENGTH);
     }
-    const enteredQuery = val;
-    // this.currentPage = 1
-    // this.numberOfPages = 1
-    // this.numberOfResults = 0
-    // this.currentSearchQuery = enteredQuery
-    // // tt0092099 example
 
-    this.searchHistoryList.unshift(val);
     const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`);
-    if (enteredQuery.match(REGEX_IMDB_ID)) {
-      this.searchByImdbId(enteredQuery);
+    if (val.match(REGEX_IMDB_ID)) {
+      this.searchByImdbId(val);
     } else {
-      this.searchByTitle(enteredQuery);
+      this.searchByTitle(val);
     }
   }
 
@@ -161,8 +168,8 @@ export class TopNavigationComponent implements OnInit {
    * @param enteredQuery query to search
    */
   searchByTitle(enteredQuery: string) {
-    // this.dataService.currentSearchQuery = enteredQuery
-    if (this.searchQuery && this.searchQuery.query.length > 0) {
+    this.searchQuery.query = enteredQuery;
+    if (this.searchQuery.query.length > 0) {
       this.dataService.updateSearchQuery(this.searchQuery);
       this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
     }
@@ -207,14 +214,6 @@ export class TopNavigationComponent implements OnInit {
   }
   onExit() {
     this.ipcService.exitApp();
-  }
-
-  private removeDuplicate(val: string) {
-    let result = this.searchHistoryList.filter((option, index) => {
-      GeneralUtil.DEBUG.log('option: ', option);
-      return this.searchHistoryList.indexOf(option) === index;
-    });
-    this.searchHistoryList = result;
   }
 }
 
