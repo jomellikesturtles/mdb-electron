@@ -5,8 +5,8 @@ import { DataService } from './data.service';
 import { Observable } from 'rxjs';
 import { IMediaProgress } from '@models/media-progress';
 import { HttpUrlProviderService } from './http-url.provider.service';
-import { HttpClient } from '@angular/common/http';
 import { BaseProgressService } from './media/base-progress.service';
+import { HttpBaseService } from './http-base.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,7 @@ export class ProgressService extends BaseProgressService {
     private bffService: MDBApiService,
     dataService: DataService,
     private httpUrlProvider: HttpUrlProviderService,
-    private http: HttpClient
+    private httpBaseService: HttpBaseService
   ) { super(dataService); }
 
   /**
@@ -28,7 +28,7 @@ export class ProgressService extends BaseProgressService {
    */
   postProgress(progressBody: IMediaProgress): Observable<IMediaProgress> {
     return this.dataService.postHandle(
-      this.http.post<any>(this.httpUrlProvider.getBffAPI('/progress'), progressBody), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
+      this.httpBaseService.post(this.httpUrlProvider.getBffAPI('/progress'), progressBody, 'postProgress'), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
         progressBody, null));
   }
 

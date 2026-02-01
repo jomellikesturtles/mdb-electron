@@ -37,27 +37,26 @@ export class IpcService {
   ) {
     if (environment.runConfig.electron) {
 
-      console.log((window as any).require('electron'));
+      this.loggerService.info(`electron require: ${(window as any).require('electron')}`);
 
       this.ipcRenderer = (window as any).require('electron').ipcRenderer;
 
       this.ipcRenderer.on('torrent-video', (event, data: any) => {
-        console.log('event: ', event);
-        console.log('data: ', data);
+        this.loggerService.info(`torrent-video event: ${event} data: ${data}`);
         this.torrentVideo.next(data);
       });
 
       this.ipcRenderer.on(IPCMainChannel.PREFERENCES_GET_COMPLETE, (event: Electron.IpcRendererEvent, data) => {
         this.preferences.next(data);
-        console.log('IPCMainChannel.PREFERENCES_COMPLETE ', data);
+        this.loggerService.info(`IPCMainChannel.PREFERENCES_COMPLETE ${JSON.stringify(data)}`);
       });
       this.ipcRenderer.on(IPCMainChannel.STREAM_LINK, (event: Electron.IpcRendererEvent, data) => {
         this.streamLink.next(data);
-        console.log('IPCMainChannel.STREAM_LINK ', data);
+        this.loggerService.info(`IPCMainChannel.STREAM_LINK ${data}`);
       });
       this.ipcRenderer.on(IPCMainChannel.STATS, (event: Electron.IpcRendererEvent, data) => {
         this.statsForNerds.next(data);
-        console.log('IPCMainChannel.STATS ', data);
+        this.loggerService.info(`IPCMainChannel.STATS ${JSON.stringify(data)}`);
       });
     }
   }
@@ -87,7 +86,7 @@ export class IpcService {
    * @param data folder directory
    */
   openFolder(data: string) {
-    console.log('open', data);
+    this.loggerService.info(`openFolder: ${data}`);
     // this.ipcRenderer.send('go-to-folder', ['open', data])
   }
 
@@ -161,10 +160,10 @@ export class IpcService {
 
     this.sendToMain(IPCRendererChannel.SCAN_LIBRARY_START);
     this.ipcRenderer.on(IPCMainChannel.ScanLibraryResult, e => {
-      console.log(IPCMainChannel.ScanLibraryResult, e);
+      this.loggerService.info(`${IPCMainChannel.ScanLibraryResult}: ${e}`);
     });
     this.ipcRenderer.once(IPCMainChannel.ScanLibraryComplete, e => {
-      console.log('completscan');
+      this.loggerService.info('ScanLibraryComplete');
       this.ipcRenderer.removeListener(IPCMainChannel.ScanLibraryResult, d => { });
     });
   }
@@ -228,17 +227,16 @@ export class IpcService {
   }
 
   private removeListener(channel: string) {
-    console.log('REMOVING LISTENER', channel);
+    this.loggerService.info(`REMOVING LISTENER ${channel}`);
     this.ipcRenderer.removeListener(channel, d => { });
   }
 
   private sendToMain(channel: string, headers?: Headers | string, body?: Body) {
     try {
       this.ipcRenderer.send(channel, [headers, body]);
-      console.log('sent to ipc... ', channel, [headers, body]);
+      this.loggerService.info(`sent to ipc... ${channel} [${JSON.stringify(headers)}, ${JSON.stringify(body)}]`);
     } catch {
-      console.log('failed to send Ipc: ', channel, [headers, body]);
-      this.loggerService.error(`'failed to send Ipc: ${channel} [${headers}, ${body}]`);
+      this.loggerService.error(`'failed to send Ipc: ${channel} [${JSON.stringify(headers)}, ${JSON.stringify(body)}]`);
     }
   }
 

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { MDBTorrent, MDBTorrentAndMovieObject } from '@models/interfaces';
 import { DomSanitizer } from '@angular/platform-browser';
 import { STRING_REGEX_IMDB_ID } from '../../shared/constants';
@@ -9,6 +8,7 @@ import { IYTSSingleQuery } from '@models/yts-torrent.model';
 import GeneralUtil from '@utils/general.util';
 import { environment } from '@environments/environment';
 import { LoggerService } from '@core/logger.service';
+import { HttpBaseService } from '@services/http-base.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ import { LoggerService } from '@core/logger.service';
 export class TorrentService {
 
   constructor(
-    private http: HttpClient,
+    private httpBaseService: HttpBaseService,
     private sanitizer: DomSanitizer,
     private logger: LoggerService
   ) { }
@@ -44,22 +44,18 @@ export class TorrentService {
   private getTorrentsOnline(imdbId: string, refresh = false): Observable<MDBTorrentAndMovieObject> {
     // tt2015381 - guardians of the galaxy
     let url = `${this.YTS_URL}?query_term=${imdbId}`;
-    return this.http.get<IYTSSingleQuery>(url).pipe(tap(_ => this.logger.info('')),
+    return this.httpBaseService.get(url, 'getTorrentsOnline').pipe(
       map((data: IYTSSingleQuery) => {
         const newData = new MDBTorrentAndMovieObject(data);
         return newData;
-      }),
-      catchError(this.handleError<any>('getTorrentsOnline')));
+      }));
   }
 
   searchTorrentsByQuery(val: string): Observable<any> {
     console.log('insearchtorentsquery');
     val = 'tt0499549';
     const url = `${this.YTS_URL}?query_term=${val}`;
-    // let result = this.http.get<any>(url).pipe(
-    //   tap(_ => this.logger.info(`searched torrents for ${val}`)),
-    //   catchError(this.handleError<any>('search torrents fail')))
-    const result = this.http.get<any>(url).pipe(map(response => response));
+    const result = this.httpBaseService.get(url, 'searchTorrentsByQuery').pipe(map(response => response));
     // console.log('result: ', JSON.parse(result.))
     console.log('result: ', result);
     return result;
@@ -132,22 +128,7 @@ export class TorrentService {
     // tt2015381 - guardians of the galaxy
     let url = `http://localhost:3000/getStreamLink/${hash}`;
 
-    return this.http.get<string>(url).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getStreamLink')));
-  }
-
-  /**
-   * Error handler.
-   * @param operation the operation
-   * @param result result
-   */
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(error); // log to console instead
-      this.logger.error(`${operation} failed: ${error.message}`);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
+    return this.httpBaseService.get(url, 'getStreamLink');
   }
 
 }

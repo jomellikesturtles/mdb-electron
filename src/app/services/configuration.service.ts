@@ -1,9 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoggerService } from '@core/logger.service';
 import { ENDPOINT } from '@shared/endpoint.const';
-import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { HttpBaseService } from './http-base.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,26 +10,12 @@ import { catchError, tap } from 'rxjs/operators';
 export class ConfigurationService {
 
   constructor(
-    private http: HttpClient,
+    private httpBaseService: HttpBaseService,
     private logger: LoggerService
   ) { }
   getConfiguration(): Observable<any> {
     // const url = `${BFF_URL}/config`;
     // const url = `${BFF_URL}/config/versions`;
-    return this.http.get<any>(ENDPOINT.ACTUATOR_HEALTH).pipe(tap(_ => this.logger.info(`getConfiguration`)),
-      catchError(this.handleError<any>('getConfiguration')));
-  }
-
-  /**
-   * Error handler.
-   * @param operation the operation
-   * @param result result
-   */
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      this.logger.error(`${operation} failed: ${error.message}`);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
+    return this.httpBaseService.get(ENDPOINT.ACTUATOR_HEALTH, 'getConfiguration');
   }
 }

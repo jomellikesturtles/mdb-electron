@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { MDBMovie } from '@models/mdb-movie.model';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
@@ -7,6 +6,7 @@ import { Injectable } from '@angular/core';
 import { CacheService } from '@services/cache.service';
 import { IpcService } from '@services/ipc.service';
 import { TmdbService } from '@services/tmdb/tmdb.service';
+import { HttpBaseService } from '@services/http-base.service';
 
 @Injectable({ providedIn: "root" })
 export abstract class BaseMovieService {
@@ -15,7 +15,7 @@ export abstract class BaseMovieService {
     protected cacheService: CacheService,
     protected ipcService: IpcService,
     protected tmdbService: TmdbService,
-    protected http: HttpClient
+    protected httpBaseService: HttpBaseService
   ) { }
 
   /**

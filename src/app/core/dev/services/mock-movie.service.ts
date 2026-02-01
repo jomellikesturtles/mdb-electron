@@ -48,15 +48,14 @@ export class MockMovieService extends BaseMovieService {
   }
 
   getMovieDetails(id: number, appendToResponse?: string, refresh?: boolean): Observable<MDBMovie> {
-    return this.http.get<any>('assets/mock-responses/tmdb-movie-details.json').pipe(
+    return this.httpBaseService.get('assets/mock-responses/tmdb-movie-details.json').pipe(
       map(data => {
         return new MDBMovie(data);
-      }),
-      catchError(this.handleError<any>('getMovieDetails')));
+      }));
   }
 
   getMoviesDiscover(paramMap: Map<TmdbParameters, any>, listName?: string, refresh = false): Observable<IMdbMoviePaginated> {
-    return this.http.get<IRawTmdbResultObject>(`assets/mock-responses/tmdb-movie-search-result.json`).pipe(tap(_ => this.log('')),
+    return this.httpBaseService.get(`assets/mock-responses/tmdb-movie-search-result.json`).pipe(tap(_ => this.log('')),
       map((data: IRawTmdbResultObject) => {
         let newData: IMdbMoviePaginated = {
           totalPages: data.total_pages,
@@ -69,16 +68,15 @@ export class MockMovieService extends BaseMovieService {
           newData.results.push(movie);
         });
         return newData;
-      }),
-      catchError(this.handleError<any>('getMoviesDiscover')));
+      }));
   }
 
   searchMovie(parameters: Map<TmdbParameters | TmdbSearchMovieParameters, any>, refresh?: boolean): Observable<IRawTmdbResultObject> {
-    return this.http.get<IRawTmdbResultObject>('assets/mock-responses/tmdb-movie-search-result.json');
+    return this.httpBaseService.get('assets/mock-responses/tmdb-movie-search-result.json');
   }
 
   getSubtitleFile(filePath: string): Observable<any> {
-    return this.http.get<any>('file:///D:/workspaces/git_repos/mdb-electron/cameron/src/assets/Cinema%20Paradiso-English.srt');
+    return this.httpBaseService.get('file:///D:/workspaces/git_repos/mdb-electron/cameron/src/assets/Cinema%20Paradiso-English.srt');
   }
   getSubtitleFileString(filePath: string): Observable<any> {
     return of('D:/workspaces/git_repos/mdb-electron/cameron/src/assets/Cinema Paradiso-English.srt');
