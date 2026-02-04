@@ -51,10 +51,19 @@ export class SigninComponent implements OnInit {
     if (this.signInForm.valid) {
       const emailUsername = this.signInForm.get('usernameEmail').value;
       const password = this.signInForm.get('password').value;
-      // TODO: Call service to sign in
-      this.authenticationService.login({ email: '', username: emailUsername, password: password }).subscribe({
-
-      });
+      this.authenticationService.login({ email: "", username: emailUsername, password: password }).subscribe(
+        (e) => {
+          console.log(e);
+          // {
+          // next: (e) => {
+          this.router.navigate(["/dashboard"]);
+        }
+        // },
+        // error: (e) => {
+        //   this.generalError = e.error.message;
+        // }
+        // }
+      );
     }
   }
 
@@ -67,11 +76,10 @@ export class SigninComponent implements OnInit {
 
 }
 
-
 export interface SignIn {
-  username: string,
-  emailAddress: string,
-  age: number,
-  gender: string,
-  authType: string,
+  username: string;
+  emailAddress: string;
+  age: number;
+  gender: string;
+  authType: string;
 }
