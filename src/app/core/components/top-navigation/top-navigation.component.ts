@@ -1,4 +1,3 @@
-
 import { Component, OnInit, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 // import { MovieGenre, IGenre, ISearchQuery, ITmdbSearchQuery } from '@models/interfaces';
@@ -14,6 +13,9 @@ import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import GeneralUtil from '@utils/general.util';
 import { ISearchQuery } from '@models/interfaces';
+import { AuthenticationService } from "@services/authentication.service";
+import { Actions, ofActionDispatched } from "@ngxs/store";
+import { Login } from "app/store/auth/auth.state";
 
 @Component({
   selector: 'app-top-navigation',
@@ -41,7 +43,10 @@ export class TopNavigationComponent implements OnInit {
     private movieService: MovieService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private location: Location) { }
+    private authService: AuthenticationService,
+    private $actions: Actions,
+    private location: Location
+  ) { }
 
   isElectron = environment.runConfig.electron;
   status = 'LOGIN';
@@ -75,6 +80,10 @@ export class TopNavigationComponent implements OnInit {
 
   myControl = new FormControl();
   ngOnInit() {
+    this.$actions.pipe(ofActionDispatched(Login)).subscribe((e) => {
+      this.isSignedIn = true;
+      this.status = "";
+    });
     const e = localStorage.getItem('user');
     this.getSearchHistoryList();
     if (e === null) {
@@ -185,9 +194,11 @@ export class TopNavigationComponent implements OnInit {
 
   signOut() {
     localStorage.removeItem('user');
-    this.isSignedIn = false;
-    this.status = 'LOGIN';
-    this.router.navigate(['/user/signin']);
+    this.authService.logout().subscribe((e) => {
+      this.isSignedIn = false;
+      this.status = "LOGIN";
+      this.router.navigate(["/user/signin"]);
+    });
   }
 
   signIn() {
@@ -216,6 +227,3 @@ export class TopNavigationComponent implements OnInit {
     this.ipcService.exitApp();
   }
 }
-
-
-
