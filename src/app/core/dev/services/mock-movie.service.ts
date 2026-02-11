@@ -1,4 +1,9 @@
 import { Injectable } from "@angular/core";
+import { Store } from "@ngxs/store";
+import { CacheService } from "@services/cache.service";
+import { HttpBaseService } from "@services/http-base.service";
+import { IpcService } from "@services/ipc.service";
+import { TmdbService } from "@services/tmdb/tmdb.service";
 import { IOmdbMovieDetail, IRawTmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from "@models/interfaces";
 import { MDBMovie } from "@models/mdb-movie.model";
 import { IMdbMoviePaginated } from "@models/media-paginated.model";
@@ -10,6 +15,15 @@ import { Observable, catchError, map, of, tap } from "rxjs";
 
 @Injectable({ providedIn: "root" })
 export class MockMovieService extends BaseMovieService {
+  constructor(
+    protected cacheService: CacheService,
+    protected ipcService: IpcService,
+    protected tmdbService: TmdbService,
+    protected httpBaseService: HttpBaseService,
+    protected store: Store
+  ) {
+    super(cacheService, ipcService, tmdbService, httpBaseService, store);
+  }
   getMovieInfo(val: string): Observable<IMediaProgress> {
     throw new Error("Method not implemented.");
   }
