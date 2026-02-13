@@ -3,8 +3,8 @@
  */
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpParams, } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { first, map, tap } from 'rxjs/operators';
+import { Observable, from, of } from 'rxjs';
+import { first, map, tap, switchMap } from 'rxjs/operators';
 import { IpcService } from '@services/ipc.service';
 import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters, IRawTmdbResultObject } from '@models/interfaces';
 import { OMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID } from '../../shared/constants';
@@ -22,6 +22,8 @@ import { MDBPaginatedResultModel } from './interface/movie';
 import { CacheService } from '@services/cache.service';
 import { TmdbService } from '@services/tmdb/tmdb.service';
 import { HttpBaseService } from '@services/http-base.service';
+import { DataService } from '@services/data.service';
+import { TmdbMapper } from '@utils/tmdb.mapper';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -36,6 +38,7 @@ export class MovieService extends BaseMovieService {
     protected ipcService: IpcService,
     protected tmdbService: TmdbService,
     protected httpBaseService: HttpBaseService,
+    protected dataService: DataService,
     protected store: Store
   ) {
     super(cacheService, ipcService, tmdbService, httpBaseService, store);
@@ -109,21 +112,24 @@ export class MovieService extends BaseMovieService {
     return this.getCachedOrFetch<any>(
       MovieState.getPreviewMovie(entityId),
       () => {
-        let apiCall$ = Observable.create((observer) => observer.next(null));
-        if (environment.dataSource.toString() === "TMDB") {
-          apiCall$ = this.tmdbService.getTmdbVideos(tmdbId);
+        let fetch$: Observable<any>;
+        if (this.dataService.isWebApp() || navigator.onLine) {
+          fetch$ = this.tmdbService.getTmdbVideos(tmdbId);
+        } else {
+          // Fallback to IPC if offline
+          fetch$ = from(this.ipcService.getMovieFromLibrary(tmdbId));
         }
-        return apiCall$.pipe(
+        return fetch$.pipe(
           first(),
           map((data) => this.mapMovieDetails(entityId, data))
         );
       },
       (data) => {
         return { type: "NO_OP" };
-      }, // mapMovieDetails dispatches Action internally, so we pass a dummy or refactor mapMovieDetails.
+      },
       refresh
     ).pipe(
-      map((res) => (res && res.moviePreview ? res.moviePreview : res)) // Handle both cached (MDBMoviePreviewModel) and fresh (data)
+      map((res) => (res && res.moviePreview ? res.moviePreview : res))
     );
   }
 
@@ -131,21 +137,23 @@ export class MovieService extends BaseMovieService {
     return this.getCachedOrFetch<any>(
       MovieState.getMovie(id),
       () => {
-        let apiCall$ = Observable.create((observer) => observer.next(null));
-        if (environment.dataSource.toString() === "TMDB") {
-          apiCall$ = this.tmdbService.getTmdbMovieDetails(id, appendToResponse);
+        let fetch$: Observable<any>;
+        if (this.dataService.isWebApp() || navigator.onLine) {
+          fetch$ = this.tmdbService.getTmdbMovieDetails(id, appendToResponse);
+        } else {
+          fetch$ = from(this.ipcService.getMovieFromLibrary(id));
         }
-        return apiCall$.pipe(
+        return fetch$.pipe(
           first(),
           map((data) => this.mapMovieDetails(id, data))
         );
       },
       (data) => {
         return { type: "NO_OP" };
-      }, // mapMovieDetails dispatches internally
+      },
       refresh
     ).pipe(
-      map((res) => (res instanceof MDBMovie ? res : res && res.movie ? res.movie : res)) // Handle cached wrapper vs direct object
+      map((res) => (res instanceof MDBMovie ? res : res && res.movie ? res.movie : res))
     );
   }
 
@@ -163,22 +171,18 @@ export class MovieService extends BaseMovieService {
     return this.getCachedOrFetch<any>(
       MovieState.getDiscoverMovie(entityId),
       () => {
-        let apiCall$: Observable<IMdbMoviePaginated> = of(null); // Default or error fallback
-
-        myHttpParam = myHttpParam.append(TmdbParameters.ApiKey, this.TMDB_API_KEY);
-        const tmdbHttpOptions = {
-          headers: JSON_CONTENT_TYPE_HEADER,
-          params: myHttpParam
-        };
-        apiCall$ = this.httpBaseService
-          .get(`${this.TMDB_URL}/discover/movie`, tmdbHttpOptions, "getMoviesDiscover")
-          .pipe(
-            tap((_) => this.log("")),
-            map((data: IRawTmdbResultObject) => {
-              return this.mapPaginatedResult(entityId, data);
-            })
-          );
-        return apiCall$;
+        let fetch$: Observable<any>;
+        if (this.dataService.isWebApp() || navigator.onLine) {
+          fetch$ = this.tmdbService.getTmdbDiscover(paramMap);
+        } else {
+          // IPC Discover placeholder
+          fetch$ = of({ results: [], page: 1, total_pages: 0, total_results: 0 });
+        }
+        return fetch$.pipe(
+          map((data: IRawTmdbResultObject) => {
+            return this.mapPaginatedResult(entityId, data);
+          })
+        );
       },
       (data) => {
         return { type: "NO_OP" };
@@ -196,36 +200,29 @@ export class MovieService extends BaseMovieService {
     myHttpParam = GeneralUtil.appendMappedParameters(paramMap, myHttpParam);
     let entityId = `movie:search:${myHttpParam.toString()}`;
 
-    if (environment.dataSource.toString() === "TMDB") {
-      GeneralUtil.DEBUG.log(`searchMovie entityId ${entityId}`);
-
-      return this.getCachedOrFetch<any>(
-        MovieState.getSearchMovie(entityId),
-        () => {
-          let apiCall$: Observable<any> = this.tmdbService.searchTmdb(paramMap).pipe(
-            first(),
-            map((data: IRawTmdbResultObject) => {
-              return this.mapPaginatedResult(entityId, data);
-            })
-          );
-          return apiCall$;
-        },
-        (data) => {
-          return { type: "NO_OP" };
-        },
-        refresh
-      ).pipe(
-        map((res) => (res && res.movies ? res.movies : res)) // Assuming getSearchMovie returns { movies: ... } or similar?
-        // Wait, MovieState.getSearchMovie returns MDBMovieListModel?
-        // Let's check MovieState. searchMovies: { [id: string]: MDBMovieListModel };
-        // But mapPaginatedResult returns IMdbMoviePaginated.
-        // This seems inconsistent in original code. Original code mapped to mapPaginatedResult but stored in searchMovies?
-        // Original code: return this.mapPaginatedResult(entityId, data);
-        // And getSearchMovie returns cached.movies.
-        // Let's assume MDBMovieListModel has 'movies' property.
-      );
-    }
-    return of([]);
+    return this.getCachedOrFetch<any>(
+      MovieState.getSearchMovie(entityId),
+      () => {
+        let fetch$: Observable<any>;
+        if (this.dataService.isWebApp() || navigator.onLine) {
+          fetch$ = this.tmdbService.searchTmdb(paramMap);
+        } else {
+          fetch$ = of({ results: [], page: 1, total_pages: 0, total_results: 0 });
+        }
+        return fetch$.pipe(
+          first(),
+          map((data: IRawTmdbResultObject) => {
+            return this.mapPaginatedResult(entityId, data);
+          })
+        );
+      },
+      (data) => {
+        return { type: "NO_OP" };
+      },
+      refresh
+    ).pipe(
+      map((res) => (res && res.movies ? res.movies : res))
+    );
   }
 
   getSubtitleFile(filePath: string): Observable<any> {
@@ -240,22 +237,17 @@ export class MovieService extends BaseMovieService {
     const entityId = `movie:streams:${movieId}`;
     GeneralUtil.DEBUG.log(`getStreams movieId: ${movieId}`);
 
-    const tmdbHttpOptions = {
-      headers: JSON_CONTENT_TYPE_HEADER
-    };
-
     return this.getCachedOrFetch<any>(
       MovieState.getDiscoverMovie(entityId),
       () => {
-        let apiCall$ = this.httpBaseService
-          .get(`mdb/v1/media/${movieId}_1/streams`, tmdbHttpOptions, "getStreams")
+        return this.httpBaseService
+          .get(`mdb/v1/media/${movieId}_1/streams`, {}, "getStreams")
           .pipe(
             tap((_) => this.log("")),
             map((data: IRawTmdbResultObject) => {
               return this.mapPaginatedResult(entityId, data);
             })
           );
-        return apiCall$;
       },
       (data) => {
         return { type: "NO_OP" };
@@ -270,7 +262,7 @@ export class MovieService extends BaseMovieService {
   }
 
   private mapMovieDetails(id, data): MDBMovie {
-    let newData = new MDBMovie(data);
+    let newData = TmdbMapper.mapToMdbMovie(data);
     const store = {
       id: id,
       movie: newData
@@ -280,17 +272,7 @@ export class MovieService extends BaseMovieService {
   }
 
   private mapPaginatedResult(entityId: string, rawData: IRawTmdbResultObject): IMdbMoviePaginated {
-    let newData: IMdbMoviePaginated = {
-      totalPages: rawData.total_pages,
-      page: rawData.page,
-      totalResults: rawData.total_results,
-      results: []
-    };
-
-    rawData.results.forEach((e) => {
-      let movie = new MDBMovie(e);
-      newData.results.push(movie);
-    });
+    let newData = TmdbMapper.mapToPaginatedResults(rawData);
 
     const store: MDBPaginatedResultModel = {
       id: entityId,
