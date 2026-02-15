@@ -15,9 +15,9 @@ import { FeatureToggleService } from '@core/services/feature-toggle.service';
 })
 export class CardListComponent implements OnInit, OnChanges {
 
-  @Input() cardWidth: string;
-  @Input() displayMode: string = 'd-inline-flex';
-  @Input() listType: string;
+  @Input() cardWidth: string
+  @Input() displayMode: string = 'card-list-horizontal'
+  @Input() listType: string
   _movieList: MDBMovie[];
   @Input()
   set movieList(inputMessage: any[]) {

@@ -6,10 +6,21 @@
     </span>
     <!-- <label class='see-more-label' *ngIf="moviesList.length > 6" style='float:right; padding-right: 5px;position: absolute;
       cursor: pointer; padding-right: 20px; right: 0;' (click)='seeAll()'>See more</label> -->
-  </div>
-  <mat-divider [inset]="false"></mat-divider>
-  <div class='container-fluid card-list-horizontal'>
-    <app-card-list [movieList]='moviesList' [displayMode]='"d-inline-flex"' [listType]='"none"' [cardWidth]='"130px"'>
-    </app-card-list>
-  </div>
-</div>
+    </div>
+      <mat-divider [inset]="false"></mat-divider>
+      <div class="scroll-wrapper">
+        <button class="scroll-btn left" (click)="scrollLeft()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        
+        <div class='container-fluid card-list-horizontal' #cardListContainer>
+          <app-card-list [movieList]='moviesList' [displayMode]='"card-list-horizontal"' [listType]='"none"' [cardWidth]='"130px"'>
+          </app-card-list>
+        </div>
+    
+        <button class="scroll-btn right" (click)="scrollRight()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+    
