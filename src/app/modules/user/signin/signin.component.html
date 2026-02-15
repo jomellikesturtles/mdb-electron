@@ -5,6 +5,12 @@
   
   <div class="signin-content">
     <mdb-card title="Sign In" padding="lg" class="signin-card">
+        
+        <div *ngIf="generalError" class="signin-error-alert mb-3">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ generalError }}</span>
+        </div>
+
         <form [formGroup]="signInForm" (ngSubmit)="onSignIn()" class="signin-form d-flex flex-column gap-3">
           
           <mdb-input label="Username or Email" formControlName="usernameEmail" placeholder="Enter your username or email" error="Username or Email is required"></mdb-input>

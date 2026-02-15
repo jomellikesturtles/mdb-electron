@@ -71,6 +71,7 @@
     "nedb": "^1.8.0",
     "ngx-cacheable": "^1.3.2",
     "ngx-electron": "^2.2.0",
+    "openpgp": "^6.3.0",
     "papaparse": "^5.0.1",
     "path": "^0.12.7",
     "popper": "^1.0.1",

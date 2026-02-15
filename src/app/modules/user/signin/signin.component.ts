@@ -39,8 +39,8 @@ export class SigninComponent implements OnInit {
       password: new FormControl(this.userSignIn.password, [Validators.required])
     },
     );
-    this.usernameEmail.setValue('user1');
-    this.password.setValue('Password@54321');
+    this.usernameEmail.setValue('myusername2');
+    this.password.setValue('Password!123');
   }
 
   get usernameEmail() { return this.signInForm.get('usernameEmail'); }
@@ -51,19 +51,22 @@ export class SigninComponent implements OnInit {
     if (this.signInForm.valid) {
       const emailUsername = this.signInForm.get('usernameEmail').value;
       const password = this.signInForm.get('password').value;
-      this.authenticationService.login({ email: "", username: emailUsername, password: password }).subscribe(
-        (e) => {
+      this.generalError = ''; // Clear previous errors
+
+      this.authenticationService.login({ email: "", username: emailUsername, password: password }).subscribe({
+        next: (e) => {
           console.log(e);
-          // {
-          // next: (e) => {
           this.router.navigate(["/dashboard"]);
+        },
+        error: (err) => {
+          console.error('Login error', err);
+          if (err.status === 401 || err.status === 403) {
+            this.generalError = 'Invalid username/email or password.';
+          } else {
+            this.generalError = err.error?.message || 'An error occurred during sign in. Please try again.';
+          }
         }
-        // },
-        // error: (e) => {
-        //   this.generalError = e.error.message;
-        // }
-        // }
-      );
+      });
     }
   }
 

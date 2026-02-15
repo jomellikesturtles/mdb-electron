@@ -1,12 +1,14 @@
 import { Injectable, signal } from "@angular/core";
 import { LoggerService } from "@core/logger.service";
 import { ENDPOINT } from "@shared/endpoint.const";
-import { Observable, of } from "rxjs";
-import { map } from "rxjs/operators";
+import { from, Observable, of } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 import { Action, Store } from "@ngxs/store";
 import { HttpBaseService } from "./http-base.service";
 import { Login } from "app/store/auth/auth.state";
 import { toObservable } from "@angular/core/rxjs-interop";
+import * as openpgp from "openpgp";
+import { environment } from "@environments/environment";
 
 export class LoginPayload {
   username: string;
@@ -39,23 +41,22 @@ export class AuthenticationService {
   }
 
   /**
-   * Login user
+   * Login user by first encrypting the credentials and then authenticating.
    * @param payload login payload
    */
-  // @Action(Login)
   login(payload: LoginPayload): Observable<LoginResponse> {
-    // return of({
-    //   username: 'test',
-    //   authToken: 'test',
-    //   expiry: 'test',
-    // });
-    // Unreachable code updated for consistency
-    return this.httpBaseService.post(ENDPOINT.LOGIN, payload, "login").pipe(
+
+    return from(this.encryptMessage(payload.password)).pipe(
+
+      // return this.httpBaseService.post(ENDPOINT.ENCRYPT, payload, "encrypt").pipe(
+      switchMap((encryptedPayload: string) => {
+        payload.password = encryptedPayload;
+        return this.httpBaseService.post(ENDPOINT.LOGIN, payload, "login");
+      }),
       map((e: LoginResponse) => {
         this._isAuthenticated.set(true);
         this.store.dispatch(new Login(payload));
         sessionStorage.setItem("token", e.authToken);
-        this._isAuthenticated.set(true);
         return e;
       })
     );
@@ -80,5 +81,19 @@ export class AuthenticationService {
     sessionStorage.removeItem("token");
     localStorage.removeItem("user");
     this._isAuthenticated.set(false);
+  }
+
+  async encryptMessage(unencrptedMessage: string) {
+    // Allow 1024-bit keys as the current environment key is weak
+    openpgp.config.minRSABits = 1024;
+    const publicKey = await openpgp.readKey({ armoredKey: environment.publicKey });
+
+    const encrypted = await openpgp.encrypt({
+      message: await openpgp.createMessage({ text: unencrptedMessage }), // input as Message object
+      encryptionKeys: publicKey,
+      // signingKeys: privateKey // optional
+    });
+
+    return encrypted as string;
   }
 }

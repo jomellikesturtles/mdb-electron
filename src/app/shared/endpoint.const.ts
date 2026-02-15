@@ -28,11 +28,13 @@ export const ENDPOINT = {
   BOOKMARKS: `${MDB_API_URL}/bookmarks`,
 
   PROFILE: `${MDB_API_URL}/profile`,
-  // LOGIN: `${MDB_API_URL}/auth/login`,
-  LOGIN: `${MDB_API_URL}/basicAuthenticate`,
-  LOGOUT: `${MDB_API_URL}/auth/logout`,
-  RESET: `${MDB_API_URL}/auth/reset`,
-  REGISTER: `${MDB_API_URL}/auth/register`,
+  LOGIN: `${MDB_API_URL}/v1/auth/login`,
+  ENCRYPT: `${MDB_API_URL}/v1/auth/encrypt`,
+  DECRYPT: `${MDB_API_URL}/v1/auth/decrypt`,
+  // LOGIN: `${MDB_API_URL}/basicAuthenticate`,
+  LOGOUT: `${MDB_API_URL}/v1/auth/logout`,
+  RESET: `${MDB_API_URL}/v1/auth/reset`,
+  REGISTER: `${MDB_API_URL}/v1/auth/register`,
 
   ACTUATOR_HEALTH: `${MDB_API_URL}/actuator/health`,
   ACTUATOR_METRICS: `${MDB_API_URL}/actuator/metrics`,

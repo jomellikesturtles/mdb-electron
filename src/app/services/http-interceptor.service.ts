@@ -18,7 +18,7 @@ export class HttpInterceptorService implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     let request = req;
-    if (req.url.includes('mdb')) {
+    if (req.url.includes('mdb') && !req.url.includes('/v1/auth')) {
       request = this.modifyRequest(req) ?? req;
     }
 
