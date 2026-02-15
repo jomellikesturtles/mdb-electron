@@ -1,0 +1,35 @@
+.card-list-horizontal {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 16px;
+  padding: 10px 0;
+  width: 100%;
+  
+  // Custom Scrollbar for the list
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+  }
+
+  /* Force cards to not shrink */
+  #results-panel {
+    flex: 0 0 auto;
+  }
+}
+
+/* Grid fallback/alternate mode if needed */
+.movie-cards-display-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
