@@ -17,8 +17,8 @@ import GeneralUtil from '@utils/general.util';
 import { ITmdbVideoResult } from '@models/tmdb.model';
 import { Store } from '@ngxs/store';
 import { MovieState } from '../../store/movie/movie.state';
-import { AddMovie, AddDiscoverMovie } from '../../store/movie/movie.actions';
-import { MDBPaginatedResultModel } from './interface/movie';
+import { AddMovie, AddDiscoverMovie, AddPreviewMovie } from '../../store/movie/movie.actions';
+import { MDBPaginatedResultModel, MDBMoviePreviewModel } from './interface/movie';
 import { CacheService } from '@services/cache.service';
 import { TmdbService } from '@services/tmdb/tmdb.service';
 import { HttpBaseService } from '@services/http-base.service';
@@ -109,7 +109,7 @@ export class MovieService extends BaseMovieService {
 
   getRelatedClips(tmdbId: number, refresh: boolean = false): Observable<any> {
     const entityId = `movie:video:${tmdbId}`;
-    return this.getCachedOrFetch<any>(
+    return this.getCachedOrFetch<MDBMoviePreviewModel>(
       MovieState.getPreviewMovie(entityId),
       () => {
         let fetch$: Observable<any>;
@@ -121,11 +121,13 @@ export class MovieService extends BaseMovieService {
         }
         return fetch$.pipe(
           first(),
-          map((data) => this.mapMovieDetails(entityId, data))
+          map((data) => {
+            return { id: entityId, moviePreview: data };
+          })
         );
       },
       (data) => {
-        return { type: "NO_OP" };
+        return new AddPreviewMovie(data);
       },
       refresh
     ).pipe(

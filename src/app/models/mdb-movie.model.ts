@@ -13,7 +13,7 @@ export class MDBMovie {
   popularity: number;
   posterPath: string;
   userData: IProfileData;
-  backropPath: string;
+  backdropPath: string;
   credits: ICredits;
   rating: IRating;
   isAdult: boolean;
@@ -78,7 +78,7 @@ export class MDBMovie {
     this.overview = value['overview'] || value['plot'];
     this.posterPath = value['poster_path'] || value['posterPath'];
     // this.userData = value['userData'] || value['plot']
-    this.backropPath = value['backdrop_path'] || value['backropPath'];
+    this.backdropPath = value['backdrop_path'] || value['backdropPath'];
     this.credits = value['credits'];
     this.rating = value['overview'] || value['plot'];
     this.isAdult = value['adult'] || value['isAdult'];
