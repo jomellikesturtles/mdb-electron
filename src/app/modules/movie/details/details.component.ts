@@ -1,9 +1,6 @@
 import { GenreCodes } from '@models/interfaces';
 import { IRawLibrary, LibraryService } from '@services/library.service';
-import {
-  Component, OnInit,
-  OnDestroy,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MDBTorrent } from '@models/interfaces';
 import { DataService } from '@services/data.service';
 import { MovieService } from '@services/movie/movie.service';
@@ -24,6 +21,7 @@ import { ImagePreviewComponent } from '@shared/components/image-preview/image-pr
 import { BookmarkService } from '@services/media/bookmark.service';
 import { LoggerService } from '@core/logger.service';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
+import { AuthenticationService } from '@services/authentication.service';
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -72,6 +70,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     { id: 4, name: 'Horror Classics' }
   ];
   private ngUnsubscribe = new Subject();
+  isAuthenticated = this.authService.isAuthenticated().valueOf();
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -86,7 +85,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private bookmarkService: BookmarkService,
     private playedService: PlayedService,
-    private loggerService: LoggerService
+    private loggerService: LoggerService,
+    private authService: AuthenticationService
   ) { }
 
   ngOnInit() {
@@ -150,8 +150,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   playOfflineLibrary(val) {
-    this.libraryService.openVideoStream(val).then(e => {
-      GeneralUtil.DEBUG.log('streamlink1:', e);
+    this.libraryService.openVideoStream(val).then((e) => {
+      GeneralUtil.DEBUG.log("streamlink1:", e);
       // if (e != 0 && e != [] && e != '' && e.length > 0) {
       if (e) {
         this.showVideo = true;
@@ -164,7 +164,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets the user's watched, bookmark, library data of the movie
    */
   getUserMovieData() {
-    this.procVideo, this.procBookmark, this.procWatched = true;
+    (this.procVideo, this.procBookmark, (this.procWatched = true));
 
     this.mediaUserDataService.getMediaUserData(this.movieDetails.tmdbId).subscribe((profileData: IProfileData) => {
 
@@ -187,7 +187,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
       if (profileData.review) {
         this.userData.review = profileData.review;
       }
-      this.procVideo, this.procBookmark, this.procWatched = false;
+      (this.procVideo, this.procBookmark, (this.procWatched = false));
     });
   }
 
@@ -256,13 +256,17 @@ export class DetailsComponent implements OnInit, OnDestroy {
     // tt2015381 is Guardians of the galaxy 2014; for testing only
     GeneralUtil.DEBUG.log('getMovie initializing with value...', val);
 
-    this.movieService.getMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations,reviews').subscribe(data => {
-      this.movieDetails = data;
-      this.loadVideoData();
-      this.hasData = true;
-      // COMMENTED UNTIL 'error spawn ENAMETOOLONG' is fixed.
-      // this.saveMovieDataOffline(this.movieDetails)
-    });
+    this.movieService.getMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations,reviews')
+      .subscribe((data) => {
+        this.movieDetails = data;
+        this.loadVideoData();
+        this.hasData = true;
+        this.movieService.getStreams(data.imdbId).subscribe((data) => {
+          GeneralUtil.DEBUG.log("streams", data);
+        });
+        // COMMENTED UNTIL 'error spawn ENAMETOOLONG' is fixed.
+        // this.saveMovieDataOffline(this.movieDetails)
+      });
   }
 
   /**
@@ -540,4 +544,3 @@ export class DetailsComponent implements OnInit, OnDestroy {
     return playLink;
   }
 }
-

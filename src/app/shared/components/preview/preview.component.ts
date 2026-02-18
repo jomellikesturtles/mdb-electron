@@ -144,9 +144,9 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.previewMovie = movie;
     this.isHide = false;
-    if (movie.tmdbId === this.playedTmdbId) {
-      return;
-    }
+    // if (movie.tmdbId === this.playedTmdbId) {
+    //   return;
+    // }
     this.playedTmdbId = this.previewMovie.tmdbId;
     this.hasInitialSelected = true;
     let videoId = '';
@@ -193,13 +193,17 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.hasAlreadySelected) {
       this.generateYoutube();
       this.hasAlreadySelected = true;
+    } else {
+      if (this.player && this.player.loadVideoById) {
+        this.player.loadVideoById(videoId);
+      }
     }
 
     const root = this;
     setTimeout(() => {
-      // root.setVideo(videoId)
+      root.setVideo(videoId);
       root.cdr.detectChanges();
-    }, 5000);
+    }, 1000);
     // })
   }
 
