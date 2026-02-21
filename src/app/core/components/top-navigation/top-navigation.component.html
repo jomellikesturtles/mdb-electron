@@ -22,14 +22,17 @@
   <!-- CENTER: Cinematic Search Bar -->
   <div class="search-controls-container">
     <div class="search-wrapper">
-      <form class="example-form w-100">
+      <form class="search-form w-100">
+        <!-- Search Icon (Left) -->
+        <img src="./assets/icons/magnifiying-glass.svg" class="search-icon-left" matTooltip="Search">
+
         <input #searchBar type="text" class="form-control" placeholder="Search titles, people, genres..."
           [(ngModel)]="searchQuery.query" name="searchQuery" (keyup.enter)="onSearch(searchQuery.query)"
           [matAutocomplete]="auto">
 
-        <!-- Search Icon (Clickable) -->
-        <img src="./assets/icons/magnifiying-glass.svg" class="search-icon" (click)="onSearch(searchQuery.query)"
-          matTooltip="Search">
+        <!-- Clear Icon (Right, only if query has value) -->
+        <mat-icon *ngIf="searchQuery.query" class="clear-icon" (click)="searchQuery.query=''; searchBar.focus()"
+          matTooltip="Clear">close</mat-icon>
 
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSearch($event.option.value)">
           <mat-option *ngFor="let option of filteredOptions | async" [value]="option">

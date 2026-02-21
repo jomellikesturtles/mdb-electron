@@ -3,7 +3,6 @@ import { FormGroup, FormControl, Validators, FormBuilder, AbstractControl } from
 import { Router } from '@angular/router';
 import { CredentialsValidator } from '@directives/credentials.directive';
 import { AuthenticationService } from '@services/authentication.service';
-import { UtilsService } from '@services/utils.service';
 
 @Component({
   selector: 'app-signin',
@@ -22,7 +21,6 @@ export class SigninComponent implements OnInit {
 
   constructor(
     private credentialValidator: CredentialsValidator,
-    private utilsService: UtilsService,
     private authenticationService: AuthenticationService,
     private formBuilder: FormBuilder,
     private router: Router

@@ -20,11 +20,15 @@
     "enabled": false
   },
   "played_status": {
-    "description": "Played/watched status",
+    "description": "Played/watched/progress status",
     "enabled": false
   },
   "trailer": {
     "description": "Play trailer button",
+    "enabled": false
+  },
+  "review": {
+    "description": "Media reviews functionality",
     "enabled": false
   }
 }

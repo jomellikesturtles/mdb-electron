@@ -105,15 +105,19 @@
             </mat-menu>
           </div>
 
+          @if (isFeatureEnabled('trailer')) {
           <button mat-stroked-button class="trailer-btn btn-lg px-4 py-3" *ngIf='movieTrailer' (click)='playPreview()'>
             <mat-icon class="me-2 fs-4">movie</mat-icon>
             <span class="fs-5">TRAILER</span>
           </button>
+          }
+          @if (isFeatureEnabled('played_status') || isFeatureEnabled('torrent_flag')) {
           <button mat-stroked-button class="trailer-btn btn-lg px-4 py-3" *ngIf='hasContinueWatching'
             (click)='continueWatching()'>
             <mat-icon class="me-2">history</mat-icon>
             <span class="fs-5">RESUME</span>
           </button>
+          }
         </div>
 
         <mat-tab-group animationDuration="0ms" class="custom-tabs">
