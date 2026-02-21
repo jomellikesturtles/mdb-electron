@@ -22,6 +22,7 @@ import { BookmarkService } from '@services/media/bookmark.service';
 import { LoggerService } from '@core/logger.service';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
 import { AuthenticationService } from '@services/authentication.service';
+import { FeatureName, FeatureToggleService } from '@core/services/feature-toggle.service';
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -48,11 +49,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
   movieCertification;
   movieDetails = new MDBMovie();
   userLocation = 'US';
-  procBookmark = false;
-  procWatched = false;
-  procFavorite = false;
-  procVideo = false;
-  procPlayLink = false;
+  isProcessingBookmark = false;
+  isProcessingWatched = false;
+  isProcessingFavorite = false;
+  processingVideo = false;
+  processingPlayLink = false;
   showVideo = false;
   _isBookmarked = false;
   _isPlayed = false;
@@ -86,7 +87,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private bookmarkService: BookmarkService,
     private playedService: PlayedService,
     private loggerService: LoggerService,
-    private authService: AuthenticationService
+    private authService: AuthenticationService,
+    private featureToggleService: FeatureToggleService
   ) { }
 
   ngOnInit() {
@@ -160,11 +162,14 @@ export class DetailsComponent implements OnInit, OnDestroy {
     });
   }
 
+
+
+
   /**
    * Gets the user's watched, bookmark, library data of the movie
    */
   getUserMovieData() {
-    (this.procVideo, this.procBookmark, (this.procWatched = true));
+    (this.processingVideo, this.isProcessingBookmark, (this.isProcessingWatched = true));
 
     this.mediaUserDataService.getMediaUserData(this.movieDetails.tmdbId).subscribe((profileData: IProfileData) => {
 
@@ -177,17 +182,17 @@ export class DetailsComponent implements OnInit, OnDestroy {
         this.userData.played = profileData.played;
         this._isPlayed = this.mediaUserDataService.commonSetter(profileData.played);
       }
-      if (profileData.favorite) {
+      if (profileData.favorite)
         this.userData.favorite = profileData.favorite;
-        this._isFavorite = this.mediaUserDataService.commonSetter(profileData.favorite);
-      }
+      this._isFavorite = this.mediaUserDataService.commonSetter(profileData.favorite);
+
       if (profileData.listLinkMovie) {
         this.userData.listLinkMovie = profileData.listLinkMovie;
       }
       if (profileData.review) {
         this.userData.review = profileData.review;
       }
-      (this.procVideo, this.procBookmark, (this.procWatched = false));
+      (this.processingVideo, this.isProcessingBookmark, (this.isProcessingWatched = false));
     });
   }
 
@@ -209,21 +214,19 @@ export class DetailsComponent implements OnInit, OnDestroy {
   /**
    * Toggles movie from user's watchlist or bookmarks
    */
-  async toggleBookmark() {
-    this.procBookmark = true;
+  toggleBookmark() {
+    this.isProcessingBookmark = true;
     const tmdbId = this.movieDetails.tmdbId;
-    let res = false;
-    if (this._isBookmarked) {
-      res = await this.bookmarkService.removeBookmark('tmdbId', tmdbId).toPromise();
-    } else {
-      res = await this.bookmarkService.saveBookmark(tmdbId).toPromise();
-    }
-    this.isBookmarked = res;
-    this.procBookmark = false;
+    const bookmarkToggleFunction = this._isBookmarked ? this.bookmarkService.remove('tmdbId', tmdbId) : this.bookmarkService.save({ tmdbId });
+    bookmarkToggleFunction.subscribe(e => {
+      this.isBookmarked = e.isBookmark;
+      this.isProcessingBookmark = false;
+    });
+
   }
 
   async togglePlayed() {
-    this.procWatched = true;
+    this.isProcessingWatched = true;
     const tmdbId = this.movieDetails.tmdbId;
     let res = false;
     if (this._isPlayed) {
@@ -232,21 +235,19 @@ export class DetailsComponent implements OnInit, OnDestroy {
       res = await this.playedService.savePlayed({ tmdbId }).toPromise();
     }
     this.isPlayed = res;
-    this.procWatched = false;
+    this.isProcessingWatched = false;
   }
 
-  async toggleFavorite() {
-    this.procFavorite = true;
+  toggleFavorite() {
+    this.isProcessingFavorite = true;
     const tmdbId = this.movieDetails.tmdbId;
-    let res;
-    if (this._isFavorite) {
-      res = await this.favoriteService.removeFavorite('tmdbId', tmdbId).toPromise();
-    } else {
-      res = await this.favoriteService.saveFavorite({ tmdbId }).toPromise();
-    }
-    this.isFavorite = res;
-    this.procFavorite = false;
+    const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove('tmdbId', tmdbId) : this.favoriteService.save({ tmdbId });
+    favoriteToggleFunction.subscribe(e => {
+      this.isFavorite = e.isFavorite;
+      this.isProcessingFavorite = false;
+    });
   }
+
 
   /**
    * Gets movie details, torrents
@@ -327,7 +328,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param val name
    */
   getLibrary() {
-    this.procPlayLink = true;
+    this.processingPlayLink = true;
     this.libraryService.getMovieFromLibrary(this.movieDetails.tmdbId).then((libraryList: IRawLibrary[]) => {
       GeneralUtil.DEBUG.log("libraryList", libraryList);
       if (libraryList.length > 0) {
@@ -345,7 +346,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
         if (!this.bestPlayLink && this.torrents.length > 0) this.bestPlayLink = this.mapPlayLink(this.torrents[0]); // TODO: add sorting by preferred quality
       }
-      this.procPlayLink = false;
+      this.processingPlayLink = false;
     });
   }
 
@@ -543,4 +544,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     playLink.type = arg.hasOwnProperty('hash') ? 'torrent' : 'offline';
     return playLink;
   }
+
+  isFeatureEnabled(featureName: FeatureName) {
+    return this.featureToggleService.isEnabled(featureName);
+  }
+
 }

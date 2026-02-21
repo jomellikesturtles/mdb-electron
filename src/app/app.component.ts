@@ -1,21 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
-import { Subscription } from 'rxjs';
-import { WebSocketService } from '@services/socket.service';
-import { ConfigurationService } from '@services/configuration.service';
+import { Component, OnInit } from "@angular/core";
+import { WebSocketSubject, webSocket } from "rxjs/webSocket";
+import { Subscription } from "rxjs";
+import { WebSocketService } from "@services/socket.service";
+import { ConfigurationService } from "@services/configuration.service";
+import { AuthenticationService } from "@services/authentication.service";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'mdb-electron';
-  constructor(private webSocketService: WebSocketService, private configService: ConfigurationService) { }
+  title = "mdb-electron";
+  constructor(
+    private webSocketService: WebSocketService,
+    private configService: ConfigurationService,
+    private authService: AuthenticationService
+  ) { }
   messageSubscription: Subscription;
   ngOnInit() {
-    // this.configService.getConfiguration().subscribe(e => {
-    //   console.log(e);
-    // });
+    this.authService.clearSession();
+    this.configService.getConfiguration().subscribe((e) => {
+      console.log(e);
+    });
     // this.messageSubscription = this.webSocketService.get.subscribe(msg => {
     //   console.log("Response from websocket: " + msg);
     // });
@@ -30,7 +36,5 @@ export class AppComponent implements OnInit {
     // })
   }
 
-  syncTime() {
-
-  }
+  syncTime() { }
 }

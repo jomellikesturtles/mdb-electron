@@ -25,10 +25,12 @@
             <mat-icon>{{ _isBookmarked ? 'bookmark' : 'bookmark_border' }}</mat-icon>
           </button>
 
+          @if(isFeatureEnabled('played_status')) {
           <!-- Watched -->
           <button (click)="togglePlayed()" matTooltip="Mark as Watched" [class.active-played]="_isPlayed">
             <mat-icon>{{ _isPlayed ? 'visibility' : 'visibility_off' }}</mat-icon>
           </button>
+          }
 
           <!-- Favorite -->
           <button (click)="toggleFavorite()" matTooltip="Favorite" [class.active-favorite]="_isFavorite">
@@ -88,8 +90,8 @@
             <button mat-flat-button color="warn" class="btn-lg px-4 py-3" [disabled]="playLinks.length <= 0"
               (click)='playBestPlayLink()'>
               <mat-icon class="me-2 fs-3">play_arrow</mat-icon>
-              <span class="fs-5" *ngIf='!procPlayLink'>WATCH NOW</span>
-              <mat-spinner *ngIf='procPlayLink' [diameter]='24' color="accent"></mat-spinner>
+              <span class="fs-5" *ngIf='!processingPlayLink'>WATCH NOW</span>
+              <mat-spinner *ngIf='processingPlayLink' [diameter]='24' color="accent"></mat-spinner>
             </button>
             <button mat-flat-button color="warn" class="dropdown-toggle" [matMenuTriggerFor]="playMenu"
               [disabled]="playLinks.length <= 0">

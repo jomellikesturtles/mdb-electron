@@ -15,6 +15,7 @@ import { BookmarkService } from '@services/media/bookmark.service';
 import { PlayedService } from '@services/media/played.service';
 import { FavoriteService } from '@services/media/favorite.service';
 import { LoggerService } from '@core/logger.service';
+import { FeatureName, FeatureToggleService } from '@core/services/feature-toggle.service';
 
 @Component({
   selector: 'app-movie-card',
@@ -80,8 +81,8 @@ export class MovieCardComponent implements OnInit {
   }
 
   isAdminMode = false;
-  procFavorite = false;
-  procBookmark = false;
+  isProcessingFavorite = false;
+  isProcessingBookmark = false;
   procWatched = false;
   procHighlight = false;
   isWatched = false;
@@ -104,7 +105,8 @@ export class MovieCardComponent implements OnInit {
     private bookmarkService: BookmarkService,
     private favoriteService: FavoriteService,
     private playedService: PlayedService,
-    private loggerService: LoggerService
+    private loggerService: LoggerService,
+    private featureToggleService: FeatureToggleService
   ) { }
 
   ngOnInit(): void {
@@ -176,16 +178,13 @@ export class MovieCardComponent implements OnInit {
    * Toggles movie from user's watchlist or bookmarks
    */
   async toggleBookmark() {
-    this.procBookmark = true;
+    this.isProcessingBookmark = true;
     const tmdbId = this._movie.tmdbId;
-    let res = false;
-    if (this._isBookmarked) {
-      res = await this.bookmarkService.removeBookmark('tmdbId', tmdbId).toPromise();
-    } else {
-      res = await this.bookmarkService.saveBookmark(tmdbId).toPromise();
-    }
-    this.isBookmarked = res;
-    this.procBookmark = false;
+    const bookmarkToggleFunction = this._isBookmarked ? this.bookmarkService.remove('tmdbId', tmdbId) : this.bookmarkService.save({ tmdbId });
+    bookmarkToggleFunction.subscribe(e => {
+      this.isBookmarked = e.isBookmark;
+      this.isProcessingBookmark = false;
+    });
   }
 
   async togglePlayed() {
@@ -201,18 +200,16 @@ export class MovieCardComponent implements OnInit {
     this.procWatched = false;
   }
 
-  async toggleFavorite() {
-    this.procFavorite = true;
+  toggleFavorite() {
+    this.isProcessingFavorite = true;
     const tmdbId = this._movie.tmdbId;
-    let res;
-    if (this._isFavorite) {
-      res = await this.favoriteService.removeFavorite('tmdbId', tmdbId).toPromise();
-    } else {
-      res = await this.favoriteService.saveFavorite({ tmdbId }).toPromise();
-    }
-    this.isFavorite = res;
-    this.procFavorite = false;
+    const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove('tmdbId', tmdbId) : this.favoriteService.save({ tmdbId });
+    favoriteToggleFunction.subscribe(e => {
+      this.isFavorite = e.isFavorite;
+      this.isProcessingFavorite = false;
+    });
   }
+
   /**
    * Gets the year.
    * @param releaseDate release date with format YYYY-MM-DD
@@ -235,5 +232,9 @@ export class MovieCardComponent implements OnInit {
     this.router.navigate([`/discover`], {
       relativeTo: this.activatedRoute, queryParams: { type: 'year', year: year }
     });
+  }
+
+  isFeatureEnabled(featureName: FeatureName) {
+    return this.featureToggleService.isEnabled(featureName);
   }
 }

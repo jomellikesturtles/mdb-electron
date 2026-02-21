@@ -11,6 +11,7 @@ import { ENDPOINT } from '@shared/endpoint.const';
 import { HttpUrlProviderService } from './http-url.provider.service';
 import { LoggerService } from '@core/logger.service';
 import { HttpBaseService } from './http-base.service';
+import { FavoriteResponse } from './media/favorite.service';
 
 @Injectable({ providedIn: 'root' })
 export class MDBApiService {
@@ -55,13 +56,13 @@ export class MDBApiService {
     );
   }
 
-  saveFavorite(favBody: any): Observable<any> {
+  saveFavorite(favBody: any): Observable<FavoriteResponse> {
     return this.httpBaseService.post(`${MDB_API_URL}/profileData/favorite`, favBody, 'saveFavorite').pipe(
       tap(_ => this.logger.info(`saveFavorite tmdbId=${favBody.tmdbId}`))
     );
   }
 
-  deleteFavorite(favId: any): Observable<any> {
+  deleteFavorite(favId: any): Observable<FavoriteResponse> {
     let params = { id: favId };
     return this.httpBaseService.delete(`${MDB_API_URL}/profileData/favorite`, { params: params }, 'deleteFavorite').pipe(
       tap(_ => this.logger.info(`deleteFavorite id=${favId}`))
