@@ -24,26 +24,24 @@ export class BookmarkService extends BaseBookmarkService {
     );
   }
 
-  saveBookmark(id: number): Observable<any> {
-    if (!this.featureToggleService.isEnabled('springMode')) {
-      return this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
-        { tmdbId: id }, null);
-    }
-    return this.dataService.getHandle(this.bffService.saveBookmark(id), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
-      { tmdbId: id }, null));
+  save(data: any): Observable<BookmarkResponse> {
+    return this.bffService.saveBookmark(data);
+    // if (!this.featureToggleService.isEnabled('springMode')) {
+    //   return this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
+    //     { tmdbId: id }, null);
+    // }
+    // return this.dataService.getHandle(this.bffService.saveBookmark(id), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
+    //   { tmdbId: id }, null));
   }
 
-  /**
-   * Removes bookmark.
-   * @param id watched id/_id/tmdbId to remove.
-   */
-  removeBookmark(type: 'id' | 'tmdbId', id: string | number): Observable<any> {
-    if (!this.featureToggleService.isEnabled('springMode')) {
-      return this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.REMOVE },
-        null, { tmdbId: id });
-    }
-    return this.dataService.getHandle(this.bffService.deleteBookmark(id), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.REMOVE },
-      null, { tmdbId: id }));
+  remove(type: 'id' | 'tmdbId', id: string | number): Observable<BookmarkResponse> {
+    return this.bffService.deleteBookmark(id);
+    // if (!this.featureToggleService.isEnabled('springMode')) {
+    //   return this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.REMOVE },
+    //     null, { tmdbId: id });
+    // }
+    // return this.dataService.getHandle(this.bffService.deleteBookmark(id), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.REMOVE },
+    //   null, { tmdbId: id }));
   }
 
   saveBookmarkMulti(data: object[]) {
@@ -78,4 +76,11 @@ export interface IBookmark extends IUserSavedData {
   title: string,
   year: number,
   cr8Ts?: number,
+}
+
+
+export interface BookmarkResponse {
+  status: 'SAVED' | 'DELETED',
+  isBookmark: boolean,
+  mediaId: string;
 }
