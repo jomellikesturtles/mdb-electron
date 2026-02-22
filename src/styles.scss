@@ -40,7 +40,8 @@ $mdb-dark-theme: mat.define-dark-theme((
 html, body {
   height: 100%;
   margin: 0;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; // Netflix stack
+  // font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; // New font stack
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; // New font stack
   background-color: $netflix-black;
   color: $netflix-white;
   -webkit-font-smoothing: antialiased;
@@ -87,6 +88,7 @@ button {
 
 // Headings
 h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif; // New heading font
   color: $netflix-white;
   margin-bottom: 0.5rem;
   font-weight: bold;

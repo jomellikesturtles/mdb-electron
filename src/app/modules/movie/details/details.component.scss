@@ -1,337 +1,349 @@
-@import '../../../variables.scss';
+@import "../../../variables.scss";
 
-// Host element should take full height
 :host {
   display: block;
   height: 100%;
   width: 100%;
+  background-color: #000;
 }
 
-// Fixed Backdrop Background
-.backdrop-container {
-  position: fixed;
-  top: 0;
-  left: 0;
+.header-banner {
   width: 100%;
-  height: 100%;
   background-size: cover;
   background-position: center top;
-  background-repeat: no-repeat;
-  z-index: 0; // Brought up from -1 to be visible over parent backgrounds
-}
-
-// Dark Gradient Overlay for Readability
-.backdrop-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(77deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 30%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0.8) 100%),
-              linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(18, 18, 18, 1) 100%);
-  z-index: 1;
-}
-
-// Main Content Wrapper
-.content-wrapper {
   position: relative;
-  min-height: 100vh;
-  padding-top: 120px;
-  padding-bottom: 60px;
-  color: #fff;
-  z-index: 2;
+  min-height: 510px;
 }
 
-// Poster Styling
-.poster-card {
+.header-overlay {
+  background-image: linear-gradient(
+    to right,
+    rgba(31.5, 31.5, 31.5, 1) calc((50vw - 170px) - 340px),
+    rgba(31.5, 31.5, 31.5, 0.84) 50%,
+    rgba(31.5, 31.5, 31.5, 0.84) 100%
+  );
   width: 100%;
-  max-width: 300px;
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.1);
-  background-size: cover;
-  background-position: center;
-  aspect-ratio: 2/3;
-  margin-bottom: 2rem;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  border: 1px solid rgba(255,255,255,0.1);
-  
-  &:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.9);
-  }
-}
-
-// User Action Buttons
-.user-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-
-  button {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.2);
-    background: rgba(0,0,0,0.5);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    padding: 0;
-    
-    &:hover {
-      border-color: #fff;
-      background: rgba(255,255,255,0.1);
-      transform: scale(1.1);
-    }
-
-    mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-
-    &.active-bookmark { background-color: #2196F3 !important; border-color: #2196F3 !important; }
-    &.active-played { background-color: #FF9800 !important; border-color: #FF9800 !important; }
-    &.active-favorite { background-color: #f44336 !important; border-color: #f44336 !important; }
-  }
-}
-
-.pointer {
-  cursor: pointer;
-  &:hover {
-    color: $mdb-primary;
-  }
-}
-
-// Typography & Text
-.movie-title {
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  line-height: 1.1;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-  
-  // Responsive Font Sizes
-  font-size: 2rem;
-  @media (min-width: 768px) { font-size: 3rem; }
-  @media (min-width: 1200px) { font-size: 3.5rem; }
-}
-
-.metadata-row {
+  min-height: 510px;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  font-size: 1.1rem;
-  color: #ddd;
-  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.hero-content {
+  padding: 30px 0;
+}
+
+// Flex Layout for Hero
+.hero-flex-row {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+}
+
+.poster-col {
+  flex-shrink: 0;
+}
+
+.poster-card {
+  width: 300px;
+  height: 450px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+
+  @media (max-width: 991px) {
+    width: 240px;
+    height: 360px;
+  }
+}
+
+.info-col {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.movie-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0;
+
+  .release-year {
+    font-weight: 400;
+    opacity: 0.8;
+  }
 
   .year {
     font-weight: 600;
     color: $mdb-primary; // Accent color
     cursor: pointer;
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
-  .rating {
+  @media (max-width: 767px) {
+    font-size: 1.8rem;
+  }
+}
+
+.facts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 0.95rem;
+
+  @media (max-width: 767px) {
+    justify-content: center;
+  }
+
+  .certification {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 1px 4px;
+    border-radius: 2px;
+    font-size: 0.8rem;
+  }
+
+  .genre-link {
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Actions Section
+.actions-section {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  @media (max-width: 767px) {
+    justify-content: center;
+  }
+}
+
+.user-score {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .score-outer {
+    width: 64px;
+    height: 64px;
+    background-color: #081c22;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 0.3rem;
-    
-    img {
-      height: 1.2em;
-    }
-  }
-}
-
-// Genre Pills
-.genres-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
-
-  .genre-pill {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 0.5rem 1.25rem;
-    border-radius: 4px; 
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-decoration: none;
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.1);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-
-    &:hover {
-      background-color: #fff;
-      color: #000;
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(255,255,255,0.2);
-    }
-  }
-}
-
-// Play Buttons Area
-.play-controls {
-  margin-bottom: 3rem;
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-
-  .main-play-btn {
-    box-shadow: 0 10px 20px rgba(229, 9, 20, 0.3);
-    
-    button {
-      height: 54px;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    
-    .dropdown-toggle {
-      min-width: 40px;
-      padding: 0;
-      border-left: 1px solid rgba(255,255,255,0.2);
-    }
+    justify-content: center;
+    padding: 2px;
   }
 
-  .trailer-btn {
-    height: 54px;
-    border: 2px solid rgba(255,255,255,0.5) !important;
-    color: #fff !important;
-    font-weight: 700;
-    letter-spacing: 1px;
-    transition: all 0.2s;
-    background: rgba(255,255,255,0.1) !important;
-    backdrop-filter: blur(5px);
-    
-    &:hover {
-      background: rgba(255,255,255,0.2) !important;
-      border-color: #fff !important;
-      transform: translateY(-2px);
-    }
-  }
-}
-
-// Overview Text
-.overview-text {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #ddd;
-  margin-bottom: 1.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-  padding-right: 10px;
-
-  // Custom Scrollbar
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(255,255,255,0.3);
-    border-radius: 3px;
-  }
-}
-
-// Tabs Styling Overrides
-::ng-deep .mat-tab-label {
-  color: #bbb !important;
-  font-weight: 600;
-  
-  &.mat-tab-label-active {
-    color: #fff !important;
-    opacity: 1;
-  }
-}
-
-::ng-deep .mat-ink-bar {
-  background-color: $mdb-primary !important;
-}
-
-// Credits Section
-.credits-section {
-  .credit-group {
-    margin-bottom: 0.5rem;
+  .score-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
     display: flex;
-    
-    .label {
-      width: 100px;
-      font-weight: 600;
-      color: #bbb;
-      flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      width: 88%;
+      height: 88%;
+      background-color: #081c22;
+      border-radius: 50%;
+      z-index: 0;
     }
-    
-    .names {
-      color: #ddd;
-      
-      .name-link {
-        cursor: pointer;
-        &:hover { color: $mdb-primary; text-decoration: underline; }
+
+    .percent {
+      position: relative;
+      z-index: 1;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+
+      small {
+        font-size: 0.5rem;
+        margin-top: -5px;
       }
     }
   }
+
+  .score-label {
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1.1;
+  }
 }
 
-// Cast Grid Styling
-.cast-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1.5rem;
-  padding-bottom: 2rem;
+.tmdb-circle-btn {
+  background-color: #032541 !important;
+  color: #fff !important;
+  width: 46px !important;
+  height: 46px !important;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &.active {
+    color: #ef47b6 !important;
+  }
 }
 
-.cast-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+.trailer-link {
   cursor: pointer;
-  transition: transform 0.3s ease;
-  
+  font-weight: 600;
+  transition: opacity 0.2s;
+
   &:hover {
-    transform: translateY(-5px);
-    
-    .cast-name {
-      color: $mdb-primary;
+    opacity: 0.7;
+  }
+}
+
+// Overview Section
+.overview-section {
+  .tagline {
+    font-style: italic;
+    opacity: 0.7;
+    font-weight: 400;
+  }
+
+  .overview-text {
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+}
+
+.featured-credits {
+  .name {
+    cursor: pointer;
+    &:hover {
+      color: rgba(255, 255, 255, 0.7);
     }
   }
 }
 
-.cast-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-size: cover;
-  background-position: center;
-  margin-bottom: 0.75rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  border: 2px solid rgba(255,255,255,0.1);
+// =============================================================================
+// CONTENT BODY
+// =============================================================================
+
+.content-body {
+  background-color: #fff;
+  color: #000;
 }
 
-.cast-info {
-  display: flex;
-  flex-direction: column;
-  
-  .cast-name {
+::ng-deep .tmdb-tabs {
+  .mat-tab-header {
+    border-bottom: 1px solid #e3e3e3;
+  }
+
+  .mat-tab-label {
+    height: 48px;
+    padding: 0 20px;
+    color: #000 !important;
     font-weight: 600;
-    font-size: 0.95rem;
-    color: #fff;
-    transition: color 0.2s;
+    opacity: 1;
   }
-  
-  .cast-character {
-    font-size: 0.85rem;
+
+  .mat-ink-bar {
+    background-color: #01b4e4 !important;
+    height: 4px !important;
   }
 }
 
-// Horizontal Scrolling for Cast (if used in future)
+// Cast Mini Cards
 .cast-scroller {
-  display: flex;
   overflow-x: auto;
-  gap: 1rem;
-  padding-bottom: 1rem;
+  padding-bottom: 10px;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dbdbdb;
+    border-radius: 10px;
+  }
+}
+
+.cast-card-mini {
+  min-width: 140px;
+  width: 140px;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+
+  .cast-img {
+    height: 175px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .name {
+    color: #000;
+    font-size: 0.9rem;
+  }
+
+  .character {
+    font-size: 0.8rem;
+    color: #000 !important;
+    opacity: 0.7;
+  }
+}
+
+// Review Card
+.review-card {
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .author-avatar {
+    width: 44px;
+    height: 44px;
+    background: #01b4e4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+
+  h5 {
+    color: #000 !important;
+  }
+  p {
+    color: #000 !important;
+    opacity: 0.8;
+  }
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.italic {
+  font-style: italic;
 }
