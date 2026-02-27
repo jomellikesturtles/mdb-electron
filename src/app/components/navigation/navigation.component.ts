@@ -29,7 +29,7 @@ export class NavigationComponent implements OnInit {
     window.addEventListener('resize', () => this.checkScreenSize());
 
     // Existing data initialization (kept as is)
-    this.mediaUserDataService.getMediaUserData(122).subscribe(e => {
+    this.mediaUserDataService.getMediaUserData('122').subscribe(e => {
       GeneralUtil.DEBUG.log(`mediaUserDataService.getMediaUserData ${JSON.stringify(e)}`);
     });
 
