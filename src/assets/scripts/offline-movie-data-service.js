@@ -4,6 +4,7 @@
 const path = require('path')
 args = process.argv.slice(2)
 const DataStore = require('nedb')
+const { DEBUG } = require("./shared/util");
 var command = args[0]
 var movie = args[1]
 
@@ -95,17 +96,17 @@ function getAllMovieData() {
     movieDataDb.find({}, function (err, result) {
         // console.log(result)
         if (!err) {
-            console.log(result)
+            DEBUG.log(result)
             // process.send(['offline-movie-data', result])
         }
     })
 }
 
 function getMovieData() {
-    // console.log('command', command, ' movie ', movie)
+    // DEBUG.log('command', command, ' movie ', movie)
     movieDataDb.findOne({ imdbID: movie }, function (err, result) {
         if (!err) {
-            // console.log('movie-metadata', result)
+            // DEBUG.log('movie-metadata', result)
             if (!result) {
                 process.send(['movie-metadata', 'empty'])
             } else {
@@ -131,7 +132,7 @@ function setMovieData() {
 function initializeService() {
     movieDataDb.ensureIndex({ fieldName: 'imdbID', unique: true }, function (err) {
         if (err) {
-            console.log(err);
+            DEBUG.log(err);
         }
     })
     switch (command) {

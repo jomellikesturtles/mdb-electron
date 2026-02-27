@@ -14,6 +14,7 @@ const ffmpeg = require("fluent-ffmpeg");
 var libraryDbService = require("./library-db-service-2.js");
 var identifyMovie = require("./identify-movie");
 var DataStore = require("nedb");
+const { DEBUG } = require("./shared/util");
 var config = new DataStore({
   // filename: "../config/config.db",// for node only
   filename: path.join(__dirname, "..", "config", "config.db"),
@@ -21,30 +22,20 @@ var config = new DataStore({
   autoload: true,
 });
 
-let DEBUG = (() => {
-  let timestamp = () => {};
-  timestamp.toString = () => {
-    return "[DEBUG " + new Date().toLocaleString() + "]";
-  };
-  return {
-    log: console.log.bind(console, "%s", timestamp),
-  };
-})();
-
 process.on("uncaughtException", function (error) {
-  console.log("ERROR: ", error);
+  DEBUG.log("ERROR: ", error);
 });
 
 process.on("unhandledRejection", function (error) {
-  console.log("unhandledRejection ERROR: ", error);
+  DEBUG.log("unhandledRejection ERROR: ", error);
 });
 
 process.on("exit", function (error) {
-  console.log("exit ERROR: ", error);
+  DEBUG.log("exit ERROR: ", error);
 });
 
 process.on("disconnect", function (error) {
-  console.log("disconnect: ", error);
+  DEBUG.log("disconnect: ", error);
 });
 
 // process.send =
@@ -173,7 +164,7 @@ function isVideoFile(params) {
  */
 function readDirectory(startPath) {
   if (!fs.existsSync(startPath)) {
-    console.log("no dir ", startPath);
+    DEBUG.log("no dir ", startPath);
     return;
   }
   var files = fs.readdirSync(startPath);
@@ -185,7 +176,7 @@ function readDirectory(startPath) {
       readDirectory(filename); //recurse
     } else {
       if (isVideoFile(filename)) {
-        console.log(filename);
+        DEBUG.log(filename);
         addToList(startPath, files[i]);
         process.send(["found-video-library", filename]);
       }
@@ -210,7 +201,7 @@ function getLibraryFolders() {
             foldersList = dbPref.foldersList;
             resolve(foldersList);
           } else {
-            console.log("undefined or null");
+            DEBUG.log("undefined or null");
           }
         } else {
           reject();
@@ -228,15 +219,15 @@ async function scanExistingLibraryMovies() {
   let promises = [];
   libraryDbService.count().then(async (count) => {
     totalCount = count;
-    console.log("count:", count);
+    DEBUG.log("count:", count);
     while (page < totalCount) {
       promises[page] = new Promise((resolve, reject) => {
         //------pagination steps. dont delete--
-        // console.log('page ', page, ' page*skip ', skip * page, ' totalCount', totalCount);
+        // DEBUG.log('page ', page, ' page*skip ', skip * page, ' totalCount', totalCount);
         // if ((totalCount < (skip * page)) && totalCount % (skip * page) !== (skip * page)) {
         libraryDbService.getLibraryFilesMulti(page, 1).then((fullFilePath) => {
           if (!fs.existsSync(fullFilePath)) {
-            console.log(`no dir, deleting ${fullFilePath}...`);
+            DEBUG.log(`no dir, deleting ${fullFilePath}...`);
             libraryDbService.removeLibraryFile(fullFilePath);
           }
           resolve("myval");
@@ -274,7 +265,7 @@ async function identifyMovies() {
           libraryFile._id,
           replacementObj
         );
-        console.log(updateLibDb);
+        DEBUG.log(updateLibDb);
       }
     }
     index++;
@@ -286,7 +277,7 @@ async function identifyMovies() {
  */
 async function initializeScan() {
   let result = await scanExistingLibraryMovies();
-  console.log("result:", result);
+  DEBUG.log("result:", result);
 
   getLibraryFolders().then(function (libraryFolders) {
     libraryFolders.forEach((folder) => {

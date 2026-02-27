@@ -5,6 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const papa = require('papaparse');
+const { DEBUG } = require("./shared/util");
 
 let args = process.argv.slice(2);
 let totalResults = 0
@@ -64,7 +65,7 @@ function procData(results, parser) {
 
             imdbDb.ensureIndex({ fieldName: 'tconst', unique: true }, function (err) {
                 if (err) {
-                    console.log(err);
+                    DEBUG.log(err);
                 }
             })
             imdbDb.insert(record, function (err, record) {
@@ -86,9 +87,9 @@ function procData(results, parser) {
  * Finish search, exit the process
  */
 function finSearch() {
-    // console.log('result: ', result)
-    console.log('result: ', totalResults)
-    console.timeEnd('searchLapse')
+    // DEBUG.log('result: ', result)
+    DEBUG.log('result: ', totalResults)
+    DEBUG.log('searchLapse: end')
     // process.exit(0)
 };
 
@@ -96,9 +97,9 @@ function finSearch() {
 * Initialize search
 */
 function initConversion() {
-    console.log('initSearch');
+    DEBUG.log('initSearch');
 
-    console.log('titleBasicsTSV', titleBasicsTSV);
+    DEBUG.log('titleBasicsTSV', titleBasicsTSV);
     stream = fs.createReadStream(titleBasicsTSV)
         .once('open', function () {
             papa.parse(stream, {
@@ -108,17 +109,17 @@ function initConversion() {
                 chunk: procData,
                 complete: finSearch,
                 error: function (error) {
-                    console.log(error);
+                    DEBUG.log(error);
                 }
             });
         })
         .on('error', function (err) {
             // process.send(['search-failed', 'read']); 
-            console.log(err);
+            DEBUG.log(err);
         });
 }
 
-console.time('searchLapse')
+DEBUG.log('searchLapse: start')
 initConversion()
-console.log('result: ', result);
+DEBUG.log('result: ', result);
 // console.timeEnd('searchLapse')

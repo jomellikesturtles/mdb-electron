@@ -3,16 +3,19 @@
 const path = require("path");
 /**
  * Fancy console log
+ * 1. Adopt `electron-log`: Replace the custom DEBUG implementation with a battle-tested library like electron-log. It handles log rotation, file writing, and provides a unified interface for both Main and Renderer processes
+      automatically.
+   2. Log Levels & Filtering: Implement standard log levels (info, warn, error, debug, verbose). This allows you to silence noisy debug logs in production while still capturing critical errors.
+   3. Persistent Storage: Configure the logger to save to a specific directory (e.g., app.getPath('userData')/logs/). This is critical for diagnosing issues on users' machines where you don't have console access.
+   4. Contextual Metadata: Enhance the logger to automatically include the process name (e.g., [Main], [Worker: ScanLibrary]) and PID in every entry to make concurrent log streams readable.
+   5. Remote Error Reporting: Integrate a service like Sentry or a custom "Upload Logs" feature to allow users to send diagnostic data when they encounter a crash.
+   6. Unified Dev Console: Create an IPC bridge that pipes all Main process logs to the Angular developer tools console during development, so you don't have to switch between the terminal and the browser window.
  */
 let DEBUG = (() => {
-  let timestamp = () => {};
-  timestamp.toString = () => {
-    return "" + new Date().toISOString() + "] ";
-    // return `[${type} ` + new Date().toISOString() + "] ";
-  };
+  const getTimestamp = () => "" + new Date().toISOString() + "] ";
   return {
-    log: console.log.bind(console, "%s", "[DEBUG", timestamp.toString()),
-    error: console.error.bind(console, "%s", "[ERROR", timestamp.toString())
+    log: (...args) => console.log("%s %s", "[DEBUG", getTimestamp(), ...args),
+    error: (...args) => console.error("%s %s", "[ERROR", getTimestamp(), ...args)
   };
 })();
 

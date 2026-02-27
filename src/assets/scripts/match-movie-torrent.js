@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const papa = require('papaparse');
 const levenshtein = require('fast-levenshtein')
+const { DEBUG } = require("./shared/util");
 let stream;
 let result = [];
 // test object
@@ -21,8 +22,8 @@ function titleCondition(record) {
   //         record['startYear'] <= searchQuery['releaseTo']) {
   //         // if (hasGenre(record['genres'])) {
   //         if ((record['primaryTitle'].toLowerCase().includes(searchQuery['title'])) || (record['primaryTitle'].toLowerCase().includes(searchQuery['title']))) {
-  //             // console.log('found ', record['tconst']);
-  //             console.log('found primaryTitle', record['primaryTitle'], 'with query ', searchQuery['title']);
+  //             // DEBUG.log('found ', record['tconst']);
+  //             DEBUG.log('found primaryTitle', record['primaryTitle'], 'with query ', searchQuery['title']);
   //             return true
   //         }
   //         // }
@@ -42,7 +43,7 @@ function procData(results, parser) {
   for (let c = 0; c < results.data.length; c++) {
     let record = results.data[c];
 
-    console.log('record', record)
+    DEBUG.log('record', record)
     if (titleCondition(record)) {
 
       // if (i > count) { //count: sets limits of how many results to display
@@ -59,8 +60,8 @@ function procData(results, parser) {
  * Finish search, exit the process
  */
 function finSearch() {
-  console.log('result: ', result);
-  console.timeEnd('searchLapse')
+  DEBUG.log('result: ', result);
+  DEBUG.log('searchLapse: end')
   process.exit(0);
 }
 
@@ -78,21 +79,21 @@ function initializeSearch() {
         chunk: procData,
         complete: finSearch,
         error: function (error) {
-          console.log(error);
+          DEBUG.log(error);
         }
       });
     })
     .on('error', function (err) {
       // process.send(['search-failed', 'read']); //mainWindow.webContents.send('search-failed', 'read');
-      console.log(err);
+      DEBUG.log(err);
     });
 }
 
 
-console.time('start')
+DEBUG.log('start')
 initializeSearch()
 // getLevenshteinDistance()
-console.timeEnd('start')
+DEBUG.log('start: end')
 
 function getLevenshteinDistance() {
   var toCompare = ['Guardians.of.the.galaxy',
@@ -100,16 +101,16 @@ function getLevenshteinDistance() {
     'Guardians of the galaxy',
     'Guardians of the Galaxy Vol. 2'
   ]
-  console.log(levenshtein.get(toCompare[0], 'Guardians of the Galaxy', {
+  DEBUG.log(levenshtein.get(toCompare[0], 'Guardians of the Galaxy', {
     useCollator: true
   }));
-  console.log(levenshtein.get('Leon the professional', 'Léon: The Professional', {
+  DEBUG.log(levenshtein.get('Leon the professional', 'Léon: The Professional', {
     useCollator: true
   }));
-  console.log(levenshtein.get('Leon the professional', 'Léon The Professional', {
+  DEBUG.log(levenshtein.get('Leon the professional', 'Léon The Professional', {
     useCollator: true
   }));
-  console.log(levenshtein.get('RUN', '!RUN', {
+  DEBUG.log(levenshtein.get('RUN', '!RUN', {
     useCollator: true
   }));
 }
@@ -119,9 +120,9 @@ function getLevenshteinDistance() {
 // var titleRegex = new RegExp(fileTitleRegexStr, 'gmi')
 // var result = null
 // result = titleRegex.exec('Guardians.of.the.galaxy.mp4')
-// console.log(result[0]);
-// console.log(result[1]);
-// console.log(regexify('guardians of the galaxy'))
+// DEBUG.log(result[0]);
+// DEBUG.log(result[1]);
+// DEBUG.log(regexify('guardians of the galaxy'))
 
 // function regexify(text) {
 //     text = text.trim().replace(/(\s+)/g, ' ');

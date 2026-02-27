@@ -6,6 +6,7 @@ const searchMovie = require('./search-movie')
 const fs = require('fs');
 const path = require('path');
 var DataStore = require('nedb')
+const { DEBUG } = require("./shared/util");
 const validExtensions = ['.mp4', '.mkv', '.mpeg', '.avi', '.wmv', '.mpg',]
 const ffmpeg = require('fluent-ffmpeg')
 var moviesList = []
@@ -31,7 +32,7 @@ var itemInfo = {
 }
 
 process.on('uncaughtException', function (error) {
-  console.log(error);
+  DEBUG.log(error);
   // process.send(['scrape-failed', 'general']); //mainWindow.webContents.send('scrape-failed', 'general');
 });
 
@@ -49,16 +50,16 @@ function getMovieInfo() {
  */
 function saveToLibrary(params) {
   libraryFilesDb.insert(params, function (err, numpReplaced) {
-    console.log('adding');
+    DEBUG.log('adding');
     if (err || (numpReplaced < 1)) {
-      console.log("replaced---->" + numReplaced);
-      console.log(err)
+      DEBUG.log("replaced---->" + numReplaced);
+      DEBUG.log(err)
     }
   })
 
   // libraryDb.insert(value, function (err, data) {
   //   if (!err) {
-  //     console.log('inserted ', data);
+  //     DEBUG.log('inserted ', data);
   //   }
   // })
 
@@ -95,7 +96,7 @@ function addToList(folderPath, fileName) {
   }
   // durationMins: 123,
   // hasDuplicateTitle: false,
-  console.log(fileInfo);
+  DEBUG.log(fileInfo);
   // saveToLibrary(fileInfo);
 }
 
@@ -167,7 +168,7 @@ function isVideoFile(params) {
  */
 function readDirectory(startPath) {
   if (!fs.existsSync(startPath)) {
-    console.log("no dir ", startPath);
+    DEBUG.log("no dir ", startPath);
     return;
   }
   var files = fs.readdirSync(startPath);
@@ -180,16 +181,16 @@ function readDirectory(startPath) {
     }
     else {
       if (isVideoFile(filename)) {
-        console.log(filename);
+        DEBUG.log(filename);
         addToList(startPath, files[i])
       }
     }
   }
   // fs.readdir(folderpath, (err, files) => {
-  //     console.log(files)
+  //     DEBUG.log(files)
   //     files.forEach(element => {
-  //         console.log(element)
-  //         console.log(getExtension(element))
+  //         DEBUG.log(element)
+  //         DEBUG.log(getExtension(element))
   //     });
   // })
 };
@@ -218,15 +219,15 @@ function getLibraryFolders() {
 function initializeIdentify() {
   getLibraryFolders().then(function (libraryFolders) {
     libraryFolders.forEach(folder => {
-      console.log(folder)
+      DEBUG.log(folder)
       readDirectory(folder);
     });
   })
 }
 
-console.time('initializeScan')
+DEBUG.log('initializeScan: start')
 initializeIdentify();
-console.timeEnd('initializeScan')
+DEBUG.log('initializeScan: end')
 
 // saveToConfig(moviesList)
 
