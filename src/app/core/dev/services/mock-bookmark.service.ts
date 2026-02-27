@@ -21,7 +21,7 @@ export class MockBookmarkService extends BaseBookmarkService {
     });
     // return of({ _id: 'abcd', tmdbId: 122 });
   }
-  remove(type: "id" | "tmdbId", id: string | number): Observable<BookmarkResponse> {
+  remove(id: string | number): Observable<BookmarkResponse> {
     return of({
       status: 'DELETED',
       isBookmark: false,

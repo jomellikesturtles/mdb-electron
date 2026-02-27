@@ -37,7 +37,7 @@ export class MockMovieService extends BaseMovieService {
   searchSubtitleById(val: string) {
     throw new Error("Method not implemented.");
   }
-  getExternalId(tmdbId: number): Observable<TMDB_External_Id> {
+  getExternalId(tmdbId: "number"): Observable<TMDB_External_Id> {
     return of({
       id: 1234,
       imdb_id: 't232332',
@@ -57,7 +57,7 @@ export class MockMovieService extends BaseMovieService {
     throw new Error("Method not implemented.");
   }
 
-  getRelatedClips(tmdbId: number, refresh?: boolean): Observable<any> {
+  getRelatedClips(tmdbId: "number", refresh?: boolean): Observable<any> {
     return of({ results: [{ type: 'trailer', key: 'I7c1etV7D7g' }] });
   }
 

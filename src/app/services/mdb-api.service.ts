@@ -12,9 +12,12 @@ import { HttpUrlProviderService } from './http-url.provider.service';
 import { LoggerService } from '@core/logger.service';
 import { HttpBaseService } from './http-base.service';
 import { FavoriteResponse } from './media/favorite.service';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class MDBApiService {
+
+  JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   constructor(
     private httpBaseService: HttpBaseService,
@@ -22,7 +25,7 @@ export class MDBApiService {
     private logger: LoggerService
   ) { }
 
-  getMediaUserData(tmdbId: number): Observable<any> {
+  getMediaUserData(tmdbId: string): Observable<any> {
     return this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_ID, tmdbId), 'getMediaUserData').pipe(
       tap(_ => this.logger.info(`getMediaUserData tmdbId=${tmdbId}`))
     );
@@ -42,30 +45,28 @@ export class MDBApiService {
     );
   }
 
-  saveBookmark(bookmarkBody: any): Observable<any> {
-    return this.httpBaseService.post(`${MDB_API_URL}/profileData/bookmark`, bookmarkBody, 'saveBookmark').pipe(
-      tap(_ => this.logger.info(`saveBookmark tmdbId=${bookmarkBody.tmdbId}`))
+  saveBookmark(tmdbId: string): Observable<any> {
+    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_BOOKMARK, tmdbId), 'saveBookmark').pipe(
+      tap(_ => this.logger.info(`saveBookmark tmdbId=${tmdbId}`))
     );
   }
 
-  deleteBookmark(bookmarkId: any): Observable<any> {
+  deleteBookmark(tmdbId: string): Observable<any> {
     // HttpBaseService delete takes payload as options
-    let params = { id: bookmarkId };
-    return this.httpBaseService.delete(`${MDB_API_URL}/profileData/bookmark`, { params: params }, 'deleteBookmark').pipe(
-      tap(_ => this.logger.info(`deleteBookmark id=${bookmarkId}`))
+    return this.httpBaseService.delete(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_BOOKMARK, tmdbId), 'deleteBookmark').pipe(
+      tap(_ => this.logger.info(`deleteBookmark id=${tmdbId}`))
     );
   }
 
-  saveFavorite(favBody: any): Observable<FavoriteResponse> {
-    return this.httpBaseService.post(`${MDB_API_URL}/profileData/favorite`, favBody, 'saveFavorite').pipe(
-      tap(_ => this.logger.info(`saveFavorite tmdbId=${favBody.tmdbId}`))
+  saveFavorite(tmdbId: any): Observable<FavoriteResponse> {
+    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_FAVORITE, tmdbId), tmdbId, 'saveFavorite').pipe(
+      tap(_ => this.logger.info(`saveFavorite tmdbId=${tmdbId}`))
     );
   }
 
-  deleteFavorite(favId: any): Observable<FavoriteResponse> {
-    let params = { id: favId };
-    return this.httpBaseService.delete(`${MDB_API_URL}/profileData/favorite`, { params: params }, 'deleteFavorite').pipe(
-      tap(_ => this.logger.info(`deleteFavorite id=${favId}`))
+  deleteFavorite(tmdbId: any): Observable<FavoriteResponse> {
+    return this.httpBaseService.delete(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_FAVORITE, tmdbId), 'deleteFavorite').pipe(
+      tap(_ => this.logger.info(`deleteFavorite id=${tmdbId}`))
     );
   }
 

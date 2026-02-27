@@ -53,7 +53,7 @@ export class TmdbService {
   /**
    * Gets movie videos (trailers, clips).
    */
-  getTmdbVideos(tmdbId: number): Observable<any> {
+  getTmdbVideos(tmdbId: string): Observable<any> {
     const params = this.getBaseParams();
     return this.httpBaseService.get(`${this.TMDB_URL}/movie/${tmdbId}/videos`, { params }, 'getTmdbVideos');
   }

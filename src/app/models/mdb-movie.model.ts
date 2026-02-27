@@ -5,7 +5,7 @@ import { IProfileData } from "./profile-data.model";
 export class MDBMovie {
   mdbId: string;
   imdbId: string;
-  tmdbId: number;
+  tmdbId: string;
   title: string;
   originalTitle: string;
   originalLanguage: string;

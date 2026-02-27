@@ -7,6 +7,10 @@
   background-color: #000;
 }
 
+// =============================================================================
+// HEADER BANNER (TMDB STYLE)
+// =============================================================================
+
 .header-banner {
   width: 100%;
   background-size: cover;
@@ -16,12 +20,7 @@
 }
 
 .header-overlay {
-  background-image: linear-gradient(
-    to right,
-    rgba(31.5, 31.5, 31.5, 1) calc((50vw - 170px) - 340px),
-    rgba(31.5, 31.5, 31.5, 0.84) 50%,
-    rgba(31.5, 31.5, 31.5, 0.84) 100%
-  );
+  background-image: linear-gradient(to right, rgba(31.5, 31.5, 31.5, 1) calc((50vw - 170px) - 340px), rgba(31.5, 31.5, 31.5, 0.84) 50%, rgba(31.5, 31.5, 31.5, 0.84) 100%);
   width: 100%;
   min-height: 510px;
   display: flex;
@@ -49,6 +48,9 @@
 
 .poster-col {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .poster-card {
@@ -57,12 +59,18 @@
   border-radius: 8px;
   background-size: cover;
   background-position: center;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
 
   @media (max-width: 991px) {
     width: 240px;
     height: 360px;
   }
+}
+
+.action-circle-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
 }
 
 .info-col {
@@ -80,16 +88,7 @@
     font-weight: 400;
     opacity: 0.8;
   }
-
-  .year {
-    font-weight: 600;
-    color: $mdb-primary; // Accent color
-    cursor: pointer;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
+  
   @media (max-width: 767px) {
     font-size: 1.8rem;
   }
@@ -107,7 +106,7 @@
   }
 
   .certification {
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255,255,255,0.6);
     padding: 1px 4px;
     border-radius: 2px;
     font-size: 0.8rem;
@@ -115,9 +114,7 @@
 
   .genre-link {
     cursor: pointer;
-    &:hover {
-      text-decoration: underline;
-    }
+    &:hover { text-decoration: underline; }
   }
 }
 
@@ -138,56 +135,36 @@
   align-items: center;
   gap: 10px;
 
-  .score-outer {
-    width: 64px;
-    height: 64px;
-    background-color: #081c22;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2px;
+  .star-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: #f5c518; // IMDB/Star yellow
   }
 
-  .score-inner {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+  .score-text {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+    flex-direction: column;
+  }
 
-    &::before {
-      content: "";
-      position: absolute;
-      width: 88%;
-      height: 88%;
-      background-color: #081c22;
-      border-radius: 50%;
-      z-index: 0;
-    }
-
-    .percent {
-      position: relative;
-      z-index: 1;
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: #fff;
-      display: flex;
-      align-items: center;
-
-      small {
-        font-size: 0.5rem;
-        margin-top: -5px;
-      }
+  .rating-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: $netflix-white;
+    line-height: 1;
+    
+    small {
+      font-size: 1rem;
+      color: $netflix-gray-text;
+      font-weight: 400;
     }
   }
 
   .score-label {
-    font-weight: 700;
-    font-size: 0.9rem;
-    line-height: 1.1;
+    font-size: 0.8rem;
+    color: $netflix-gray-text;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
 }
 
@@ -196,15 +173,23 @@
   color: #fff !important;
   width: 46px !important;
   height: 46px !important;
-
+  
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
   }
 
-  &.active {
-    color: #ef47b6 !important;
+  &.fav-btn.active {
+    color: #FC0404 !important;
+  }
+
+  &.bookmark-btn.active {
+    color: #F8E00B !important;
+  }
+
+  &.played-btn.active {
+    color: #FD710C !important;
   }
 }
 
@@ -212,7 +197,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: opacity 0.2s;
-
+  
   &:hover {
     opacity: 0.7;
   }
@@ -235,9 +220,7 @@
 .featured-credits {
   .name {
     cursor: pointer;
-    &:hover {
-      color: rgba(255, 255, 255, 0.7);
-    }
+    &:hover { color: rgba(255,255,255,0.7); }
   }
 }
 
@@ -254,7 +237,7 @@
   .mat-tab-header {
     border-bottom: 1px solid #e3e3e3;
   }
-
+  
   .mat-tab-label {
     height: 48px;
     padding: 0 20px;
@@ -273,7 +256,7 @@
 .cast-scroller {
   overflow-x: auto;
   padding-bottom: 10px;
-
+  
   &::-webkit-scrollbar {
     height: 8px;
   }
@@ -290,7 +273,7 @@
   border: 1px solid #e3e3e3;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   cursor: pointer;
 
   .cast-img {
@@ -298,12 +281,12 @@
     background-size: cover;
     background-position: center;
   }
-
+  
   .name {
     color: #000;
     font-size: 0.9rem;
   }
-
+  
   .character {
     font-size: 0.8rem;
     color: #000 !important;
@@ -316,7 +299,7 @@
   background: #fff;
   border: 1px solid #e3e3e3;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 
   .author-avatar {
     width: 44px;
@@ -330,14 +313,9 @@
     font-weight: 700;
     font-size: 1.2rem;
   }
-
-  h5 {
-    color: #000 !important;
-  }
-  p {
-    color: #000 !important;
-    opacity: 0.8;
-  }
+  
+  h5 { color: #000 !important; }
+  p { color: #000 !important; opacity: 0.8; }
 }
 
 .pointer {

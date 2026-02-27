@@ -180,7 +180,7 @@ export class MovieCardComponent implements OnInit {
   async toggleBookmark() {
     this.isProcessingBookmark = true;
     const tmdbId = this._movie.tmdbId;
-    const bookmarkToggleFunction = this._isBookmarked ? this.bookmarkService.remove('tmdbId', tmdbId) : this.bookmarkService.save({ tmdbId });
+    const bookmarkToggleFunction = this._isBookmarked ? this.bookmarkService.remove(tmdbId) : this.bookmarkService.save(tmdbId);
     bookmarkToggleFunction.subscribe(e => {
       this.isBookmarked = e.isBookmark;
       this.isProcessingBookmark = false;

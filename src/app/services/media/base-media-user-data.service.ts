@@ -8,7 +8,7 @@ export abstract class BaseMediaUserDataService {
     protected dataService: DataService,
   ) { }
 
-  protected abstract getMediaUserData(tmdbId: number): Observable<any>;
+  protected abstract getMediaUserData(tmdbId: string): Observable<any>;
 
   /**
    *

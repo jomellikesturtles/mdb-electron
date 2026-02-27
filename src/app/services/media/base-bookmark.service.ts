@@ -9,13 +9,13 @@ export abstract class BaseBookmarkService {
     protected dataService: DataService,
   ) { }
 
-  protected abstract save(tmdbId: number): Observable<BookmarkResponse>;
+  protected abstract save(tmdbId: string): Observable<BookmarkResponse>;
 
   /**
    * Removes bookmark.
    * @param id watched id/_id/tmdbId to remove.
    */
-  protected abstract remove(type: 'id' | 'tmdbId', id: string | number): Observable<BookmarkResponse>;
+  protected abstract remove(id: string): Observable<BookmarkResponse>;
 
   protected abstract saveBookmarkMulti(data: object[]): Observable<any>;
 

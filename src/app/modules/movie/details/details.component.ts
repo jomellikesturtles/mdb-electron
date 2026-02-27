@@ -172,26 +172,28 @@ export class DetailsComponent implements OnInit, OnDestroy {
     (this.processingVideo, this.isProcessingBookmark, (this.isProcessingWatched = true));
 
     this.mediaUserDataService.getMediaUserData(this.movieDetails.tmdbId).subscribe((profileData: IProfileData) => {
+      this.isBookmarked = profileData.isBookmark;
+      this.isFavorite = profileData.isFavorite;
 
       GeneralUtil.DEBUG.log('usermoviedata', profileData);
-      if (profileData.bookmark) {
-        this.userData.bookmark = profileData.bookmark;
-        this._isBookmarked = this.mediaUserDataService.commonSetter(profileData.bookmark);
-      }
-      if (profileData.played) {
-        this.userData.played = profileData.played;
-        this._isPlayed = this.mediaUserDataService.commonSetter(profileData.played);
-      }
-      if (profileData.favorite)
-        this.userData.favorite = profileData.favorite;
-      this._isFavorite = this.mediaUserDataService.commonSetter(profileData.favorite);
+      // if (profileData.bookmark) {
+      //   this.userData.bookmark = profileData.bookmark;
+      //   this._isBookmarked = this.mediaUserDataService.commonSetter(profileData.bookmark);
+      // }
+      // if (profileData.played) {
+      //   this.userData.played = profileData.played;
+      //   this._isPlayed = this.mediaUserDataService.commonSetter(profileData.played);
+      // }
+      // if (profileData.favorite)
+      //   this.userData.favorite = profileData.favorite;
+      // this._isFavorite = this.mediaUserDataService.commonSetter(profileData.favorite);
 
-      if (profileData.listLinkMovie) {
-        this.userData.listLinkMovie = profileData.listLinkMovie;
-      }
-      if (profileData.review) {
-        this.userData.review = profileData.review;
-      }
+      // if (profileData.listLinkMovie) {
+      //   this.userData.listLinkMovie = profileData.listLinkMovie;
+      // }
+      // if (profileData.review) {
+      //   this.userData.review = profileData.review;
+      // }
       (this.processingVideo, this.isProcessingBookmark, (this.isProcessingWatched = false));
     });
   }
@@ -217,9 +219,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
   toggleBookmark() {
     this.isProcessingBookmark = true;
     const tmdbId = this.movieDetails.tmdbId;
-    const bookmarkToggleFunction = this._isBookmarked ? this.bookmarkService.remove('tmdbId', tmdbId) : this.bookmarkService.save({ tmdbId });
+    const bookmarkToggleFunction = this._isBookmarked ? this.bookmarkService.remove(tmdbId) : this.bookmarkService.save(tmdbId);
     bookmarkToggleFunction.subscribe(e => {
       this.isBookmarked = e.isBookmark;
+      this.isProcessingBookmark = false;
+    }, err => {
+      this.loggerService.error(`toggleBookmark error: ${err}`);
       this.isProcessingBookmark = false;
     });
 
@@ -229,13 +234,18 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.isProcessingWatched = true;
     const tmdbId = this.movieDetails.tmdbId;
     let res = false;
-    if (this._isPlayed) {
-      res = await this.playedService.removePlayed('tmdbId', tmdbId).toPromise();
-    } else {
-      res = await this.playedService.savePlayed({ tmdbId }).toPromise();
+    try {
+      if (this._isPlayed) {
+        res = await this.playedService.removePlayed('tmdbId', tmdbId).toPromise();
+      } else {
+        res = await this.playedService.savePlayed({ tmdbId }).toPromise();
+      }
+      this.isPlayed = res;
+    } catch (err) {
+      this.loggerService.error(`togglePlayed error: ${err}`);
+    } finally {
+      this.isProcessingWatched = false;
     }
-    this.isPlayed = res;
-    this.isProcessingWatched = false;
   }
 
   toggleFavorite() {
@@ -244,6 +254,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove('tmdbId', tmdbId) : this.favoriteService.save({ tmdbId });
     favoriteToggleFunction.subscribe(e => {
       this.isFavorite = e.isFavorite;
+      this.isProcessingFavorite = false;
+    }, err => {
+      this.loggerService.error(`toggleFavorite error: ${err}`);
       this.isProcessingFavorite = false;
     });
   }

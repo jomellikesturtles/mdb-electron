@@ -24,8 +24,8 @@ export class BookmarkService extends BaseBookmarkService {
     );
   }
 
-  save(data: any): Observable<BookmarkResponse> {
-    return this.bffService.saveBookmark(data);
+  save(id: string): Observable<BookmarkResponse> {
+    return this.bffService.saveBookmark(id);
     // if (!this.featureToggleService.isEnabled('springMode')) {
     //   return this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
     //     { tmdbId: id }, null);
@@ -34,7 +34,7 @@ export class BookmarkService extends BaseBookmarkService {
     //   { tmdbId: id }, null));
   }
 
-  remove(type: 'id' | 'tmdbId', id: string | number): Observable<BookmarkResponse> {
+  remove(id: string): Observable<BookmarkResponse> {
     return this.bffService.deleteBookmark(id);
     // if (!this.featureToggleService.isEnabled('springMode')) {
     //   return this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.REMOVE },
@@ -49,8 +49,9 @@ export class BookmarkService extends BaseBookmarkService {
       return this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
         data, null);
     }
-    return this.dataService.getHandle(this.bffService.saveBookmark(data), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
-      data, null));
+    return null;
+    // return this.dataService.getHandle(this.bffService.saveBookmark(data), this.ipcService.userData({ subChannel: SubChannel.BOOKMARK, operation: IpcOperations.SAVE },
+    //   data, null));
   }
 
   /**
