@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { LoggerService } from '@core/logger.service';
 import GeneralUtil from '@utils/general.util';
 
+const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 @Injectable({
   providedIn: 'root'
 })
 export class HttpBaseService {
+
 
   constructor(
     protected http: HttpClient,
@@ -31,7 +33,7 @@ export class HttpBaseService {
   }
 
   post(url: string, payload: any, operation = 'POST'): Observable<any> {
-    return this.http.post<any>(url, payload).pipe(
+    return this.http.post<any>(url, payload, { headers: JSON_CONTENT_TYPE_HEADER }).pipe(
       tap(_ => this.logger.info(`POST url=${url}`)),
       catchError(this.handleError<any>(operation))
     );

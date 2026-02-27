@@ -39,7 +39,7 @@ export abstract class BaseMovieService {
    * @param tmdbId tmdbId
    * @returns external ids
    */
-  protected abstract getExternalId(tmdbId: number): Observable<TMDB_External_Id>;
+  protected abstract getExternalId(tmdbId: string): Observable<TMDB_External_Id>;
 
   protected abstract getMovieBackdrop(val: string): Observable<any>;
 
@@ -55,7 +55,7 @@ export abstract class BaseMovieService {
    * Gets related videos from TMDB.
    * @param tmdbId the tmdb id.
    */
-  protected abstract getRelatedClips(tmdbId: number, refresh?: boolean): Observable<any>;
+  protected abstract getRelatedClips(tmdbId: string, refresh?: boolean): Observable<any>;
   /**
    *
    * @param id tmdbId,imdbId, etc.

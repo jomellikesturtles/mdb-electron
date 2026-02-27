@@ -24,6 +24,8 @@ import { TmdbService } from '@services/tmdb/tmdb.service';
 import { HttpBaseService } from '@services/http-base.service';
 import { DataService } from '@services/data.service';
 import { TmdbMapper } from '@utils/tmdb.mapper';
+import { HttpUrlProviderService } from '@services/http-url.provider.service';
+import { ENDPOINT } from '@shared/endpoint.const';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -39,7 +41,8 @@ export class MovieService extends BaseMovieService {
     protected tmdbService: TmdbService,
     protected httpBaseService: HttpBaseService,
     protected dataService: DataService,
-    protected store: Store
+    protected store: Store,
+    private httpUrlProvider: HttpUrlProviderService
   ) {
     super(cacheService, ipcService, tmdbService, httpBaseService, store);
   }
@@ -84,7 +87,7 @@ export class MovieService extends BaseMovieService {
     // insert code here
   }
 
-  getExternalId(tmdbId: number): Observable<TMDB_External_Id> {
+  getExternalId(tmdbId: string): Observable<TMDB_External_Id> {
     return this.cacheService.get(tmdbId + '_EXTERNAL_ID', this.externalId(tmdbId));
   }
 
@@ -107,7 +110,7 @@ export class MovieService extends BaseMovieService {
     return this.tmdbService.getFindMovie(val);
   }
 
-  getRelatedClips(tmdbId: number, refresh: boolean = false): Observable<any> {
+  getRelatedClips(tmdbId: string, refresh: boolean = false): Observable<any> {
     const entityId = `movie:video:${tmdbId}`;
     return this.getCachedOrFetch<MDBMoviePreviewModel>(
       MovieState.getPreviewMovie(entityId),
@@ -242,8 +245,10 @@ export class MovieService extends BaseMovieService {
     return this.getCachedOrFetch<any>(
       MovieState.getDiscoverMovie(entityId),
       () => {
+        // this.;
         return this.httpBaseService
-          .get(`mdb/v1/media/${movieId}_1/streams`, {}, "getStreams")
+          // .get(`mdb/v1/media/${movieId}/streams`, {}, "getStreams")
+          .get(this.httpUrlProvider.getBffAPI(ENDPOINT.STREAMS, movieId), {}, "getStreams")
           .pipe(
             tap((_) => this.log("")),
             map((data: IRawTmdbResultObject) => {
@@ -258,7 +263,7 @@ export class MovieService extends BaseMovieService {
     ).pipe(map((res) => (res && res.paginatedResult ? res.paginatedResult : res)));
   }
 
-  private externalId(tmdbId: number): Observable<TMDB_External_Id> {
+  private externalId(tmdbId: string): Observable<TMDB_External_Id> {
     const url = `${this.TMDB_URL}/movie/${tmdbId}/external_ids?api_key=${this.TMDB_API_KEY}`;
     return this.httpBaseService.get(url, 'getExternalId').pipe(tap(_ => this.log('')));
   }

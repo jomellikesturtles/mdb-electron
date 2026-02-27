@@ -17,18 +17,18 @@ export class MockUserDataService extends BaseMediaUserDataService {
     super(dataService);
   }
 
-  getMediaUserData(tmdbId: number): Observable<any | IMediaUserData | IProfileData> {
+  getMediaUserData(tmdbId: string): Observable<any | IMediaUserData | IProfileData> {
     this.loggerService.info('MockUserDataService getMediaUserData');
     return of(
       {
         // "122":
         // {
         "favorite":
-          { "tmdbId": 122, "createdAt": "2023-01-27T16:36:28.703Z", "updatedAt": "2023-01-27T16:36:54.892Z" },
+          { "tmdbId": "122", "createdAt": "2023-01-27T16:36:28.703Z", "updatedAt": "2023-01-27T16:36:54.892Z" },
         "listLinkMedia": {
-          "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": 122, "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
+          "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
         },
-        "progress": { "tmdbId": 122, "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
+        "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
         // }
       });
   }
@@ -39,11 +39,11 @@ export class MockUserDataService extends BaseMediaUserDataService {
         "122":
         {
           "favorite":
-            { "tmdbId": 122, "createdAt": "2023-01-27T16:36:28.703Z", "updatedAt": "2023-01-27T16:36:54.892Z" },
+            { "tmdbId": "122", "createdAt": "2023-01-27T16:36:28.703Z", "updatedAt": "2023-01-27T16:36:54.892Z" },
           "listLinkMedia": {
-            "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": 122, "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
+            "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
           },
-          "progress": { "tmdbId": 122, "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
+          "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
         }
       }]
     );
@@ -59,18 +59,18 @@ export class MockUserDataService extends BaseMediaUserDataService {
 interface IMediaUserData {
   [x: string]: {
     favorite: {
-      tmdbId: number;
+      tmdbId: string;
       createdAt: string;
       updatedAt: string;
     };
     listLinkMedia: {
       listId: string;
-      tmdbId: number;
+      tmdbId: string;
       createdAt: string;
       updatedAt: string;
     };
     progress: {
-      tmdbId: number;
+      tmdbId: string;
       current: number;
       total: number;
       _id: string;
