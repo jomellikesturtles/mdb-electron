@@ -2,6 +2,8 @@
 /**
  * Main processor
  */
+if (require("electron-squirrel-startup")) return;
+
 const cp = require("child_process");
 const electron = require("electron");
 const Datastore = require("nedb");
@@ -33,6 +35,20 @@ let mdbTray;
 let splashWindow;
 const appIcon = `${__dirname}/dist/mdb-electron/assets/icons/plex.png`;
 
+let isMac = process.platform === "darwin";
+
+// let shouldQuit = app.requestSingleInstanceLock()
+
+switch (process.platform) {
+  case "win32":
+    DEBUG.log("Detected windows");
+    break;
+  case "darwin":
+    DEBUG.log("Detected MacOS");
+
+    break;
+}
+
 process.on("uncaughtException", (error) => {
   DEBUG.log("uncaughtException");
   sendContents("error", JSON.stringify(error));
@@ -63,9 +79,11 @@ function createMainWindow() {
     backgroundColor: "#1e2a31",
     webPreferences: {
       experimentalFeatures: true,
-      nodeIntegration: true,
+      nodeIntegration: false,
+      contextIsolation: true,
       webSecurity: false,
-      nativeWindowOpen: true
+      nativeWindowOpen: true,
+      preload: path.join(__dirname, "preload.js")
     },
     icon: appIcon,
     title: "MDB"
@@ -78,11 +96,16 @@ function createMainWindow() {
     mainWindow = null;
   });
 
-  mainWindow.webContents.once("dom-ready", function () {
+  app.whenReady().then(() => {
+    DEBUG.log("splashWindow: ", splashWindow);
     if (splashWindow) {
+      DEBUG.log("closing splash window...");
       splashWindow.close();
-      DEBUG.log("domready");
     }
+  });
+  mainWindow.webContents.once("dom-ready", function () {
+    splashWindow.close();
+    DEBUG.log("domready");
   });
 
   // ipcMain.on('error', (_, err) => {
@@ -131,7 +154,7 @@ app.on("activate", function () {
 });
 const TEMP_FOLDER = path.join(process.cwd(), "dist/mdb-electron/tmp");
 if (!fs.existsSync(TEMP_FOLDER)) {
-  fs.mkdirSync(TEMP_FOLDER);
+  fs.mkdirSync(TEMP_FOLDER, { recursive: true });
 }
 
 function showSplash() {
@@ -142,16 +165,16 @@ function showSplash() {
     show: false,
     frame: false,
     transparent: false,
-    alwaysOnTop: false,
+    alwaysOnTop: true,
     webPreferences: {
-      preload: __dirname + "/preload.js",
-      experimentalFeatures: true,
+      // preload: __dirname + "/preload.js",
+      // experimentalFeatures: true,
       nodeIntegration: false,
       webSecurity: false,
       nativeWindowOpen: true,
       devTools: true
     },
-    title: "OfflineBay by TechTac"
+    title: "Starting MDB"
   });
 
   splashWindow.loadURL(
@@ -163,10 +186,13 @@ function showSplash() {
   );
 
   splashWindow.webContents.once("dom-ready", function () {
+    DEBUG.log("Splash webcontents dom ready");
     splashWindow.show();
+    // mainWindow.show();
   });
 
   splashWindow.once("show", function () {
+    DEBUG.log("Splash shown");
     splashWindow.webContents.send("fade");
   });
 }
@@ -198,6 +224,25 @@ function setSystemTray() {
   mdbTray.setContextMenu(trayMnu);
   mdbTray.on("click", showWindow);
   mdbTray.on("double-click", showWindow);
+  if (isMac) {
+    const dockMenu = Menu.buildFromTemplate([
+      {
+        label: "MDB",
+        click: () => {}
+      },
+      { type: "separator" },
+      {
+        label: "Check for updates",
+        click: () => {}
+      },
+      {
+        label: "Quit",
+        click: () => {}
+      }
+    ]);
+
+    app.dock.setMenu(dockMenu);
+  }
 }
 
 // Show and Focus mainWindow
@@ -499,11 +544,11 @@ ipcMain.on("get-subtitle", function (event, data) {
       // fs.copyFile(e.filePaths[0], subtitlePath, (err) => {
       fs.writeFile(subtitlePath, data, (err) => {
         if (err) throw err;
-        console.log("The file has been saved!");
+        DEBUG.log("The file has been saved!");
         if (err) {
-          console.log(err);
+          DEBUG.log(err);
         }
-        console.log("subtitle-path", subtitlePath);
+        DEBUG.log("subtitle-path", subtitlePath);
         sendContents("subtitle-path", subtitlePath);
         // sendContents("subtitle-path", path.basename(e.filePaths[0]));
       });

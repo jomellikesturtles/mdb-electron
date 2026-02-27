@@ -1,3 +1,39 @@
+## Gemini Added Memories
+
+- @readme.md
+- This project is a desktop application for browsing, tracking, and watching movies.
+- Built with Angular and Electron.
+- Assume the role of senior Full-stack developer with 15 years of experience.
+- The application has a server context path set to '/mdb' in application-dev.yml.
+- you are enforcing modular architecture and decoupling strategies in a shared codebase
+- Use best software engineering standards online
+
+## 🏗️ Architecture & Refactoring Status
+
+- **Current State:** Transitioning from a monolithic `main.js` to a modular, feature-based architecture.
+- **Feature Isolation:** New Electron logic MUST reside in `src/electron/features/[feature-name]`.
+- **ModuleManager:** Use `src/electron/core/ModuleManager.js` for registering and initializing feature modules. Do not add business logic to `main.js`.
+- **Refactoring Guide:** Refer to `ELECTRON_REFACTORING_GUIDE.md` for Electron/Node.js refactoring patterns and `REFACTORING_GUIDE.md` for Angular patterns.
+
+## 🛡️ Development & Coding Standards
+
+- **Cross-Platform Compatibility:**
+  - NEVER hardcode Windows-specific paths (e.g., `C:\`).
+  - Use `path.join()`, `os.homedir()`, and `os.tmpdir()` for all filesystem operations.
+  - Check `process.platform` for OS-specific branching (e.g., `darwin`, `win32`).
+- **Standardized IPC:**
+  - Use `WorkerMessage` contract (`src/electron/core/contracts/worker-message.contract.js`) for all Main <-> Worker communication.
+  - Avoid index-based arrays (`msg[0]`) for messages.
+- **Process Management:** Use `WorkerManagerService` for spawning and managing child processes.
+- **Feature Toggles:** Use `src/electron/core/services/feature-toggle.service.js` to gate new features or refactored logic.
+
+## 🔑 Key Project Facts
+
+- **Startup Sequence:** `main.js` -> `ModuleManager` -> `Splash (Pre-start Checks)` -> `MainWindow`.
+- **Pre-start Checks:** Critical logic for app initialization (internet, disk space, etc.) is in `src/assets/scripts/pre-start.js`.
+- **Database:** Uses `NeDB` for local storage (`src/assets/db/`).
+- **Streaming:** Integrated WebTorrent client managed via modular workers.
+
 # MdbElectron - Project Context
 
 **MdbElectron** is a hybrid media management application designed for browsing, organizing, and streaming local and online movies.
