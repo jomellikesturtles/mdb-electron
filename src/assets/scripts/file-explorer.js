@@ -3,6 +3,7 @@ let args = process.argv.slice(2);
 let command = args[0];
 let data1 = args[1];
 const path = require('path');
+const { DEBUG } = require("./shared/util");
 let selectedFolders = []
 
 /**
@@ -26,11 +27,11 @@ function openFolder(folder) {
         const currentFile = path.join(folder, element)
         try {
             if (fs.statSync(currentFile).isDirectory()) {
-                console.log(currentFile)
+                DEBUG.log(currentFile)
                 returnFolders.push(currentFile)
             }
         } catch (err) {
-            console.log('error code : ' + err.code)
+            DEBUG.log('error code : ' + err.code)
         }
     });
     // display folders in folder
@@ -44,7 +45,7 @@ function selectFolder() {
 }
 
 function initializeFileExplorer() {
-    console.log('command', command, 'folder', data1)
+    DEBUG.log('command', command, 'folder', data1)
     switch (command) {
         case 'up':
             goUp(data1)
@@ -56,7 +57,7 @@ function initializeFileExplorer() {
             selectFolder()
             break;
         default:
-            console.log('invalid command');
+            DEBUG.log('invalid command');
             break;
     }
 }

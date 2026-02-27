@@ -2,13 +2,14 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const { DEBUG } = require("../shared/util");
 const app = express();
 const port = 3000;
 var libraryDbService = require("../library-db-service-2.js");
 
 app.get("/", (req, res) => res.send("Hello World!"));
 app.get("/test", (req, res) => {
-  console.log(`Example app listening on port ${port}!`);
+  DEBUG.log(`Example app listening on port ${port}!`);
   res.send("Hello Worldd!s");
 });
 
@@ -31,7 +32,7 @@ app.get("/getBookmarks", (req, res) => {
  * @param id the tmdb id or imdb id
  */
 app.get("/getBookmark/:id", (req, res) => {
-  console.log(req.params);
+  DEBUG.log(req.params);
   const response = {
     tmdbId: 123,
     imdbId: "tt1234567",
@@ -53,7 +54,7 @@ app.post("/addBookmark", (req, res) => {
 
 app.get("/countBookmarks", (req, res) => {
   libraryDbService.count().then(async (count) => {
-    console.log(`sending ${count}`);
+    DEBUG.log(`sending ${count}`);
     res.json(count);
     // res.send(count)
   });
@@ -66,7 +67,7 @@ app.get("/getVideoFile", function (req, res) {});
 app.get("/stream", function (req, res) {
   // const filePath = path.join(process.cwd(), 'src', 'assets', 'scripts', 'A.Streetcar.Named.Desire.1951.1080p.BluRay.x264-[YTS.AM].mp4')
   const filePath = `D:\\media server\\movies\\Forrest Gump.mp4`;
-  console.log("filepath: ", filePath);
+  DEBUG.log("filepath: ", filePath);
 
   const stat = fs.statSync(filePath);
   const fileSize = stat.size;
@@ -97,4 +98,4 @@ app.get("/stream", function (req, res) {
   }
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => DEBUG.log(`Example app listening on port ${port}!`));

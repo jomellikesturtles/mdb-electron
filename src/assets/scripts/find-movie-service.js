@@ -6,6 +6,7 @@
 let fs = require('fs');
 const path = require('path');
 const papa = require('papaparse');
+const { DEBUG } = require("./shared/util");
 let totalResults = 0
 let searchQuery = {
     title: 'g',
@@ -93,7 +94,7 @@ function procData(results, parser) {
             && hasGenreCondition(record)
         ) {
             totalResults++
-            // console.log(record);
+            // DEBUG.log(record);
             searchResults.push(record)
         }
     }
@@ -107,10 +108,10 @@ function finSearch(type) {
 
     // } else if (type == 'rating') {
 
-    console.timeEnd('searchLapse')
+    DEBUG.log('searchLapse: end')
     stream.close()
     // }
-    console.log('result: ', searchResults)
+    DEBUG.log('result: ', searchResults)
     // initSearchTsv('rating')
     process.exit(0)
 };
@@ -125,7 +126,7 @@ function initSearchTsv(type) {
     } else if (type == 'rating') {
         dataPath = ratingsDataPath
     }
-    console.log('initSearch', searchQuery, ' dataPath', dataPath, ' type', type);
+    DEBUG.log('initSearch', searchQuery, ' dataPath', dataPath, ' type', type);
     stream = fs.createReadStream(dataPath)
         .once('open', function () {
             papa.parse(stream, {
@@ -135,17 +136,17 @@ function initSearchTsv(type) {
                 chunk: procData,
                 complete: finSearch,
                 error: function (error) {
-                    console.log(error);
+                    DEBUG.log(error);
                 }
             });
         })
         .on('error', function (err) {
             // process.send(['search-failed', 'read']); 
-            console.log(err);
+            DEBUG.log(err);
             stream.close()
         });
 }
 
-console.time('searchLapse')
+DEBUG.log('searchLapse: start')
 
 initSearchTsv('basic')

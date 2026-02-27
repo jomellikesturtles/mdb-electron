@@ -1,6 +1,7 @@
 var DataStore = require('nedb')
+const { DEBUG } = require("./shared/util");
 // process.on('uncaughtException', function (error) {
-//     console.log(error);
+//     DEBUG.log(error);
 //     process.send(['operation-failed', 'general']); //mainWindow.webContents.send('scrape-failed', 'general');
 // });
 var configDb = new DataStore({
@@ -22,7 +23,7 @@ let preferencesObject
 function savePreferences(param) {
   param.forEach(element => {
     delete element._id
-    console.log('element ', element)
+    DEBUG.log('element ', element)
     configDb.insert(element, function (err, data) {
     })
   });
@@ -34,9 +35,9 @@ function savePreferences(param) {
 function getPreferences() {
   configDb.find({}, function (err, result) {
     if (err) {
-      console.log(err)
+      DEBUG.log(err)
     } else {
-      // console.log('result', result[0])
+      // DEBUG.log('result', result[0])
       // process.send(['preferences-success', result]);
       savePreferences(result)
     }
@@ -60,7 +61,7 @@ function initializeDataAccess(command, data1, data2) {
   }
 }
 
-console.log('asd')
+DEBUG.log('asd')
 
 // module.exports = {
 //   count: count,

@@ -4,6 +4,7 @@
 let fs = require('fs');
 const path = require('path');
 const papa = require('papaparse');
+const { DEBUG } = require("./shared/util");
 let totalResults = 0
 let searchQuery = {
     title: '[',
@@ -35,7 +36,7 @@ function procRatingsData(results, parser) {
     for (let c = 0; c < results.data.length; c++) {
         let record = results.data[c];
         if (hasRatingsCondition(record)) {
-            console.log('hasratings true', record);
+            DEBUG.log('hasratings true', record);
 
         }
     }
@@ -59,12 +60,12 @@ function getRatingFromRatingTsv() {
                 chunk: procRatingsData,
                 complete: finRatingsSearch,
                 error: function (error) {
-                    console.log(error);
+                    DEBUG.log(error);
                 }
             });
         })
         .on('error', function (err) {
-            console.log(err);
+            DEBUG.log(err);
             ratingsStream.close()
         });
     return ['', '']
@@ -92,7 +93,7 @@ function procData(results, parser) {
     for (let c = 0; c < results.data.length; c++) {
         let record = results.data[c];
         if (hasTitleTypeCondition(record)) {
-            console.log('has title type', record['tconst']);
+            DEBUG.log('has title type', record['tconst']);
             stream.pause()
             const rating = getRatingFromRatingTsv()
             stream.resume()
@@ -108,8 +109,8 @@ function procData(results, parser) {
  * Finish search, exit the process
  */
 function finSearch() {
-    console.log('result: ', totalResults)
-    console.timeEnd('searchLapse')
+    DEBUG.log('result: ', totalResults)
+    DEBUG.log('searchLapse: end')
     // process.exit(0)
 };
 
@@ -117,9 +118,9 @@ function finSearch() {
 * Initialize search
 */
 function initConversionTitleBasics() {
-    console.log('initSearch');
+    DEBUG.log('initSearch');
 
-    console.log('titleBasicsTSV', titleBasicsTSV);
+    DEBUG.log('titleBasicsTSV', titleBasicsTSV);
     stream = fs.createReadStream(titleBasicsTSV)
         .once('open', function () {
             papa.parse(stream, {
@@ -129,36 +130,36 @@ function initConversionTitleBasics() {
                 chunk: procData,
                 complete: finSearch,
                 error: function (error) {
-                    console.log(error);
+                    DEBUG.log(error);
                 }
             });
         })
         .on('error', function (err) {
-            console.log(err);
+            DEBUG.log(err);
         });
 
 }
 
-console.time('searchLapse')
+DEBUG.log('searchLapse: start')
 
 function initConversion() {
 
     let dataPath = path.join(process.cwd(), 'data.tsv');
-    console.log(dataPath);
+    DEBUG.log(dataPath);
 
     writeStage = fs.createWriteStream(dataPath)
         .on('open', function () {
-            console.log('open');
+            DEBUG.log('open');
             initConversionTitleBasics()
         })
         .on('error', function (err) {
             writeStage.close();
-            console.log(err);
+            DEBUG.log(err);
         })
         .on('close', function () {
             writeStage.close();
-            console.log('completed');
+            DEBUG.log('completed');
         })
-    console.log('result: ', result);
+    DEBUG.log('result: ', result);
 }
 initConversion()
