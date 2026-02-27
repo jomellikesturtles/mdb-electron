@@ -4,13 +4,22 @@ import { AddMovie, AddSearchMovie, AddDiscoverMovie, AddPreviewMovie, AddDashboa
 import { MDBMovieDashboardModel, MDBMovieListModel, MDBMovieModel, MDBMoviePreviewModel, MDBPaginatedResultModel } from "@services/movie/interface/movie";
 
 export interface MovieStateModel {
-  movies: { [id: string]: MDBMovieModel };
-  searchMovies: { [id: string]: MDBMovieListModel };
-  discoverMovies: { [id: string]: MDBPaginatedResultModel };
-  previewMovies: { [id: string]: MDBMoviePreviewModel };
-  dashboardMovies: { [id: string]: MDBMovieDashboardModel };
+  movies: { [id: string]: MDBMovieModel; };
+  searchMovies: { [id: string]: MDBMovieListModel; };
+  discoverMovies: { [id: string]: MDBPaginatedResultModel; };
+  previewMovies: { [id: string]: MDBMoviePreviewModel; };
+  dashboardMovies: { [id: string]: MDBMovieDashboardModel; };
 }
 
+
+/**
+ * TODO: add persistence; fix quota error
+ */
+// @Persistence({
+//     path: 'auth.accessToken',
+//     existingEngine: localStorage,
+//     ttl: 1000 * 60 * 15 // 15min
+// })
 @State<MovieStateModel>({
   name: 'movie',
   defaults: {
