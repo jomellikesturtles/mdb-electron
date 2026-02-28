@@ -18,12 +18,16 @@ export class CardListComponent implements OnInit, OnChanges {
   @Input() cardWidth: string
   @Input() displayMode: string = 'card-list-horizontal'
   @Input() listType: string
+  @Input() loading: boolean = false;
   _movieList: MDBMovie[];
   @Input()
   set movieList(inputMessage: any[]) {
-    inputMessage.forEach(inputMovie => {
-      this.movieAndUserDataList.push({ movie: inputMovie, userData: null });
-    });
+    this.movieAndUserDataList = [];
+    if (inputMessage) {
+      inputMessage.forEach(inputMovie => {
+        this.movieAndUserDataList.push({ movie: inputMovie, userData: null });
+      });
+    }
     this._movieList = inputMessage;
   }
   get movieList(): any[] {

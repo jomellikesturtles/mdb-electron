@@ -20,7 +20,7 @@ export class FavoriteService {
     private featureToggleService: FeatureToggleService,
   ) { }
 
-  save(data: any): Observable<FavoriteResponse> {
+  save(data: string): Observable<FavoriteResponse> {
     return this.bffService.saveFavorite(data);
     // if (!this.featureToggleService.isEnabled('springMode')) {
     //   return this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.SAVE },
@@ -35,7 +35,7 @@ export class FavoriteService {
    * @param type
    * @param id watched id/_id/tmdbId to remove.
   */
-  remove(type: 'id' | 'tmdbId', id: string | number): Observable<FavoriteResponse> {
+  remove(id: string | number): Observable<FavoriteResponse> {
     return this.bffService.deleteFavorite(id);
     // if (!this.featureToggleService.isEnabled('springMode')) {
     //   return this.ipcService.userData({ subChannel: SubChannel.FAVORITE, operation: IpcOperations.REMOVE },

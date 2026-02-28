@@ -33,7 +33,7 @@ export class MockFavoriteService extends FavoriteService {
     });
   }
 
-  remove(type: "id" | "tmdbId", id: string | number): Observable<FavoriteResponse> {
+  remove(id: string | number): Observable<FavoriteResponse> {
     return of({
       status: 'DELETED',
       isFavorite: false,

@@ -20,6 +20,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   discoverMoviesQuery = '';
   currentPage = 1;
   hasResults = false;
+  loading = false;
   cardWidth = '130px';
   discoverTitle = '';
   hasMoreResults = false;
@@ -55,6 +56,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
    */
   discoverQuery(type: string, val: string | number, val2: string, paramMap: Map<TmdbParameters, any>, name: string): void {
     let tempTitle = '';
+    this.loading = true;
+    this.discoverResults = [];
     // cert,year,genre,person
     switch (type) {
       case 'certification':
@@ -88,6 +91,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
           this.hasMoreResults = true;
         }
       }
+      this.loading = false;
+    }, () => {
+      this.loading = false;
     });
   }
 

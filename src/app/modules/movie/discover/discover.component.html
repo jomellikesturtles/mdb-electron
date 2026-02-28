@@ -12,9 +12,9 @@
     <h1 class='jumbo-message'>No movies found</h1>
   </div>
   <h1>{{discoverTitle}}</h1>
-  <div *ngIf='hasResults'>
+  <div *ngIf='hasResults || loading'>
     <app-card-list [movieList]='discoverResults' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'
-      [listType]='"none"'>
+      [listType]='"none"' [loading]="loading">
     </app-card-list>
     <div style='width: 100%; text-align: center; height: 80px;'>
       <h5 *ngIf='!procLoadMoreResults' class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>

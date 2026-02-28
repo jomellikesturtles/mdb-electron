@@ -1,8 +1,16 @@
 <div [ngClass]="displayMode">
   <!-- 'd-inline-flex' or 'movie-cards-display-grid' -->
-  <div id="results-panel" *ngFor="let movieAndUserData of movieAndUserDataList">
-    <app-movie-card [movie]='movieAndUserData.movie' [cardWidth]='cardWidth' [library]='null'
-      [userData]='movieAndUserData.userData'>
-    </app-movie-card>
-  </div>
+  <ng-container *ngIf="loading; else content">
+    <div *ngFor="let i of [1,2,3,4,5,6,7,8]">
+      <app-movie-card-skeleton [cardWidth]="cardWidth"></app-movie-card-skeleton>
+    </div>
+  </ng-container>
+
+  <ng-template #content>
+    <div id="results-panel" *ngFor="let movieAndUserData of movieAndUserDataList">
+      <app-movie-card [movie]='movieAndUserData.movie' [cardWidth]='cardWidth' [library]='null'
+        [userData]='movieAndUserData.userData'>
+      </app-movie-card>
+    </div>
+  </ng-template>
 </div>
