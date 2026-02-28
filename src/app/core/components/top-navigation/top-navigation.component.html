@@ -27,11 +27,11 @@
         <img src="./assets/icons/magnifiying-glass.svg" class="search-icon-left" matTooltip="Search">
 
         <input #searchBar type="text" class="form-control" placeholder="Search titles, people, genres..."
-          [(ngModel)]="searchQuery.query" name="searchQuery" (keyup.enter)="onSearch(searchQuery.query)"
+          [formControl]="myControl" (keyup.enter)="onSearch(myControl.value)"
           [matAutocomplete]="auto">
 
         <!-- Clear Icon (Right, only if query has value) -->
-        <mat-icon *ngIf="searchQuery.query" class="clear-icon" (click)="searchQuery.query=''; searchBar.focus()"
+        <mat-icon *ngIf="myControl.value" class="clear-icon" (click)="myControl.setValue(''); searchBar.focus()"
           matTooltip="Clear">close</mat-icon>
 
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSearch($event.option.value)">

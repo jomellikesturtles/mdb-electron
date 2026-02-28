@@ -95,7 +95,10 @@ export class TopNavigationComponent implements OnInit {
     }
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(''),
-      map(value => this._filter(value))
+      map(value => {
+        this.searchQuery.query = value;
+        return this._filter(value || '');
+      })
     );
   }
   private _filter(value: string): string[] {
@@ -105,13 +108,12 @@ export class TopNavigationComponent implements OnInit {
   }
 
   getSearchHistoryList() {
-    this.searchHistoryList = ['titanic', 'enteng kabisote'];
-    // })
-    // this.ipcService.call(this.ipcService.IPCCommand.GetSearchList)
-    // this.ipcService.searchList.subscribe(data => {
-    //   this.searchHistoryList = data
-    //   GeneralUtil.DEBUG.log('DATA:', data)
-    // })
+    const history = localStorage.getItem('mdb_search_history');
+    if (history) {
+      this.searchHistoryList = JSON.parse(history);
+    } else {
+      this.searchHistoryList = ['gladiator', 'titanic', 'pulp fiction']; // Default suggestions
+    }
   }
 
   /**
@@ -136,6 +138,7 @@ export class TopNavigationComponent implements OnInit {
       return;
     }
     val = val.trim();
+    this.searchQuery.query = val;
 
     if (this.lastQuery === val && this.router.url === '/results') {
       return;
@@ -143,11 +146,13 @@ export class TopNavigationComponent implements OnInit {
     this.lastQuery = val;
 
     // Update search history: move to front and maintain max length
-    this.searchHistoryList = this.searchHistoryList.filter(q => q !== val);
+    this.searchHistoryList = this.searchHistoryList.filter(q => q.toLowerCase() !== val.toLowerCase());
     this.searchHistoryList.unshift(val);
     if (this.searchHistoryList.length > this.SEARCH_HISTORY_MAX_LENGTH) {
       this.searchHistoryList = this.searchHistoryList.slice(0, this.SEARCH_HISTORY_MAX_LENGTH);
     }
+    localStorage.setItem('mdb_search_history', JSON.stringify(this.searchHistoryList));
+    this.myControl.setValue(val, { emitEvent: false });
 
     const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`);
     if (val.match(REGEX_IMDB_ID)) {
