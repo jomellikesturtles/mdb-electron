@@ -18,7 +18,6 @@ export class AppComponent implements OnInit {
   ) { }
   messageSubscription: Subscription;
   ngOnInit() {
-    this.authService.clearSession();
     this.configService.getConfiguration().subscribe((e) => {
       console.log(e);
     });

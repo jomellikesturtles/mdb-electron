@@ -203,7 +203,7 @@ export class MovieCardComponent implements OnInit {
   toggleFavorite() {
     this.isProcessingFavorite = true;
     const tmdbId = this._movie.tmdbId;
-    const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove('tmdbId', tmdbId) : this.favoriteService.save({ tmdbId });
+    const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove(tmdbId) : this.favoriteService.save(tmdbId);
     favoriteToggleFunction.subscribe(e => {
       this.isFavorite = e.isFavorite;
       this.isProcessingFavorite = false;

@@ -18,10 +18,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { UiModule } from './ui/ui.module';
 
+import { MovieCardSkeletonComponent } from './components/movie-card-skeleton/movie-card-skeleton.component';
+
 @NgModule({
   declarations: [
     SelectedListComponent,
     MovieCardComponent,
+    MovieCardSkeletonComponent,
     CardListComponent,
     ReleaseYearPipe,
     HHMMSSPipe,
@@ -57,7 +60,8 @@ import { UiModule } from './ui/ui.module';
     SimplifySizePipe,
     MagnetPipe,
     GenrePipe,
-    UiModule
+    UiModule,
+    MovieCardSkeletonComponent
   ]
 })
 export class SharedModule { }

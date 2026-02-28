@@ -19,6 +19,8 @@ export class HorizontalCardListComponent implements OnInit {
   seeAllLink: string;
   @Input()
   queryParams: any;
+  @Input()
+  loading: boolean = false;
 
   @ViewChild('cardListContainer') cardListContainer: ElementRef;
 
