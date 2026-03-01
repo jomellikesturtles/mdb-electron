@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { repeatPasswordValidator } from '@directives/repeat-password.directive';
 import { UsernameExistValidator } from '@directives/username-exist.directive';
+import { AuthenticationService } from '@services/authentication.service';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +26,9 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private usernameExistValidator: UsernameExistValidator
+    private usernameExistValidator: UsernameExistValidator,
+    private authService: AuthenticationService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -52,8 +56,13 @@ export class RegisterComponent implements OnInit {
       const username = this.signUpForm.get('username').value;
       const emailAddress = this.signUpForm.get('emailAddress').value;
       const password = this.signUpForm.get('password').value;
-      // TODO: Call service to register user
-      console.log('Registering user:', { username, emailAddress });
+      this.authService.register({ email: emailAddress, username, password }).subscribe(response => {
+        console.log('Registering user:', { username, emailAddress });
+
+        // TODO: show popup
+        this.router.navigate(['/user/signin']);
+
+      });
     }
   }
 }

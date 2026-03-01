@@ -10,6 +10,11 @@ import { toObservable } from "@angular/core/rxjs-interop";
 import * as openpgp from "openpgp";
 import { environment } from "@environments/environment";
 
+export class RegisterPayload {
+  username: string;
+  email: string;
+  password: string;
+}
 export class LoginPayload {
   username: string;
   email: string;
@@ -20,6 +25,10 @@ export class LoginResponse {
   username: string;
   authToken: string;
   expiry: string;
+}
+export class RegisterResponse {
+  success: boolean;
+  message: string;
 }
 
 @Injectable({
@@ -48,7 +57,6 @@ export class AuthenticationService {
 
     return from(this.encryptMessage(payload.password)).pipe(
 
-      // return this.httpBaseService.post(ENDPOINT.ENCRYPT, payload, "encrypt").pipe(
       switchMap((encryptedPayload: string) => {
         payload.password = encryptedPayload;
         return this.httpBaseService.post(ENDPOINT.LOGIN, payload, "login");
@@ -70,6 +78,28 @@ export class AuthenticationService {
     return this.httpBaseService.post(ENDPOINT.LOGOUT, {}, "logout").pipe(
       map((e) => {
         this.clearSession();
+      })
+    );
+  }
+
+
+  /**
+   * Login user by first encrypting the credentials and then authenticating.
+   * @param payload login payload
+   */
+  register(payload: RegisterPayload): Observable<RegisterResponse> {
+
+    return from(this.encryptMessage(payload.password)).pipe(
+
+      switchMap((encryptedPayload: string) => {
+        payload.password = encryptedPayload;
+        return this.httpBaseService.post(ENDPOINT.REGISTER, payload, "login");
+      }),
+      map((e: RegisterResponse) => {
+        // this._isAuthenticated.set(true);
+        // this.store.dispatch(new Login(payload));
+        // sessionStorage.setItem("token", e.authToken);
+        return e;
       })
     );
   }
