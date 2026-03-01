@@ -37,7 +37,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   isYTReady = false;
   hasInitialSelected = false;
   isHide = true;
-  playedTmdbId = '';
+  playedTmdbId = '0';
   isMute = false;
   isYTPlaying = false;
   hasTrailerClip = false;
