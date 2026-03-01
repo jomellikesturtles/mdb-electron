@@ -20,7 +20,12 @@
 }
 
 .header-overlay {
-  background-image: linear-gradient(to right, rgba(31.5, 31.5, 31.5, 1) calc((50vw - 170px) - 340px), rgba(31.5, 31.5, 31.5, 0.84) 50%, rgba(31.5, 31.5, 31.5, 0.84) 100%);
+  background-image: linear-gradient(
+    to right,
+    rgba(31.5, 31.5, 31.5, 1) calc((50vw - 170px) - 340px),
+    rgba(31.5, 31.5, 31.5, 0.84) 50%,
+    rgba(31.5, 31.5, 31.5, 0.84) 100%
+  );
   width: 100%;
   min-height: 510px;
   display: flex;
@@ -59,7 +64,7 @@
   border-radius: 8px;
   background-size: cover;
   background-position: center;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 
   @media (max-width: 991px) {
     width: 240px;
@@ -88,7 +93,7 @@
     font-weight: 400;
     opacity: 0.8;
   }
-  
+
   @media (max-width: 767px) {
     font-size: 1.8rem;
   }
@@ -106,7 +111,7 @@
   }
 
   .certification {
-    border: 1px solid rgba(255,255,255,0.6);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     padding: 1px 4px;
     border-radius: 2px;
     font-size: 0.8rem;
@@ -114,7 +119,9 @@
 
   .genre-link {
     cursor: pointer;
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
@@ -152,7 +159,7 @@
     font-weight: bold;
     color: $netflix-white;
     line-height: 1;
-    
+
     small {
       font-size: 1rem;
       color: $netflix-gray-text;
@@ -169,35 +176,37 @@
 }
 
 .tmdb-circle-btn {
-  background-color: #032541 !important;
+  // background-color: #032541 !important;
   color: #fff !important;
   width: 46px !important;
   height: 46px !important;
-  
+
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
   }
+}
+.list-btn {
+  background-color: #032541 !important;
+}
+.fav-btn {
+  background-color: #fc0404 !important;
+}
 
-  &.fav-btn.active {
-    color: #FC0404 !important;
-  }
+.bookmark-btn {
+  background-color: #f8e00b !important;
+}
 
-  &.bookmark-btn.active {
-    color: #F8E00B !important;
-  }
-
-  &.played-btn.active {
-    color: #FD710C !important;
-  }
+.played-btn {
+  background-color: #fd710c !important;
 }
 
 .trailer-link {
   cursor: pointer;
   font-weight: 600;
   transition: opacity 0.2s;
-  
+
   &:hover {
     opacity: 0.7;
   }
@@ -220,7 +229,9 @@
 .featured-credits {
   .name {
     cursor: pointer;
-    &:hover { color: rgba(255,255,255,0.7); }
+    &:hover {
+      color: rgba(255, 255, 255, 0.7);
+    }
   }
 }
 
@@ -237,7 +248,7 @@
   .mat-tab-header {
     border-bottom: 1px solid #e3e3e3;
   }
-  
+
   .mat-tab-label {
     height: 48px;
     padding: 0 20px;
@@ -256,7 +267,7 @@
 .cast-scroller {
   overflow-x: auto;
   padding-bottom: 10px;
-  
+
   &::-webkit-scrollbar {
     height: 8px;
   }
@@ -273,7 +284,7 @@
   border: 1px solid #e3e3e3;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
 
   .cast-img {
@@ -281,12 +292,12 @@
     background-size: cover;
     background-position: center;
   }
-  
+
   .name {
     color: #000;
     font-size: 0.9rem;
   }
-  
+
   .character {
     font-size: 0.8rem;
     color: #000 !important;
@@ -299,7 +310,7 @@
   background: #fff;
   border: 1px solid #e3e3e3;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   .author-avatar {
     width: 44px;
@@ -313,9 +324,14 @@
     font-weight: 700;
     font-size: 1.2rem;
   }
-  
-  h5 { color: #000 !important; }
-  p { color: #000 !important; opacity: 0.8; }
+
+  h5 {
+    color: #000 !important;
+  }
+  p {
+    color: #000 !important;
+    opacity: 0.8;
+  }
 }
 
 .pointer {

@@ -203,14 +203,26 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this._isBookmarked = this.mediaUserDataService.commonSetter(val);
   }
 
+  get isBookmarked(): boolean {
+    return this._isBookmarked;
+  }
+
   set isFavorite(val: number | Object) {
     this.loggerService.info('set isFavorite called');
     this._isFavorite = this.mediaUserDataService.commonSetter(val);
   }
 
+  get isFavorite(): boolean {
+    return this._isFavorite;
+  }
+
   set isPlayed(val: number | Object) {
     this.loggerService.info('set isPlayed called');
     this._isPlayed = this.mediaUserDataService.commonSetter(val);
+  }
+
+  get isPlayed(): boolean {
+    return this._isPlayed;
   }
 
   /**
@@ -251,12 +263,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
   toggleFavorite() {
     this.isProcessingFavorite = true;
     const tmdbId = this.movieDetails.tmdbId;
-    const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove('tmdbId', tmdbId) : this.favoriteService.save({ tmdbId });
+    const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove(tmdbId) : this.favoriteService.save(tmdbId);
     favoriteToggleFunction.subscribe(e => {
       this.isFavorite = e.isFavorite;
-      this.isProcessingFavorite = false;
     }, err => {
       this.loggerService.error(`toggleFavorite error: ${err}`);
+    }, () => {
       this.isProcessingFavorite = false;
     });
   }

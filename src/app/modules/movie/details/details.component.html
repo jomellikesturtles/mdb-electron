@@ -16,13 +16,22 @@
 
           <div class="action-circle-buttons mt-3 justify-content-center">
             <button mat-icon-button matTooltip="Add to List" [matMenuTriggerFor]="listMenu"
-              class="tmdb-circle-btn"><mat-icon>list</mat-icon></button>
-            <button mat-icon-button [class.active]="_isFavorite" (click)="toggleFavorite()"
-              matTooltip="Mark as favorite" class="tmdb-circle-btn"><mat-icon>favorite</mat-icon></button>
-            <button mat-icon-button [class.active]="_isBookmarked" (click)="toggleBookmark()"
-              matTooltip="Add to watchlist" class="tmdb-circle-btn"><mat-icon>bookmark</mat-icon></button>
-            <button mat-icon-button [class.active]="_isPlayed" (click)="togglePlayed()" matTooltip="Mark as watched"
-              class="tmdb-circle-btn"><mat-icon>visibility</mat-icon></button>
+              class="tmdb-circle-btn list-btn"><mat-icon>list</mat-icon></button>
+            <button mat-icon-button [class.active]="isFavorite" (click)="toggleFavorite()"
+              [disabled]="isProcessingFavorite" matTooltip="Mark as favorite" class="tmdb-circle-btn fav-btn">
+              <mat-icon *ngIf="!isProcessingFavorite">{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+              <mat-spinner *ngIf="isProcessingFavorite" diameter="20" class="m-auto"></mat-spinner>
+            </button>
+            <button mat-icon-button [class.active]="isBookmarked" (click)="toggleBookmark()"
+              [disabled]="isProcessingBookmark" matTooltip="Add to watchlist" class="tmdb-circle-btn bookmark-btn">
+              <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+              <mat-spinner *ngIf="isProcessingBookmark" diameter="20" class="m-auto"></mat-spinner>
+            </button>
+            <button mat-icon-button [class.active]="isPlayed" (click)="togglePlayed()" [disabled]="isProcessingWatched"
+              matTooltip="Mark as watched" class="tmdb-circle-btn played-btn">
+              <mat-icon *ngIf="!isProcessingWatched">visibility</mat-icon>
+              <mat-spinner *ngIf="isProcessingWatched" diameter="20" class="m-auto"></mat-spinner>
+            </button>
           </div>
         </div>
 
@@ -87,7 +96,7 @@
           </section>
 
           <section class="overview-section">
-            <h4 class="tagline text-white-50 italic mb-2" *ngIf="movieDetails.tagline">{{ movieDetails.tagline }}</h4>
+            <!-- <h4 class="tagline text-white-50 italic mb-2" *ngIf="movieDetails.tagline">{{ movieDetails.tagline }}</h4> -->
             <h3 class="fw-bold mb-2">Overview</h3>
             <p class="overview-text mb-4">{{ movieDetails.overview }}</p>
 
