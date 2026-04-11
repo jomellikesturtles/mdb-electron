@@ -23,8 +23,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets", "src/manifest.json", "src/environment.js"],
-            "styles": ["src/styles.scss"],
-            "scripts": ["src/environment.js"]
+            "styles": ["src/styles.scss"]
           },
           "configurations": {
             "production": {
@@ -53,6 +52,23 @@
               "ngswConfigPath": "src/ngsw-config.json"
             },
             "development": {
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                "src/manifest.json",
+                "src/environment.js",
+                {
+                  "input": "src/environments",
+                  "output": "/",
+                  "glob": "*.js"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.dev.js",
+                  "with": "src/environment.js"
+                }
+              ],
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
