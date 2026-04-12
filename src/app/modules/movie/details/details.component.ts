@@ -1,4 +1,5 @@
 import { GenreCodes } from '@models/interfaces';
+import { PlayLink } from '@models/playlink.model';
 import { IRawLibrary, LibraryService } from '@services/library.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MDBTorrent } from '@models/interfaces';
