@@ -34,6 +34,8 @@ export class YoutubeService {
       params: myHttpParam
     };
     // https://www.googleapis.com/youtube/v3/search?part=snippet&key=AIzaSyAC1kcZu_DoO7mbrMxMuCpO57iaDByGKV0&q=Toy%20Story%204%202019&maxResults=50&order=relevance&type=video
-    return this.httpBaseService.get(baseUrl, httpOptions, 'getRandomVideoClip').pipe(map((e) => e.items));
+    return this.httpBaseService.get<{ items: any[] }>(baseUrl, httpOptions, 'getRandomVideoClip').pipe(
+      map((e) => e.items)
+    );
   }
 }

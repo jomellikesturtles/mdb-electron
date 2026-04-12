@@ -1,3 +1,4 @@
+import { IUserProfile } from '@models/user.model';
 import { LibraryService } from '../library.service';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
@@ -33,25 +34,25 @@ export class UserDataService {
     private httpBaseService: HttpBaseService
   ) { }
 
-  getUser(username: string) {
+  getUser(username: string): Observable<IUserProfile> {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
         null, { tmdbId: username });
     }
     return this.dataService.getHandle(
-      this.httpBaseService.get(
+      this.httpBaseService.get<IUserProfile>(
         this.httpUrlProvider.getBffAPI(ENDPOINT.USER_ID, username)),
       this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
-        null, { tmdbId: username }));
+        null, { tmdbId: username }) as Observable<IUserProfile>);
   }
 
-  updateUser(username: string, payload: any) {
+  updateUser(username: string, payload: IUserProfile): Observable<IUserProfile> {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
         null, { tmdbId: username });
     }
     return this.dataService.postHandle(
-      this.httpBaseService.post(
+      this.httpBaseService.post<IUserProfile>(
         this.httpUrlProvider.getBffAPI(ENDPOINT.USER_ID, username),
         payload),
       this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },

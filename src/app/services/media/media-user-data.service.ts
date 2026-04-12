@@ -32,7 +32,7 @@ export class MediaUserDataService extends BaseMediaUserDataService {
    * @param tmdbId
    * @param currentUserOnly
    */
-  getMediaUserData(tmdbId: string, currentUserOnly: boolean = true) {
+  getMediaUserData(tmdbId: string, currentUserOnly: boolean = true): Observable<any> {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
         null, { tmdbId: tmdbId });
@@ -46,7 +46,7 @@ export class MediaUserDataService extends BaseMediaUserDataService {
    * @param idList tmdbIdList
    * @returns
    */
-  getMediaUserDataMultiple(idList: string): Observable<any> {
+  getMediaUserDataMultiple(idList: string): Observable<any[]> {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
         null, { idList: idList });

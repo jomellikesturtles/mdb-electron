@@ -1,11 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { IMediaList } from "@models/media-list.model";
 import { BaseLibraryService } from "@services/base-library.service";
-import { DataService } from "@services/data.service";
-import { IUserDataPaginated } from "@services/ipc.service";
-import { BaseListService } from "@services/media/base-list.service";
-import { Observable, of } from "rxjs";
+import { Observable, firstValueFrom } from "rxjs";
 
 @Injectable({ providedIn: "root" })
 export class MockLibraryService extends BaseLibraryService {
@@ -15,22 +11,16 @@ export class MockLibraryService extends BaseLibraryService {
   ) {
     super();
   }
+
   openVideoStream(id: any) {
-    return of('https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4').toPromise();
+    return Promise.resolve('https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4');
   }
-  getMovieFromLibrary(id: string | number): Promise<any> {
-    return of(
-      [
-        {
-          fullFilePath: 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4',
-          title: 'Titanic',
-          year: '1997',
-          tmdbId: 3897,
-          _id: 'asdasd'
-        }
-      ]
-    ).toPromise();
+
+  async getMovieFromLibrary(id: string | number): Promise<any> {
+    const movies = await firstValueFrom(this.http.get<any[]>('assets/mock-responses/library-movies.json'));
+    return movies.filter(m => m.tmdbId == id);
   }
+
   getMoviesFromLibraryInList(idList: number[]): Promise<any> {
     throw new Error("Method not implemented.");
   }
@@ -40,6 +30,4 @@ export class MockLibraryService extends BaseLibraryService {
   getLibraryPaginated(lastVal: string | number): Promise<any> {
     throw new Error("Method not implemented.");
   }
-
-
 }

@@ -21,8 +21,6 @@ export abstract class BaseMovieService {
     protected store: Store
   ) { }
 
-  protected abstract getImages(val: any): Observable<any>;
-
   protected abstract searchSubtitleById(val: string);
 
   /**
