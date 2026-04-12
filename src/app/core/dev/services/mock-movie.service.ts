@@ -4,13 +4,12 @@ import { CacheService } from "@services/cache.service";
 import { HttpBaseService } from "@services/http-base.service";
 import { IpcService } from "@services/ipc.service";
 import { TmdbService } from "@services/tmdb/tmdb.service";
-import { IOmdbMovieDetail, IRawTmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from "@models/interfaces";
+import { IRawTmdbResultObject, TmdbParameters, TmdbSearchMovieParameters } from "@models/interfaces";
 import { MDBMovie } from "@models/mdb-movie.model";
 import { IMdbMoviePaginated } from "@models/media-paginated.model";
 import { IMediaProgress } from "@models/media-progress";
 import { TMDB_External_Id } from "@models/tmdb-external-id.model";
 import { BaseMovieService } from "@services/movie/base-movie.service";
-import { TEST_OMDB_MOVIE_DETAIL } from "app/mock-data";
 import { Observable, catchError, map, of, tap } from "rxjs";
 
 @Injectable({ providedIn: "root" })
@@ -28,9 +27,6 @@ export class MockMovieService extends BaseMovieService {
     throw new Error("Method not implemented.");
   }
 
-  getMovieByImdbId(val: string): Observable<IOmdbMovieDetail> {
-    return of(TEST_OMDB_MOVIE_DETAIL);
-  }
   getImages(val: any): Observable<any> {
     throw new Error("Method not implemented.");
   }

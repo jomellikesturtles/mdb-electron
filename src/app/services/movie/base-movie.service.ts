@@ -1,4 +1,4 @@
-import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
+import { TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
 import { Store } from '@ngxs/store';
 import { MDBMovie } from '@models/mdb-movie.model';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
@@ -20,14 +20,6 @@ export abstract class BaseMovieService {
     protected httpBaseService: HttpBaseService,
     protected store: Store
   ) { }
-
-  /**
-    * Gets movie info. First it gets from offline source,
-    * if there is none, it gets from online source (OMDB)
-    */
-  protected abstract getMovieInfo(val: string): Observable<any>;
-
-  protected abstract getMovieByImdbId(val: string): Observable<IOmdbMovieDetail>;
 
   protected abstract getImages(val: any): Observable<any>;
 

@@ -1,8 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
-// import { MovieGenre, IGenre, ISearchQuery, ITmdbSearchQuery } from '@models/interfaces';
-import { MOVIEGENRES } from '../../../mock-data';
-import { STRING_REGEX_IMDB_ID } from '@shared/constants';
 import { DataService } from '@services/data.service';
 import { MovieService } from '@services/movie/movie.service';
 import { IpcService } from '@services/ipc.service';
@@ -11,11 +8,11 @@ import { Location } from '@angular/common';
 import { environment } from '@environments/environment';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
-import GeneralUtil from '@utils/general.util';
 import { ISearchQuery } from '@models/interfaces';
 import { AuthenticationService } from "@services/authentication.service";
 import { Actions, ofActionDispatched } from "@ngxs/store";
 import { Login } from "app/store/auth/auth.state";
+import { MockDataService } from '@services/mock-data.service';
 
 @Component({
   selector: 'app-top-navigation',
@@ -45,7 +42,8 @@ export class TopNavigationComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private authService: AuthenticationService,
     private $actions: Actions,
-    private location: Location
+    private location: Location,
+    private mockDataService: MockDataService
   ) { }
 
   isElectron = environment.runConfig.electron;
@@ -58,7 +56,7 @@ export class TopNavigationComponent implements OnInit {
     query: '',
     yearFrom: 1969,
     yearTo: 2018,
-    genres: MOVIEGENRES,
+    genres: [],
     type: 'TV Series',
     isAvailable: 'true',
     availability: '',
@@ -80,6 +78,10 @@ export class TopNavigationComponent implements OnInit {
 
   myControl = new FormControl();
   ngOnInit() {
+    this.mockDataService.getMovieGenres().subscribe(genres => {
+      this.searchQuery.genres = genres;
+    });
+
     this.$actions.pipe(ofActionDispatched(Login)).subscribe((e) => {
       this.isSignedIn = true;
       this.status = "";
@@ -153,28 +155,8 @@ export class TopNavigationComponent implements OnInit {
     }
     localStorage.setItem('mdb_search_history', JSON.stringify(this.searchHistoryList));
     this.myControl.setValue(val, { emitEvent: false });
+    this.searchByTitle(val);
 
-    const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`);
-    if (val.match(REGEX_IMDB_ID)) {
-      this.searchByImdbId(val);
-    } else {
-      this.searchByTitle(val);
-    }
-  }
-
-  /**
-   * Searches movie by imdb id and redirects if there are results
-   * @param imdbId imdb id to search
-   */
-  searchByImdbId(imdbId: string) {
-    this.movieService.getMovieByImdbId(imdbId).subscribe(data => {
-      if (data.Response !== 'False') {
-        this.router.navigate([`/details/${imdbId}`], { relativeTo: this.activatedRoute });
-      } else {
-        this.hasSearchResults = false;
-        // insert code for not found
-      }
-    });
   }
 
   /**
