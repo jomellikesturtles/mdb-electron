@@ -39,6 +39,8 @@ export class AuthenticationService {
   public isAuthenticated = this._isAuthenticated.asReadonly();
   private $isAuthenticated = toObservable(this._isAuthenticated);
 
+  private readonly SESSION_TIMEOUT_MS = 15 * 60 * 1000;
+
   constructor(
     protected httpBaseService: HttpBaseService,
     protected logger: LoggerService,
@@ -65,6 +67,37 @@ export class AuthenticationService {
         this._isAuthenticated.set(true);
         this.store.dispatch(new Login(payload));
         sessionStorage.setItem("token", e.authToken);
+        this.updateExpiry();
+        return e;
+      })
+    );
+  }
+
+  /**
+   * Updates the session expiry timestamp in localStorage.
+   * Supports sliding expiration by being called on user activity.
+   */
+  updateExpiry(): void {
+    const expiryTime = Date.now() + this.SESSION_TIMEOUT_MS;
+    localStorage.setItem("token_expiry", expiryTime.toString());
+  }
+
+  /**
+   * Checks if the current session has expired based on the stored timestamp.
+   */
+  isTokenExpired(): boolean {
+    const expiry = localStorage.getItem("token_expiry");
+    return !expiry || Date.now() > Number(expiry);
+  }
+
+  /**
+   * Requests a new token from the backend and resets the expiry timer.
+   */
+  refreshToken(): Observable<LoginResponse> {
+    return this.httpBaseService.post(ENDPOINT.REFRESH, {}, "refresh").pipe(
+      map((e: LoginResponse) => {
+        sessionStorage.setItem("token", e.authToken);
+        this.updateExpiry();
         return e;
       })
     );
@@ -110,6 +143,7 @@ export class AuthenticationService {
   clearSession(): void {
     sessionStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("token_expiry");
     this._isAuthenticated.set(false);
   }
 
