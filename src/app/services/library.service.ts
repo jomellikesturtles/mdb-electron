@@ -13,15 +13,16 @@ export class LibraryService extends BaseLibraryService {
     super();
   }
 
-  async openVideoStream(id): Promise<any> {
+  // returns link
+  async openVideoStream(id): Promise<string> {
     return this.ipcService.playOfflineVideo(id);
   }
 
-  getMovieFromLibrary(id: number | string): Promise<any> {
+  getMovieFromLibrary(id: number | string): Promise<IRawLibrary[]> {
     return this.ipcService.getMovieFromLibrary(id);
   }
 
-  getMoviesFromLibraryInList(idList: number[]): Promise<any> {
+  getMoviesFromLibraryInList(idList: number[]): Promise<IRawLibrary[]> {
     console.log('getting multiplevideos...', idList);
     return this.ipcService.getMoviesFromLibraryInList(idList);
   }

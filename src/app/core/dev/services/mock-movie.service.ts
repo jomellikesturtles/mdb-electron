@@ -27,9 +27,6 @@ export class MockMovieService extends BaseMovieService {
     throw new Error("Method not implemented.");
   }
 
-  getImages(val: any): Observable<any> {
-    throw new Error("Method not implemented.");
-  }
   searchSubtitleById(val: string) {
     throw new Error("Method not implemented.");
   }

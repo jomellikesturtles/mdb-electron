@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { LoggerService } from '@core/logger.service';
 import GeneralUtil from '@utils/general.util';
 
@@ -17,7 +17,7 @@ export class HttpBaseService {
     protected logger: LoggerService
   ) { }
 
-  get(url: string, optionsOrOperation?: any, operation: string = 'GET'): Observable<any> {
+  get<T>(url: string, optionsOrOperation?: any, operation: string = 'GET'): Observable<T> {
     let options = {};
     let op = operation;
     if (typeof optionsOrOperation === 'string') {
@@ -26,37 +26,38 @@ export class HttpBaseService {
       options = optionsOrOperation;
     }
 
-    return this.http.get<any>(url, options).pipe(
+    return this.http.get<T>(url, options).pipe(
       tap(_ => this.logger.info(`GET url=${url}`)),
-      catchError(this.handleError<any>(op))
+      catchError(this.handleError<T>(op))
     );
   }
 
-  post(url: string, payload: any, operation = 'POST'): Observable<any> {
-    return this.http.post<any>(url, payload, { headers: JSON_CONTENT_TYPE_HEADER }).pipe(
+  post<T>(url: string, payload: any, operation = 'POST'): Observable<T> {
+    return this.http.post<T>(url, payload, { headers: JSON_CONTENT_TYPE_HEADER }).pipe(
       tap(_ => this.logger.info(`POST url=${url}`)),
-      catchError(this.handleError<any>(operation))
+      catchError(this.handleError<T>(operation))
     );
   }
 
-  patch(url: string, payload: any, operation = 'PATCH'): Observable<any> {
-    return this.http.patch<any>(url, payload).pipe(
+  patch<T>(url: string, payload: any, operation = 'PATCH'): Observable<T> {
+    return this.http.patch<T>(url, payload).pipe(
       tap(_ => this.logger.info(`PATCH url=${url}`)),
-      catchError(this.handleError<any>(operation))
+      catchError(this.handleError<T>(operation))
     );
   }
 
-  put(url: string, payload: any, operation = 'PUT'): Observable<any> {
-    return this.http.put<any>(url, payload).pipe(
+  put<T>(url: string, payload: any, operation = 'PUT'): Observable<T> {
+    return this.http.put<T>(url, payload).pipe(
       tap(_ => this.logger.info(`PUT url=${url}`)),
-      catchError(this.handleError<any>(operation))
+      catchError(this.handleError<T>(operation))
     );
   }
 
-  delete(url: string, payload: any, operation = 'DELETE'): Observable<any> {
-    return this.http.delete<any>(url, payload).pipe(
+  delete<T>(url: string, options: any = {}, operation = 'DELETE'): Observable<T> {
+    return this.http.delete<T>(url, options).pipe(
+      map(res => res as T),
       tap(_ => this.logger.info(`DELETE url=${url}`)),
-      catchError(this.handleError<any>(operation))
+      catchError(this.handleError<T>(operation))
     );
   }
 

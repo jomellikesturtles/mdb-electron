@@ -4,10 +4,10 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, from, of } from 'rxjs';
-import { first, map, tap, switchMap } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 import { IpcService } from '@services/ipc.service';
 import { TmdbParameters, TmdbSearchMovieParameters, IRawTmdbResultObject } from '@models/interfaces';
-import { OMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID } from '../../shared/constants';
+import { FANART_TV_API_KEY, FANART_TV_URL } from '../../shared/constants';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { environment } from '@environments/environment';
 import { MDBMovie } from '@models/mdb-movie.model';
@@ -47,11 +47,6 @@ export class MovieService extends BaseMovieService {
     super(cacheService, ipcService, tmdbService, httpBaseService, store);
   }
 
-  getImages(val: any): Observable<any> {
-    const url = `${OMDB_URL}/?t=${val}&apikey=${this.TMDB_API_KEY}`;
-    return this.httpBaseService.get(url, 'getMovie').pipe(tap(_ => this.log(`getMovie ${val}`)));
-  }
-
   searchSubtitleById(val: string) {
     // insert code here
   }
@@ -60,9 +55,9 @@ export class MovieService extends BaseMovieService {
     return this.cacheService.get(tmdbId + '_EXTERNAL_ID', this.externalId(tmdbId));
   }
 
-  getMovieBackdrop(val: string): Observable<any> {
+  getMovieBackdrop(val: string): Observable<{ moviebackground: { url: string; }[]; }> {
     const url = `${FANART_TV_URL}/${val}?api_key=${FANART_TV_API_KEY}`;
-    return this.httpBaseService.get(url, 'getMovieBackdrop').pipe(tap(_ => this.log('')));
+    return this.httpBaseService.get<{ moviebackground: { url: string; }[]; }>(url, 'getMovieBackdrop').pipe(tap(_ => this.log('')));
   }
 
   getMoviePoster(posterLink: string) {
@@ -75,11 +70,11 @@ export class MovieService extends BaseMovieService {
     );
   }
 
-  getFindMovie(val: string | number): Observable<any> {
+  getFindMovie(val: string | number): Observable<IRawTmdbResultObject> {
     return this.tmdbService.getFindMovie(val);
   }
 
-  getRelatedClips(tmdbId: string, refresh: boolean = false): Observable<any> {
+  getRelatedClips(tmdbId: string, refresh: boolean = false): Observable<ITmdbVideoResult> {
     const entityId = `movie:video:${tmdbId}`;
     return this.getCachedOrFetch<MDBMoviePreviewModel>(
       MovieState.getPreviewMovie(entityId),
@@ -168,7 +163,7 @@ export class MovieService extends BaseMovieService {
   searchMovie(
     paramMap: Map<TmdbParameters | TmdbSearchMovieParameters, any>,
     refresh: boolean = false
-  ): Observable<any> {
+  ): Observable<IRawTmdbResultObject> {
     const page = paramMap.get(TmdbSearchMovieParameters.Page) ? paramMap.get(TmdbSearchMovieParameters.Page) : 1;
     let myHttpParam = new HttpParams().append(TmdbParameters.Page, page);
     myHttpParam = GeneralUtil.appendMappedParameters(paramMap, myHttpParam);
@@ -199,15 +194,15 @@ export class MovieService extends BaseMovieService {
     );
   }
 
-  getSubtitleFile(filePath: string): Observable<any> {
-    return this.httpBaseService.get(filePath, { responseType: "blob" as "json" });
+  getSubtitleFile(filePath: string): Observable<Blob> {
+    return this.httpBaseService.get<Blob>(filePath, { responseType: "blob" as "json" });
   }
 
-  getSubtitleFileString(filePath: string): Observable<any> {
-    return this.httpBaseService.get(filePath, { responseType: "text" as "json" });
+  getSubtitleFileString(filePath: string): Observable<string> {
+    return this.httpBaseService.get<string>(filePath, { responseType: "text" as "json" });
   }
 
-  getStreams(movieId: string, refresh: boolean = false): Observable<any> {
+  getStreams(movieId: string, refresh: boolean = false): Observable<IMdbMoviePaginated> {
     const entityId = `movie:streams:${movieId}`;
     GeneralUtil.DEBUG.log(`getStreams movieId: ${movieId}`);
 
@@ -234,7 +229,7 @@ export class MovieService extends BaseMovieService {
 
   private externalId(tmdbId: string): Observable<TMDB_External_Id> {
     const url = `${this.TMDB_URL}/movie/${tmdbId}/external_ids?api_key=${this.TMDB_API_KEY}`;
-    return this.httpBaseService.get(url, 'getExternalId').pipe(tap(_ => this.log('')));
+    return this.httpBaseService.get<TMDB_External_Id>(url, 'getExternalId').pipe(tap(_ => this.log('')));
   }
 
   private mapMovieDetails(id, data): MDBMovie {

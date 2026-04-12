@@ -1,0 +1,23 @@
+[
+  {
+    "fullFilePath": "https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4",
+    "title": "Titanic",
+    "year": "1997",
+    "tmdbId": 597,
+    "_id": "597_titanic_id"
+  },
+  {
+    "fullFilePath": "https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4",
+    "title": "Guardians of the Galaxy",
+    "year": "2014",
+    "tmdbId": 118340,
+    "_id": "118340_gotg_id"
+  },
+  {
+    "fullFilePath": "https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4",
+    "title": "Inception",
+    "year": "2010",
+    "tmdbId": 27205,
+    "_id": "27205_inception_id"
+  }
+]

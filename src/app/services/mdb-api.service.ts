@@ -3,7 +3,7 @@
  */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 import { MDB_API_URL } from '../shared/constants';
 import { IProfileData } from '../models/profile-data.model';
 import { IMediaList } from '@models/media-list.model';
@@ -59,13 +59,13 @@ export class MDBApiService {
   }
 
   saveFavorite(tmdbId: any): Observable<FavoriteResponse> {
-    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_FAVORITE, tmdbId), tmdbId, 'saveFavorite').pipe(
+    return this.httpBaseService.post<FavoriteResponse>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_FAVORITE, tmdbId), { tmdbId }, 'saveFavorite').pipe(
       tap(_ => this.logger.info(`saveFavorite tmdbId=${tmdbId}`))
     );
   }
 
   deleteFavorite(tmdbId: any): Observable<FavoriteResponse> {
-    return this.httpBaseService.delete(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_FAVORITE, tmdbId), 'deleteFavorite').pipe(
+    return this.httpBaseService.delete<FavoriteResponse>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_FAVORITE, tmdbId), {}, 'deleteFavorite').pipe(
       tap(_ => this.logger.info(`deleteFavorite id=${tmdbId}`))
     );
   }
@@ -120,7 +120,7 @@ export class MDBApiService {
   }
 
   getProfileDataByTmdbIdList(tmdbIdList: number[]): Observable<IProfileData[]> {
-    return this.httpBaseService.get(`${MDB_API_URL}/profileData/media/list/${tmdbIdList}`, 'getProfileDataByTmdbIdList').pipe(
+    return this.httpBaseService.get<IProfileData[]>(`${MDB_API_URL}/profileData/media/${tmdbIdList}`, 'getProfileDataByTmdbIdList').pipe(map(res => res as IProfileData[])).pipe(
       tap(_ => this.logger.info(`getProfileDataByTmdbIdList count=${tmdbIdList.length}`))
     );
   }

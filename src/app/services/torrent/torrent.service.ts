@@ -51,14 +51,11 @@ export class TorrentService {
       }));
   }
 
-  searchTorrentsByQuery(val: string): Observable<any> {
+  searchTorrentsByQuery(val: string): Observable<IYTSSingleQuery> {
     console.log('insearchtorentsquery');
     val = 'tt0499549';
     const url = `${this.YTS_URL}?query_term=${val}`;
-    const result = this.httpBaseService.get(url, 'searchTorrentsByQuery').pipe(map(response => response));
-    // console.log('result: ', JSON.parse(result.))
-    console.log('result: ', result);
-    return result;
+    return this.httpBaseService.get<IYTSSingleQuery>(url, 'searchTorrentsByQuery');
   }
 
   /**
@@ -124,11 +121,11 @@ export class TorrentService {
    * @param hash hash
    * @returns streaming url
    */
-  getStreamLink(hash: String): Observable<any> {
+  getStreamLink(hash: string): Observable<string> {
     // tt2015381 - guardians of the galaxy
     let url = `http://localhost:3000/getStreamLink/${hash}`;
 
-    return this.httpBaseService.get(url, 'getStreamLink');
+    return this.httpBaseService.get<string>(url, 'getStreamLink');
   }
 
 }
