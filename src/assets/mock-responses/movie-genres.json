@@ -1,0 +1,9 @@
+[
+  { "id": 1, "code": "ACT", "description": "Action", "isChecked": true },
+  { "id": 2, "code": "ADV", "description": "Adventure", "isChecked": false },
+  { "id": 3, "code": "DOC", "description": "Documentary", "isChecked": false },
+  { "id": 4, "code": "DRA", "description": "Drama", "isChecked": false },
+  { "id": 5, "code": "HOR", "description": "Horror", "isChecked": false },
+  { "id": 6, "code": "SCI", "description": "Sci-Fi", "isChecked": true },
+  { "id": 7, "code": "THR", "description": "Thriller", "isChecked": false }
+]

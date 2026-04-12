@@ -6,7 +6,7 @@ import { HttpHeaders, HttpParams, } from '@angular/common/http';
 import { Observable, from, of } from 'rxjs';
 import { first, map, tap, switchMap } from 'rxjs/operators';
 import { IpcService } from '@services/ipc.service';
-import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters, IRawTmdbResultObject } from '@models/interfaces';
+import { TmdbParameters, TmdbSearchMovieParameters, IRawTmdbResultObject } from '@models/interfaces';
 import { OMDB_API_KEY, FANART_TV_API_KEY, OMDB_URL, FANART_TV_URL, STRING_REGEX_IMDB_ID } from '../../shared/constants';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { environment } from '@environments/environment';
@@ -45,37 +45,6 @@ export class MovieService extends BaseMovieService {
     private httpUrlProvider: HttpUrlProviderService
   ) {
     super(cacheService, ipcService, tmdbService, httpBaseService, store);
-  }
-
-  getMovieInfo(val: string): Observable<any> {
-    let result;
-    const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`);
-    if (val.trim().match(REGEX_IMDB_ID)) {
-      result = this.getMovieByImdbId(val);
-    } else {
-      result = this.getMovieByTitle(val);
-    }
-    return result;
-  }
-
-  getMovieByImdbId(val: string): Observable<IOmdbMovieDetail> {
-    const url = `${OMDB_URL}/?i=${val}&apikey=${OMDB_API_KEY}&plot=full`;
-    return this.httpBaseService.get(url, 'getMovie').pipe(
-      map(data => {
-        console.log(data);
-        return data;
-      }),
-      tap(_ => this.log(``))
-    );
-  }
-
-  /**
-   * most probably will not be used
-   * @param val Movie title
-   */
-  getMovieByTitle(val: string): Observable<IOmdbMovieDetail> {
-    const url = `${OMDB_URL}/?t=${val}&apikey=${OMDB_API_KEY}`;
-    return this.httpBaseService.get(url, 'getMovie').pipe(tap(_ => this.log(`getMovie ${val}`)));
   }
 
   getImages(val: any): Observable<any> {
