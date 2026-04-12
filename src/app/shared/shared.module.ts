@@ -16,9 +16,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
 import { UiModule } from './ui/ui.module';
 
 import { MovieCardSkeletonComponent } from './components/movie-card-skeleton/movie-card-skeleton.component';
+import { SessionExpiredDialogComponent } from './components/session-dialogs/session-expired-dialog.component';
+import { SessionWarningDialogComponent } from './components/session-dialogs/session-warning-dialog.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +37,8 @@ import { MovieCardSkeletonComponent } from './components/movie-card-skeleton/mov
     SimplifySizePipe,
     MagnetPipe,
     GenrePipe,
+    SessionExpiredDialogComponent,
+    SessionWarningDialogComponent
   ],
   imports: [
     CommonModule,
@@ -42,6 +47,7 @@ import { MovieCardSkeletonComponent } from './components/movie-card-skeleton/mov
     MatDividerModule,
     MatProgressSpinnerModule,
     MatMenuModule, MatButtonModule, MatIconModule,
+    MatDialogModule,
     UiModule
     // UserIdleModule.forRoot({ idle: 1, timeout: 1, ping: 1 })
     // UserIdleModule.forRoot({ idle: 3, timeout: 1, ping: 3 })
@@ -61,7 +67,9 @@ import { MovieCardSkeletonComponent } from './components/movie-card-skeleton/mov
     MagnetPipe,
     GenrePipe,
     UiModule,
-    MovieCardSkeletonComponent
+    MovieCardSkeletonComponent,
+    SessionExpiredDialogComponent,
+    SessionWarningDialogComponent
   ]
 })
 export class SharedModule { }

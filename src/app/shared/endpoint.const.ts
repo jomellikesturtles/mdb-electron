@@ -38,6 +38,7 @@ export const ENDPOINT = {
   LOGOUT: `${MDB_API_URL}/v1/auth/logout`,
   RESET: `${MDB_API_URL}/v1/auth/reset`,
   REGISTER: `${MDB_API_URL}/v1/auth/register`,
+  REFRESH: `${MDB_API_URL}/v1/auth/refresh`,
 
   ACTUATOR_HEALTH: `${MDB_API_URL}/actuator/health`,
   ACTUATOR_METRICS: `${MDB_API_URL}/actuator/metrics`,

@@ -30,5 +30,9 @@
   "review": {
     "description": "Media reviews functionality",
     "enabled": false
+  },
+  "sessionWarning": {
+    "description": "Show 1-minute session expiration warning",
+    "enabled": false
   }
 }
