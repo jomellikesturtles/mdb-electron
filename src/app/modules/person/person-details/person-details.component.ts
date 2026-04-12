@@ -38,9 +38,8 @@ export class PersonDetailsComponent implements OnInit {
     });
   }
 
-  goToMovie(val): void {
-    const highlightedId = val;
-    this.dataService.updateHighlightedMovie(highlightedId);
-    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+  goToMovie(val: string): void {
+    this.dataService.updateHighlightedMovie(val);
+    this.router.navigate(['/details', val]);
   }
 }

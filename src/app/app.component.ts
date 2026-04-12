@@ -5,6 +5,7 @@ import { WebSocketService } from "@services/socket.service";
 import { ConfigurationService } from "@services/configuration.service";
 import { AuthenticationService } from "@services/authentication.service";
 import { SessionService } from "@services/session.service";
+import { StorageSyncService } from "@services/storage-sync.service";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { FeatureToggleService } from "@core/services/feature-toggle.service";
@@ -23,6 +24,7 @@ export class AppComponent implements OnInit {
     private configService: ConfigurationService,
     private authService: AuthenticationService,
     private sessionService: SessionService,
+    private storageSyncService: StorageSyncService,
     private dialog: MatDialog,
     private router: Router,
     private featureToggle: FeatureToggleService
@@ -39,6 +41,7 @@ export class AppComponent implements OnInit {
     // this.getCurrentUser()
     this.syncTime();
     this.initSessionMonitoring();
+    this.storageSyncService.initSync();
   }
 
   private initSessionMonitoring(): void {
