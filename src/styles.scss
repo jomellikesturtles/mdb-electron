@@ -1,14 +1,9 @@
 @use "@angular/material" as mat;
+@import "app/variables";
 
 // =============================================================================
-// NETFLIX-INSPIRED COLOR PALETTE
+// MDB BRANDING (Based on Netflix-Inspired Palette)
 // =============================================================================
-$netflix-red: #E50914;
-$netflix-black: #141414;
-$netflix-dark-gray: #181818; // Slightly lighter than black for cards/elements
-$netflix-light-gray: #E5E5E5;
-$netflix-white: #FFFFFF;
-$netflix-gray-text: #B3B3B3;
 
 // =============================================================================
 // MATERIAL THEME OVERRIDES (Dark Theme Base)
@@ -42,8 +37,8 @@ html, body {
   margin: 0;
   // font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; // New font stack
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; // New font stack
-  background-color: $netflix-black;
-  color: $netflix-white;
+  background-color: $mdb-black;
+  color: $mdb-white;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -56,7 +51,7 @@ html, body {
 }
 
 *::-webkit-scrollbar-track {
-  background: $netflix-black; 
+  background: $mdb-black; 
   box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
@@ -89,26 +84,26 @@ button {
 // Headings
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Montserrat', sans-serif; // New heading font
-  color: $netflix-white;
+  color: $mdb-white;
   margin-bottom: 0.5rem;
   font-weight: bold;
 }
 
 p, span, label {
-  color: $netflix-gray-text;
+  color: $mdb-gray-text;
   
   &.text-white {
-    color: $netflix-white !important;
+    color: $mdb-white !important;
   }
 }
 
 a {
-  color: $netflix-white;
+  color: $mdb-white;
   text-decoration: none;
   transition: color 0.2s;
   
   &:hover {
-    color: $netflix-gray-text; 
+    color: $mdb-gray-text; 
     text-decoration: underline;
   }
 }
@@ -194,7 +189,7 @@ a {
 
 // Movie Cards
 .movie-card-image-container {
-  background-color: $netflix-dark-gray;
+  background-color: $mdb-dark-gray;
   transition: transform 0.2s;
   cursor: pointer;
   
@@ -206,16 +201,16 @@ a {
 
 // Material Card Overrides for Dark Theme consistency
 .mat-mdc-card {
-  background-color: $netflix-dark-gray !important;
-  color: $netflix-white !important;
+  background-color: $mdb-dark-gray !important;
+  color: $mdb-white !important;
   border: 1px solid #333;
 }
 
 .mat-mdc-dialog-container .mat-mdc-dialog-surface {
 
-  background-color: $netflix-dark-gray !important;
+  background-color: $mdb-dark-gray !important;
 
-  color: $netflix-white !important;
+  color: $mdb-white !important;
 
 }
 
@@ -235,7 +230,7 @@ a {
 
   .mat-mdc-tab {
 
-    color: $netflix-gray-text;
+    color: $mdb-gray-text;
 
     font-weight: 600;
 
@@ -247,7 +242,7 @@ a {
 
     &.mdc-tab--active {
 
-      color: $netflix-white;
+      color: $mdb-white;
 
     }
 
@@ -257,7 +252,7 @@ a {
 
   .mat-mdc-tab-indicator .mat-mdc-tab-indicator__content {
 
-    border-color: $netflix-red !important;
+    border-color: $mdb-primary !important;
 
     border-top-width: 4px !important; // Thicker line like Netflix
 

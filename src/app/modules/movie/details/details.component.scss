@@ -157,19 +157,19 @@
   .rating-value {
     font-size: 1.8rem;
     font-weight: bold;
-    color: $netflix-white;
+    color: $mdb-white;
     line-height: 1;
 
     small {
       font-size: 1rem;
-      color: $netflix-gray-text;
+      color: $mdb-gray-text;
       font-weight: 400;
     }
   }
 
   .score-label {
     font-size: 0.8rem;
-    color: $netflix-gray-text;
+    color: $mdb-gray-text;
     text-transform: uppercase;
     letter-spacing: 1px;
   }

@@ -38,7 +38,7 @@
   h1 {
     font-family: 'Akira', 'Arial Black', sans-serif;
     font-size: 1.5rem;
-    color: #E50914; // Netflix-style Red or $mdb-primary
+    color: $mdb-primary; // Netflix-style Red or $mdb-primary
     margin: 0;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -189,7 +189,7 @@
     }
 
     &.window-close:hover {
-      background-color: #E50914; // Red for close
+      background-color: $mdb-primary; // Red for close
     }
 
     .icon-img {
