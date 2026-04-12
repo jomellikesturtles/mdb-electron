@@ -1,8 +1,7 @@
-$netflix-red: #E50914;
-$netflix-white: #FFFFFF;
-$netflix-black: #141414;
-$netflix-gray-button: rgba(109, 109, 110, 0.7);
-$netflix-gray-hover: rgba(109, 109, 110, 0.4);
+@import "app/variables";
+
+$mdb-gray-button: rgba(109, 109, 110, 0.7);
+$mdb-gray-hover: rgba(109, 109, 110, 0.4);
 
 :host {
   display: inline-block;
@@ -38,38 +37,38 @@ button {
 
 // Primary (Red)
 ::ng-deep .mat-raised-button.mat-primary {
-  background-color: $netflix-red !important;
-  color: $netflix-white !important;
+  background-color: $mdb-primary !important;
+  color: $mdb-white !important;
   
   &:hover {
-    background-color: darken($netflix-red, 10%) !important;
+    background-color: darken($mdb-primary, 10%) !important;
   }
 }
 
 // Secondary (Accent) -> Netflix "More Info" Gray style
 ::ng-deep .mat-flat-button.mat-accent {
-  background-color: $netflix-gray-button !important;
-  color: $netflix-white !important;
+  background-color: $mdb-gray-button !important;
+  color: $mdb-white !important;
   
   &:hover {
-    background-color: $netflix-gray-hover !important;
+    background-color: $mdb-gray-hover !important;
   }
 }
 
 // Outline -> White Border
 ::ng-deep .mat-stroked-button {
   border: 1px solid rgba(255, 255, 255, 0.7) !important;
-  color: $netflix-white !important;
+  color: $mdb-white !important;
   
   &:hover {
-    border-color: $netflix-white !important;
+    border-color: $mdb-white !important;
     background-color: rgba(255, 255, 255, 0.1) !important;
   }
 }
 
 // Text / Ghost
 ::ng-deep .mat-button {
-  color: $netflix-white !important;
+  color: $mdb-white !important;
   
   &:hover {
     background-color: rgba(255, 255, 255, 0.1) !important;
