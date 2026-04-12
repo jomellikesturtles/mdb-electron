@@ -1,12 +1,11 @@
-
-class PlayLink {
-
-  id?: string;
-  name?: string;
-  type: "torrent" | "offline";
-  [x: string]: any;
+export class PlayLink {
+  id: string;
+  name: string;
+  type: 'torrent' | 'offline';
+  url: string;
+  quality: string;
   // size?: string
-  hash?: string;
+  hash: string;
   // url?: string
   // quality?: string
   // type?: string
