@@ -148,9 +148,9 @@ export class BulkDownloadComponent implements OnInit {
    * Go to movie's detail
    * @param movie selected movie object
    */
-  goToMovie(movie) {
+  goToMovie(movie: any) {
     let tmdbId = movie.id;
-    this.router.navigate([`/details/${tmdbId}`], { relativeTo: this.activatedRoute });
+    this.router.navigate(['/details', tmdbId]);
   }
   // https://yts.lt/api/v2/movie_suggestions.json?movie_id=10
   /**

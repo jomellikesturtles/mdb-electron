@@ -4,7 +4,7 @@ import { DataService } from '@services/data.service';
 import { MovieService } from '@services/movie/movie.service';
 import { IpcService } from '@services/ipc.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
+import { NavigationService } from '@core/services/navigation.service';
 import { environment } from '@environments/environment';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
@@ -42,7 +42,7 @@ export class TopNavigationComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private authService: AuthenticationService,
     private $actions: Actions,
-    private location: Location,
+    private navigationService: NavigationService,
     private mockDataService: MockDataService
   ) { }
 
@@ -122,14 +122,14 @@ export class TopNavigationComponent implements OnInit {
    * Go to previous location
    */
   navigateBack() {
-    this.location.back();
+    this.navigationService.back();
   }
 
   /**
    * Opens advanced search options.
    */
   onAdvancedSearch() {
-    this.router.navigate([`/advanced-find`], { relativeTo: this.activatedRoute });
+    this.router.navigate(['/advanced-find']);
   }
 
   /**
@@ -167,7 +167,7 @@ export class TopNavigationComponent implements OnInit {
     this.searchQuery.query = enteredQuery;
     if (this.searchQuery.query.length > 0) {
       this.dataService.updateSearchQuery(this.searchQuery);
-      this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
+      this.router.navigate(['/results']);
     }
   }
 

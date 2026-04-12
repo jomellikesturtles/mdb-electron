@@ -213,14 +213,24 @@ export class IpcService {
     return this.listenOnce('subtitle-path');
   }
 
+  private isElectron(): boolean {
+    return !!(environment.runConfig.electron && (window as any).electron);
+  }
+
   minimizeWindow() {
-    this.sendToMain('MINIMIZE_APP');
+    if (this.isElectron()) {
+      this.sendToMain('MINIMIZE_APP');
+    }
   }
   minimizeRestoreWindow() {
-    this.sendToMain('RESTORE_APP');
+    if (this.isElectron()) {
+      this.sendToMain('RESTORE_APP');
+    }
   }
   exitApp() {
-    this.sendToMain('EXIT_APP');
+    if (this.isElectron()) {
+      this.sendToMain('EXIT_APP');
+    }
   }
 
   private removeListener(channel: string) {
