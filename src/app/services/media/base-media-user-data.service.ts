@@ -1,4 +1,3 @@
-import { IUserSavedData } from '@models/interfaces';
 import { Observable } from 'rxjs';
 import { DataService } from '../data.service';
 
@@ -33,13 +32,4 @@ export abstract class BaseMediaUserDataService {
   }
 
 
-}
-
-export interface IBookmark extends IUserSavedData {
-  id?: string,
-  tmdbId: number,
-  imdbId?: string,
-  title: string,
-  year: number,
-  cr8Ts?: number,
 }

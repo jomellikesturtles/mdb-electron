@@ -35,12 +35,10 @@ export class HttpUrlProviderService {
   }
   getURI(api: API_TYPE): string {
     const configPath = this.coreEnvironment.environment[api].uri;
-    const origin = window.location.origin;
-    if (configPath.includes('http')) {
+    if (configPath && configPath.includes('http')) {
       return configPath;
     } else {
-      // file:
-
+      return '';
     }
   }
 }

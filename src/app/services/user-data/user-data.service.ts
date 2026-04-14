@@ -2,17 +2,17 @@ import { IUserProfile } from '@models/user.model';
 import { LibraryService } from '../library.service';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { IBookmark, BookmarkService } from '../media/bookmark.service';
+import { BookmarkService } from '../media/bookmark.service';
 import { MovieService } from '../movie/movie.service';
 import { PlayedService, IPlayed } from '../media/played.service';
 import { IUserDataPaginated, IpcOperations, IpcService, SubChannel } from '../ipc.service';
 import { CollectionName } from '@shared/constants';
-import { MediaUserDataService } from '@services/media/media-user-data.service';
 import { DataService } from '@services/data.service';
 import { HttpUrlProviderService } from '@services/http-url.provider.service';
 import { ENDPOINT } from '@shared/endpoint.const';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
 import { HttpBaseService } from '@services/http-base.service';
+import { IBookmark } from '@services/media';
 
 /**
  * User data only. no media.

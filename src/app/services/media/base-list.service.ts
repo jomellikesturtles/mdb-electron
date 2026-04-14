@@ -1,4 +1,3 @@
-import { IUserSavedData } from '@models/interfaces';
 import { IMediaList } from '@models/media-list.model';
 import { IUserDataPaginated } from '@services/ipc.service';
 import { Observable } from 'rxjs';
@@ -33,13 +32,4 @@ export abstract class BaseListService {
    */
   protected abstract deleteList(listId: string): Observable<number>;
   protected abstract editListById(id: string, listObject: IMediaList): Observable<any>;
-}
-
-export interface IBookmark extends IUserSavedData {
-  id?: string,
-  tmdbId: number,
-  imdbId?: string,
-  title: string,
-  year: number,
-  cr8Ts?: number,
 }
