@@ -17,12 +17,3 @@ export abstract class BaseProgressService {
 
 
 }
-
-export interface IBookmark extends IUserSavedData {
-  id?: string,
-  tmdbId: number,
-  imdbId?: string,
-  title: string,
-  year: number,
-  cr8Ts?: number,
-}

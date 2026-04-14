@@ -1,4 +1,3 @@
-import { IUserSavedData } from '@models/interfaces';
 import { Injectable } from '@angular/core';
 import { IpcOperations, IpcService, SubChannel } from '../ipc.service';
 import { Observable } from 'rxjs';
@@ -69,16 +68,6 @@ export class BookmarkService extends BaseBookmarkService {
   }
 
 }
-
-export interface IBookmark extends IUserSavedData {
-  id?: string,
-  tmdbId: number,
-  imdbId?: string,
-  title: string,
-  year: number,
-  cr8Ts?: number,
-}
-
 
 export interface BookmarkResponse {
   status: 'SAVED' | 'DELETED',
