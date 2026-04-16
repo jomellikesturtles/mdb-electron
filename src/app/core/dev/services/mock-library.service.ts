@@ -13,12 +13,13 @@ export class MockLibraryService extends BaseLibraryService {
   }
 
   openVideoStream(id: any) {
-    return Promise.resolve('https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4');
+    return Promise.resolve('src/assets/scripts/videoplayback.mp4');
   }
 
   async getMovieFromLibrary(id: string | number): Promise<any> {
     const movies = await firstValueFrom(this.http.get<any[]>('assets/mock-responses/library-movies.json'));
-    return movies.filter(m => m.tmdbId == id);
+    // return movies.filter(m => m.tmdbId == id);
+    return movies;
   }
 
   getMoviesFromLibraryInList(idList: number[]): Promise<any> {

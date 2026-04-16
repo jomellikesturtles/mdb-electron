@@ -12,6 +12,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() type: 'text' | 'password' | 'email' | 'number' = 'text';
   @Input() icon: string = '';
   @Input() error: string = '';
+  @Input() required: boolean = false;
 
   value: any = '';
   isDisabled: boolean = false;

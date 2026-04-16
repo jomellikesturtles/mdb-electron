@@ -82,6 +82,15 @@ export class MDBApiService {
     );
   }
 
+  toggleListMembership(listId: string | number, mediaId: string | number): Observable<any> {
+    let url = ENDPOINT.LIST_ID_MEDIA_MEDIA_ID;
+    url = url.replace('mdb_parameter_1', listId.toString());
+    url = url.replace('mdb_parameter_2', mediaId.toString());
+    return this.httpBaseService.post(url, {}, 'toggleListMembership').pipe(
+      tap(_ => this.logger.info(`toggleListMembership listId=${listId} mediaId=${mediaId}`))
+    );
+  }
+
   saveMediaList(listBody: IMediaList): Observable<any> {
     return this.httpBaseService.post(`${MDB_API_URL}/profileData/list`, listBody, 'saveMediaList').pipe(
       tap(_ => this.logger.info(`saveMediaList name=${listBody.title}`))

@@ -20,6 +20,7 @@ export const ENDPOINT = {
   USER_PROGRESS: `${MDB_API_URL}/v1/user/${REPLACE_PARAMETER}_1/progress`,
   LIST: `${MDB_API_URL}/list`,
   LIST_ID: `${MDB_API_URL}/list/${REPLACE_PARAMETER}_1`,
+  LIST_ID_MEDIA_MEDIA_ID: `${MDB_API_URL}/list/${REPLACE_PARAMETER}_1/mediaId/${REPLACE_PARAMETER}_2`,
 
 
   PLAYED: `${MDB_API_URL}/played`,

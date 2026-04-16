@@ -48,7 +48,9 @@ import { MatCardModule } from '@angular/material/card';
     CheckboxComponent,
     CardComponent,
     AvatarComponent,
-    BadgeComponent
+    BadgeComponent,
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class UiModule { }

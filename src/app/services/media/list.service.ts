@@ -92,8 +92,12 @@ export class ListsService extends BaseListService {
    * @param type
    * @param id watched id/_id/tmdbId to remove.
    */
-  addOrRemoveItemFromList(type: 'id' | 'tmdbId', id: string | number) {
-
+  toggleListMembership(listId: string | number, mediaId: string | number): Observable<any> {
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      // TODO: Implement IPC version if needed
+      return null;
+    }
+    return this.dataService.postHandle(this.bffService.toggleListMembership(listId, mediaId), null);
   }
 
 }

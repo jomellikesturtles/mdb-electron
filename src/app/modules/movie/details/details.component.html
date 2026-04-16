@@ -70,6 +70,7 @@
             </div>
 
             <div class="play-actions d-flex align-items-center gap-4">
+              <!-- playLinks.length {{playLinks.length}} -->
               <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playBestPlayLink()'
                 [disabled]="playLinks.length <= 0">
                 WATCH NOW
@@ -83,10 +84,11 @@
             </div>
 
             <mat-menu #listMenu="matMenu">
-              <button mat-menu-item *ngFor="let list of userLists" (click)="addToList(list)">
-                <mat-icon>list</mat-icon>
-                <span>{{list.name}}</span>
-              </button>
+              <div mat-menu-item *ngFor="let list of userLists" (click)="$event.stopPropagation()">
+                <mat-checkbox [checked]="list.checked" (change)="toggleList(list, $event)">
+                  {{list.name}}
+                </mat-checkbox>
+              </div>
               <mat-divider></mat-divider>
               <button mat-menu-item (click)="addToList()">
                 <mat-icon>add</mat-icon>
