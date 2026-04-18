@@ -25,7 +25,7 @@
   },
   "trailer": {
     "description": "Play trailer button",
-    "enabled": false
+    "enabled": true
   },
   "review": {
     "description": "Media reviews functionality",

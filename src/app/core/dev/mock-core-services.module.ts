@@ -27,7 +27,7 @@ import { MockAuthenticationService } from "@services/mock-authentication.service
   imports: [HttpClientModule],
   providers: [
     // { provide: AuthenticationService, useExisting: MockAuthenticationService },
-    // { provide: MediaUserDataService, useExisting: MockUserDataService },
+    { provide: MediaUserDataService, useExisting: MockUserDataService },
     // { provide: BookmarkService, useExisting: MockBookmarkService },
     // { provide: FavoriteService, useExisting: MockFavoriteService },
     { provide: ListsService, useExisting: MockListService },

@@ -151,12 +151,7 @@ export class MovieCardComponent implements OnInit {
   }
 
   onPreview(): void {
-    this.isSingleClick = true;
-    setTimeout(() => {
-      if (this.isSingleClick) {
-        this.dataService.updatePreviewMovie(this._movie);
-      }
-    }, 300);
+    this.dataService.updatePreviewMovie(this._movie);
   }
 
   set isBookmarked(val: number | Object) {
