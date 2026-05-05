@@ -1,25 +1,18 @@
 enum source {
   TMDB = "TMDB", IMDB = "IMDB", MDB = "MDB", OMDB = "OMDB", Local = "local"
 }
+
 export const environment = {
   production: true,
   bff: {
     url: '/mdb',
     version: 'v1'
   },
+  bffBaseUrl: 'http://localhost:8080',
   runConfig: {
-
-    // firebaseMode: false,
-    // electron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
-    // useTestData: true,
-    environment: location.protocol,
-    firebaseMode: true,
-    electron: false,
-    useTestData: false
-    // firebaseMode: true,
-    // electron: false,
-    // useTestData: false
-
+    firebaseMode: false,
+    electron: typeof window !== 'undefined' && (window as any).process && (window as any).process.type === 'renderer' || (typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().indexOf(' electron/') > -1),
+    useTestData: false,
   },
   tmdb: {
     url: 'https://api.themoviedb.org/3',
@@ -28,7 +21,8 @@ export const environment = {
   yts: {
     url: 'https://yts.mx/api/v2/list_movies.json',
     urlV2: 'https://yts.am/api/v2/list_movies.json'
-  }, torrent: {
+  },
+  torrent: {
     trackers: [`udp://glotorrents.pw:6969/announce`,
       `udp://tracker.opentrackr.org:1337/announce`,
       `udp://torrent.gresille.org:80/announce`,
@@ -70,7 +64,7 @@ j8zvlmiqX9IC40SGfgjd1JYqaOJc9ozjwRVqpxX2TWNzUAH/+1ILYytUu7NeoHAi
 n/5Sq2ZXRvknWnlFU7CwFAxF2bIVwmq9Gz8Qvv5s2GwDfd320eUfrBnyl3eaUIIB
 AWrhV9R84X+0A/8UKbUYU9+o6VkbV/IgAW/8dsYRa6BzmBl8zNMolqjtHB98BHiM
 dCahYGDQHzvZawrXqW0Y4Tkq1KgK4ih97Pz8J4bNl1COy/K0Lc6E22xeemAJ2qRl
-yHB5L/QZx4McVmt8ry+o4pme6n/IqsvyOx3ZAk3hRot0akCV06eAvZfA80N7kV6t
+yHB5L/QZx4McVmt8ry+o4mme6n/IqsvyOx3ZAk3hRot0akCV06eAvZfA80N7kV6t
 TH/iVrMArwyLIgb96Ru5Ag0EaYc2WAEQAKV4FxoOtMmYNkzVTud9fC+3nJ0tJjdq
 13OTf5pCr/r91K7F4JGzNA1cNIWVmTOKqt90uovepbLwv0fd0ZSkY2dafUpo0d6o
 vLUjosQtyu/QuHSQIy//mbQDdVBnePn4ZpmNaL9XfPMabC3RYD7Ef9l6niQHr/tl

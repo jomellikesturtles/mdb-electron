@@ -52,26 +52,7 @@
               "ngswConfigPath": "src/ngsw-config.json"
             },
             "development": {
-              "assets": [
-                "src/favicon.ico",
-                "src/assets",
-                "src/manifest.json",
-                "src/environment.js",
-                {
-                  "input": "src/environments",
-                  "output": "/",
-                  "glob": "*.js"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.dev.js",
-                  "with": "src/environment.js"
-                }
-              ],
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true

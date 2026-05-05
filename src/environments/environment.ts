@@ -15,7 +15,7 @@ export const environment = {
   bffBaseUrl: 'http://localhost:8080',
   runConfig: {
     firebaseMode: false,
-    electron: location.protocol === "http:" || location.protocol === "https:" ? false : true,
+    electron: typeof window !== 'undefined' && (window as any).process && (window as any).process.type === 'renderer' || (typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().indexOf(' electron/') > -1),
     useTestData: false,
   },
   tmdb: {

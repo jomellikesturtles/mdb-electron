@@ -1,6 +1,6 @@
 window["environment"] = {
   production: false,
-  name: "ci",
+  name: "dev",
   language: "en",
   bff: {
     uri: "",
