@@ -3,14 +3,33 @@ module.exports = {
     asar: true,
     executableName: 'mdb',
     ignore: [
-      /^\/src/, // Source files (already bundled in dist/)
-      /^\/e2e/, // End-to-end tests
-      /^\/node_modules/, // Forge prunes this, but explicit ignore can help
-      /\.md$/, // Markdown documentation
-      /tsconfig\.json/,
-      /tslint\.json/
+      /^\/\.angular/,
+      /^\/\.git/,
+      /^\/\.github/,
+      /^\/\.husky/,
+      /^\/\.playwright-mcp/,
+      /^\/\.storybook/,
+      /^\/\.vscode/,
+      /^\/e2e/,
+      /^\/node_modules\/@angular/, // Angular source (bundled in dist)
+      /^\/node_modules\/@ngxs/,     // NGXS source (bundled in dist)
+      /^\/out/,
+      /^\/plans/,
+      /^\/scripts/,
+      /^\/src\/(?!assets\/scripts|assets\/config|assets\/db)/, // Ignore all src except critical runtime scripts and DBs
+      /^\/test-results/,
+      /\.lighthouserc\.json$/,
+      /angular\.json$/,
+      /browserslistrc$/,
+      /editorconfig$/,
+      /karma\.conf\.js$/,
+      /package-lock\.json$/,
+      /prettierrc$/,
+      /tsconfig.*\.json$/,
+      /tslint\.json$/,
+      /\.md$/,
+      /\.map$/ // Exclude source maps from production
     ]
-    // Add icons here later
   },
   rebuildConfig: {},
   makers: [
