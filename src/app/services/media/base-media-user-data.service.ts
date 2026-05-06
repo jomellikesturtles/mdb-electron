@@ -1,4 +1,3 @@
-import { IUserSavedData } from '@models/interfaces';
 import { Observable } from 'rxjs';
 import { DataService } from '../data.service';
 
@@ -8,7 +7,7 @@ export abstract class BaseMediaUserDataService {
     protected dataService: DataService,
   ) { }
 
-  protected abstract getMediaUserData(tmdbId: number): Observable<any>;
+  protected abstract getMediaUserData(tmdbId: string): Observable<any>;
 
   /**
    *
@@ -19,22 +18,18 @@ export abstract class BaseMediaUserDataService {
 
   protected abstract getMediaDataPaginated(type: 'id' | 'tmdbId', id: string | number): Observable<any>;
 
-  commonSetter(val: number | Object): boolean {
+  commonSetter(val: number | Object | boolean): boolean {
+    if (typeof val === 'boolean') {
+      return val;
+    }
     if (typeof val === 'number' && val >= 1) {
       return false;
     }
-    if (val && val['_id']) {
+    if (val && (val['_id'] || val['id'])) {
       return true;
     }
+    return false;
   }
 
-}
 
-export interface IBookmark extends IUserSavedData {
-  id?: string,
-  tmdbId: number,
-  imdbId?: string,
-  title: string,
-  year: number,
-  cr8Ts?: number,
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataService } from '@services/data.service';
 
@@ -19,6 +19,10 @@ export class HorizontalCardListComponent implements OnInit {
   seeAllLink: string;
   @Input()
   queryParams: any;
+  @Input()
+  loading: boolean = false;
+
+  @ViewChild('cardListContainer') cardListContainer: ElementRef;
 
   constructor(
     private router: Router,
@@ -27,6 +31,14 @@ export class HorizontalCardListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+  }
+
+  scrollLeft() {
+    this.cardListContainer.nativeElement.scrollBy({ left: -500, behavior: 'smooth' });
+  }
+
+  scrollRight() {
+    this.cardListContainer.nativeElement.scrollBy({ left: 500, behavior: 'smooth' });
   }
 
   seeAll() {

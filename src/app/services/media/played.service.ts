@@ -38,7 +38,8 @@ export class PlayedService {
       return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.FIND_IN_LIST },
         null, { tmdbIdList: idList });
     }
-    return this.dataService.getHandle(this.bffService.getMediaUserData(0),
+    // TODO: do this
+    return this.dataService.getHandle(this.bffService.getMediaUserData('0'),
       this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.FIND_IN_LIST },
         null, { tmdbIdList: idList }));
   }
@@ -63,7 +64,7 @@ export class PlayedService {
       return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.REMOVE },
         null, { [type]: id });
     }
-    return this.dataService.getHandle(this.bffService.getMediaUserData(0), this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.REMOVE },
+    return this.dataService.getHandle(this.bffService.getMediaUserData('0'), this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.REMOVE },
       null, { [type]: id }));
   }
 

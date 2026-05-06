@@ -1,0 +1,47 @@
+name: pull_request_on_master - PR Validation
+
+on:
+  pull_request:
+    branches: [master, preprod]
+jobs:
+  build_and_test_angular:
+    name: \[Angular\] Build, Test, Lint, Lighthouse Score
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      - name: Build Angular
+        run: npm run build:web:prod
+  #     - name: Lighthouse Performance Audit
+  #       uses: treosh/lighthouse-ci-action@v12
+  #       with:
+  #         urls: |
+  #           http://localhost:8080/dashboard
+  #         configPath: "./.lighthouserc.json"
+  #         uploadArtifacts: true
+  #         temporaryPublicStorage: true
+  #         continue-on-error: true
+  # # tests build-ability of electron package
+  build_and_test_electron:
+    name: \[Electron\] Build, Test, Lint, Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      - name: Build Angular
+        run: npm run build:electron:prod

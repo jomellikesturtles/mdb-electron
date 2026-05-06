@@ -1,6 +1,7 @@
 import { IUserSavedData } from '@models/interfaces';
 import { Observable } from 'rxjs';
 import { DataService } from '../data.service';
+import { BookmarkResponse } from './bookmark.service';
 
 export abstract class BaseBookmarkService {
 
@@ -8,13 +9,13 @@ export abstract class BaseBookmarkService {
     protected dataService: DataService,
   ) { }
 
-  protected abstract saveBookmark(tmdbId: number): Observable<any>;
+  protected abstract save(tmdbId: string): Observable<BookmarkResponse>;
 
   /**
    * Removes bookmark.
    * @param id watched id/_id/tmdbId to remove.
    */
-  protected abstract removeBookmark(type: 'id' | 'tmdbId', id: string | number): Observable<any>;
+  protected abstract remove(id: string): Observable<BookmarkResponse>;
 
   protected abstract saveBookmarkMulti(data: object[]): Observable<any>;
 

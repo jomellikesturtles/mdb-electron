@@ -1,64 +1,163 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { LoggerService } from '@core/logger.service';
-import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Injectable, signal } from "@angular/core";
+import { LoggerService } from "@core/logger.service";
+import { ENDPOINT } from "@shared/endpoint.const";
+import { from, Observable, of } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
+import { Action, Store } from "@ngxs/store";
+import { HttpBaseService } from "./http-base.service";
+import { Login } from "app/store/auth/auth.state";
+import { toObservable } from "@angular/core/rxjs-interop";
+import * as openpgp from "openpgp";
+import { environment } from "@environments/environment";
+
+export class RegisterPayload {
+  username: string;
+  email: string;
+  password: string;
+}
+export class LoginPayload {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export class LoginResponse {
+  username: string;
+  authToken: string;
+  expiry: string;
+}
+export class RegisterResponse {
+  success: boolean;
+  message: string;
+}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class AuthenticationService {
+  protected _isAuthenticated = signal<boolean>(!!sessionStorage.getItem("token"));
+  public isAuthenticated = this._isAuthenticated.asReadonly();
+  private $isAuthenticated = toObservable(this._isAuthenticated);
+
+  private readonly SESSION_TIMEOUT_MS = 15 * 60 * 1000;
 
   constructor(
-    private http: HttpClient,
-    private logger: LoggerService
-  ) { }
+    protected httpBaseService: HttpBaseService,
+    protected logger: LoggerService,
+    protected store: Store
+  ) {
+    this.$isAuthenticated.subscribe((e) => {
+      console.log("ISAUTH", e);
+    });
+  }
 
   /**
-   * Login user
+   * Login user by first encrypting the credentials and then authenticating.
    * @param payload login payload
    */
-  login(payload: LoginPayload): Observable<string> {
-    const url = `/login`;
+  login(payload: LoginPayload): Observable<LoginResponse> {
 
-    return this.http.post<string>(url, payload).pipe(map(e => {
-      sessionStorage.setItem('token', e);
-    }
-    ),
-      catchError(this.handleError<any>('login')));
+    return from(this.encryptMessage(payload.password)).pipe(
+
+      switchMap((encryptedPayload: string) => {
+        payload.password = encryptedPayload;
+        return this.httpBaseService.post(ENDPOINT.LOGIN, payload, "login");
+      }),
+      map((e: LoginResponse) => {
+        this._isAuthenticated.set(true);
+        this.store.dispatch(new Login(payload));
+        sessionStorage.setItem("token", e.authToken);
+        this.updateExpiry();
+        return e;
+      })
+    );
   }
+
+  /**
+   * Updates the session expiry timestamp in localStorage.
+   * Supports sliding expiration by being called on user activity.
+   */
+  updateExpiry(): void {
+    const expiryTime = Date.now() + this.SESSION_TIMEOUT_MS;
+    localStorage.setItem("token_expiry", expiryTime.toString());
+  }
+
+  /**
+   * Checks if the current session has expired based on the stored timestamp.
+   */
+  isTokenExpired(): boolean {
+    const expiry = localStorage.getItem("token_expiry");
+    return !expiry || Date.now() > Number(expiry);
+  }
+
+  /**
+   * Requests a new token from the backend and resets the expiry timer.
+   */
+  refreshToken(): Observable<LoginResponse> {
+    return this.httpBaseService.post(ENDPOINT.REFRESH, {}, "refresh").pipe(
+      map((e: LoginResponse) => {
+        sessionStorage.setItem("token", e.authToken);
+        this.updateExpiry();
+        return e;
+      })
+    );
+  }
+
   /**
    * Login user
    * @param payload login payload
    */
   logout(): Observable<any> {
-    const url = `/logout`;
+    return this.httpBaseService.post(ENDPOINT.LOGOUT, {}, "logout").pipe(
+      map((e) => {
+        this.clearSession();
+      })
+    );
+  }
 
-    return this.http.post<any>(url, {}).pipe(map(e => {
-      sessionStorage.removeItem('token');
-    }
-    ),
-      catchError(this.handleError<any>('login')));
+
+  /**
+   * Login user by first encrypting the credentials and then authenticating.
+   * @param payload login payload
+   */
+  register(payload: RegisterPayload): Observable<RegisterResponse> {
+
+    return from(this.encryptMessage(payload.password)).pipe(
+
+      switchMap((encryptedPayload: string) => {
+        payload.password = encryptedPayload;
+        return this.httpBaseService.post(ENDPOINT.REGISTER, payload, "login");
+      }),
+      map((e: RegisterResponse) => {
+        // this._isAuthenticated.set(true);
+        // this.store.dispatch(new Login(payload));
+        // sessionStorage.setItem("token", e.authToken);
+        return e;
+      })
+    );
   }
 
   /**
-   * Error handler.
-   * @param operation the operation
-   * @param result result
+   * Clears local session data and resets authentication state.
    */
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      this.logger.error(`${operation} failed: ${error.message}`);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
+  clearSession(): void {
+    sessionStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token_expiry");
+    this._isAuthenticated.set(false);
   }
 
+  async encryptMessage(unencrptedMessage: string) {
+    // Allow 1024-bit keys as the current environment key is weak
+    openpgp.config.minRSABits = 1024;
+    const publicKey = await openpgp.readKey({ armoredKey: environment.publicKey });
 
-}
+    const encrypted = await openpgp.encrypt({
+      message: await openpgp.createMessage({ text: unencrptedMessage }), // input as Message object
+      encryptionKeys: publicKey,
+      // signingKeys: privateKey // optional
+    });
 
-export class LoginPayload {
-  username: string;
-  email: string;
-  password: string;
+    return encrypted as string;
+  }
 }

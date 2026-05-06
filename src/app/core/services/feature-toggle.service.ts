@@ -2,16 +2,23 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
+export type FeatureName = 'newSearch' | 'betaFeatures' | 'springMode' | 'torrent_flag' | 'direct_tmdb' | 'trailer' | 'played_status' | 'sessionWarning';
+
+interface IFeature {
+  description: string;
+  enabled: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class FeatureToggleService {
-  private features: { [key: string]: boolean } = {};
+  private features: Partial<Record<FeatureName, IFeature>> = {};
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   loadConfig(): Promise<void> {
-    return firstValueFrom(this.http.get<{ [key: string]: boolean }>('assets/config/feature-toggles.json'))
+    return firstValueFrom(this.http.get<Record<FeatureName, IFeature>>('assets/config/feature-toggles.json'))
       .then(config => {
         this.features = config;
       })
@@ -21,7 +28,7 @@ export class FeatureToggleService {
       });
   }
 
-  isEnabled(featureName: string): boolean {
-    return this.features[featureName] === true;
+  isEnabled(featureName: FeatureName): boolean {
+    return this.features[featureName]?.enabled === true;
   }
 }

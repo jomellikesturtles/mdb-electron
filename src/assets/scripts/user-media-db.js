@@ -220,7 +220,7 @@ function mapPromise(promiseResponse) {
 function sendContents(channel, args, theWindow) {
   // DEBUG.log("sending...", channel, " | ", args);
   DEBUG.log("sending...", channel);
-  console.table("sending...", args);
+  DEBUG.log("sending content:", args);
   if (theWindow) theWindow.webContents.send(channel, args); // reply
 }
 

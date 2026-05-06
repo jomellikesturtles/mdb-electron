@@ -1,15 +1,16 @@
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "@environments/environment";
 import { map } from "rxjs";
+import { HttpBaseService } from "@services/http-base.service";
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
 @Injectable({ providedIn: 'root' })
-export class MovieService {
+export class YoutubeService {
 
   constructor(
-    private http: HttpClient) { }
+    private httpBaseService: HttpBaseService) { }
 
 
   YOUTUBE_API_KEY = environment.youtube.apiKey;
@@ -33,6 +34,8 @@ export class MovieService {
       params: myHttpParam
     };
     // https://www.googleapis.com/youtube/v3/search?part=snippet&key=AIzaSyAC1kcZu_DoO7mbrMxMuCpO57iaDByGKV0&q=Toy%20Story%204%202019&maxResults=50&order=relevance&type=video
-    return this.http.get<any>(baseUrl, httpOptions).pipe(map((e) => e.items));
+    return this.httpBaseService.get<{ items: any[] }>(baseUrl, httpOptions, 'getRandomVideoClip').pipe(
+      map((e) => e.items)
+    );
   }
 }

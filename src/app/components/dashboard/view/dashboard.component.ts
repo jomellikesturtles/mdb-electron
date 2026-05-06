@@ -27,7 +27,7 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   browserConnection = navigator.onLine;
-  dashboardLists: { name: string, data: any, queryParams?: any; }[] = [];
+  dashboardLists: { name: string, data: any, queryParams?: any, loading?: boolean; }[] = [];
   cardWidth = '130px';
 
   ngOnInit() {
@@ -35,6 +35,11 @@ export class DashboardComponent implements OnInit {
   }
 
   getDashboard(refresh = false) {
+    this.dashboardLists = [
+      { name: 'New Releases', data: [], loading: true },
+      { name: 'Top movies of', data: [], loading: true },
+      { name: 'Top Genre', data: [], loading: true }
+    ];
     this.getNowShowingMovies(refresh);
     this.getTopMoviesFromYear(refresh);
     this.getTopGenreMovie(refresh);
@@ -49,6 +54,8 @@ export class DashboardComponent implements OnInit {
     const listName = 'New Releases';
     let entityId = `movie:dashboard:${listName}`.toLowerCase();
     const cached = this.store.selectSnapshot(MovieState.getDashboardMovie(entityId));
+    const listIndex = this.dashboardLists.findIndex(l => l.name === listName);
+
     if (!cached || refresh) {
       const sDate = new Date();
       const today = sDate.getFullYear() + '-' + ('0' + (sDate.getMonth() + 1)).slice(-2) + '-' + ('0' + sDate.getDate()).slice(-2);
@@ -60,7 +67,11 @@ export class DashboardComponent implements OnInit {
       paramMap.set(TmdbParameters.PrimaryReleaseDateLess, today);
       this.sendToMovieService(paramMap, listName, entityId);
     } else if (cached?.movieDashboard) {
-      return this.dashboardLists.push(cached.movieDashboard);
+      if (listIndex !== -1) {
+        this.dashboardLists[listIndex] = { ...cached.movieDashboard, loading: false };
+      } else {
+        this.dashboardLists.push({ ...cached.movieDashboard, loading: false });
+      }
     }
   }
 
@@ -68,20 +79,27 @@ export class DashboardComponent implements OnInit {
    * Gets top-rated movies from year
    */
   getTopMoviesFromYear(refresh: boolean) {
-    const listName = 'Top movies of';
-    let entityId = `movie:dashboard:${listName}`.toLowerCase();
+    const listNamePrefix = 'Top movies of';
+    const sDate = new Date();
+    const minimumYear = 1940;
+    const randYear = Math.round(
+      Math.random() * ((sDate.getFullYear() - 1) - minimumYear) + minimumYear
+    );
+    const listName = `${listNamePrefix} ${randYear}`;
+    let entityId = `movie:dashboard:${listNamePrefix}`.toLowerCase();
     const cached = this.store.selectSnapshot(MovieState.getDashboardMovie(entityId));
+    const listIndex = this.dashboardLists.findIndex(l => l.name === listNamePrefix);
+
     if (!cached || refresh) {
-      const sDate = new Date();
-      const minimumYear = 1940;
-      const randYear = Math.round(
-        Math.random() * ((sDate.getFullYear() - 1) - minimumYear) + minimumYear
-      );
       const paramMap = new Map<TmdbParameters, any>();
       paramMap.set(TmdbParameters.PrimaryReleaseYear, randYear);
-      this.sendToMovieService(paramMap, `Top movies of ${randYear}`, entityId);
+      this.sendToMovieService(paramMap, listName, entityId, listNamePrefix);
     } else if (cached?.movieDashboard) {
-      return this.dashboardLists.push(cached.movieDashboard);
+      if (listIndex !== -1) {
+        this.dashboardLists[listIndex] = { ...cached.movieDashboard, loading: false };
+      } else {
+        this.dashboardLists.push({ ...cached.movieDashboard, loading: false });
+      }
     }
   }
 
@@ -89,18 +107,25 @@ export class DashboardComponent implements OnInit {
    * Gets top-rated movies by genre.
    */
   getTopGenreMovie(refresh: boolean) {
-    const listName = 'Top Genre';
-    let entityId = `movie:dashboard:${listName}`.toLowerCase();
+    const listNamePrefix = 'Top Genre';
+    const TMDB_GENRE_LENGTH = 19; // up to index 19 is valid tmdb genre
+    const GENRE_INDEX = Math.floor(Math.random() * (TMDB_GENRE_LENGTH));
+    const CHOSEN_GENRE = GENRES[GENRE_INDEX];
+    const listName = `Top ${CHOSEN_GENRE.name}`;
+    let entityId = `movie:dashboard:${listNamePrefix}`.toLowerCase();
     const cached = this.store.selectSnapshot(MovieState.getDashboardMovie(entityId));
+    const listIndex = this.dashboardLists.findIndex(l => l.name === listNamePrefix);
+
     if (!cached || refresh) {
-      const TMDB_GENRE_LENGTH = 19; // up to index 19 is valid tmdb genre
-      const GENRE_INDEX = Math.floor(Math.random() * (TMDB_GENRE_LENGTH));
-      const CHOSEN_GENRE = GENRES[GENRE_INDEX];
       const paramMap = new Map<TmdbParameters, any>();
       paramMap.set(TmdbParameters.WithGenres, CHOSEN_GENRE.id);
-      this.sendToMovieService(paramMap, `Top ${CHOSEN_GENRE.name}`, entityId);
+      this.sendToMovieService(paramMap, listName, entityId, listNamePrefix);
     } else if (cached?.movieDashboard) {
-      return this.dashboardLists.push(cached.movieDashboard);
+      if (listIndex !== -1) {
+        this.dashboardLists[listIndex] = { ...cached.movieDashboard, loading: false };
+      } else {
+        this.dashboardLists.push({ ...cached.movieDashboard, loading: false });
+      }
     }
   }
 
@@ -109,15 +134,24 @@ export class DashboardComponent implements OnInit {
    * @param paramMap parameters map to pass to the API
    * @param listName the name of the list
    */
-  async sendToMovieService(paramMap: Map<TmdbParameters, any>, listName: string, entityId?: string) {
+  async sendToMovieService(paramMap: Map<TmdbParameters, any>, listName: string, entityId?: string, listNamePrefix?: string) {
     const data = await this.movieService.getMoviesDiscover(paramMap, listName).toPromise();
     let mappedResults = data.results;
     const innerList = {
       name: listName,
       data: mappedResults,
-      queryParams: paramMap
+      queryParams: paramMap,
+      loading: false
     };
-    this.dashboardLists.push(innerList);
+
+    const targetName = listNamePrefix || listName;
+    const listIndex = this.dashboardLists.findIndex(l => l.name === targetName);
+    if (listIndex !== -1) {
+      this.dashboardLists[listIndex] = innerList;
+    } else {
+      this.dashboardLists.push(innerList);
+    }
+
     this.dataService.addDashboardData(innerList.data);
     const store = {
       id: entityId,

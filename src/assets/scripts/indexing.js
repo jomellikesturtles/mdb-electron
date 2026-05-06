@@ -1,5 +1,7 @@
 
 
+const { DEBUG } = require("./shared/util");
+
 var categories = [
     'country', 'studio', 'awardees', 'upcoming', 'decades'
 ]
@@ -22,8 +24,8 @@ function generateDecade() {
     const genereatedYearStr = generatedYear.toString()
     const decadeStart = genereatedYearStr.slice(0, 3) + 0;
     const decadeEnd = genereatedYearStr.slice(0, 3) + 9;
-    console.log(decadeStart)
-    console.log(decadeEnd)
+    DEBUG.log(decadeStart)
+    DEBUG.log(decadeEnd)
     return [decadeStart, decadeEnd]
 
 }

@@ -1,12 +1,12 @@
 /**
  * Preview for movie details.
  */
-import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from '@services/data.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MovieService } from '@services/movie/movie.service';
-import { PlayedService } from '@services/media/played.service';
+import { YoutubeService } from '@services/movie/youtube.service';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
@@ -19,14 +19,22 @@ import { MediaUserDataService } from '@services/media/media-user-data.service';
 })
 export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.onHidePlayer();
+    }
+  }
+
   constructor(
     private dataService: DataService,
-    private watchedService: PlayedService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private mediaUserDataService: MediaUserDataService,
     private cdr: ChangeDetectorRef,
     private movieService: MovieService,
+    private youtubeService: YoutubeService,
     private domSanitizer: DomSanitizer,
   ) { }
 
@@ -39,7 +47,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   isYTReady = false;
   hasInitialSelected = false;
   isHide = true;
-  playedTmdbId = 0;
+  playedTmdbId = '0';
   isMute = false;
   isYTPlaying = false;
   hasTrailerClip = false;
@@ -49,6 +57,7 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   procHighlight = false;
   showPreviewOverlayContext = false;
   isTrailerOnly = false;
+  playerState = -1;
 
   ngOnInit() {
     this.frameReady();
@@ -90,10 +99,12 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onPlayerReady(event) {
+    this.isYTReady = true;
     event.target.cueVideoById({
       videoId: this.youtubeUrl
     });
     event.target.playVideo();
+    this.cdr.detectChanges();
   }
 
   /**
@@ -115,21 +126,17 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
      * YT.PlayerState.CUED
      */
     console.log('onPlayerStateChange: ', event.data);
+    this.playerState = event.data;
     if (event.data === 1) {
       this.isYTReady = true;
       this.isYTPlaying = true;
     }
     if (event.data === -1 || event.data === 5 || event.data === 0) {
-      this.isYTReady = false;
+      // Keep isYTReady as true once it has loaded
       this.isYTPlaying = false;
     }
     if (event.data === 2) {
-      const root = this;
       console.log('paused');
-      // setTimeout(() => {
-      //   root.player.playVideo()
-      //   console.log('settoplay')
-      // }, 3000);
     }
     this.cdr.detectChanges();
 
@@ -141,68 +148,79 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param movie the selected movie
    */
   async getVideoClip(movie: MDBMovie) {
-    this.previewMovie = movie;
-    this.isHide = false;
-    if (movie.tmdbId === this.playedTmdbId) {
+    if (!movie || !movie.tmdbId) {
       return;
     }
+    this.previewMovie = movie;
+    this.isHide = false;
+    // if (movie.tmdbId === this.playedTmdbId) {
+    //   return;
+    // }
     this.playedTmdbId = this.previewMovie.tmdbId;
     this.hasInitialSelected = true;
     let videoId = '';
-    const results = [];
-    let title = this.previewMovie.title.toLowerCase();
-    const query = `${this.previewMovie.title} ${this.getYear(this.previewMovie.releaseDate)}`;
-    title = title.replace(/[.…]+/g, '');
+    const query = `${this.previewMovie.title} ${this.getYear(this.previewMovie.releaseDate)} trailer`;
 
-    let theRes = await this.movieService.getRelatedClips(this.previewMovie.tmdbId).toPromise();
+    try {
+      const theRes = await this.movieService.getRelatedClips(this.previewMovie.tmdbId).toPromise();
 
-    if (theRes.results.length === 0) {
-      this.clipSrc = null;
-      return;
+      if (theRes && theRes.results && theRes.results.length > 0) {
+        // TODO: add checking for "status": "UNPLAYABLE",
+        const filteredVideos = theRes.results.filter(e => e.type == 'Trailer');
+        const trailer = filteredVideos[Math.floor(Math.random() * (filteredVideos.length - 0 + 1) + 0)];
+        if (trailer) {
+          this.hasTrailerClip = true;
+          videoId = trailer.key;
+        }
+      }
+    } catch (e) {
+      console.log('TMDB related clips error', e);
     }
 
-    const trailer = theRes.results.find(e => e.type.toLowerCase() === 'trailer');
-    if (trailer) {
-      this.hasTrailerClip = true;
-      videoId = trailer.key;
-    } else {
+    // Fallback only
+    // if (!videoId) {
+    //   try {
+    //     const ytResults = await this.youtubeService.getRandomVideoClip(query).toPromise();
+    //     if (ytResults && ytResults.length > 0) {
+    //       this.hasTrailerClip = true;
+    //       videoId = ytResults[0].id.videoId;
+    //     }
+    //   } catch (e) {
+    //     console.log('Youtube search error', e);
+    //   }
+    // }
+
+    if (!videoId) {
       this.clipSrc = null;
       this.hasTrailerClip = false;
       return;
     }
-    // const index = Math.round(Math.random() * (theRes.results.length - 1))
-    // theRes = theRes.results[index].key
-    // this.movieService.getRandomVideoClip(query).subscribe(data => {
-    // data.forEach(element => {
-    //   const snipTitle = $.parseHTML(element.snippet.title.toLowerCase())[0].textContent
-    //   if ((snipTitle.indexOf(title) >= 0) && ((snipTitle.indexOf('scene') >= 0) || (snipTitle.indexOf('trailer') >= 0) || (snipTitle.indexOf('movie clip') >= 0)) && (snipTitle.indexOf('behind the scene') === -1)) {
-    //     results.push({ title: snipTitle, videoId: element.id.videoId })
-    //   }
-    // })
-    // // HiN6Ag5-DrU?VQ=HD720
-    // const index = Math.round(Math.random() * (results.length - 1))
-    // console.log('clips list length: ', results.length, ' clip index: ', index, results[index]);
 
-    // videoId = results[index].videoId
     this.clipSrc = this.domSanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`);
-    this.clipSrc = `https://www.youtube.com/embed/${videoId}?VQ=HD720&autoplay=1&rel=1&controls=0&disablekb=1&fs=0&modestbranding=1`;
     this.youtubeUrl = videoId;
     console.log('CLIPSRC', this.clipSrc);
     // if results[index].snippet.channelTitle  === 'Movieclips' ---- cut the video by 30seconds
     if (!this.hasAlreadySelected) {
       this.generateYoutube();
       this.hasAlreadySelected = true;
+    } else {
+      if (this.player && this.player.loadVideoById) {
+        this.player.loadVideoById(videoId);
+      }
     }
 
     const root = this;
     setTimeout(() => {
-      // root.setVideo(videoId)
+      if (root.player && root.player.loadVideoById) {
+        root.setVideo(videoId);
+      }
       root.cdr.detectChanges();
-    }, 5000);
+    }, 1000);
     // })
   }
 
   setVideo(videoId: string) {
+    console.log(`Setting video with video id: ${videoId}.`);
     this.player.loadVideoById(videoId);
     // this.player.cueVideoByUrl(videoId);
   }
@@ -298,10 +316,18 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onHidePlayer() {
-    console.log(this.player);
     this.isHide = true;
-    this.clipSrc = null;
     this.stopPreview();
+    // if (this.player) {
+    //   try {
+    //     this.player.destroy();
+    //     this.player = null;
+    //   } catch (e) {
+    //     console.error('Error destroying player:', e);
+    //   }
+    // }
+    this.clipSrc = null;
+    // this.cdr.detectChanges();
   }
 
   playMovie() {

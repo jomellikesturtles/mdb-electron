@@ -4,6 +4,8 @@ import {
 import { ThemePalette } from '@angular/material/core';
 import { ProfileService } from '@services/profile/profile.service';
 import { UserDataService } from '@services/user-data/user-data.service';
+import { IUserProfile } from '@models/user.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -11,13 +13,14 @@ import { UserDataService } from '@services/user-data/user-data.service';
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-  // @Select(UserState) user$: Observable<any>
-  // moviesList = TMDB_SEARCH_RESULTS.results
   moviesList = [];
-  userProfile: IProfile;
+  userProfile: IUserProfile;
   photoUrl = '';
-  userStats: {
-    filmsNumber: 54;
+  userStats = {
+    watched: 0,
+    bookmarked: 0,
+    reviews: 0,
+    favorites: 0
   };
   defaultUserProfile;
   moviesWatchedList = {
@@ -29,13 +32,14 @@ export class ProfileComponent implements OnInit {
     data: []
   };
   background: ThemePalette = undefined;
+  
   constructor(
     private userDataService: UserDataService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private router: Router
   ) { }
 
   ngOnInit() {
-    // this.countBookmarks()
     this.getUser();
     this.getUserData();
   }
@@ -47,7 +51,16 @@ export class ProfileComponent implements OnInit {
   getUser() {
     this.profileService.getProfile().subscribe(e => {
       this.userProfile = e;
+      // Update stats if available in profile directly
+      if (e) {
+        this.userStats.watched = e.watchedCount || 0;
+        this.userStats.bookmarked = e.bookmarkedCount || 0;
+      }
     });
+  }
+
+  onEditProfile() {
+    this.router.navigate(['/user/edit-profile']);
   }
 
   changePassword() {
@@ -89,19 +102,14 @@ export class ProfileComponent implements OnInit {
       console.log('getuserdata watched', e);
       this.moviesWatchedList.count = e.totalResults;
       this.moviesWatchedList.data = e.results;
+      this.userStats.watched = e.totalResults;
     });
     this.userDataService.getUserDataFirstPage('bookmark').then(e => {
       console.log('getuserdata bookmark', e);
       this.moviesBookmarksList.count = e.totalResults;
       this.moviesBookmarksList.data = e.results;
+      this.userStats.bookmarked = e.totalResults;
     });
+    // Add calls for favorites/reviews if available
   }
-}
-
-export interface IProfile {
-  username: string,
-  watchedCount: number | 0,
-  bookmarkedCount: number | 0,
-  emailAddress: string,
-  bio: string;
 }

@@ -1,0 +1,34 @@
+.movie-card-skeleton {
+  margin: 5px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.poster-skeleton {
+  width: 100%;
+  aspect-ratio: 1 / 1.45;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 12px;
+}
+
+.title-skeleton {
+  height: 16px;
+  width: 80%;
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.year-skeleton {
+  height: 12px;
+  width: 40%;
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

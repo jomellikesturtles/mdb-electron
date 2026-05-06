@@ -4,7 +4,7 @@
   <div class="nav-left">
     <div class="hamburger-btn" (click)="toggleSidebar.emit()"
       style="cursor: pointer; padding: 5px; -webkit-app-region: no-drag;">
-      <!-- <img src="./assets/icons/menu.svg" alt="Menu" style="width: 24px; height: 24px; filter: invert(1);"> -->
+      <!-- <img src="/assets/icons/menu.svg" alt="Menu" style="width: 24px; height: 24px; filter: invert(1);"> -->
       <!-- <mat-icon>close</mat-icon> -->
       <!-- <mat-icon>menu</mat-icon> -->
       <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="menu"></mat-icon>
@@ -15,23 +15,26 @@
     </div>
 
     <div id='app-logo' routerLink='/dashboard' style='-webkit-app-region: no-drag;'>
-      <h1>LOGO</h1>
+      <h1 class="brand-logo">MDB</h1>
     </div>
   </div>
 
   <!-- CENTER: Cinematic Search Bar -->
   <div class="search-controls-container">
     <div class="search-wrapper">
-      <form class="example-form w-100">
+      <form class="search-form w-100">
+        <!-- Search Icon (Left) -->
+        <img src="/assets/icons/magnifiying-glass.svg" class="search-icon-left" matTooltip="Search">
+
         <input #searchBar type="text" class="form-control" placeholder="Search titles, people, genres..."
-          [(ngModel)]="searchQuery.query" name="searchQuery" (keyup.enter)="onSearch(searchQuery.query)"
+          [formControl]="myControl" (keyup.enter)="onSearch(myControl.value)"
           [matAutocomplete]="auto">
 
-        <!-- Search Icon (Clickable) -->
-        <img src="./assets/icons/magnifiying-glass.svg" class="search-icon" (click)="onSearch(searchQuery.query)"
-          matTooltip="Search">
+        <!-- Clear Icon (Right, only if query has value) -->
+        <mat-icon *ngIf="myControl.value" class="clear-icon" (click)="myControl.setValue(''); searchBar.focus()"
+          matTooltip="Clear">close</mat-icon>
 
-        <mat-autocomplete #auto="matAutocomplete">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSearch($event.option.value)">
           <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
             {{option}}
           </mat-option>
@@ -41,7 +44,7 @@
 
     <!-- Advanced Search Icon Button -->
     <button class="advanced-search-btn" (click)='onAdvancedSearch()' matTooltip="Advanced Search">
-      <img src="./assets/icons/gear.svg" style="width: 20px; height: 20px; filter: invert(0.8);">
+      <img src="/assets/icons/gear.svg" style="width: 20px; height: 20px; filter: invert(0.8);">
     </button>
   </div>
 
@@ -49,19 +52,58 @@
   <div class="nav-right">
 
     <!-- Profile Avatar -->
-    <div class="profile-avatar" style="background-image: url('./assets/offline-image/clint-eastwood.jfif');"
-      routerLink='./user/profile' matTooltip="View Profile"></div>
+    <div class="profile-avatar" style="background-image: url('/assets/offline-image/clint-eastwood.jfif');"
+      [matMenuTriggerFor]="profileMenu" matTooltip="Account"></div>
+
+    <mat-menu #profileMenu="matMenu" xPosition="before" class="profile-menu">
+      <ng-container *ngIf="isSignedIn; else loggedOutMenu">
+        <button mat-menu-item (click)="goToProfile()">
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </button>
+        <button mat-menu-item (click)="goToSettings()">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
+        <button mat-menu-item (click)="signOut()">
+          <mat-icon>logout</mat-icon>
+          <span>Sign Out</span>
+        </button>
+      </ng-container>
+
+      <ng-template #loggedOutMenu>
+        <button mat-menu-item (click)="signIn()">
+          <mat-icon>login</mat-icon>
+          <span>Sign In</span>
+        </button>
+      </ng-template>
+
+      <mat-divider></mat-divider>
+      
+      <button mat-menu-item (click)="goToHelp()">
+        <mat-icon>help</mat-icon>
+        <span>Help</span>
+      </button>
+      <button mat-menu-item (click)="goToAbout()">
+        <mat-icon>info</mat-icon>
+        <span>About</span>
+      </button>
+      <button mat-menu-item (click)="sendFeedback()">
+        <mat-icon>feedback</mat-icon>
+        <span>Send Feedback</span>
+      </button>
+    </mat-menu>
 
     <!-- Window Controls (Electron Only) -->
     <div *ngIf="isElectron" class="window-controls-container">
       <div class="window-icon-bg" (click)="onMinimize()">
-        <img class="icon-img" src="./assets/icons/minimize.svg">
+        <img class="icon-img" src="/assets/icons/minimize.svg">
       </div>
       <div class="window-icon-bg" (click)="onRestore()">
-        <img class="icon-img" src="./assets/icons/maximize.svg">
+        <img class="icon-img" src="/assets/icons/maximize.svg">
       </div>
       <div class="window-icon-bg window-close" (click)="onExit()">
-        <img class="icon-img" src="./assets/icons/close.svg">
+        <img class="icon-img" src="/assets/icons/close.svg">
       </div>
     </div>
 

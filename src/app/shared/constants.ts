@@ -216,9 +216,9 @@ export const DEFAULT_PREFERENCES: IPreferences = {
 };
 
 export const FONT_SIZE_LIST = [
-  { value: '1.5vh', label: 'Juts' },
+  { value: '1.5vh', label: 'Small' },
   { value: '2.5vh', label: 'Medium' },
-  { value: '3.5vh', label: 'Daks' },
+  { value: '3.5vh', label: 'Medium' },
   { value: '5vh', label: 'XL' },
 ];
 

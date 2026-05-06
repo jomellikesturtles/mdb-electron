@@ -2,7 +2,7 @@ import { IReview } from "./review.model";
 
 export class IProfileData {
 
-  tmdbId?: number;
+  tmdbId?: string;
   bookmark?: Bookmark;
   favorite?: Favorite;
   played?: Played;

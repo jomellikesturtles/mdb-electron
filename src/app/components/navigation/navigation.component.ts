@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
+import { NavigationService } from '@core/services/navigation.service';
 import { ListsService } from '@services/media/list.service';
 import { LoggerService } from '@core/logger.service';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
@@ -18,7 +18,7 @@ export class NavigationComponent implements OnInit {
   isMobileOpen = false; // Track mobile drawer state
 
   constructor(
-    private location: Location,
+    private navigationService: NavigationService,
     private listsService: ListsService,
     private loggerService: LoggerService,
     private mediaUserDataService: MediaUserDataService
@@ -29,7 +29,7 @@ export class NavigationComponent implements OnInit {
     window.addEventListener('resize', () => this.checkScreenSize());
 
     // Existing data initialization (kept as is)
-    this.mediaUserDataService.getMediaUserData(122).subscribe(e => {
+    this.mediaUserDataService.getMediaUserData('122').subscribe(e => {
       GeneralUtil.DEBUG.log(`mediaUserDataService.getMediaUserData ${JSON.stringify(e)}`);
     });
 
@@ -58,10 +58,10 @@ export class NavigationComponent implements OnInit {
 
   // Navigation Helpers
   goPreviousPage() {
-    this.location.back();
+    this.navigationService.back();
   }
 
   goForwardPage() {
-    this.location.forward();
+    window.history.forward();
   }
 }

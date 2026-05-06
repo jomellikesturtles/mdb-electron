@@ -1,63 +1,76 @@
-<div>
+<div class="container py-5">
+  <div class="row mb-5">
+    <!-- User Info Column -->
+    <div class="col-md-4 col-lg-3 text-center d-flex flex-column align-items-center">
+      <div class="mb-3">
+        <mdb-avatar [src]="userProfile?.photoUrl" alt="Profile Photo" size="xl" [border]="true"></mdb-avatar>
+      </div>
+      <h2 class="mb-1">{{ userProfile?.username || 'Username' }}</h2>
+      <p class="text-muted mb-3">{{ userProfile?.emailAddress || 'email@example.com' }}</p>
+      
+      <p class="mb-4 text-white-50" *ngIf="userProfile?.bio">
+        {{ userProfile?.bio }}
+      </p>
 
-  <div>
-    <div class='image-container'
-      style='border-radius: 50%; height:100px;width:100px;background-image: url("./assets/offline-image/clint-eastwood.jfif");'>
+      <div class="d-flex gap-2">
+        <mdb-button variant="outline" (onClick)="onEditProfile()">Edit Profile</mdb-button>
+        <mdb-button variant="secondary" (onClick)="exportUserData()" icon="download">Export Data</mdb-button>
+      </div>
     </div>
-    <!-- let movie of (movies$| async)?.movies -->
-    <!-- <div class='image-container' style='border-radius: 50%; height:100px;width:100px;'
-    [ngStyle]="{'background-image':'url('+photoUrl+')'}"> </div> -->
-    <p>{{userProfile.bio}}</p>
-    <h2>{{userProfile.username}}</h2>
-  </div>
-  <button (click)='exportUserData()'>Export user data...</button>
-  <mat-tab-group>
-    <mat-tab label="Overview">
-      <ng-container [ngTemplateOutlet]='overviewTemplate'></ng-container>
-    </mat-tab>
-    <mat-tab label="Movies">
-      <ng-container [ngTemplateOutlet]='overviewTemplate'></ng-container>
-    </mat-tab>
-    <mat-tab label="Series" disabled></mat-tab>
-    <mat-tab label="Music" disabled></mat-tab>
-    <mat-tab label="Podcast" disabled></mat-tab>
-    <mat-tab label="Video Games" disabled></mat-tab>
-  </mat-tab-group>
 
-  <ng-template #overviewTemplate>
-
-    <app-horizontal-card-list [title]='"Watched"' [totalCount]='moviesWatchedList.count' [moviesList]='moviesWatchedList.data'></app-horizontal-card-list>
-    <app-horizontal-card-list [title]='"Bookmarks"' [totalCount]='moviesBookmarksList.count' [moviesList]='moviesBookmarksList.data'></app-horizontal-card-list>
-
-    <div>
-      <h3>My Stats</h3>
-      <label>You have {{userProfile.bookmarkedCount}} bookmarked movies.</label>
-      <button routerLink='./bookmarks' href='#' *ngIf="userProfile.bookmarkedCount">Bookmarks</button>
-      <label>You have watched {{userProfile.watchedCount}} movies.</label>
-      <button routerLink='./watched' href='#' *ngIf="userProfile.watchedCount">Watched</button>
-    </div>
-    <div>
-      <h3>Most Played</h3>
-    </div>
-  </ng-template>
-</div>
-  <!-- <input type="file" id="myfile" placeholder="Upload file" accept=".jpg,.jpeg,.png" name="myfile"
-    (change)='uploadFile($event.target.files)'>
-    <button class='btn btn-primary'>Change
-      profile image</button>
-    <p>{{firebaseUser$.email}}</p> -->
-
-    <!-- <div class='container'>
-      <div class='row'>
-        <div class='col'>
-          <h3>My Information</h3>
-          <label>Username: <input [value]='userProfile.username' /></label>
-          <label>Password: <input /><button (click)='changePassword()'>Change</button></label>
-          <label>Email Address: <input [value]='userProfile.emailAddress' /><button
-            (click)='changeEmailAddress()'>Change</button></label>
-            <button (click)='onSave()'>Save</button>
-            <button (click)='onReset()'>Reset</button>
-            <button (click)='onSignOut()'>Sign out: </button>
-          </div>
+    <!-- Stats & Content Column -->
+    <div class="col-md-8 col-lg-9">
+      <!-- Stats Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-sm-3">
+          <mat-card class="text-center py-3">
+            <h3 class="m-0 text-primary">{{ userStats.watched }}</h3>
+            <small class="text-muted text-uppercase">Watched</small>
+          </mat-card>
         </div>
-      </div> -->
+        <div class="col-6 col-sm-3">
+          <mat-card class="text-center py-3">
+            <h3 class="m-0 text-accent">{{ userStats.bookmarked }}</h3>
+            <small class="text-muted text-uppercase">Bookmarks</small>
+          </mat-card>
+        </div>
+        <div class="col-6 col-sm-3">
+          <mat-card class="text-center py-3">
+            <h3 class="m-0 text-warn">{{ userStats.reviews }}</h3>
+            <small class="text-muted text-uppercase">Reviews</small>
+          </mat-card>
+        </div>
+        <div class="col-6 col-sm-3">
+          <mat-card class="text-center py-3">
+            <h3 class="m-0 text-white">{{ userStats.favorites }}</h3>
+            <small class="text-muted text-uppercase">Favorites</small>
+          </mat-card>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <mat-tab-group animationDuration="0ms" mat-align-tabs="start" class="custom-tabs">
+        <mat-tab label="WATCHED">
+          <div class="py-3">
+            <app-horizontal-card-list [title]='"Recently Watched"' [totalCount]='moviesWatchedList.count' [moviesList]='moviesWatchedList.data' [seeAllLink]="'/watched'"></app-horizontal-card-list>
+          </div>
+        </mat-tab>
+        <mat-tab label="BOOKMARKS">
+          <div class="py-3">
+            <app-horizontal-card-list [title]='"Bookmarks"' [totalCount]='moviesBookmarksList.count' [moviesList]='moviesBookmarksList.data' [seeAllLink]="'/bookmarks'"></app-horizontal-card-list>
+          </div>
+        </mat-tab>
+        <mat-tab label="REVIEWS">
+          <div class="py-3 text-center text-muted">
+            <p>No reviews yet.</p>
+          </div>
+        </mat-tab>
+        <mat-tab label="FAVORITES">
+          <div class="py-3 text-center text-muted">
+            <p>No favorites yet.</p>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

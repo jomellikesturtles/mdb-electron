@@ -1,16 +1,63 @@
 import { Injectable } from '@angular/core';
-import { HTTP_INTERCEPTORS, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HTTP_INTERCEPTORS, HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { AuthenticationService } from './authentication.service';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpInterceptorService implements HttpInterceptor {
 
-  constructor() { }
+  constructor(
+    private router: Router,
+    private authService: AuthenticationService,
+    private sessionService: SessionService
+  ) { }
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    req.headers.set('Authorization', sessionStorage.getItem('token'));
-    return next.handle(req);
+    
+    // Proactive session check for MDB API requests
+    if (req.url.includes('mdb')) {
+      if (this.authService.isAuthenticated()) {
+        if (this.authService.isTokenExpired()) {
+          this.sessionService.sessionExpired$.next();
+          return throwError(() => new HttpErrorResponse({ 
+            error: 'Session Expired', 
+            status: 401, 
+            statusText: 'Unauthorized' 
+          }));
+        }
+        // Sliding Expiration: Update timestamp on successful activity check
+        this.authService.updateExpiry();
+      }
+    }
+
+    let request = req;
+    if (req.url.includes('mdb') && !req.url.includes('/v1/auth')) {
+      request = this.modifyRequest(req) ?? req;
+    }
+
+    return next.handle(request).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401 || error.status === 403) {
+          this.authService.clearSession();
+          this.sessionService.sessionExpired$.next();
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  modifyRequest(request: HttpRequest<any>): HttpRequest<any> {
+    let headers = request.headers.set('Authorization', 'Bearer ' + (sessionStorage.getItem('token')));
+
+    return request.clone({
+      headers,
+      withCredentials: false
+    });
   }
 }
 

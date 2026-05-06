@@ -5,6 +5,7 @@
 const fs = require('fs')
 const path = require('path')
 const papa = require('papaparse')
+const { DEBUG } = require("./shared/util");
 args = process.argv.slice(2)
 var title = args[0]
 var year = args[1]
@@ -57,14 +58,14 @@ function procData(results, parser) {
  * Finish search, exit the process
  */
 function finSearch() {
-  console.log('result: ', result);
-  console.timeEnd('searchLapse')
+  DEBUG.log('result: ', result);
+  DEBUG.log('searchLapse: end')
   process.exit(0)
 }
 function initializeSearch() {
   // const titleBasicsTSV = path.join(process.cwd(), 'src', 'assets', 'torrent database', 'torrent_dump_full.csv', 'torrent_dump_full.csv')
   const titleBasicsTSV = path.join(process.cwd(), '..', 'torrent database', 'torrent_dump_full.csv', 'torrent_dump_full.csv')
-  console.log(titleBasicsTSV);
+  DEBUG.log(titleBasicsTSV);
 
   stream = fs.createReadStream(titleBasicsTSV)
     .once('open', function () {
@@ -75,17 +76,17 @@ function initializeSearch() {
         chunk: procData,
         complete: finSearch,
         error: function (error) {
-          console.log(error);
+          DEBUG.log(error);
         }
       });
     })
     .on('error', function (err) {
       // process.send(['search-failed', 'read'])
-      console.log(err)
+      DEBUG.log(err)
     });
 }
-console.time('searchLapse')
-console.log('torrent search with data0', title);
-console.log('torrent search with data1', year);
+DEBUG.log('searchLapse: start')
+DEBUG.log('torrent search with data0', title);
+DEBUG.log('torrent search with data1', year);
 
 initializeSearch()

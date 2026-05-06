@@ -1,29 +1,27 @@
 import { GenreCodes } from '@models/interfaces';
-import { IRawLibrary, LibraryService } from '@services/library.service';
-import {
-  Component, OnInit,
-  OnDestroy,
-} from '@angular/core';
+import { PlayLink } from '@models/playlink.model';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { MDBTorrent } from '@models/interfaces';
-import { DataService } from '@services/data.service';
-import { MovieService } from '@services/movie/movie.service';
-import { TorrentService } from '@services/torrent/torrent.service';
 import { IpcService } from '@services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TROUBLE_QUOTES } from '@shared/constants';
-import { PlayedService, IPlayed } from '@services/media/played.service';
 import { Subject } from 'rxjs';
 import { basename } from 'path';
-import { FavoriteService } from '@services/media/favorite.service';
 import { IProfileData } from '@models/profile-data.model';
 import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util';
 import { environment } from 'environments/environment';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ImagePreviewComponent } from '@shared/components/image-preview/image-preview.component';
-import { BookmarkService } from '@services/media/bookmark.service';
+import { FeatureName, FeatureToggleService } from '@core/services/feature-toggle.service';
+import { AuthenticationService, DataService, HttpBaseService, IRawLibrary, LibraryService } from '@services';
+import { BookmarkService, FavoriteService, MediaUserDataService, PlayedService, ListsService } from '@services/media';
+import { TorrentService } from '@services/torrent/torrent.service';
+import { MovieService } from '@services/movie/movie.service';
 import { LoggerService } from '@core/logger.service';
-import { MediaUserDataService } from '@services/media/media-user-data.service';
+import { NewListDialogComponent } from '@shared/components/list-dialogs/new-list-dialog.component';
+
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
@@ -50,11 +48,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
   movieCertification;
   movieDetails = new MDBMovie();
   userLocation = 'US';
-  procBookmark = false;
-  procWatched = false;
-  procFavorite = false;
-  procVideo = false;
-  procPlayLink = false;
+  isProcessingBookmark = false;
+  isProcessingWatched = false;
+  isProcessingFavorite = false;
+  processingVideo = false;
+  processingPlayLink = false;
   showVideo = false;
   _isBookmarked = false;
   _isPlayed = false;
@@ -65,7 +63,14 @@ export class DetailsComponent implements OnInit, OnDestroy {
   bestPlayLink: PlayLink;
   certification: 'PG';
   userData: IProfileData = new IProfileData();
+  userLists = [
+    { id: 1, name: 'Favorites', checked: false },
+    { id: 2, name: 'Watchlist', checked: false },
+    { id: 3, name: 'Weekend Binge', checked: false },
+    { id: 4, name: 'Horror Classics', checked: false }
+  ];
   private ngUnsubscribe = new Subject();
+  isAuthenticated = this.authService.isAuthenticated().valueOf();
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -78,9 +83,14 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private favoriteService: FavoriteService,
     private router: Router,
     public dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private bookmarkService: BookmarkService,
     private playedService: PlayedService,
-    private loggerService: LoggerService
+    private loggerService: LoggerService,
+    private authService: AuthenticationService,
+    private featureToggleService: FeatureToggleService,
+    private listsService: ListsService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -90,9 +100,27 @@ export class DetailsComponent implements OnInit, OnDestroy {
     });
   }
 
+  toggleList(list: any, event: any) {
+    const isChecked = event.checked;
+    const mediaId = this.movieDetails.tmdbId;
+    const listId = list.id;
+
+    this.listsService.toggleListMembership(listId, mediaId).subscribe({
+      next: () => {
+        list.checked = isChecked;
+        this.snackBar.open(`${isChecked ? 'Added to' : 'Removed from'} ${list.name}`, 'Close', { duration: 3000 });
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.loggerService.error(`Error toggling list: ${JSON.stringify(err)}`);
+        this.snackBar.open(`Failed to update ${list.name}`, 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   ngOnDestroy(): void {
     GeneralUtil.DEBUG.log('DETAILS DESTROY');
-    // this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
 
@@ -104,12 +132,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.movieDetailsPersons.writers = this.getWriters();
     this.movieDetailsPersons.producers = this.getProducers();
     this.movieDetailsPersons.cast = this.getCast();
-    // this.movieCertification = this.getMovieCertification()
     this.getUserMovieData();
-    // this.getLibrary();
+    this.getLibrary();
     this.displayBackdrop();
     this.getTrailer();
-
   }
 
   getTrailer() {
@@ -119,7 +145,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   playBestPlayLink() {
     if (environment.runConfig.useTestData) {
       this.showVideo = true;
-      this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4';
+      this.streamLink = 'https://samplelib.com/mp4/sample-30s.mp4';
       GeneralUtil.DEBUG.log('playingbestplaylink');
     } else {
       if (this.bestPlayLink.hash) { // is torrent
@@ -144,44 +170,33 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   playOfflineLibrary(val) {
-    this.libraryService.openVideoStream(val).then(e => {
-      GeneralUtil.DEBUG.log('streamlink1:', e);
+    this.libraryService.openVideoStream(val).then((e) => {
+      GeneralUtil.DEBUG.log("streamlink1:", e);
       // if (e != 0 && e != [] && e != '' && e.length > 0) {
       if (e) {
         this.showVideo = true;
         this.streamLink = e;
+        this.cdr.detectChanges();
       }
     });
   }
+
+
+
 
   /**
    * Gets the user's watched, bookmark, library data of the movie
    */
   getUserMovieData() {
-    this.procVideo, this.procBookmark, this.procWatched = true;
+    (this.processingVideo, this.isProcessingBookmark, (this.isProcessingWatched = true));
 
     this.mediaUserDataService.getMediaUserData(this.movieDetails.tmdbId).subscribe((profileData: IProfileData) => {
+      this.isBookmarked = profileData.isBookmark;
+      this.isFavorite = profileData.isFavorite;
 
       GeneralUtil.DEBUG.log('usermoviedata', profileData);
-      if (profileData.bookmark) {
-        this.userData.bookmark = profileData.bookmark;
-        this._isBookmarked = this.mediaUserDataService.commonSetter(profileData.bookmark);
-      }
-      if (profileData.played) {
-        this.userData.played = profileData.played;
-        this._isPlayed = this.mediaUserDataService.commonSetter(profileData.played);
-      }
-      if (profileData.favorite) {
-        this.userData.favorite = profileData.favorite;
-        this._isFavorite = this.mediaUserDataService.commonSetter(profileData.favorite);
-      }
-      if (profileData.listLinkMovie) {
-        this.userData.listLinkMovie = profileData.listLinkMovie;
-      }
-      if (profileData.review) {
-        this.userData.review = profileData.review;
-      }
-      this.procVideo, this.procBookmark, this.procWatched = false;
+      (this.processingVideo, this.isProcessingBookmark, (this.isProcessingWatched = false));
+      this.cdr.detectChanges();
     });
   }
 
@@ -190,9 +205,17 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this._isBookmarked = this.mediaUserDataService.commonSetter(val);
   }
 
+  get isBookmarked(): boolean {
+    return this._isBookmarked;
+  }
+
   set isFavorite(val: number | Object) {
     this.loggerService.info('set isFavorite called');
     this._isFavorite = this.mediaUserDataService.commonSetter(val);
+  }
+
+  get isFavorite(): boolean {
+    return this._isFavorite;
   }
 
   set isPlayed(val: number | Object) {
@@ -200,63 +223,92 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this._isPlayed = this.mediaUserDataService.commonSetter(val);
   }
 
+  get isPlayed(): boolean {
+    return this._isPlayed;
+  }
+
   /**
    * Toggles movie from user's watchlist or bookmarks
    */
-  async toggleBookmark() {
-    this.procBookmark = true;
+  toggleBookmark() {
+    this.isProcessingBookmark = true;
     const tmdbId = this.movieDetails.tmdbId;
-    let res = false;
-    if (this._isBookmarked) {
-      res = await this.bookmarkService.removeBookmark('tmdbId', tmdbId).toPromise();
-    } else {
-      res = await this.bookmarkService.saveBookmark(tmdbId).toPromise();
-    }
-    this.isBookmarked = res;
-    this.procBookmark = false;
+    const isAdding = !this._isBookmarked;
+    const bookmarkToggleFunction = this._isBookmarked ? this.bookmarkService.remove(tmdbId) : this.bookmarkService.save(tmdbId);
+    bookmarkToggleFunction.subscribe(e => {
+      this.isBookmarked = e.isBookmark;
+      this.isProcessingBookmark = false;
+      this.snackBar.open(`${isAdding ? 'Added to' : 'Removed from'} Watchlist`, 'Close', { duration: 3000 });
+      this.cdr.detectChanges();
+    }, err => {
+      this.loggerService.error(`toggleBookmark error: ${JSON.stringify(err)}`);
+      this.isProcessingBookmark = false;
+      this.snackBar.open(`Failed to update Watchlist`, 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+      this.cdr.detectChanges();
+    });
+
   }
 
   async togglePlayed() {
-    this.procWatched = true;
+    this.isProcessingWatched = true;
     const tmdbId = this.movieDetails.tmdbId;
+    const isAdding = !this._isPlayed;
     let res = false;
-    if (this._isPlayed) {
-      res = await this.playedService.removePlayed('tmdbId', tmdbId).toPromise();
-    } else {
-      res = await this.playedService.savePlayed({ tmdbId }).toPromise();
+    try {
+      if (this._isPlayed) {
+        res = await this.playedService.removePlayed('tmdbId', tmdbId).toPromise();
+      } else {
+        res = await this.playedService.savePlayed({ tmdbId }).toPromise();
+      }
+      this.isPlayed = res;
+      this.snackBar.open(`${isAdding ? 'Marked as' : 'Removed from'} Watched`, 'Close', { duration: 3000 });
+      this.cdr.detectChanges();
+    } catch (err) {
+      this.loggerService.error(`togglePlayed error: ${JSON.stringify(err)}`);
+      this.snackBar.open(`Failed to update Watched status`, 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+      this.isProcessingWatched = false;
+      this.cdr.detectChanges();
     }
-    this.isPlayed = res;
-    this.procWatched = false;
   }
 
-  async toggleFavorite() {
-    this.procFavorite = true;
+  toggleFavorite() {
+    this.isProcessingFavorite = true;
     const tmdbId = this.movieDetails.tmdbId;
-    let res;
-    if (this._isFavorite) {
-      res = await this.favoriteService.removeFavorite('tmdbId', tmdbId).toPromise();
-    } else {
-      res = await this.favoriteService.saveFavorite({ tmdbId }).toPromise();
-    }
-    this.isFavorite = res;
-    this.procFavorite = false;
+    const isAdding = !this._isFavorite;
+    const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove(tmdbId) : this.favoriteService.save(tmdbId);
+    favoriteToggleFunction.subscribe(e => {
+      this.isFavorite = e.isFavorite;
+      this.snackBar.open(`${isAdding ? 'Added to' : 'Removed from'} Favorites`, 'Close', { duration: 3000 });
+      this.cdr.detectChanges();
+    }, err => {
+      this.loggerService.error(`toggleFavorite error: ${JSON.stringify(err)}`);
+      this.snackBar.open(`Failed to update Favorites`, 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+      this.isProcessingFavorite = false;
+      this.cdr.detectChanges();
+    }, () => {
+      this.isProcessingFavorite = false;
+      this.cdr.detectChanges();
+    });
   }
+
 
   /**
    * Gets movie details, torrents
    * @param val tmdb id
    */
   getMovieOnline(val: number) {
-    // tt2015381 is Guardians of the galaxy 2014; for testing only
     GeneralUtil.DEBUG.log('getMovie initializing with value...', val);
 
-    this.movieService.getMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations').subscribe(data => {
-      this.movieDetails = data;
-      this.loadVideoData();
-      this.hasData = true;
-      // COMMENTED UNTIL 'error spawn ENAMETOOLONG' is fixed.
-      // this.saveMovieDataOffline(this.movieDetails)
-    });
+    this.movieService.getMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations,reviews')
+      .subscribe((data) => {
+        this.movieDetails = data;
+        this.loadVideoData();
+        this.hasData = true;
+        this.movieService.getStreams(data.imdbId).subscribe((data) => {
+          GeneralUtil.DEBUG.log("streams", data);
+        });
+        this.cdr.detectChanges();
+      });
   }
 
   /**
@@ -265,8 +317,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getMovieCertification() {
     const myLoc = this.movieDetails.releaseDates.results.find((e) => e.iso_3166_1 === this.userLocation);
     const toReturn = myLoc.release_dates[0].certification;
-    // let toReturn = myLoc.release_dates.find((e) => { return e.type === 3 })
-    // toReturn = toReturn.certification
     return toReturn;
   }
 
@@ -274,26 +324,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets the movie poster
    */
   getMoviePoster() {
-    // implement offline movie poster
-  }
-
-  /**
-   * !UNUSED
-   * Gets backdrop or background image
-   * @param val IMDb id
-   */
-  getBackdrop(val) {
-    this.movieService.getMovieBackdrop(val.trim()).subscribe(data => {
-      const numberOfBackgrounds = data.moviebackground.length;
-      if (numberOfBackgrounds) {
-        const imageIndex = Math.round(
-          Math.random() * (numberOfBackgrounds - 0) + 0
-        );
-        this.movieBackdrop = data.moviebackground[imageIndex].url;
-      } else {
-        // this.movieBackdrop = this.selectedMovie.Poster;
-      }
-    });
   }
 
   /**
@@ -317,7 +347,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param val name
    */
   getLibrary() {
-    this.procPlayLink = true;
+    this.processingPlayLink = true;
     this.libraryService.getMovieFromLibrary(this.movieDetails.tmdbId).then((libraryList: IRawLibrary[]) => {
       GeneralUtil.DEBUG.log("libraryList", libraryList);
       if (libraryList.length > 0) {
@@ -335,7 +365,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
         if (!this.bestPlayLink && this.torrents.length > 0) this.bestPlayLink = this.mapPlayLink(this.torrents[0]); // TODO: add sorting by preferred quality
       }
-      this.procPlayLink = false;
+      this.processingPlayLink = false;
     });
   }
 
@@ -398,7 +428,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
 
     if (environment.runConfig.electron) {
-      // this.ipcService.call(this.ipcService.IPCCommand.OpenLinkExternal, url)
     } else {
       window.open(url);
     }
@@ -410,24 +439,18 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param id value to discover
    */
   goToDiscover(type: string, id: string, name?: string) {
-
     this.dataService.updateDiscoverQuery({ type: type, value: id, name: name });
     this.router.navigate([`/discover`], { queryParams: { type: type, id: id, name: name } });
   }
 
   goToMovie(val: string) {
-    // // this.navigationService.goToPage()
-    // this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
-
     const highlightedId = val;
     this.dataService.updateHighlightedMovie(highlightedId);
-    // this.router.navigate([`./details/${highlightedId}`]);
     this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
   }
 
   goToPerson(castId) {
     this.router.navigate([`/person-details/${castId}`], { relativeTo: this.activatedRoute });
-    // this.router.navigate([`/person-details/${castId}`], { relativeTo: this.activatedRoute });
   }
 
   goToFullCredits() {
@@ -504,6 +527,37 @@ export class DetailsComponent implements OnInit, OnDestroy {
     GeneralUtil.copyToClipboard(magnetLink);
   }
 
+  addToList(list?: any) {
+    if (list) {
+      this.loggerService.info(`Added to list: ${list.name}`);
+    } else {
+      const dialogRef = this.dialog.open(NewListDialogComponent, {
+        width: '400px',
+        panelClass: 'mdb-dialog-container'
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.loggerService.info(`Creating new list: ${JSON.stringify(result)}`);
+          this.listsService.createList(result).subscribe({
+            next: (newList: any) => {
+              this.snackBar.open(`List "${result.name}" created successfully`, 'Close', { duration: 3000 });
+              if (newList && newList.id) {
+                this.userLists.push({ ...newList, checked: false });
+              }
+              this.cdr.detectChanges();
+            },
+            error: (err) => {
+              this.loggerService.error(`Error creating list: ${JSON.stringify(err)}`);
+              this.snackBar.open('Failed to create new list', 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+              this.cdr.detectChanges();
+            }
+          });
+        }
+      });
+    }
+  }
+
   /**
    * @param rawLibraryList torrent list or library list
    */
@@ -524,5 +578,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     playLink.type = arg.hasOwnProperty('hash') ? 'torrent' : 'offline';
     return playLink;
   }
-}
 
+  isFeatureEnabled(featureName: FeatureName) {
+    return this.featureToggleService.isEnabled(featureName);
+  }
+
+}

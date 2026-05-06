@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { HttpHeaders, HttpParams, } from '@angular/common/http';
 import { TmdbParameters } from '@models/interfaces';
 import { environment } from '@environments/environment';
 import { LoggerService } from '@core/logger.service';
+import { HttpBaseService } from './http-base.service';
 
 const jsonContentType = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -18,7 +17,7 @@ export class PersonService {
   omdbUrl = 'http://www.omdbapi.com';
   tmdbUrl = 'https://api.themoviedb.org/3';
   constructor(
-    private http: HttpClient,
+    private httpBaseService: HttpBaseService,
     private logger: LoggerService) { }
 
   /**
@@ -41,17 +40,7 @@ export class PersonService {
       headers: jsonContentType,
       params: myHttpParam
     };
-    return this.http.get<any>(url, tmdbHttpOptions).pipe(tap(_ => this.logger.info('')),
-      catchError(this.handleError<any>('getPersonDetails')));
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(error); // log to console instead
-      this.logger.error(`${operation} failed: ${error.message}`);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
+    return this.httpBaseService.get(url, tmdbHttpOptions, 'getPersonDetails');
   }
 
 }

@@ -6,8 +6,7 @@
  * Service to communicate to ipc main
  */
 import { environment } from '@environments/environment';
-import IPCRendererChannel from '../../assets/IPCRendererChannel.json';
-import IPCMainChannel from '../../assets/IPCMainChannel.json';
+import { RendererToMainChannels, MainToRendererChannels } from '../../electron/core/contracts/ipc-channels';
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, from } from 'rxjs';
@@ -35,36 +34,33 @@ export class IpcService {
   constructor(
     private loggerService: LoggerService
   ) {
-    if (environment.runConfig.electron) {
+    if (environment.runConfig.electron && (window as any).electron) {
 
-      console.log((window as any).require('electron'));
+      this.ipcRenderer = (window as any).electron.ipcRenderer;
 
-      this.ipcRenderer = (window as any).require('electron').ipcRenderer;
-
-      this.ipcRenderer.on('torrent-video', (event, data: any) => {
-        console.log('event: ', event);
-        console.log('data: ', data);
+      this.ipcRenderer.on('torrent-video', (data: any) => {
+        this.loggerService.info(`torrent-video data: ${data}`);
         this.torrentVideo.next(data);
       });
 
-      this.ipcRenderer.on(IPCMainChannel.PREFERENCES_GET_COMPLETE, (event: Electron.IpcRendererEvent, data) => {
+      this.ipcRenderer.on(MainToRendererChannels.PREFERENCES_GET_COMPLETE, (data) => {
         this.preferences.next(data);
-        console.log('IPCMainChannel.PREFERENCES_COMPLETE ', data);
+        this.loggerService.info(`MainToRendererChannels.PREFERENCES_COMPLETE ${JSON.stringify(data)}`);
       });
-      this.ipcRenderer.on(IPCMainChannel.STREAM_LINK, (event: Electron.IpcRendererEvent, data) => {
+      this.ipcRenderer.on(MainToRendererChannels.STREAM_LINK, (data) => {
         this.streamLink.next(data);
-        console.log('IPCMainChannel.STREAM_LINK ', data);
+        this.loggerService.info(`MainToRendererChannels.STREAM_LINK ${data}`);
       });
-      this.ipcRenderer.on(IPCMainChannel.STATS, (event: Electron.IpcRendererEvent, data) => {
+      this.ipcRenderer.on(MainToRendererChannels.STATS, (data) => {
         this.statsForNerds.next(data);
-        console.log('IPCMainChannel.STATS ', data);
+        this.loggerService.info(`MainToRendererChannels.STATS ${JSON.stringify(data)}`);
       });
     }
   }
 
   async getFiles() {
     // return new Promise<string[]>((resolve, reject) => {
-    //   this.ipcRenderer.once('library-folders', (event, arg) => {
+    //   this.ipcRenderer.once('library-folders', (arg) => {
     //     resolve(arg);
     //   });
     //   this.ipcRenderer.send('retrieve-library-folders');
@@ -76,7 +72,7 @@ export class IpcService {
    */
   async getSystemDrives() {
     // return new Promise<string[]>((resolve, reject) => {
-    //   this.ipcRenderer.once('system-drives', (event, arg) => {
+    //   this.ipcRenderer.once('system-drives', (arg) => {
     //     resolve(arg);
     //   });
     // });
@@ -87,7 +83,7 @@ export class IpcService {
    * @param data folder directory
    */
   openFolder(data: string) {
-    console.log('open', data);
+    this.loggerService.info(`openFolder: ${data}`);
     // this.ipcRenderer.send('go-to-folder', ['open', data])
   }
 
@@ -95,7 +91,7 @@ export class IpcService {
    * Ipc renderer that sends command to main renderer to get movies from library db.
    * @param idList
    */
-  getMoviesFromLibraryInList(idList: number[]): Promise<any> {
+  getMoviesFromLibraryInList(idList: number[]): Promise<IRawLibrary[]> {
     const theUuid = uuidv4();
     this.sendToMain('library', { operation: IpcOperations.FIND_IN_LIST, uuid: theUuid },
       { idList: idList });
@@ -134,7 +130,7 @@ export class IpcService {
    * Replies offline library object(s).
    * @param arg imdb id or movie title and release year or tmdb id
    */
-  getMovieFromLibrary(arg): Promise<IRawLibrary> {
+  getMovieFromLibrary(arg: number | string): Promise<IRawLibrary[]> {
     const theUuid = uuidv4();
     this.sendToMain('library', { operation: IpcOperations.FIND, uuid: theUuid },
       { tmdbId: arg });
@@ -149,7 +145,7 @@ export class IpcService {
 
   userData(headers: Headers, body: Body, params: IPCParams) {
     const theUuid = uuidv4();
-    const channel = IPCRendererChannel.USER_DATA;
+    const channel = RendererToMainChannels.USER_DATA;
     headers.uuid = theUuid;
     this.sendToMainNew(channel, headers,
       body, params);
@@ -159,37 +155,37 @@ export class IpcService {
   // ----- END OF USER DATA
   startScanLibrary() {
 
-    this.sendToMain(IPCRendererChannel.SCAN_LIBRARY_START);
-    this.ipcRenderer.on(IPCMainChannel.ScanLibraryResult, e => {
-      console.log(IPCMainChannel.ScanLibraryResult, e);
+    this.sendToMain(RendererToMainChannels.SCAN_LIBRARY_START);
+    this.ipcRenderer.on(MainToRendererChannels.ScanLibraryResult, e => {
+      this.loggerService.info(`${MainToRendererChannels.ScanLibraryResult}: ${e}`);
     });
-    this.ipcRenderer.once(IPCMainChannel.ScanLibraryComplete, e => {
-      console.log('completscan');
-      this.ipcRenderer.removeListener(IPCMainChannel.ScanLibraryResult, d => { });
+    this.ipcRenderer.once(MainToRendererChannels.ScanLibraryComplete, e => {
+      this.loggerService.info('ScanLibraryComplete');
+      this.ipcRenderer.removeListener(MainToRendererChannels.ScanLibraryResult, d => { });
     });
   }
 
   stopScanLibrary() {
-    this.sendToMain(IPCRendererChannel.SCAN_LIBRARY_STOP);
+    this.sendToMain(RendererToMainChannels.SCAN_LIBRARY_STOP);
   }
 
   getPlayTorrent(hash: string): Promise<any> {
-    this.sendToMain(IPCRendererChannel.PLAY_TORRENT, hash);
+    this.sendToMain(RendererToMainChannels.PLAY_TORRENT, hash);
     return this.listenOnce(`stream-link`);
   }
 
   stopStream() {
-    this.sendToMain(IPCRendererChannel.STOP_STREAM);
+    this.sendToMain(RendererToMainChannels.STOP_STREAM);
   }
 
   playOfflineVideo(docId): Promise<any> {
-    this.sendToMain(IPCRendererChannel.PLAY_OFFLINE_VIDEO_STREAM, docId);
+    this.sendToMain(RendererToMainChannels.PLAY_OFFLINE_VIDEO_STREAM, docId);
     return this.listenOnce(`stream-link`);
   }
 
   getPreferences() {
     const theUuid = uuidv4();
-    const channel = IPCRendererChannel.PREFERENCES;
+    const channel = RendererToMainChannels.PREFERENCES;
     const headers: Headers = { uuid: '', operation: IpcOperations.FIND };
     headers.uuid = theUuid;
     this.sendToMainNew(channel, headers,
@@ -199,14 +195,14 @@ export class IpcService {
 
   savePreferences(val) {
     const theUuid = uuidv4();
-    const channel = IPCRendererChannel.PREFERENCES;
+    const channel = RendererToMainChannels.PREFERENCES;
     const headers: Headers = { uuid: theUuid, operation: IpcOperations.UPDATE };
     this.sendToMainNew(channel, headers,
       val, null);
     return from(this.listenOnceWithTimeout(`${channel}-${theUuid}`));
   }
 
-  generalOperation(channel: typeof IPCRendererChannel, data: any): Promise<any> {
+  generalOperation(channel: RendererToMainChannels, data: any): Promise<any> {
     const theUuid = uuidv4();
     this.sendToMain(channel.toString(), { operation: IpcOperations.SAVE, uuid: theUuid }, data);
     return this.listenOnce(`${channel}-${theUuid}`);
@@ -217,28 +213,37 @@ export class IpcService {
     return this.listenOnce('subtitle-path');
   }
 
+  private isElectron(): boolean {
+    return !!(environment.runConfig.electron && (window as any).electron);
+  }
+
   minimizeWindow() {
-    this.sendToMain(this.IPCCommand.MinimizeApp);
+    if (this.isElectron()) {
+      this.sendToMain('MINIMIZE_APP');
+    }
   }
   minimizeRestoreWindow() {
-    this.sendToMain(this.IPCCommand.RestoreApp);
+    if (this.isElectron()) {
+      this.sendToMain('RESTORE_APP');
+    }
   }
   exitApp() {
-    this.sendToMain(this.IPCCommand.ExitApp);
+    if (this.isElectron()) {
+      this.sendToMain('EXIT_APP');
+    }
   }
 
   private removeListener(channel: string) {
-    console.log('REMOVING LISTENER', channel);
+    this.loggerService.info(`REMOVING LISTENER ${channel}`);
     this.ipcRenderer.removeListener(channel, d => { });
   }
 
   private sendToMain(channel: string, headers?: Headers | string, body?: Body) {
     try {
       this.ipcRenderer.send(channel, [headers, body]);
-      console.log('sent to ipc... ', channel, [headers, body]);
+      this.loggerService.info(`sent to ipc... ${channel} [${JSON.stringify(headers)}, ${JSON.stringify(body)}]`);
     } catch {
-      console.log('failed to send Ipc: ', channel, [headers, body]);
-      this.loggerService.error(`'failed to send Ipc: ${channel} [${headers}, ${body}]`);
+      this.loggerService.error(`'failed to send Ipc: ${channel} [${JSON.stringify(headers)}, ${JSON.stringify(body)}]`);
     }
   }
 
@@ -256,7 +261,7 @@ export class IpcService {
   private listenOnce(channel: string, timeoutSeconds = 300) {
     return new Promise<any>((resolve, reject) => {
       try {
-        this.ipcRenderer.once(channel, (event, arg) => {
+        this.ipcRenderer.once(channel, (arg) => {
           this.loggerService.info(`channel: ${JSON.stringify(channel)}  arg: ${arg}`);
           resolve(arg);
         });
@@ -270,7 +275,7 @@ export class IpcService {
   private listenOnceWithTimeout(channel: string, timeoutMillis = 300000) {
     const promise = new Promise<any>((resolve, reject) => {
       try {
-        this.ipcRenderer.once(channel, (event, arg) => {
+        this.ipcRenderer.once(channel, (arg) => {
           this.loggerService.info(`channel: ${JSON.stringify(channel)} arg: ${arg}`);
           resolve(arg);
         });
@@ -296,8 +301,10 @@ export class IpcService {
 
   }
 
-  IPCCommand = IPCRendererChannel['default'];
-  IPCChannel = IPCMainChannel['default'];
+  // IPCCommand and IPCChannel should be updated to use the new enums or direct references
+  // if you still need these for backward compatibility
+  IPCCommand = RendererToMainChannels;
+  IPCChannel = MainToRendererChannels;
 }
 
 interface IPCContext {
@@ -313,7 +320,7 @@ interface Headers {
 }
 
 interface Body {
-  tmdbId?: number;
+  tmdbId?: number | string;
   idList?: number[] | string;
   _id?: string | number;
   [x: string]: any;

@@ -421,7 +421,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     try {
       encodingStr = jschardet.detect(fileStr, { minimumThreshold: 0 }).encoding; // errors with subs with `ó`
     } catch {
-      const encodingAlt = chardet.analyse(fileStr);
+      const encoder = new TextEncoder();
+      const encodingAlt = chardet.analyse(encoder.encode(fileStr));
       GeneralUtil.DEBUG.log(encodingAlt);
       if (encodingAlt.length > 1) {
         encodingStr = encodingAlt[0].name;

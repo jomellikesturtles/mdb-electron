@@ -5,7 +5,7 @@ import { IProfileData } from "./profile-data.model";
 export class MDBMovie {
   mdbId: string;
   imdbId: string;
-  tmdbId: number;
+  tmdbId: string;
   title: string;
   originalTitle: string;
   originalLanguage: string;
@@ -13,7 +13,7 @@ export class MDBMovie {
   popularity: number;
   posterPath: string;
   userData: IProfileData;
-  backropPath: string;
+  backdropPath: string;
   credits: ICredits;
   rating: IRating;
   isAdult: boolean;
@@ -33,12 +33,14 @@ export class MDBMovie {
   video: boolean;
   // to map further
   recommendations: any;
+  similar: any;
   images: any;
   videos: any;
   productionCompanies: any;
   collection: any;
   productionCountries: any;
   releaseDates: any;
+  reviews: any;
 
   constructor(value?: any) {
     if (value != null) {
@@ -76,7 +78,7 @@ export class MDBMovie {
     this.overview = value['overview'] || value['plot'];
     this.posterPath = value['poster_path'] || value['posterPath'];
     // this.userData = value['userData'] || value['plot']
-    this.backropPath = value['backdrop_path'] || value['backropPath'];
+    this.backdropPath = value['backdrop_path'] || value['backdropPath'];
     this.credits = value['credits'];
     this.rating = value['overview'] || value['plot'];
     this.isAdult = value['adult'] || value['isAdult'];
@@ -99,12 +101,14 @@ export class MDBMovie {
     this.video = value['video'];
 
     this.recommendations = value['recommendations'];
+    this.similar = value['similar'];
     this.images = value['images'];
     this.videos = value['videos'];
     this.productionCompanies = value['production_companies'] || value['productionCompanies'];
     this.collection = value['belongs_to_collection'] || value['collection'];
     this.productionCountries = value['production_countries'] || value['productionCountries'];
     this.releaseDates = value['release_dates'] || value['releaseDates'];
+    this.reviews = value['reviews'];
 
   }
 }

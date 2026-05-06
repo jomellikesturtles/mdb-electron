@@ -3,6 +3,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SigninComponent } from './signin/signin.component';
 import { ProfileComponent } from './profile/profile.component'
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { RegisterComponent } from './register/register.component';
+import { EditProfileComponent } from './edit-profile/edit-profile.component';
 
 const routes: Routes = [
 
@@ -14,9 +17,18 @@ const routes: Routes = [
     path: 'signin', component: SigninComponent
   },
   {
+    path: 'register', component: RegisterComponent
+  },
+  {
+    path: 'reset-password', component: ResetPasswordComponent
+  },
+  {
     path: 'profile', component: ProfileComponent,
     // path: 'profile', component: ProfileComponent, canActivate: [MdbGuardGuard]
   },
+  {
+    path: 'edit-profile', component: EditProfileComponent
+  }
 
   // {
   // path: '',

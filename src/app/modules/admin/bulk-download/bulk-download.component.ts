@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { DISPLAYEDMOVIES } from '../../../mock-data';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from '@services/data.service';
+import { MockDataService } from '@services/mock-data.service';
 
 @Component({
   selector: 'app-bulk-download',
@@ -10,17 +10,21 @@ import { DataService } from '@services/data.service';
 })
 export class BulkDownloadComponent implements OnInit {
 
-  displayedMovies = DISPLAYEDMOVIES;
+  displayedMovies = [];
   selectedMovie = null;
   result: any;
 
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private dataService: DataService) {
+    private dataService: DataService,
+    private mockDataService: MockDataService) {
   }
 
   ngOnInit() {
+    this.mockDataService.getDisplayedMovies().subscribe(movies => {
+      this.displayedMovies = movies;
+    });
 
     this.dataService.selectedMovies.subscribe(data => {
       data.forEach(element => {
@@ -144,9 +148,9 @@ export class BulkDownloadComponent implements OnInit {
    * Go to movie's detail
    * @param movie selected movie object
    */
-  goToMovie(movie) {
+  goToMovie(movie: any) {
     let tmdbId = movie.id;
-    this.router.navigate([`/details/${tmdbId}`], { relativeTo: this.activatedRoute });
+    this.router.navigate(['/details', tmdbId]);
   }
   // https://yts.lt/api/v2/movie_suggestions.json?movie_id=10
   /**

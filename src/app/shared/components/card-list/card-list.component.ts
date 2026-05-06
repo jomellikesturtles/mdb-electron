@@ -1,12 +1,11 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { IBookmark } from '@services/media/bookmark.service';
 import { PlayedService, IPlayed } from '@services/media/played.service';
-import { environment } from '@environments/environment';
 import { IProfileData } from '@models/profile-data.model';
 import { MDBMovie } from '@models/mdb-movie.model';
 import ObjectUtil from '@utils/object.utils';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
+import { IBookmark } from '@services/media';
 
 @Component({
   selector: 'app-card-list',
@@ -16,14 +15,18 @@ import { FeatureToggleService } from '@core/services/feature-toggle.service';
 export class CardListComponent implements OnInit, OnChanges {
 
   @Input() cardWidth: string;
-  @Input() displayMode: string = 'd-inline-flex';
+  @Input() displayMode: string = 'card-list-horizontal';
   @Input() listType: string;
+  @Input() loading: boolean = false;
   _movieList: MDBMovie[];
   @Input()
   set movieList(inputMessage: any[]) {
-    inputMessage.forEach(inputMovie => {
-      this.movieAndUserDataList.push({ movie: inputMovie, userData: null });
-    });
+    this.movieAndUserDataList = [];
+    if (inputMessage) {
+      inputMessage.forEach(inputMovie => {
+        this.movieAndUserDataList.push({ movie: inputMovie, userData: null });
+      });
+    }
     this._movieList = inputMessage;
   }
   get movieList(): any[] {

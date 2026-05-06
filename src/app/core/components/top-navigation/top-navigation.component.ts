@@ -1,18 +1,18 @@
-
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
-import { MovieGenre, IGenre } from '@models/interfaces';
-import { MOVIEGENRES } from '../../../mock-data';
-import { STRING_REGEX_IMDB_ID } from '@shared/constants';
 import { DataService } from '@services/data.service';
 import { MovieService } from '@services/movie/movie.service';
 import { IpcService } from '@services/ipc.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
+import { NavigationService } from '@core/services/navigation.service';
 import { environment } from '@environments/environment';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
-import GeneralUtil from '@utils/general.util';
+import { ISearchQuery } from '@models/interfaces';
+import { AuthenticationService } from "@services/authentication.service";
+import { Actions, ofActionDispatched } from "@ngxs/store";
+import { Login } from "app/store/auth/auth.state";
+import { MockDataService } from '@services/mock-data.service';
 
 @Component({
   selector: 'app-top-navigation',
@@ -22,6 +22,17 @@ import GeneralUtil from '@utils/general.util';
 export class TopNavigationComponent implements OnInit {
   @Input() data: Observable<any>;
   @Output() toggleSidebar = new EventEmitter<void>();
+  @ViewChild('searchBar') searchBar: ElementRef;
+
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent) {
+    if (event.key === '/') {
+      event.preventDefault();
+      if (this.searchBar) {
+        this.searchBar.nativeElement.focus();
+      }
+    }
+  }
 
   constructor(
     private dataService: DataService,
@@ -29,7 +40,11 @@ export class TopNavigationComponent implements OnInit {
     private movieService: MovieService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private location: Location) { }
+    private authService: AuthenticationService,
+    private $actions: Actions,
+    private navigationService: NavigationService,
+    private mockDataService: MockDataService
+  ) { }
 
   isElectron = environment.runConfig.electron;
   status = 'LOGIN';
@@ -41,7 +56,7 @@ export class TopNavigationComponent implements OnInit {
     query: '',
     yearFrom: 1969,
     yearTo: 2018,
-    genres: MOVIEGENRES,
+    genres: [],
     type: 'TV Series',
     isAvailable: 'true',
     availability: '',
@@ -63,6 +78,14 @@ export class TopNavigationComponent implements OnInit {
 
   myControl = new FormControl();
   ngOnInit() {
+    this.mockDataService.getMovieGenres().subscribe(genres => {
+      this.searchQuery.genres = genres;
+    });
+
+    this.$actions.pipe(ofActionDispatched(Login)).subscribe((e) => {
+      this.isSignedIn = true;
+      this.status = "";
+    });
     const e = localStorage.getItem('user');
     this.getSearchHistoryList();
     if (e === null) {
@@ -74,7 +97,10 @@ export class TopNavigationComponent implements OnInit {
     }
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(''),
-      map(value => this._filter(value))
+      map(value => {
+        this.searchQuery.query = value;
+        return this._filter(value || '');
+      })
     );
   }
   private _filter(value: string): string[] {
@@ -84,75 +110,53 @@ export class TopNavigationComponent implements OnInit {
   }
 
   getSearchHistoryList() {
-    this.searchHistoryList = ['titanic', 'enteng kabisote'];
-    // })
-    // this.ipcService.call(this.ipcService.IPCCommand.GetSearchList)
-    // this.ipcService.searchList.subscribe(data => {
-    //   this.searchHistoryList = data
-    //   GeneralUtil.DEBUG.log('DATA:', data)
-    // })
+    const history = localStorage.getItem('mdb_search_history');
+    if (history) {
+      this.searchHistoryList = JSON.parse(history);
+    } else {
+      this.searchHistoryList = ['gladiator', 'titanic', 'pulp fiction']; // Default suggestions
+    }
   }
 
   /**
    * Go to previous location
    */
   navigateBack() {
-    this.location.back();
+    this.navigationService.back();
   }
 
   /**
    * Opens advanced search options.
    */
   onAdvancedSearch() {
-    this.router.navigate([`/advanced-find`], { relativeTo: this.activatedRoute });
+    this.router.navigate(['/advanced-find']);
   }
 
   /**
    * Initialize search
    */
   onSearch(val: string) {
+    if (!val || !val.trim()) {
+      return;
+    }
     val = val.trim();
+    this.searchQuery.query = val;
+
     if (this.lastQuery === val && this.router.url === '/results') {
       return;
     }
     this.lastQuery = val;
+
+    // Update search history: move to front and maintain max length
+    this.searchHistoryList = this.searchHistoryList.filter(q => q.toLowerCase() !== val.toLowerCase());
     this.searchHistoryList.unshift(val);
-    this.removeDuplicate(val);
-    this.searchHistoryList.splice(this.searchHistoryList.indexOf(val), 1);
-    GeneralUtil.DEBUG.log(this.searchHistoryList);
-    if (this.searchHistoryList.length >= this.SEARCH_HISTORY_MAX_LENGTH) {
-      // this.searchHistoryList = this.searchHistoryList.splice(1)
+    if (this.searchHistoryList.length > this.SEARCH_HISTORY_MAX_LENGTH) {
       this.searchHistoryList = this.searchHistoryList.slice(0, this.SEARCH_HISTORY_MAX_LENGTH);
     }
-    const enteredQuery = val;
-    // this.currentPage = 1
-    // this.numberOfPages = 1
-    // this.numberOfResults = 0
-    // this.currentSearchQuery = enteredQuery
-    // // tt0092099 example
+    localStorage.setItem('mdb_search_history', JSON.stringify(this.searchHistoryList));
+    this.myControl.setValue(val, { emitEvent: false });
+    this.searchByTitle(val);
 
-    this.searchHistoryList.unshift(val);
-    const REGEX_IMDB_ID = new RegExp(STRING_REGEX_IMDB_ID, `gi`);
-    if (enteredQuery.match(REGEX_IMDB_ID)) {
-      this.searchByImdbId(enteredQuery);
-    } else {
-      this.searchByTitle(enteredQuery);
-    }
-  }
-
-  /**
-   * Searches movie by imdb id and redirects if there are results
-   * @param imdbId imdb id to search
-   */
-  searchByImdbId(imdbId: string) {
-    this.movieService.getMovieByImdbId(imdbId).subscribe(data => {
-      if (data.Response !== 'False') {
-        this.router.navigate([`/details/${imdbId}`], { relativeTo: this.activatedRoute });
-      } else {
-        this.hasSearchResults = false;
-        // insert code for not found
-      }
-    });
   }
 
   /**
@@ -160,19 +164,44 @@ export class TopNavigationComponent implements OnInit {
    * @param enteredQuery query to search
    */
   searchByTitle(enteredQuery: string) {
-    // this.dataService.currentSearchQuery = enteredQuery
-    if (this.searchQuery && this.searchQuery.query.length > 0) {
+    this.searchQuery.query = enteredQuery;
+    if (this.searchQuery.query.length > 0) {
       this.dataService.updateSearchQuery(this.searchQuery);
-      this.router.navigate([`/results`], { relativeTo: this.activatedRoute });
+      this.router.navigate(['/results']);
     }
   }
 
-  openProfile() {
+  goToProfile() {
+    this.router.navigate(['/user/profile']);
+  }
 
+  goToSettings() {
+    this.router.navigate(['/preferences']);
   }
 
   signOut() {
-    // this.firebaseService.signOut()
+    localStorage.removeItem('user');
+    this.authService.logout().subscribe((e) => {
+      this.isSignedIn = false;
+      this.status = "LOGIN";
+      this.router.navigate(["/user/signin"]);
+    });
+  }
+
+  signIn() {
+    this.router.navigate(['/user/signin']);
+  }
+
+  goToHelp() {
+    console.log('Navigate to Help');
+  }
+
+  goToAbout() {
+    console.log('Navigate to About');
+  }
+
+  sendFeedback() {
+    console.log('Navigate to Send Feedback');
   }
 
   onMinimize() {
@@ -184,34 +213,4 @@ export class TopNavigationComponent implements OnInit {
   onExit() {
     this.ipcService.exitApp();
   }
-
-  private removeDuplicate(val: string) {
-    let result = this.searchHistoryList.filter((option, index) => {
-      GeneralUtil.DEBUG.log('option: ', option);
-      return this.searchHistoryList.indexOf(option) === index;
-    });
-    this.searchHistoryList = result;
-  }
-}
-
-export interface ISearchQuery {
-  query: string,
-  yearFrom: number,
-  yearTo: number,
-  genres: MovieGenre[],
-  type: string,
-  isAvailable: string,
-  availability: string, // all, offline, netflix
-  ratingCount?: number,
-  ratingAverage?: number,
-  ratingAverageFrom?: number,
-  ratingAverageTo?: number,
-  sortBy: string,
-}
-
-export interface ITmdbSearchQuery {
-  keywords: string,
-  decade: number;
-  yearTo: number,
-  genres: IGenre[],
 }

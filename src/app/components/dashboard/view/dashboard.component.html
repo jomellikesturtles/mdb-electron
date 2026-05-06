@@ -4,7 +4,7 @@
   <div *ngIf="dashboardLists">
     <div *ngFor="let list of dashboardLists">
 
-      <app-horizontal-card-list [title]='list.name' [moviesList]='list.data' [seeAllLink]='"/discover"' [queryParams]='list.queryParams'></app-horizontal-card-list>
+      <app-horizontal-card-list [title]='list.name' [moviesList]='list.data' [seeAllLink]='"/discover"' [queryParams]='list.queryParams' [loading]="list.loading"></app-horizontal-card-list>
 
     </div>
   </div>

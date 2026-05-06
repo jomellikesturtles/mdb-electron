@@ -1,8 +1,10 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoggerService } from '@core/logger.service';
-import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { ENDPOINT } from '@shared/endpoint.const';
+import { Observable } from 'rxjs';
+import { HttpBaseService } from './http-base.service';
+import { MDBApiService } from './mdb-api.service';
+import { HttpUrlProviderService } from './http-url.provider.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,26 +12,14 @@ import { catchError, tap } from 'rxjs/operators';
 export class ConfigurationService {
 
   constructor(
-    private http: HttpClient,
+    private httpBaseService: HttpBaseService,
+    private httpUrlProvider: HttpUrlProviderService,
     private logger: LoggerService
   ) { }
   getConfiguration(): Observable<any> {
-    const BFF_URL = '';
-    const url = `${BFF_URL}/config`;
-    return this.http.get<any>(url).pipe(tap(_ => this.logger.info(`getConfiguration`)),
-      catchError(this.handleError<any>('getConfiguration')));
-  }
+    // const url = `${BFF_URL}/config`;
+    // const url = `${BFF_URL}/config/versions`;
 
-  /**
-   * Error handler.
-   * @param operation the operation
-   * @param result result
-   */
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      this.logger.error(`${operation} failed: ${error.message}`);
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
+    return this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.ACTUATOR_HEALTH), 'getConfiguration');
   }
 }

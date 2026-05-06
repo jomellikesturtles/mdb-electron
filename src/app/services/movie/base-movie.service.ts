@@ -1,12 +1,14 @@
-import { HttpClient } from '@angular/common/http';
-import { IOmdbMovieDetail, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
+import { TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
+import { Store } from '@ngxs/store';
 import { MDBMovie } from '@models/mdb-movie.model';
 import { TMDB_External_Id } from '@models/tmdb-external-id.model';
 import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { CacheService } from '@services/cache.service';
 import { IpcService } from '@services/ipc.service';
 import { TmdbService } from '@services/tmdb/tmdb.service';
+import { HttpBaseService } from '@services/http-base.service';
 
 @Injectable({ providedIn: "root" })
 export abstract class BaseMovieService {
@@ -15,18 +17,9 @@ export abstract class BaseMovieService {
     protected cacheService: CacheService,
     protected ipcService: IpcService,
     protected tmdbService: TmdbService,
-    protected http: HttpClient
+    protected httpBaseService: HttpBaseService,
+    protected store: Store
   ) { }
-
-  /**
-    * Gets movie info. First it gets from offline source,
-    * if there is none, it gets from online source (OMDB)
-    */
-  protected abstract getMovieInfo(val: string): Observable<any>;
-
-  protected abstract getMovieByImdbId(val: string): Observable<IOmdbMovieDetail>;
-
-  protected abstract getImages(val: any): Observable<any>;
 
   protected abstract searchSubtitleById(val: string);
 
@@ -36,7 +29,7 @@ export abstract class BaseMovieService {
    * @param tmdbId tmdbId
    * @returns external ids
    */
-  protected abstract getExternalId(tmdbId: number): Observable<TMDB_External_Id>;
+  protected abstract getExternalId(tmdbId: string): Observable<TMDB_External_Id>;
 
   protected abstract getMovieBackdrop(val: string): Observable<any>;
 
@@ -52,7 +45,7 @@ export abstract class BaseMovieService {
    * Gets related videos from TMDB.
    * @param tmdbId the tmdb id.
    */
-  protected abstract getRelatedClips(tmdbId: number, refresh?: boolean): Observable<any>;
+  protected abstract getRelatedClips(tmdbId: string, refresh?: boolean): Observable<any>;
   /**
    *
    * @param id tmdbId,imdbId, etc.
@@ -96,5 +89,27 @@ export abstract class BaseMovieService {
 
   protected log(message: string) {
     console.log(`MovieService: ${message} `);
+  }
+
+  /**
+   * Generic caching method for NGXS
+   * @param selector Selector to check in store
+   * @param apiCall$ API Observable to fetch if cache is empty
+   * @param actionFactory Function to create action to dispatch
+   * @param refresh Force refresh
+   */
+  protected getCachedOrFetch<T>(
+    selector: any,
+    apiCallFn: () => Observable<T>,
+    actionFactory: (data: T) => any,
+    refresh: boolean = false
+  ): Observable<T> {
+    const cached = this.store.selectSnapshot(selector);
+    if (!cached || refresh) {
+      return apiCallFn().pipe(
+        tap(data => this.store.dispatch(actionFactory(data)))
+      ) as Observable<T>;
+    }
+    return of(cached) as Observable<T>;
   }
 }

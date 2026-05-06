@@ -13,23 +13,14 @@ import { PersonDetailsComponent } from 'app/modules/person/person-details/person
 import { environment } from '@environments/environment';
 import { NotificationComponent } from 'app/modules/events/notification/notification.component';
 import { PreviewComponent } from '@shared/components/preview/preview.component';
-import { ServiceWorkerModule } from '@angular/service-worker';
 import { MdbGuardGuard } from './mdb-guard.guard';
 import { backendProvider } from './services/http-interceptor.service';
 import { RouterModule } from '@angular/router';
 import { FloatingPlayerComponent } from '@shared/components/floating-player/floating-player.component';
 import { SharedModule } from '@shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { AdvancedFindComponent } from '@components/advanced-find/advanced-find.component';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatTabsModule } from '@angular/material/tabs';
 import { ImagePreviewComponent } from '@shared/components/image-preview/image-preview.component';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { KeyboardShortcutsComponent } from '@modules/settings/keyboard-shortcuts/keyboard-shortcuts.component';
 import { VideoPlayerModule } from '@modules/watch/video-player.module';
 import { YoutubePlayerComponent } from '@shared/components/youtube-player/youtube-player.component';
@@ -70,18 +61,8 @@ import { MovieState } from './store/movie/movie.state';
     SharedModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatAutocompleteModule,
-    MatSidenavModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatTabsModule,
-    MatDialogModule,
-    MatAutocompleteModule,
     VideoPlayerModule,
-    // MockCoreServicesModule
-    // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    MockCoreServicesModule,
     NgxsModule.forRoot([MovieState], {
       developmentMode: !environment.production
     }),

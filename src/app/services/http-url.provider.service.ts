@@ -13,11 +13,13 @@ export class HttpUrlProviderService {
 
   getFrontdoorApi(endpoint: string, ...params: any[]) {
     endpoint = this.replaceParams(endpoint, API_TYPE.FRONTDOOR, params);
-    return `${this.coreEnvironment[API_TYPE.FRONTDOOR].uri}/${endpoint}`;
+    return `${this.coreEnvironment[API_TYPE.FRONTDOOR].url}/${endpoint}`;
   }
   getBffAPI(endpoint: string, ...params: any[]) {
     endpoint = this.replaceParams(endpoint, API_TYPE.BFF, params);
-    return `${this.coreEnvironment[API_TYPE.BFF].uri}/${endpoint}`;
+    console.log('${this.getURI(API_TYPE.BFF)}/${endpoint}:', `${this.getURI(API_TYPE.BFF)} / ${endpoint}`);
+    return `${this.getURI(API_TYPE.BFF)}/${endpoint}`;
+    // return endpoint;
   }
 
   private replaceParams(endpoint: string, apiType: API_TYPE, ...params: any[]): string {
@@ -31,9 +33,17 @@ export class HttpUrlProviderService {
     }
     return endpoint;
   }
+  getURI(api: API_TYPE): string {
+    const configPath = this.coreEnvironment.environment[api].uri;
+    if (configPath && configPath.includes('http')) {
+      return configPath;
+    } else {
+      return '';
+    }
+  }
 }
 
 export enum API_TYPE {
-  FRONTDOOR = 'frontdoorApi',
-  BFF = 'bffApi'
+  FRONTDOOR = 'frontdoor',
+  BFF = 'bff'
 }

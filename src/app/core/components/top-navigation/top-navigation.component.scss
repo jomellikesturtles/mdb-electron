@@ -38,7 +38,7 @@
   h1 {
     font-family: 'Akira', 'Arial Black', sans-serif;
     font-size: 1.5rem;
-    color: #E50914; // Netflix-style Red or $mdb-primary
+    color: $mdb-primary; // Netflix-style Red or $mdb-primary
     margin: 0;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -63,42 +63,62 @@
     align-items: center;
   }
 
+  .search-form {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
   // Pill-shaped Input
   input.form-control {
     width: 100%;
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 50px; // Pill shape
-    padding: 10px 45px 10px 20px; // Padding for text and icons
+    padding: 10px 45px 10px 45px; // Padding for text and icons (Left & Right)
     color: #fff;
     font-size: 0.95rem;
     transition: all 0.3s ease;
 
     &::placeholder {
-      color: #aaa;
+      color: #666;
     }
 
     &:focus {
       background-color: rgba(255, 255, 255, 0.15);
       border-color: rgba(255, 255, 255, 0.3);
-      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
       outline: none;
     }
   }
 
-  // Search Icon (Inside Input)
-  .search-icon {
+  // Search Icon (Inside Input - Left)
+  .search-icon-left {
     position: absolute;
-    right: 15px;
+    left: 15px;
     height: 18px;
     width: 18px;
-    opacity: 0.6;
-    cursor: pointer;
+    opacity: 0.4;
     filter: invert(1);
-    transition: opacity 0.2s;
+    pointer-events: none; // It's just an indicator now
+    z-index: 1;
+  }
+
+  // Clear Icon (Inside Input - Right)
+  .clear-icon {
+    position: absolute;
+    right: 15px;
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    z-index: 1;
+    transition: color 0.2s, transform 0.2s;
 
     &:hover {
-      opacity: 1;
+      color: #fff;
+      transform: scale(1.1);
     }
   }
 }
@@ -169,7 +189,7 @@
     }
 
     &.window-close:hover {
-      background-color: #E50914; // Red for close
+      background-color: $mdb-primary; // Red for close
     }
 
     .icon-img {

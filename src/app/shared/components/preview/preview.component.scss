@@ -19,19 +19,17 @@
 #closeIcon {
   background-image: url(../../../../assets/icons/close.svg);
   position: absolute;
-  filter: invert(1) contrast(0);
-  color: #ccc;
-  background-position: center;
-  background-size: cover;
+  filter: invert(1);
   cursor: pointer;
-  height: 20px;
-  width: 20px;
-  right: 8vw;
-  margin: auto;
-  transform: translateY(50%);
-  z-index: 5000;
+  height: 24px;
+  width: 24px;
+  right: 20px;
+  top: 20px;
+  z-index: 10000;
+  transition: transform 0.2s ease-in-out;
 }
 
-#closeIcon :hover {
-  filter: invert(1);
+#closeIcon:hover {
+  transform: scale(1.1);
+  filter: invert(0.8);
 }

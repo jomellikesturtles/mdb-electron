@@ -32,15 +32,14 @@ export class PersonDetailsComponent implements OnInit {
     this.personService.getPersonDetails(val).subscribe(data => {
       console.log('got from getMovieOnline ', data);
       this.person = data;
-      this.creditsCast = data.movie_credits.cast;
-      this.creditsCrew = data.movie_credits.crew;
+      this.creditsCast = (data as any).movie_credits.cast;
+      this.creditsCrew = (data as any).movie_credits.crew;
       this.hasData = true;
     });
   }
 
-  goToMovie(val): void {
-    const highlightedId = val;
-    this.dataService.updateHighlightedMovie(highlightedId);
-    this.router.navigate([`/details/${highlightedId}`], { relativeTo: this.activatedRoute });
+  goToMovie(val: string): void {
+    this.dataService.updateHighlightedMovie(val);
+    this.router.navigate(['/details', val]);
   }
 }

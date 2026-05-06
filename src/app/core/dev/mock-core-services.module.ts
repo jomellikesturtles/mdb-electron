@@ -20,23 +20,25 @@ import { ProfileService } from "@services/profile/profile.service";
 import { MockProfileService } from "./services/mock-profile.service";
 import { MockTorrentService } from "./services/mock-torrent.service";
 import { TorrentService } from "@services/torrent/torrent.service";
+import { AuthenticationService } from "@services/authentication.service";
+import { MockAuthenticationService } from "@services/mock-authentication.service";
 
 @NgModule({
   imports: [HttpClientModule],
   providers: [
+    // { provide: AuthenticationService, useExisting: MockAuthenticationService },
     { provide: MediaUserDataService, useExisting: MockUserDataService },
-    { provide: BookmarkService, useExisting: MockBookmarkService },
-    { provide: FavoriteService, useExisting: MockFavoriteService },
+    // { provide: BookmarkService, useExisting: MockBookmarkService },
+    // { provide: FavoriteService, useExisting: MockFavoriteService },
     { provide: ListsService, useExisting: MockListService },
     { provide: PlayedService, useExisting: MockPlayedService },
     { provide: ProgressService, useExisting: MockProgressService },
-    { provide: MovieService, useExisting: MockMovieService },
+    // { provide: MovieService, useExisting: MockMovieService },
     { provide: ProfileService, useExisting: MockProfileService },
-    { provide: TorrentService, useExisting: MockTorrentService },
-    // { provide: LibraryService, useExisting: MockLibraryService },
+    // { provide: TorrentService, useExisting: MockTorrentService }
+    { provide: LibraryService, useExisting: MockLibraryService },
 
     // { provide: HTTP_INTERCEPTORS, useClass: MockInterceptorService, multi: true },
   ]
 })
-
 export class MockCoreServicesModule { }

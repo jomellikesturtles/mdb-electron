@@ -1,227 +1,186 @@
-<div class="container">
-
-  <div class='form-inline'>
-    <h2>General Settings </h2>
-    <mat-divider></mat-divider>
-    <i class='icon-question-mark' data-toggle="tooltip" title="Enter the folders where your movie files are"></i>
-    <form [formGroup]="preferencesForm">
-
-      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"darkMode"' [fieldLabel]="'Dark Mode'"
-        [inputType]="'checkbox'">
-      </app-input-container>
-
-      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"enableCache"'
-        [fieldLabel]="'Enable Cache'" [inputType]="'checkbox'" [optionSelections]='frequencyOptions'>
-      </app-input-container>
-
-
-      <p>System update</p>
-      <button>Keyboard Shortcuts</button>
-    </form>
-  </div>
-
-  <h2>Library</h2>
-  <mat-divider></mat-divider>
-  <h5>Library Folders</h5>
-  <button class="btn btn-success" data-toggle="modal" data-target="#addLibraryModal"
-    (click)='onOpenModal()'>Add(opensmodal)</button>
-  <button class="btn btn-primary" (click)="onScanLibrary()">Scan Library</button>
-  <button class="btn btn-danger" (click)="onStopScanLibrary()">Stop scan
-    Library</button>
-
-  <!-- <div class='tab container-fluid' *ngFor='let folder of preferencesObject.libraryFolders;'>
-    <div class='form-inline form-group'>
-      <button class="btn btn-success" (click)="onOpenFolder(folder)">Open</button>
-      <input type='text' class="form-control" data-toggle="tooltip" title="{{folder}}" disabled />
-      <!-- <input type='text' class="form-control" [(ngModel)]='folder' data-toggle="tooltip" title="{{folder}}" disabled />
-      <button class="btn btn-danger" (click)="onDeleteFolder(folder)">Delete</button>
-    </div>
-  </div> -->
-  <!-- <input id="myFile" type="file" webkitdirectory /> -->
-  <!-- <button class=" btn btn-success" (click)="onAddFolder(folderName.value); folderName.value=''">Add</button> -->
-  <!-- <div *ngFor="let folder of unsavedPreferences.libraryFolders">
-    <input type="text" value="{{folder}}" />
-  </div> -->
-  <div class='form-inline'>
-    <h5>Offline Torrent Dump </h5>
-    <span class='icon-question-mark' data-toggle="tooltip" title="Search torrent even without internet"></span>
-  </div>
-  <p>Last update: January 1, 1970 12:00 AM</p>
-  <button class="btn btn-primary" (click)="onUpdateTorrentDump()">Update Torrent
-    Dump</button>
-
-  <div class='form-inline'>
-    <h5>Offline Metadata </h5>
-    <span class='icon-question-mark' data-toggle="tooltip" title="Enter the folders where your movie files are">
-    </span>
-  </div>
-  <p>Last update: January 1, 1970 12:00 AM</p>
-  <button class="btn btn-primary" (click)="onUpdateOfflineMetadata()">Update Offline
-    Metadata</button>
-  <button class="btn btn-primary" (click)="onSyncUserData()">Sync User Data</button>
-  <button class="btn btn-success" (click)="onSave()">Save</button>
-  <!-- <button class="btn btn-success" [disabled]='!preferencesObject.isDirty' (click)="onSave()">Save</button> -->
-  <button class="btn btn-warning" [disabled]='!isDirty' (click)="onReset()">Reset</button>
-
-  <div class='form-inline'>
-    <h2>Playback</h2>
-    <mat-divider></mat-divider>
-    <!-- 3rd party quality -->
-    <div>
-      <p>Playback Quality</p>
-    </div>
-    <div>
-      <p>On Play...</p>
-      <!-- dropdown. (FullScreen, View Screen) -->
-    </div>
-    <div>
-      <h4>Subtitle Appearance</h4>
-
-      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontColor"' [fieldLabel]="'Color'"
-        [inputType]="'select'" [optionSelections]='colorOptions'>
-      </app-input-container>
-      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontSize"' [fieldLabel]="'Size'"
-        [inputType]="'select'" [optionSelections]='fontSizeOptions'>
-      </app-input-container>
-      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontOpacity"' [fieldLabel]="'Opacity'"
-        [inputType]="'select'" [optionSelections]='frequencyOptions'>
-      </app-input-container>
-      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"fontFamily"'
-        [fieldLabel]="'Font Family'" [inputType]="'select'" [optionSelections]='frequencyOptions'>
-      </app-input-container>
-      <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"backgroundColor"'
-        [fieldLabel]="'Background Color'" [inputType]="'select'" [optionSelections]='colorOptions'>
-      </app-input-container>
-
-
-      <!-- Font Family, -->
-      <!-- Font size -->
-      <!-- Font opacity -->
-      <!-- Background color, opacity -->
-      <!-- Window color, opacity -->
-      <!-- Character edge style -->
-      <!-- reset -->
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mat-h1 m-0">Preferences</h1>
+    <div class="d-flex gap-2">
+      <mdb-button variant="outline" (onClick)="onReset()" [disabled]="!isDirty">Reset</mdb-button>
+      <mdb-button variant="primary" (onClick)="onSave()">Save Changes</mdb-button>
     </div>
   </div>
 
+  <form [formGroup]="preferencesForm">
+    <div class="row g-4">
+      <!-- Left Column -->
+      <div class="col-md-6 d-flex flex-column gap-4">
+        
+        <!-- General Settings -->
+        <mdb-card title="General">
+             <mdb-checkbox label="Dark Mode" formControlName="darkMode" class="d-block mb-3"></mdb-checkbox>
+             <mdb-checkbox label="Enable Cache" formControlName="enableCache" class="d-block mb-3"></mdb-checkbox>
+             
+             <div class="d-flex align-items-center justify-content-between mt-2">
+                <span>System Update</span>
+                <mdb-button variant="outline" size="sm">Check Shortcuts</mdb-button>
+             </div>
+        </mdb-card>
 
-  <h2>Playback</h2>
-  <mat-divider></mat-divider>
+        <!-- Library -->
+        <mdb-card title="Library">
+            <div header-actions>
+               <mat-icon class="ms-auto" matTooltip="Manage your movie folders">folder</mat-icon>
+            </div>
+            
+            <div class="d-flex gap-2 flex-wrap mb-3">
+               <mdb-button variant="secondary" icon="add" (onClick)="onOpenModal()" data-toggle="modal" data-target="#addLibraryModal">Add Folder</mdb-button>
+               <mdb-button variant="outline" icon="refresh" (onClick)="onScanLibrary()">Scan Library</mdb-button>
+               <mdb-button variant="danger" icon="stop" (onClick)="onStopScanLibrary()">Stop Scan</mdb-button>
+            </div>
+            
+            <mat-divider class="mb-3"></mat-divider>
+            
+            <h3 class="mat-h3 mt-2">Auto-scan</h3>
+            <mdb-checkbox label="Enable Auto-scan" formControlName="autoScan" class="d-block mb-3"></mdb-checkbox>
+            <div class="row">
+               <div class="col-6">
+                 <mdb-input label="Value" formControlName="scanFreqValue" type="number"></mdb-input>
+               </div>
+               <div class="col-6">
+                  <mdb-select label="Unit" formControlName="scanFreqUnit" [options]="frequencyOptions"></mdb-select>
+               </div>
+            </div>
+            
+            <!-- Download Speed -->
+            <!-- Note: Binding to 'autoScan' again as per original bug, assuming TS not updated yet -->
+            <!-- Changed to text/number input as per label 'bps' -->
+            <div class="mt-3">
+               <mdb-input label="Download speed (bps)" formControlName="autoScan" type="number"></mdb-input>
+            </div>
+        </mdb-card>
 
-  <!-- preferred quality -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"'
-    [fieldLabel]="'Preferred Quality'" [inputType]="'select'" [optionSelections]='qualityOptions'>
-  </app-input-container>
-  <!-- preferred mode -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Preferred Mode'"
-    [inputType]="'select'" [optionSelections]='modeOptions'>
-  </app-input-container>
+        <!-- Offline Data -->
+        <mdb-card title="Offline Data">
+             <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                   <h4 class="mat-h4 m-0">Torrent Dump</h4>
+                   <small class="text-muted">Last update: Jan 1, 1970</small>
+                </div>
+                <mdb-button variant="outline" size="sm" (onClick)="onUpdateTorrentDump()">Update</mdb-button>
+             </div>
+             <mat-divider class="mb-2"></mat-divider>
+             <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                   <h4 class="mat-h4 m-0">Metadata</h4>
+                   <small class="text-muted">Last update: Jan 1, 1970</small>
+                </div>
+                <mdb-button variant="outline" size="sm" (onClick)="onUpdateOfflineMetadata()">Update</mdb-button>
+             </div>
+             <mat-divider class="mb-2"></mat-divider>
+             <div class="d-flex justify-content-between align-items-center">
+                <div>
+                   <h4 class="mat-h4 m-0">User Data</h4>
+                   <small class="text-muted">Sync profile across devices</small>
+                </div>
+                <mdb-button variant="outline" size="sm" (onClick)="onSyncUserData()">Sync</mdb-button>
+             </div>
+        </mdb-card>
 
-  <h2>Library</h2>
-  <mat-divider></mat-divider>
+      </div>
 
-  <!-- download speed -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"'
-    [fieldLabel]="'Download speed in bps'" [inputType]="'checkbox'">
-  </app-input-container>
+      <!-- Right Column -->
+      <div class="col-md-6 d-flex flex-column gap-4">
+        
+        <!-- Playback -->
+        <mdb-card title="Playback">
+             <mdb-select label="Preferred Quality" formControlName="autoScan" [options]="qualityOptions" class="mb-3"></mdb-select>
+             <mdb-select label="Preferred Mode" formControlName="autoScan" [options]="modeOptions" class="mb-3"></mdb-select>
+             
+             <div class="row">
+               <div class="col-md-12">
+                 <mat-divider class="my-3"></mat-divider>
+                 <h4 class="mat-h4">Subtitle Appearance</h4>
+               </div>
+               <div class="col-6 mb-3">
+                 <mdb-select label="Color" formControlName="fontColor" [options]="colorOptions"></mdb-select>
+               </div>
+               <div class="col-6 mb-3">
+                 <mdb-select label="Size" formControlName="fontSize" [options]="fontSizeOptions"></mdb-select>
+               </div>
+               <div class="col-6 mb-3">
+                 <mdb-select label="Opacity" formControlName="fontOpacity" [options]="frequencyOptions"></mdb-select>
+               </div>
+               <div class="col-6 mb-3">
+                 <mdb-select label="Font Family" formControlName="fontFamily" [options]="frequencyOptions"></mdb-select>
+               </div>
+               <div class="col-12">
+                 <mdb-select label="Background Color" formControlName="backgroundColor" [options]="colorOptions"></mdb-select>
+               </div>
+             </div>
+        </mdb-card>
 
+        <!-- Statistics -->
+        <mdb-card title="Statistics">
+            <div header-actions>
+               <mat-icon matTooltip="System stats">analytics</mat-icon>
+            </div>
+            <table class="table table-borderless text-white-50 m-0">
+              <tbody>
+                <tr>
+                  <td>Library Size</td>
+                  <td class="text-end text-white">21 GB</td>
+                </tr>
+                <tr>
+                  <td>Movies Count</td>
+                  <td class="text-end text-white">30</td>
+                </tr>
+                <tr>
+                    <td>System Up Time</td>
+                    <td class="text-end text-white">2d 4h</td>
+                </tr>
+              </tbody>
+            </table>
+        </mdb-card>
 
-  <h2>Streaming</h2>
-  <mat-divider></mat-divider>
-
-  <!-- download speed -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"'
-    [fieldLabel]="'Download speed in bps'" [inputType]="'text'">
-  </app-input-container>
-
-
-  <h2>Auto-scan</h2>
-  <mat-divider></mat-divider>
-
-
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"autoScan"' [fieldLabel]="'Auto-scan'"
-    [inputType]="'checkbox'">
-  </app-input-container>
-
-  <!-- frequency unit -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"scanFreqUnit"' [fieldLabel]="'Frequency'"
-    [inputType]="'select'" [optionSelections]='frequencyOptions'>
-  </app-input-container>
-  <!-- value -->
-  <app-input-container [parentForm]="preferencesForm" [mdbFormControlName]='"scanFreqValue"' [fieldLabel]="'Value'"
-    [inputType]="'text'">
-  </app-input-container>
-
-
-  <h2>Accounts</h2>
-  <mat-divider></mat-divider>
-
-
-  <div class='form-inline'>
-    <h2>Statistics</h2>
-    <i class='icon-question-mark' data-toggle="tooltip" title="Your system and library stats."></i>
-    <mat-divider></mat-divider>
-  </div>
-  <table class="table table-striped table-inverse table-responsive">
-    <thead class="thead-inverse">
-      <tr>
-        <th>Key</th>
-        <th>Value</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td scope="row">Library Size</td>
-        <td>21.GB</td>
-      </tr>
-      <tr>
-        <td scope="row">Library Movies</td>
-        <td>30</td>
-      </tr>
-      <tr>
-        <td scope="row">Library Movies</td>
-        <td>30</td>
-      </tr>
-    </tbody>
-  </table>
+      </div>
+    </div>
+  </form>
 </div>
 
+<!-- Modal -->
 <div id="addLibraryModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" (click)='onCloseModal()' data-dismiss="modal">&times;</button>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-bottom border-secondary">
+        <h4 class="modal-title">Manage Library Folders</h4>
+        <button type="button" class="close text-white" (click)='onCloseModal()' data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body">
-        <div>
-          <button class="btn btn-info" (click)="onGoToPreviousFolder(currentFolder)">Back</button>
-          <button class="btn btn-info" (click)="onGoToParentFolder()">Up</button>
-          <input type="text" [(ngModel)]="currentFolder" #currentFolderTextbox disabled>
-          <!-- <button class="btn btn-info" (click)="onGoToFolder(currentFolderTextbox.value)">Go</button> -->
-          <h3>Add Folder</h3>
-          <div class="row">
-            <div class="col-6" style="background-color: #3d3d3d;">
-              <p>Disks</p>
+         <div class="d-flex gap-2 mb-3">
+            <mdb-button variant="secondary" size="sm" (onClick)="onGoToParentFolder()">Up</mdb-button>
+            <input type="text" class="form-control bg-secondary text-white border-0" [(ngModel)]="currentFolder" #currentFolderTextbox disabled>
+         </div>
+         
+         <div class="row g-0 border border-secondary rounded overflow-hidden">
+            <div class="col-4 bg-secondary p-3">
+               <h6 class="text-uppercase text-white-50 fs-6">Drives</h6>
+               <!-- Drives list would go here -->
+               <div class="text-white-50 small">C: (System)</div>
             </div>
-            <div class="col-6" style="background-color:#161616;">
-              <!-- <div class="col-6" style="background-color:#fc8181;"> -->
-              <p>Folders</p>
-              <ul class="list-unstyled">
-                <li *ngFor="let folder of foldersList">
-                  <a class='folder-link' style='text-decoration: underline'
-                    (click)='onGoToFolder(folder)'>{{folder}}</a>
-                  <input type="checkbox" name="selected" id="myId" autocomplete="off">
+            <div class="col-8 bg-dark p-3">
+               <h6 class="text-uppercase text-white-50 fs-6">Folders</h6>
+               <ul class="list-unstyled">
+                <li *ngFor="let folder of foldersList" class="d-flex align-items-center justify-content-between py-1 border-bottom border-secondary">
+                  <a class="text-white text-decoration-none pointer" style="cursor: pointer" (click)='onGoToFolder(folder)'>
+                    <mat-icon class="align-middle me-2 fs-6">folder</mat-icon> {{folder}}
+                  </a>
+                  <mdb-checkbox color="primary"></mdb-checkbox>
                 </li>
               </ul>
             </div>
-          </div>
-        </div>
+         </div>
+      </div>
+      <div class="modal-footer border-top border-secondary">
+        <mdb-button variant="outline" data-dismiss="modal">Cancel</mdb-button>
+        <mdb-button variant="primary" (onClick)="onSave()">Add Selected</mdb-button>
       </div>
     </div>
   </div>
-</div>
-<div class="modal-footer">
-  <!-- <p>status bar...</p> -->
-  <button class="btn btn-success" (click)="onSave()">Save</button>
-  <button class="btn" data-dismiss="modal">Cancel</button>
 </div>

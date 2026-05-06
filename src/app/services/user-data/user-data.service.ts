@@ -1,17 +1,18 @@
+import { IUserProfile } from '@models/user.model';
 import { LibraryService } from '../library.service';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { IBookmark, BookmarkService } from '../media/bookmark.service';
+import { BookmarkService } from '../media/bookmark.service';
 import { MovieService } from '../movie/movie.service';
 import { PlayedService, IPlayed } from '../media/played.service';
 import { IUserDataPaginated, IpcOperations, IpcService, SubChannel } from '../ipc.service';
 import { CollectionName } from '@shared/constants';
-import { MediaUserDataService } from '@services/media/media-user-data.service';
 import { DataService } from '@services/data.service';
-import { MDBApiService } from '@services/mdb-api.service';
 import { HttpUrlProviderService } from '@services/http-url.provider.service';
 import { ENDPOINT } from '@shared/endpoint.const';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
+import { HttpBaseService } from '@services/http-base.service';
+import { IBookmark } from '@services/media';
 
 /**
  * User data only. no media.
@@ -26,33 +27,32 @@ export class UserDataService {
     private movieService: MovieService,
     private playedService: PlayedService,
     private libraryService: LibraryService,
-    private mediaUserData: MediaUserDataService,
     private dataService: DataService,
-    private bffService: MDBApiService,
     private ipcService: IpcService,
     private httpUrlProvider: HttpUrlProviderService,
-    private featureToggleService: FeatureToggleService
+    private featureToggleService: FeatureToggleService,
+    private httpBaseService: HttpBaseService
   ) { }
 
-  getUser(username: string) {
+  getUser(username: string): Observable<IUserProfile> {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
         null, { tmdbId: username });
     }
     return this.dataService.getHandle(
-      this.bffService.get(
+      this.httpBaseService.get<IUserProfile>(
         this.httpUrlProvider.getBffAPI(ENDPOINT.USER_ID, username)),
       this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
-        null, { tmdbId: username }));
+        null, { tmdbId: username }) as Observable<IUserProfile>);
   }
 
-  updateUser(username: string, payload: any) {
+  updateUser(username: string, payload: IUserProfile): Observable<IUserProfile> {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
         null, { tmdbId: username });
     }
     return this.dataService.postHandle(
-      this.bffService.post(
+      this.httpBaseService.post<IUserProfile>(
         this.httpUrlProvider.getBffAPI(ENDPOINT.USER_ID, username),
         payload),
       this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
@@ -65,7 +65,7 @@ export class UserDataService {
     let data: IUserDataPaginated | any = [];
     switch (dataType) {
       case 'bookmark':
-        const bookmarksList = await this.mediaUserData.getMediaDataPaginated('');
+        const bookmarksList = await this.bookmarkService.getBookmarksPaginatedFirstPage();
         data = bookmarksList;
         break;
       case 'watched':

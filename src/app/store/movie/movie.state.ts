@@ -1,16 +1,25 @@
 import { Injectable } from '@angular/core';
-import { State, Action, StateContext, Selector } from '@ngxs/store';
+import { State, Action, StateContext, Selector, createSelector } from '@ngxs/store';
 import { AddMovie, AddSearchMovie, AddDiscoverMovie, AddPreviewMovie, AddDashboardMovie } from './movie.actions';
 import { MDBMovieDashboardModel, MDBMovieListModel, MDBMovieModel, MDBMoviePreviewModel, MDBPaginatedResultModel } from "@services/movie/interface/movie";
 
 export interface MovieStateModel {
-  movies: { [id: string]: MDBMovieModel };
-  searchMovies: { [id: string]: MDBMovieListModel };
-  discoverMovies: { [id: string]: MDBPaginatedResultModel };
-  previewMovies: { [id: string]: MDBMoviePreviewModel };
-  dashboardMovies: { [id: string]: MDBMovieDashboardModel };
+  movies: { [id: string]: MDBMovieModel; };
+  searchMovies: { [id: string]: MDBMovieListModel; };
+  discoverMovies: { [id: string]: MDBPaginatedResultModel; };
+  previewMovies: { [id: string]: MDBMoviePreviewModel; };
+  dashboardMovies: { [id: string]: MDBMovieDashboardModel; };
 }
 
+
+/**
+ * TODO: add persistence; fix quota error
+ */
+// @Persistence({
+//     path: 'auth.accessToken',
+//     existingEngine: localStorage,
+//     ttl: 1000 * 60 * 15 // 15min
+// })
 @State<MovieStateModel>({
   name: 'movie',
   defaults: {
@@ -24,39 +33,36 @@ export interface MovieStateModel {
 @Injectable()
 export class MovieState {
 
-  @Selector()
   static getMovie(id: string | number) {
-    return (state: MovieStateModel) => {
+    return createSelector([MovieState], (state: MovieStateModel) => {
+      // console.log('Selector getMovie input state:', state);
+      // console.log('Selector getMovie id:', id);
       return state?.movies ? state.movies[id] : undefined;
-    };
+    });
   }
 
-  @Selector()
   static getSearchMovie(id: string | number) {
-    return (state: MovieStateModel) => {
+    return createSelector([MovieState], (state: MovieStateModel) => {
       return state?.searchMovies ? state.searchMovies[id] : undefined;
-    };
+    });
   }
 
-  @Selector()
   static getDiscoverMovie(id: string | number) {
-    return (state: MovieStateModel) => {
+    return createSelector([MovieState], (state: MovieStateModel) => {
       return state?.discoverMovies ? state.discoverMovies[id] : undefined;
-    };
+    });
   }
 
-  @Selector()
   static getPreviewMovie(id: string | number) {
-    return (state: MovieStateModel) => {
+    return createSelector([MovieState], (state: MovieStateModel) => {
       return state?.previewMovies ? state.previewMovies[id] : undefined;
-    };
+    });
   }
 
-  @Selector()
   static getDashboardMovie(id: string | number) {
-    return (state: MovieStateModel) => {
+    return createSelector([MovieState], (state: MovieStateModel) => {
       return state?.dashboardMovies ? state.dashboardMovies[id] : undefined;
-    };
+    });
   }
 
   @Action(AddMovie)

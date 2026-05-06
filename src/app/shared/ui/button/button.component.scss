@@ -1,0 +1,126 @@
+@import "app/variables";
+
+$mdb-gray-button: rgba(109, 109, 110, 0.7);
+$mdb-gray-hover: rgba(109, 109, 110, 0.4);
+
+:host {
+  display: inline-block;
+  
+  &.btn-full-width {
+    display: block;
+    width: 100%;
+  }
+}
+
+.content-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between icon/spinner and text */
+}
+
+/* Base styles are handled by Material, we override specific sizing if needed */
+button {
+  cursor: pointer;
+  font-weight: 600 !important; // Netflix buttons are bold
+  letter-spacing: 0.2px;
+  
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+// =============================================================================
+// THEME OVERRIDES (Enforcing Netflix Colors)
+// =============================================================================
+
+// Primary (Red)
+::ng-deep .mat-raised-button.mat-primary {
+  background-color: $mdb-primary !important;
+  color: $mdb-white !important;
+  
+  &:hover {
+    background-color: darken($mdb-primary, 10%) !important;
+  }
+}
+
+// Secondary (Accent) -> Netflix "More Info" Gray style
+::ng-deep .mat-flat-button.mat-accent {
+  background-color: $mdb-gray-button !important;
+  color: $mdb-white !important;
+  
+  &:hover {
+    background-color: $mdb-gray-hover !important;
+  }
+}
+
+// Outline -> White Border
+::ng-deep .mat-stroked-button {
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  color: $mdb-white !important;
+  
+  &:hover {
+    border-color: $mdb-white !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+// Text / Ghost
+::ng-deep .mat-button {
+  color: $mdb-white !important;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+/* Sizes */
+.btn-sm {
+  line-height: 24px;
+  padding: 0 12px;
+  font-size: 13px;
+  
+  ::ng-deep .mat-button-wrapper {
+    line-height: 24px; 
+  }
+
+  .btn-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+}
+
+.btn-md {
+  padding: 4px 20px; // More horizontal padding like Netflix
+  font-size: 1.6rem; // Standard button text size
+}
+
+.btn-lg {
+  line-height: 48px;
+  padding: 6px 32px;
+  font-size: 1.4rem; // Large Hero buttons
+
+  ::ng-deep .mat-button-wrapper {
+    line-height: 48px; 
+  }
+  
+  .btn-icon {
+    font-size: 28px;
+    height: 28px;
+    width: 28px;
+  }
+}
+
+.btn-full-width {
+  width: 100%;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.spinner {
+  /* Ensure spinner doesn't collapse the button */
+}
