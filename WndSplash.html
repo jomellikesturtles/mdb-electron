@@ -42,6 +42,9 @@
       filter: drop-shadow(0 0px 6px rgba(0, 0, 0, .5));
     }
   </style>
+  <script>const messageElement = document.getElementById("message");
+    console.log('here`')
+  </script>
 </head>
 
 <body>
@@ -49,7 +52,10 @@
     <div id="logo" class="logo">
       <img draggable="false" src="splash.png">
     </div>
-    <h5 id="message" style='color:white'>starting...</h5>
+    <h5 style='color:white'>
+      <span id="timer" style="opacity: 0.5; font-size: 0.8em; margin-right: 10px;">0.0s</span>
+      <span id="message">starting...</span>
+    </h5>
   </div>
   <script src="RndSplash.js"></script>
 </body>

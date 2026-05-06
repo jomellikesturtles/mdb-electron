@@ -1,33 +1,47 @@
-
+const { ipcRenderer } = require("electron");
 let procPreStart;
 
+const startTime = Date.now();
+const timerElement = document.getElementById("timer");
+const messageElement = document.getElementById("message");
+
+const updateTimer = () => {
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  if (timerElement) timerElement.innerText = elapsed + "s";
+};
+
+setInterval(updateTimer, 100);
+
 let DEBUG = (() => {
-  let timestamp = () => {};
-  timestamp.toString = () => {
-    return "[DEBUG " + new Date().toLocaleString() + "]";
-  };
+  const getTimestamp = () => "[Splash][DEBUG " + new Date().toLocaleString() + "]";
   return {
-    log: console.log.bind(console, "%s", timestamp),
+    log: (...args) => console.log("%s", getTimestamp(), ...args)
   };
 })();
 
+DEBUG.log("Splash screen starting...");
 const prestartPath = path.join(__dirname, "src/assets/scripts/pre-start.js");
 procPreStart = window.fork(prestartPath, null, {
   cwd: __dirname,
-  silent: false,
+  silent: false
 });
-document.getElementById("message").innerHTML = "initializing...";
+let currentTime = new Date();
+if (messageElement)
+  messageElement.innerHTML = `initializing... ${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
 
 procPreStart.on("exit", function () {
   DEBUG.log("EXIT");
   ipcRenderer.send("splash-done");
 });
+console.log("Sending splash-done");
+
+ipcRenderer.send("splash-done");
 procPreStart.on("message", function (msg) {
   console.log("MSG:", msg);
   if (msg && msg.length > 1) {
     switch (msg[0]) {
       case "status":
-        document.getElementById("message").innerHTML = msg[1];
+        if (messageElement) messageElement.innerHTML = msg[1];
         break;
       case "error":
         ipcRenderer.send("splash-error", ["mymessage"]);
@@ -45,13 +59,13 @@ procPreStart.on("message", function (msg) {
 
 procPreStart.on("uncaughtException", function (event, msg) {
   console.log("uncaughtException:", msg);
-  ipcRenderer.send("splash-error", "123");
+  ipcRenderer.send("splash-error", "UncaughtException:" + msg);
 });
 procPreStart.on("rejectionHandled", function (event, msg) {
   console.log("rejectionHandled:", msg);
-  ipcRenderer.send("splash-error", "123");
+  ipcRenderer.send("splash-error", "Rejection Error: ", msg);
 });
 procPreStart.on("unhandledRejection", function (event, msg) {
-  console.log("unhandledRejection 123:", msg);
-  ipcRenderer.send("splash-error", "123");
+  console.log("unhandledRejection:", msg);
+  ipcRenderer.send("splash-error", "Unhandled Error: " + msg);
 });

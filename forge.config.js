@@ -2,6 +2,14 @@ module.exports = {
   packagerConfig: {
     asar: true,
     executableName: 'mdb',
+    ignore: [
+      /^\/src/, // Source files (already bundled in dist/)
+      /^\/e2e/, // End-to-end tests
+      /^\/node_modules/, // Forge prunes this, but explicit ignore can help
+      /\.md$/, // Markdown documentation
+      /tsconfig\.json/,
+      /tslint\.json/
+    ]
     // Add icons here later
   },
   rebuildConfig: {},

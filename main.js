@@ -2,7 +2,7 @@
 /**
  * Main processor
  */
-if (require("electron-squirrel-startup")) return;
+// if (require("electron-squirrel-startup")) return;
 
 const cp = require("child_process");
 const electron = require("electron");
@@ -50,15 +50,15 @@ switch (process.platform) {
 }
 
 process.on("uncaughtException", (error) => {
-  DEBUG.log("uncaughtException");
+  DEBUG.error("uncaughtException", error.message);
   sendContents("error", JSON.stringify(error));
 });
 process.on("unhandledRejection", (error) => {
-  DEBUG.log("unhandledRejection");
+  DEBUG.error("unhandledRejection", error);
   sendContents("error", JSON.stringify(error));
 });
 process.on("error", (error) => {
-  DEBUG.log("error");
+  DEBUG.error("error", error);
   sendContents("error", JSON.stringify(error));
 });
 
@@ -71,6 +71,7 @@ const PROC_OPTION = {
  * Creates the browser window
  */
 function createMainWindow() {
+  DEBUG.log("[MAIN] Creating mainWindow...");
   mainWindow = new BrowserWindow({
     minWidth: 762,
     minHeight: 700,
@@ -90,7 +91,16 @@ function createMainWindow() {
   });
   mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
-  mainWindow.loadURL(`file://${__dirname}/dist/mdb-electron/index.html`); // It will load in production mode
+  DEBUG.log("[MAIN] Loading mainWindow");
+
+  // mainWindow.loadURL(`file://${__dirname}/dist/mdb-electron/index.html`); // It will load in production mode
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, "dist/mdb-electron/index.html"),
+      protocol: "file:",
+      slashes: true
+    })
+  ); // It will load in production mode
   // Event when the window is closed.
   mainWindow.on("closed", function () {
     mainWindow = null;
@@ -131,7 +141,7 @@ function createMainWindow() {
 app.setAppUserModelId(process.execPath);
 // Create window on electron initialization
 app.on("ready", showSplash);
-// app.on("ready", createWindow);
+app.on("ready", showWindow);
 
 // Quit when all windows are closed.
 app.on("window-all-closed", function () {
@@ -203,12 +213,6 @@ ipcMain.on("splash-done", function (event, msg) {
   splashWindow.webContents.send("fade");
 });
 
-ipcMain.on("splash-error", function (event, msg) {
-  DEBUG.log("SPLASH-ERROR", msg);
-  dialog.showErrorBox("ERROR", msg[0]);
-  app.quit();
-});
-
 function setSystemTray() {
   // let trayIcon = `${__dirname}/dist/mdb-electron/assets/icons/chevron.png`
   let trayIcon = appIcon;
@@ -245,8 +249,14 @@ function setSystemTray() {
   }
 }
 
+function sendContents(channel, args) {
+  DEBUG.log("sending...", channel, " | ", args);
+  // mainWindow.webContents.send(channel, args); // reply
+}
 // Show and Focus mainWindow
 function showWindow() {
+  createMainWindow();
+  DEBUG.log("Showing window...");
   mainWindow.show();
   mainWindow.focus();
   if (isMac) {
@@ -291,6 +301,7 @@ function startTorrentClient() {
    */
   procWebTorrent.on("message", (m) => sendContents(m[0], m[1]));
 }
+
 /* IPC Event handling
 ----------------------*/
 /* Logger */
@@ -416,17 +427,6 @@ ipcMain.on("retrieve-library-folders", function (event, data) {
       }
     }
   );
-});
-
-// !UNUSED
-ipcMain.on("search-query", function (event, data) {
-  if (!procSearch) {
-    // if process search is not yet running
-    procSearch = forkChildProcess("src/assets/scripts/search-movie.js", [], PROC_OPTION);
-    procSearch.stdout.on("data", (data) => printData(data));
-  } else {
-    DEBUG.log("One Search process is already running");
-  }
 });
 
 /**
@@ -592,65 +592,7 @@ function printData(data) {
 
 function sendContents(channel, args) {
   DEBUG.log("sending...", channel, " | ", args);
-  mainWindow.webContents.send(channel, args); // reply
-}
-
-//---------------------------
-
-/**
- * TODO: assign a global proc
- * @param {string} processName
- * @param {string []} procPath
- * @param {any[]} params
- * @param {null| import("child_process").ChildProcess} proc
- */
-function startProc(processName, procPath, params) {
-  DEBUG.log(`starting ${processName}...`);
-  DEBUG.log(`starting ${procPath}...`);
-  let proc = cp.fork(path.join(__dirname, procPath), params, PROC_OPTION);
-  proc.on("exit", () => {
-    DEBUG.log(`process ${processName} ended`);
-    proc = null;
-  });
-  proc.on("message", function (m) {
-    DEBUG.log(`message by ${processName} in IPCMAIN: `, m);
-    mainWindow.webContents.send(m[0], m[1]);
-  });
-  proc.on("error", function (m) {
-    DEBUG.log(`${scriptName} in error`, m);
-  });
-  proc.on("uncaughtException", function (m) {
-    DEBUG.log(`${scriptName} in uncaughtException`, m);
-  });
-  // globalProc = proc;
-
-  return proc;
-}
-
-/* Notification senders
-------------------------*/
-// Show blue background notification
-function popMsg(msg) {
-  mainWindow.webContents.send("notify", [msg, "info"]);
-}
-// Show green background notification
-function popSuccess(msg) {
-  mainWindow.webContents.send("notify", [msg, "success"]);
-}
-// Show red background notification
-function popErr(msg) {
-  DEBUG.log("ERROR");
-  mainWindow.webContents.send("notify", [msg, "danger"]);
-  // app.quit();
-}
-function popCritError(msg) {
-  DEBUG.log("CRIT ERROR");
-  mainWindow.webContents.send("notify", [msg, "danger"]);
-  app.quit();
-}
-// Show yellow background notification
-function popWarn(msg) {
-  mainWindow.webContents.send("notify", [msg, "warning"]);
+  if (mainWindow) mainWindow.webContents.send(channel, args); // reply
 }
 
 /**
