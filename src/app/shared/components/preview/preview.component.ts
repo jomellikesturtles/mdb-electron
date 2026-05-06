@@ -165,10 +165,9 @@ export class PreviewComponent implements OnInit, OnDestroy, AfterViewInit {
       const theRes = await this.movieService.getRelatedClips(this.previewMovie.tmdbId).toPromise();
 
       if (theRes && theRes.results && theRes.results.length > 0) {
-        // const trailer = theRes.results[Math.floor(Math.random() * (theRes.results.length - 0 + 1) + 0)];
         // TODO: add checking for "status": "UNPLAYABLE",
         const filteredVideos = theRes.results.filter(e => e.type == 'Trailer');
-        const trailer = filteredVideos[Math.floor(Math.random() * (theRes.results.length - 0 + 1) + 0)];
+        const trailer = filteredVideos[Math.floor(Math.random() * (filteredVideos.length - 0 + 1) + 0)];
         if (trailer) {
           this.hasTrailerClip = true;
           videoId = trailer.key;

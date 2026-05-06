@@ -216,46 +216,32 @@ a {
 
 
 
-// Material Tabs Overrides
-
-.mat-mdc-tab-group {
-
-  .mat-mdc-tab-label-container {
-
-    border-bottom: 1px solid #333;
-
-  }
-
+// Horizontal Card List
+.card-list-horizontal {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 16px;
+  padding: 10px 0;
+  width: 100%;
+  scroll-behavior: smooth;
   
-
-  .mat-mdc-tab {
-
-    color: $mdb-gray-text;
-
-    font-weight: 600;
-
-    font-size: 1rem;
-
-    letter-spacing: 0.5px;
-
-    
-
-    &.mdc-tab--active {
-
-      color: $mdb-white;
-
-    }
-
+  // Custom Scrollbar for the list
+  &::-webkit-scrollbar {
+    height: 6px;
   }
-
   
-
-  .mat-mdc-tab-indicator .mat-mdc-tab-indicator__content {
-
-    border-color: $mdb-primary !important;
-
-    border-top-width: 4px !important; // Thicker line like Netflix
-
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
   }
 
+  /* Force cards to not shrink */
+  #results-panel {
+    flex: 0 0 auto;
+  }
 }
