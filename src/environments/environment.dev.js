@@ -3,7 +3,7 @@ window["environment"] = {
   name: "dev",
   language: "en",
   bff: {
-    uri: "",
+    uri: "http://localhost:5001",
     version: "v1"
   },
   bffBaseUrl: "",

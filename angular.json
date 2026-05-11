@@ -22,8 +22,9 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets", "src/manifest.json", "src/environment.js"],
-            "styles": ["src/styles.scss"]
+            "assets": ["src/favicon.ico", "src/assets", "src/manifest.json"],
+            "styles": ["src/styles.scss"],
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -49,13 +50,21 @@
                 }
               ],
               "serviceWorker": true,
-              "ngswConfigPath": "src/ngsw-config.json"
+              "ngswConfigPath": "src/ngsw-config.json",
+              "scripts": ["src/environment.js"]
             },
             "development": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environment.js",
+                  "with": "src/environments/environment.dev.js"
+                }
+              ],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "scripts": ["src/environments/environment.dev.js"]
             }
           }
         },

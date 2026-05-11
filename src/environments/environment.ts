@@ -6,7 +6,7 @@ enum source {
   TMDB = "TMDB", IMDB = "IMDB", MDB = "MDB", OMDB = "OMDB", Local = "local"
 }
 
-export const environment = {
+export const environment: any = {
   production: false,
   bff: {
     url: '/mdb',
