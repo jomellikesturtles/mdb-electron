@@ -12,7 +12,7 @@ export const environment: any = {
     url: '/mdb',
     version: 'v1'
   },
-  bffBaseUrl: 'http://localhost:8080',
+  bffBaseUrl: 'http://localhost:8082',
   runConfig: {
     firebaseMode: false,
     electron: typeof window !== 'undefined' && (window as any).process && (window as any).process.type === 'renderer' || (typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().indexOf(' electron/') > -1),

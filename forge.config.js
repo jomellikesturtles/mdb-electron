@@ -11,12 +11,12 @@ module.exports = {
       /^\/\.storybook/,
       /^\/\.vscode/,
       /^\/e2e/,
-      /^\/node_modules\/@angular/, // Angular source (bundled in dist)
-      /^\/node_modules\/@ngxs/,     // NGXS source (bundled in dist)
+      /^\/node_modules\/@angular/,
+      /^\/node_modules\/@ngxs/,
       /^\/out/,
       /^\/plans/,
       /^\/scripts/,
-      /^\/src\/(?!assets\/scripts|assets\/config|assets\/db)/, // Ignore all src except critical runtime scripts and DBs
+      /^\/src\/(?!assets)/, // Exclude all src EXCEPT the assets folder (which contains scripts/configs/DBs)
       /^\/test-results/,
       /\.lighthouserc\.json$/,
       /angular\.json$/,
@@ -28,7 +28,7 @@ module.exports = {
       /tsconfig.*\.json$/,
       /tslint\.json$/,
       /\.md$/,
-      /\.map$/ // Exclude source maps from production
+      /\.map$/
     ]
   },
   rebuildConfig: {},

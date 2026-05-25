@@ -8,9 +8,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:prod": "ng serve --configuration production",
-    "build:web:dev": "ng build --configuration development",
-    "build:web:prod": "ng build --configuration production",
+    "start:prod": "ng serve --configuration=production",
+    "build:web:dev": "ng build --configuration=development",
+    "build:web:prod": "ng build --configuration=production",
     "build:electron:dev": "ng build --configuration development --base-href ./",
     "build:electron:prod": "ng build --configuration production --base-href ./",
     "start:electron:dev": "npm run build:electron:dev && electron .",
@@ -125,11 +125,6 @@
     "typescript": "~5.4.5",
     "zone.js": "~0.14.10"
   },
-  "files": [
-    "*.js",
-    "build",
-    "node_modules"
-  ],
   "electronWebpack": {
     "externals": {
       "nedb": "commonjs nedb"

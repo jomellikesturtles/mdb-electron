@@ -1,17 +1,15 @@
-import { Component, OnInit, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DataService } from '@services/data.service';
-import { MovieService } from '@services/movie/movie.service';
 import { IpcService } from '@services/ipc.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { NavigationService } from '@core/services/navigation.service';
+import { Router } from '@angular/router';
 import { environment } from '@environments/environment';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { ISearchQuery } from '@models/interfaces';
-import { AuthenticationService } from "@services/authentication.service";
 import { Actions, ofActionDispatched } from "@ngxs/store";
 import { Login } from "app/store/auth/auth.state";
+import { AuthenticationService, DataService } from '@services';
+import { NavigationService } from '@core/services/navigation.service';
 import { MockDataService } from '@services/mock-data.service';
 
 @Component({
@@ -20,7 +18,6 @@ import { MockDataService } from '@services/mock-data.service';
   styleUrls: ['./top-navigation.component.scss']
 })
 export class TopNavigationComponent implements OnInit {
-  @Input() data: Observable<any>;
   @Output() toggleSidebar = new EventEmitter<void>();
   @ViewChild('searchBar') searchBar: ElementRef;
 
@@ -37,9 +34,7 @@ export class TopNavigationComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private ipcService: IpcService,
-    private movieService: MovieService,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
     private authService: AuthenticationService,
     private $actions: Actions,
     private navigationService: NavigationService,

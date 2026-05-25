@@ -5,6 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthenticationService } from './authentication.service';
 import { SessionService } from './session.service';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,15 @@ export class HttpInterceptorService implements HttpInterceptor {
     let request = req;
     if (req.url.includes('mdb') && !req.url.includes('/v1/auth')) {
       request = this.modifyRequest(req) ?? req;
+    }
+
+    // Fix for Electron file:// protocol resolution
+    if (environment.runConfig.electron && request.url.startsWith('/mdb')) {
+      const baseUrl = environment.bffBaseUrl.endsWith('/')
+        ? environment.bffBaseUrl.slice(0, -1)
+        : environment.bffBaseUrl;
+      const newUrl = baseUrl + request.url;
+      request = request.clone({ url: newUrl });
     }
 
     return next.handle(request).pipe(
