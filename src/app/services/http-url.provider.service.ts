@@ -17,9 +17,17 @@ export class HttpUrlProviderService {
   }
   getBffAPI(endpoint: string, ...params: any[]) {
     endpoint = this.replaceParams(endpoint, API_TYPE.BFF, params);
-    console.log('${this.getURI(API_TYPE.BFF)}/${endpoint}:', `${this.getURI(API_TYPE.BFF)} / ${endpoint}`);
-    return `${this.getURI(API_TYPE.BFF)}/${endpoint}`;
-    // return endpoint;
+    const uri = this.getURI(API_TYPE.BFF);
+    const bffUrl = this.coreEnvironment.environment[API_TYPE.BFF].url;
+    
+    let baseUrl = uri;
+    if (!baseUrl && bffUrl) {
+      baseUrl = bffUrl;
+    }
+
+    const finalUrl = baseUrl ? `${baseUrl}/${endpoint}` : endpoint;
+    console.log(`BFF API URL: ${finalUrl}`);
+    return finalUrl;
   }
 
   private replaceParams(endpoint: string, apiType: API_TYPE, ...params: any[]): string {

@@ -18,16 +18,16 @@ export class HttpInterceptorService implements HttpInterceptor {
   ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    
+
     // Proactive session check for MDB API requests
     if (req.url.includes('mdb')) {
       if (this.authService.isAuthenticated()) {
         if (this.authService.isTokenExpired()) {
           this.sessionService.sessionExpired$.next();
-          return throwError(() => new HttpErrorResponse({ 
-            error: 'Session Expired', 
-            status: 401, 
-            statusText: 'Unauthorized' 
+          return throwError(() => new HttpErrorResponse({
+            error: 'Session Expired',
+            status: 401,
+            statusText: 'Unauthorized'
           }));
         }
         // Sliding Expiration: Update timestamp on successful activity check
@@ -53,7 +53,7 @@ export class HttpInterceptorService implements HttpInterceptor {
 
   modifyRequest(request: HttpRequest<any>): HttpRequest<any> {
     let headers = request.headers.set('Authorization', 'Bearer ' + (sessionStorage.getItem('token')));
-
+    // request.headers.set('Access-Control-Allow-Origin', '*');
     return request.clone({
       headers,
       withCredentials: false

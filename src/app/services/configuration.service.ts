@@ -19,7 +19,6 @@ export class ConfigurationService {
   getConfiguration(): Observable<any> {
     // const url = `${BFF_URL}/config`;
     // const url = `${BFF_URL}/config/versions`;
-
-    return this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.ACTUATOR_HEALTH), 'getConfiguration');
+    return this.httpBaseService.get(ENDPOINT.ACTUATOR_HEALTH);
   }
 }
