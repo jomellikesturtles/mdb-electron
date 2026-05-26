@@ -2,6 +2,7 @@
 
   <!-- LEFT: Hamburger & Logo -->
   <div class="nav-left">
+    <div class="mac-spacer" *ngIf="isMac" style="width: 70px; -webkit-app-region: no-drag;"></div>
     <div class="hamburger-btn" (click)="toggleSidebar.emit()"
       style="cursor: pointer; padding: 5px; -webkit-app-region: no-drag;">
       <!-- <img src="/assets/icons/menu.svg" alt="Menu" style="width: 24px; height: 24px; filter: invert(1);"> -->
@@ -79,7 +80,7 @@
       </ng-template>
 
       <mat-divider></mat-divider>
-      
+
       <button mat-menu-item (click)="goToHelp()">
         <mat-icon>help</mat-icon>
         <span>Help</span>
@@ -95,7 +96,7 @@
     </mat-menu>
 
     <!-- Window Controls (Electron Only) -->
-    <div *ngIf="isElectron" class="window-controls-container">
+    <div *ngIf="isElectron && !isMac" class="window-controls-container">
       <div class="window-icon-bg" (click)="onMinimize()">
         <img class="icon-img" src="/assets/icons/minimize.svg">
       </div>

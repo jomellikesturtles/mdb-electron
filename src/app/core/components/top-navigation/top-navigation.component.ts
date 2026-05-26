@@ -42,6 +42,7 @@ export class TopNavigationComponent implements OnInit {
   ) { }
 
   isElectron = environment.runConfig.electron;
+  isMac = this.isElectron && /Mac/.test(window.navigator.platform);
   status = 'LOGIN';
   browserConnection = navigator.onLine;
   currentYear = new Date().getFullYear();
