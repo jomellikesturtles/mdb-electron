@@ -24,7 +24,6 @@ import { ImagePreviewComponent } from '@shared/components/image-preview/image-pr
 import { KeyboardShortcutsComponent } from '@modules/settings/keyboard-shortcuts/keyboard-shortcuts.component';
 import { VideoPlayerModule } from '@modules/watch/video-player.module';
 import { YoutubePlayerComponent } from '@shared/components/youtube-player/youtube-player.component';
-import { MdbButtonComponent } from './core/elements/mdb-button/mdb-button.component';
 import { CoreEnvironmentService } from '@services/core-environment.service';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
 import { MockCoreServicesModule } from '@core/dev/mock-core-services.module';
@@ -50,7 +49,6 @@ import { MovieState } from './store/movie/movie.state';
     ImagePreviewComponent,
     KeyboardShortcutsComponent,
     YoutubePlayerComponent,
-    MdbButtonComponent,
   ],
   imports: [
     BrowserModule,

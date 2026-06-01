@@ -11,6 +11,8 @@ import { Login } from "app/store/auth/auth.state";
 import { AuthenticationService, DataService } from '@services';
 import { NavigationService } from '@core/services/navigation.service';
 import { MockDataService } from '@services/mock-data.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AppDownloadDialogComponent } from '@shared/components/app-download-dialog/app-download-dialog.component';
 
 @Component({
   selector: 'app-top-navigation',
@@ -38,11 +40,17 @@ export class TopNavigationComponent implements OnInit {
     private authService: AuthenticationService,
     private $actions: Actions,
     private navigationService: NavigationService,
-    private mockDataService: MockDataService
+    private mockDataService: MockDataService,
+    private dialog: MatDialog
   ) { }
 
   isElectron = environment.runConfig.electron;
   isMac = this.isElectron && /Mac/.test(window.navigator.platform);
+  isMacBrowser = !this.isElectron && /Mac/.test(window.navigator.platform);
+  isWindowsBrowser = !this.isElectron && /Win/.test(window.navigator.platform);
+  isLinuxBrowser = !this.isElectron && /Linux/.test(window.navigator.platform);
+  downloadUrl = 'https://github.com/jomellikesturtles/mdb-electron/releases/download/v1.0.0-alpha/mdb-darwin-arm64.zip';
+  
   status = 'LOGIN';
   browserConnection = navigator.onLine;
   currentYear = new Date().getFullYear();
@@ -208,5 +216,14 @@ export class TopNavigationComponent implements OnInit {
   }
   onExit() {
     this.ipcService.exitApp();
+  }
+
+  onDownloadApp() {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      this.dialog.open(AppDownloadDialogComponent);
+    } else if (this.isMacBrowser) {
+      window.open(this.downloadUrl, '_blank');
+    }
   }
 }

@@ -15,6 +15,7 @@ import { MovieCardSkeletonComponent } from './components/movie-card-skeleton/mov
 import { SessionExpiredDialogComponent } from './components/session-dialogs/session-expired-dialog.component';
 import { SessionWarningDialogComponent } from './components/session-dialogs/session-warning-dialog.component';
 import { NewListDialogComponent } from './components/list-dialogs/new-list-dialog.component';
+import { AppDownloadDialogComponent } from './components/app-download-dialog/app-download-dialog.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { NewListDialogComponent } from './components/list-dialogs/new-list-dialo
     GenrePipe,
     SessionExpiredDialogComponent,
     SessionWarningDialogComponent,
-    NewListDialogComponent
+    NewListDialogComponent,
+    AppDownloadDialogComponent
   ],
   imports: [
     CommonModule,
@@ -56,7 +58,8 @@ import { NewListDialogComponent } from './components/list-dialogs/new-list-dialo
     MovieCardSkeletonComponent,
     SessionExpiredDialogComponent,
     SessionWarningDialogComponent,
-    NewListDialogComponent
+    NewListDialogComponent,
+    AppDownloadDialogComponent
   ]
 })
 export class SharedModule { }
