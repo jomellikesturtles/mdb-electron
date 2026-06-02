@@ -85,6 +85,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      - name: Build Angular
+        run: npm run build:web:prod
       - name: Checkout Target (mdb-platform)
         uses: actions/checkout@v4
         with:
