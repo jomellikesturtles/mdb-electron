@@ -12,6 +12,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, from } from 'rxjs';
 import { IRawLibrary } from './library.service';
 import { LoggerService } from '@core/logger.service';
+import { IAppError } from '@models/app-error.model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,7 @@ export class IpcService {
   torrentVideo = new BehaviorSubject<string[]>([]);
   preferences = new BehaviorSubject<any>([]);
   streamLink = new BehaviorSubject<any>('');
+  appErrors = new BehaviorSubject<IAppError | null>(null);
   private statsForNerds = new BehaviorSubject<any>({});
   statsForNerdsSubscribable = this.statsForNerds.asObservable();
   private ipcRenderer: any;
@@ -56,6 +58,10 @@ export class IpcService {
       this.ipcRenderer.on(MainToRendererChannels.STATS, (data) => {
         this.statsForNerds.next(data);
         this.loggerService.info(`MainToRendererChannels.STATS ${JSON.stringify(data)}`);
+      });
+      this.ipcRenderer.on(MainToRendererChannels.ERROR, (data: IAppError) => {
+        this.appErrors.next(data);
+        this.loggerService.error(`Backend Error [${data.source}]: ${data.message} ${JSON.stringify(data)}`);
       });
     } else {
       this.loggerService.warn('IpcService: Electron environment not detected. IPC features will be disabled.');

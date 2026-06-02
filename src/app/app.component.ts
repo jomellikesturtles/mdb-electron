@@ -7,10 +7,12 @@ import { AuthenticationService } from "@services/authentication.service";
 import { SessionService } from "@services/session.service";
 import { StorageSyncService } from "@services/storage-sync.service";
 import { MatDialog } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { FeatureToggleService } from "@core/services/feature-toggle.service";
 import { SessionWarningDialogComponent } from "@shared/components/session-dialogs/session-warning-dialog.component";
 import { SessionExpiredDialogComponent } from "@shared/components/session-dialogs/session-expired-dialog.component";
+import { IpcService } from "@services/ipc.service";
 
 @Component({
   selector: 'app-root',
@@ -26,8 +28,10 @@ export class AppComponent implements OnInit {
     private sessionService: SessionService,
     private storageSyncService: StorageSyncService,
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private router: Router,
-    private featureToggle: FeatureToggleService
+    private featureToggle: FeatureToggleService,
+    private ipcService: IpcService
   ) { }
   messageSubscription: Subscription;
   ngOnInit() {
@@ -42,6 +46,20 @@ export class AppComponent implements OnInit {
     this.syncTime();
     this.initSessionMonitoring();
     this.storageSyncService.initSync();
+    this.initErrorMonitoring();
+  }
+
+  private initErrorMonitoring(): void {
+    this.ipcService.appErrors.subscribe(error => {
+      if (error) {
+        this.snackBar.open(`[${error.source}] ${error.message}`, 'Close', {
+          duration: 7000,
+          panelClass: ['error-snackbar'],
+          horizontalPosition: 'end',
+          verticalPosition: 'bottom'
+        });
+      }
+    });
   }
 
   private initSessionMonitoring(): void {

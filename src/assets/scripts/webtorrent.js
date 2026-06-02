@@ -62,6 +62,7 @@ async function playMovieTorrent(hash) {
   torrentClient.add(torrentLink, {}, async function (torrent) {
     torrent.on("error", (e) => {
       DEBUG.error("Torrent error", hash, e);
+      process.send(["error", { source: "webtorrent-torrent", message: e.message, stack: e.stack }]);
     });
 
     if (currentServer) {
@@ -91,6 +92,7 @@ async function playMovieTorrent(hash) {
         server.listen(serverPort);
       } else {
         DEBUG.error("Server error:", err);
+        process.send(["error", { source: "webtorrent-server", message: err.message, stack: err.stack }]);
       }
     });
 

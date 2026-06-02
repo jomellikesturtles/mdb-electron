@@ -591,7 +591,28 @@ function forkChildProcess(modulePath, args, processOptions) {
 }
 function printError(processName, args) {
   DEBUG.log(`${processName} in error`, args);
+  sendError(processName, args);
 }
+
+function sendError(source, error) {
+  const appError = {
+    source: source,
+    message: error.message || error.toString(),
+    stack: error.stack,
+    timestamp: Date.now()
+  };
+  DEBUG.error(`[Error][${source}]`, appError);
+  sendContents("error", appError);
+}
+
+process.on("uncaughtException", (error) => {
+  sendError("main-uncaught", error);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  sendError("main-unhandled-rejection", reason);
+});
+
 function printData(data) {
   DEBUG.log("printing data", data.toString());
 }
