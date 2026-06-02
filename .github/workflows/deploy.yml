@@ -100,9 +100,9 @@ jobs:
         run: |
           mkdir -p mdb-platform/mdb-electron
           # Clean up old assets to ensure a clean sync
-          rm -rf mdb-platform/mdb-electron
-          # Copy everything from output to the target subfolder
-          cp -r dist/mdb-electron* mdb-platform/mdb-electron/
+          rm -rf mdb-platform/mdb-electron/*
+          # Copy the entire build output folder to the target repository
+          cp -r dist/mdb-electron/. mdb-platform/mdb-electron/
 
       - name: Create Pull Request on mdb-platform
 
