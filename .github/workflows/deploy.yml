@@ -46,7 +46,7 @@ jobs:
 
   build_and_release_electron:
     name: \[Electron\] Build, Package, Release
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -57,18 +57,23 @@ jobs:
           node-version: 20
           cache: "npm"
 
-      - name: Build/release Electron app
-        uses: samuelmeuli/action-electron-builder@v1
-        with:
-          # GitHub token, automatically provided to the action
-          # (No need to define this secret in the repo settings)
-          github_token: ${{ secrets.PAT_GITHUB }}
-          args: --legacy-peer-deps
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
 
-          # If the commit is tagged with a version (e.g. "v1.0.0"),
-          # release the app after building
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-          build_script_name: "build:electron:dev"
+      - name: Build Angular
+        run: npm run build:electron:prod
+
+      - name: Build/Package Electron app
+        run: npm run make
+
+      - name: Push to Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          token: ${{ secrets.PAT_GITHUB }}
+          files: |
+            out/make/**/*.zip
+            out/make/**/*.dmg
 
   sync-to-platform:
     runs-on: ubuntu-latest
