@@ -10,7 +10,6 @@ import { RendererToMainChannels, MainToRendererChannels } from '../../electron/c
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, from } from 'rxjs';
-import { ipcRenderer } from 'electron';
 import { IRawLibrary } from './library.service';
 import { LoggerService } from '@core/logger.service';
 
@@ -29,13 +28,16 @@ export class IpcService {
   streamLink = new BehaviorSubject<any>('');
   private statsForNerds = new BehaviorSubject<any>({});
   statsForNerdsSubscribable = this.statsForNerds.asObservable();
-  private ipcRenderer: typeof ipcRenderer;
+  private ipcRenderer: any;
+  private config: any;
 
   constructor(
     private loggerService: LoggerService
   ) {
-    if (environment.runConfig.electron && (window as any).electron) {
-
+    // Resolve environment safely (handles cases where 'environment' is the module object)
+    this.config = (environment as any).environment || environment;
+    console.log('RendererToMainChannels.MINIMIZE_APP: ', RendererToMainChannels.MINIMIZE_APP);
+    if (this.isElectron2()) {
       this.ipcRenderer = (window as any).electron.ipcRenderer;
 
       this.ipcRenderer.on('torrent-video', (data: any) => {
@@ -55,6 +57,8 @@ export class IpcService {
         this.statsForNerds.next(data);
         this.loggerService.info(`MainToRendererChannels.STATS ${JSON.stringify(data)}`);
       });
+    } else {
+      this.loggerService.warn('IpcService: Electron environment not detected. IPC features will be disabled.');
     }
   }
 
@@ -65,6 +69,7 @@ export class IpcService {
     //   });
     //   this.ipcRenderer.send('retrieve-library-folders');
     // });
+    return [];
   }
 
   /**
@@ -77,14 +82,15 @@ export class IpcService {
     //   });
     // });
     // this.ipcRenderer.send('get-drives')
+    return [];
   }
   /**
    * Opens the folder
    * @param data folder directory
    */
   openFolder(data: string) {
+    if (!this.isElectron()) return;
     this.loggerService.info(`openFolder: ${data}`);
-    // this.ipcRenderer.send('go-to-folder', ['open', data])
   }
 
   /**
@@ -92,8 +98,9 @@ export class IpcService {
    * @param idList
    */
   getMoviesFromLibraryInList(idList: number[]): Promise<IRawLibrary[]> {
+    if (!this.isElectron()) return Promise.resolve([]);
     const theUuid = uuidv4();
-    this.sendToMain('library', { operation: IpcOperations.FIND_IN_LIST, uuid: theUuid },
+    this.sendToMain(RendererToMainChannels.LIBRARY, { operation: IpcOperations.FIND_IN_LIST, uuid: theUuid },
       { idList: idList });
     return this.listenOnce(`library-${theUuid}`);
   }
@@ -105,6 +112,7 @@ export class IpcService {
    * @param size
    */
   getMultiplePaginatedFirst(collectionName: string, sort: string, size?: number): Promise<IUserDataPaginated> {
+    if (!this.isElectron()) return Promise.resolve({ totalPages: 0, totalResults: 0, results: [] });
     const theUuid = uuidv4();
     this.sendToMain(collectionName, { operation: IpcOperations.GET_BY_PAGE, uuid: theUuid },
       { sort: sort, size: size, lastVal: 0 });
@@ -119,6 +127,7 @@ export class IpcService {
    * @param lastVal
    */
   getMultiplePaginated(collectionName: string, sort: string, limit?: number, lastVal?: string | number): Promise<IUserDataPaginated> {
+    if (!this.isElectron()) return Promise.resolve({ totalPages: 0, totalResults: 0, results: [] });
     const theUuid = uuidv4();
     this.sendToMain(collectionName, { operation: IpcOperations.GET_BY_PAGE, uuid: theUuid },
       { sort: sort, limit: limit, lastVal: lastVal });
@@ -131,19 +140,22 @@ export class IpcService {
    * @param arg imdb id or movie title and release year or tmdb id
    */
   getMovieFromLibrary(arg: number | string): Promise<IRawLibrary[]> {
+    if (!this.isElectron()) return Promise.resolve([]);
     const theUuid = uuidv4();
-    this.sendToMain('library', { operation: IpcOperations.FIND, uuid: theUuid },
+    this.sendToMain(RendererToMainChannels.LIBRARY, { operation: IpcOperations.FIND, uuid: theUuid },
       { tmdbId: arg });
     return this.listenOnce(`library-${theUuid}`);
   }
 
   getProfile() {
+    if (!this.isElectron()) return Promise.resolve(null);
     const theUuid = uuidv4();
-    this.sendToMain('profile', { operation: IpcOperations.FIND, uuid: theUuid });
+    this.sendToMain(RendererToMainChannels.PROFILE, { operation: IpcOperations.FIND, uuid: theUuid });
     return this.listenOnce(`profile-${theUuid}`);
   }
 
   userData(headers: Headers, body: Body, params: IPCParams) {
+    if (!this.isElectron()) return from(Promise.resolve(null));
     const theUuid = uuidv4();
     const channel = RendererToMainChannels.USER_DATA;
     headers.uuid = theUuid;
@@ -154,7 +166,7 @@ export class IpcService {
 
   // ----- END OF USER DATA
   startScanLibrary() {
-
+    if (!this.isElectron()) return;
     this.sendToMain(RendererToMainChannels.SCAN_LIBRARY_START);
     this.ipcRenderer.on(MainToRendererChannels.ScanLibraryResult, e => {
       this.loggerService.info(`${MainToRendererChannels.ScanLibraryResult}: ${e}`);
@@ -166,24 +178,29 @@ export class IpcService {
   }
 
   stopScanLibrary() {
+    if (!this.isElectron()) return;
     this.sendToMain(RendererToMainChannels.SCAN_LIBRARY_STOP);
   }
 
   getPlayTorrent(hash: string): Promise<any> {
+    if (!this.isElectron()) return Promise.resolve(null);
     this.sendToMain(RendererToMainChannels.PLAY_TORRENT, hash);
-    return this.listenOnce(`stream-link`);
+    return this.listenOnce(MainToRendererChannels.STREAM_LINK);
   }
 
   stopStream() {
+    if (!this.isElectron()) return;
     this.sendToMain(RendererToMainChannels.STOP_STREAM);
   }
 
   playOfflineVideo(docId): Promise<any> {
+    if (!this.isElectron()) return Promise.resolve(null);
     this.sendToMain(RendererToMainChannels.PLAY_OFFLINE_VIDEO_STREAM, docId);
-    return this.listenOnce(`stream-link`);
+    return this.listenOnce(MainToRendererChannels.STREAM_LINK);
   }
 
   getPreferences() {
+    if (!this.isElectron()) return from(Promise.resolve(null));
     const theUuid = uuidv4();
     const channel = RendererToMainChannels.PREFERENCES;
     const headers: Headers = { uuid: '', operation: IpcOperations.FIND };
@@ -194,6 +211,7 @@ export class IpcService {
   }
 
   savePreferences(val) {
+    if (!this.isElectron()) return from(Promise.resolve(null));
     const theUuid = uuidv4();
     const channel = RendererToMainChannels.PREFERENCES;
     const headers: Headers = { uuid: theUuid, operation: IpcOperations.UPDATE };
@@ -203,51 +221,63 @@ export class IpcService {
   }
 
   generalOperation(channel: RendererToMainChannels, data: any): Promise<any> {
+    if (!this.isElectron()) return Promise.resolve(null);
     const theUuid = uuidv4();
     this.sendToMain(channel.toString(), { operation: IpcOperations.SAVE, uuid: theUuid }, data);
     return this.listenOnce(`${channel}-${theUuid}`);
   }
 
   changeSubtitle(): Promise<any> {
-    this.sendToMain("get-subtitle");
-    return this.listenOnce('subtitle-path');
+    if (!this.isElectron()) return Promise.resolve(null);
+    this.sendToMain(RendererToMainChannels.GET_SUBTITLE);
+    return this.listenOnce(MainToRendererChannels.SUBTITLE_PATH);
   }
 
   private isElectron(): boolean {
-    return !!(environment.runConfig.electron && (window as any).electron);
+    const runConfig = this.config ? this.config.runConfig : null;
+    // return !!(runConfig && runConfig.electron && (window as any).electron && (window as any).electron.ipcRenderer);
+    return !!(runConfig && runConfig.electron);
+  }
+  private isElectron2(): boolean {
+    const runConfig = this.config ? this.config.runConfig : null;
+    return !!(runConfig && runConfig.electron && (window as any).electron && (window as any).electron.ipcRenderer);
+    // return !!(runConfig && runConfig.electron && (window as any).electron && (window as any).electron.ipcRenderer);
   }
 
   minimizeWindow() {
     if (this.isElectron()) {
-      this.sendToMain('MINIMIZE_APP');
+      this.sendToMain(RendererToMainChannels.MINIMIZE_APP);
     }
   }
   minimizeRestoreWindow() {
     if (this.isElectron()) {
-      this.sendToMain('RESTORE_APP');
+      this.sendToMain(RendererToMainChannels.RESTORE_APP);
     }
   }
   exitApp() {
     if (this.isElectron()) {
-      this.sendToMain('EXIT_APP');
+      this.sendToMain(RendererToMainChannels.EXIT_APP);
     }
   }
 
   private removeListener(channel: string) {
+    if (!this.isElectron()) return;
     this.loggerService.info(`REMOVING LISTENER ${channel}`);
     this.ipcRenderer.removeListener(channel, d => { });
   }
 
   private sendToMain(channel: string, headers?: Headers | string, body?: Body) {
+    if (!this.isElectron()) return;
     try {
       this.ipcRenderer.send(channel, [headers, body]);
       this.loggerService.info(`sent to ipc... ${channel} [${JSON.stringify(headers)}, ${JSON.stringify(body)}]`);
-    } catch {
-      this.loggerService.error(`'failed to send Ipc: ${channel} [${JSON.stringify(headers)}, ${JSON.stringify(body)}]`);
+    } catch (e) {
+      this.loggerService.error(`'failed to send Ipc: ${channel} [${JSON.stringify(headers)}, ${JSON.stringify(body)}] | ${e}`);
     }
   }
 
   private sendToMainNew(channel: string, headers: Headers, body: Body, params?: IPCParams) {
+    if (!this.isElectron()) return;
     const ipcContext: IPCContext = { headers, body, params };
     const ipcContextStr: string = JSON.stringify(ipcContext); //serialize
     try {
@@ -259,37 +289,41 @@ export class IpcService {
   }
 
   private listenOnce(channel: string, timeoutSeconds = 300) {
+    if (!this.isElectron()) return Promise.resolve(null);
     return new Promise<any>((resolve, reject) => {
       try {
         this.ipcRenderer.once(channel, (arg) => {
           this.loggerService.info(`channel: ${JSON.stringify(channel)}  arg: ${arg}`);
           resolve(arg);
         });
-      } catch {
-        this.loggerService.error(`listen ${JSON.stringify(channel)}  failed`);
+      } catch (e) {
+        this.loggerService.error(`listen ${JSON.stringify(channel)}  failed | ${e}`);
         resolve(null);
       }
     });
   }
 
   private listenOnceWithTimeout(channel: string, timeoutMillis = 300000) {
+    if (!this.isElectron()) return Promise.resolve(null);
     const promise = new Promise<any>((resolve, reject) => {
       try {
         this.ipcRenderer.once(channel, (arg) => {
           this.loggerService.info(`channel: ${JSON.stringify(channel)} arg: ${arg}`);
           resolve(arg);
         });
-      } catch {
-        this.loggerService.error(`listen ${JSON.stringify(channel)} failed`);
+      } catch (e) {
+        this.loggerService.error(`listen ${JSON.stringify(channel)} failed | ${e}`);
         reject(null);
       }
     });
     const timeout = new Promise((resolve, reject) =>
       setTimeout(
         () => {
-          this.ipcRenderer.removeListener(channel, e => {
-            this.loggerService.warn(`Removed ipc listener ${channel}`);
-          });
+          if (this.ipcRenderer) {
+            this.ipcRenderer.removeListener(channel, e => {
+              this.loggerService.warn(`Removed ipc listener ${channel}`);
+            });
+          }
           this.loggerService.error(`removed ${JSON.stringify(channel)} listener`);
           reject(`Timed out after ${timeoutMillis} ms.`);
         },

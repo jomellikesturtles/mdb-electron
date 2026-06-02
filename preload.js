@@ -1,15 +1,18 @@
 const { contextBridge, ipcRenderer } = require("electron");
-const { DEBUG } = require("./src/assets/scripts/shared/util");
-DEBUG.log("[PRELOAD] Starting preload.");
-contextBridge.exposeInMainWorld("electron", {
-  ipcRenderer: {
-    send: (channel, data) => {
-      // whitelist channels
-      let validChannels = [
+
+// Simple local logger for preload to avoid loading restricted Node APIs from shared utils
+const DEBUG = {
+  log: (...args) => console.log("[PRELOAD]", ...args),
+  error: (...args) => console.error("[PRELOAD]", ...args)
+};
+
+DEBUG.log("Starting preload.");
+
+const VALID_SEND_CHANNELS = new Set([
         "logger",
-        "RestoreApp",
-        "MinimizeApp",
-        "ExitApp",
+        "app-min",
+        "app-restore",
+        "exit-program",
         "open-file-explorer",
         "go-to-folder",
         "get-drives",
@@ -31,17 +34,15 @@ contextBridge.exposeInMainWorld("electron", {
         "play-offline-video-stream",
         "play-torrent",
         "stop-stream"
-      ];
-      if (validChannels.includes(channel)) {
-        ipcRenderer.send(channel, data);
-      }
-    },
-    on: (channel, func) => {
-      let validChannels = [
+]);
+
+const VALID_RECEIVE_CHANNELS = new Set([
         "error",
         "fade",
         "system-drives",
         "library-folders",
+        "library-movie",
+        "library-movies",
         "search-list",
         "preferences-get-complete",
         "preferences-set-complete",
@@ -50,13 +51,33 @@ contextBridge.exposeInMainWorld("electron", {
         "torrent-search-result",
         "user-data-result",
         "subtitle-path",
-        "streamlink",
-        "progress",
-        "notify"
-      ];
-      if (validChannels.includes(channel)) {
-        // Deliberately strip event as it includes `sender`
+        "stream-link",
+        "stats",
+        "notify",
+        "can-play"
+]);
+
+contextBridge.exposeInMainWorld("electron", {
+  ipcRenderer: {
+    send: (channel, data) => {
+      if (VALID_SEND_CHANNELS.has(channel)) {
+        ipcRenderer.send(channel, data);
+      } else {
+        console.error(`[PRELOAD] Blocked unauthorized send: ${channel}`);
+      }
+    },
+    on: (channel, func) => {
+      if (VALID_RECEIVE_CHANNELS.has(channel)) {
         ipcRenderer.on(channel, (event, ...args) => func(...args));
+      } else {
+        console.error(`[PRELOAD] Blocked unauthorized listener (on): ${channel}`);
+      }
+    },
+    once: (channel, func) => {
+      if (VALID_RECEIVE_CHANNELS.has(channel)) {
+        ipcRenderer.once(channel, (event, ...args) => func(...args));
+      } else {
+        console.error(`[PRELOAD] Blocked unauthorized listener (once): ${channel}`);
       }
     },
     removeListener: (channel, func) => {
@@ -66,7 +87,9 @@ contextBridge.exposeInMainWorld("electron", {
       ipcRenderer.removeAllListeners(channel);
     },
     invoke: (channel, data) => {
-      return ipcRenderer.invoke(channel, data);
+      if (VALID_SEND_CHANNELS.has(channel)) {
+        return ipcRenderer.invoke(channel, data);
+      }
     }
   }
 });
