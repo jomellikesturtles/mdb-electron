@@ -12,6 +12,7 @@ const DataStore = require('nedb');
 const libraryDbService = require('./library-db-service-2');
 process.on('uncaughtException', function (error) {
   console.log('ERROR!!!!!!!!!!!!!!!!!!!!!!!!!', error);
+  process.send(['error', { source: "video-service", message: error.message, stack: error.stack }]);
   process.send(['operation-failed', 'general']);
 });
 process.on('warning', function (error) {

@@ -17,10 +17,10 @@ process.on('message', (rawMessage) => {
 
 function handleMessage(message) {
   switch (message.type) {
-    case 'PLAY_TORRENT':
+    case 'play-torrent':
       startStreaming(message.payload);
       break;
-    case 'STOP_STREAM':
+    case 'stop-stream':
       stopStreaming();
       break;
     default:

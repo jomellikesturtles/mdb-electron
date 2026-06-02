@@ -1,11 +1,14 @@
 /*jshint esversion: 6 */
+const os = require("os");
+const path = require("path");
+
 const SIZE_LIMIT = 5000000000;
 
 function getUserName() {
-  return require("os").userInfo().username;
+  return os.userInfo().username;
 }
 
-const WEBTORRENT_FULL_FILE_PATH = `C:\\Users\\${getUserName()}\\AppData\\Local\\Temp\\webtorrent`;
+const WEBTORRENT_FULL_FILE_PATH = path.join(os.tmpdir(), "webtorrent");
 
 const COLLECTION_NAME = Object.freeze({
   LIST: "list",

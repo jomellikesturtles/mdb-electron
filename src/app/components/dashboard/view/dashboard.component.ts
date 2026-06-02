@@ -9,6 +9,8 @@ import { LoggerService } from '@core/logger.service';
 import { Store } from '@ngxs/store';
 import { MovieState } from '../../../store/movie/movie.state';
 import { AddDashboardMovie } from '../../../store/movie/movie.actions';
+import { ConfigurationService, HttpBaseService, HttpUrlProviderService } from '@services';
+import { ENDPOINT } from '@shared/endpoint.const';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,6 +25,9 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private loggerService: LoggerService,
+    private configService: ConfigurationService,
+    private httpBaseService: HttpBaseService,
+    private httpUrlProvider: HttpUrlProviderService,
     private store: Store
   ) { }
 
@@ -30,6 +35,24 @@ export class DashboardComponent implements OnInit {
   dashboardLists: { name: string, data: any, queryParams?: any, loading?: boolean; }[] = [];
   cardWidth = '130px';
 
+  getHealth() {
+
+    this.configService.getConfiguration().subscribe(e => {
+      console.log('e:', e);
+    });
+  }
+
+  encrypt() {
+
+    const payload = {
+      username: "",
+      password: "test"
+    };
+    this.httpBaseService.post(ENDPOINT.ENCRYPT, payload, 'encrypt')
+      .subscribe(e => {
+        console.log('e:', e);
+      });
+  }
   ngOnInit() {
     this.getDashboard();
   }

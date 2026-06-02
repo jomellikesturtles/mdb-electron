@@ -1,7 +1,8 @@
 module.exports = {
   packagerConfig: {
     asar: true,
-    executableName: 'mdb',
+    executableName: "MDB Player",
+    icon: "./src/assets/icons/plex",
     ignore: [
       /^\/\.angular/,
       /^\/\.git/,
@@ -11,12 +12,12 @@ module.exports = {
       /^\/\.storybook/,
       /^\/\.vscode/,
       /^\/e2e/,
-      /^\/node_modules\/@angular/, // Angular source (bundled in dist)
-      /^\/node_modules\/@ngxs/,     // NGXS source (bundled in dist)
+      /^\/node_modules\/@angular/,
+      /^\/node_modules\/@ngxs/,
       /^\/out/,
       /^\/plans/,
       /^\/scripts/,
-      /^\/src\/(?!assets\/scripts|assets\/config|assets\/db)/, // Ignore all src except critical runtime scripts and DBs
+      /^\/src\/(?!assets)/, // Exclude all src EXCEPT the assets folder (which contains scripts/configs/DBs)
       /^\/test-results/,
       /\.lighthouserc\.json$/,
       /angular\.json$/,
@@ -28,27 +29,27 @@ module.exports = {
       /tsconfig.*\.json$/,
       /tslint\.json$/,
       /\.md$/,
-      /\.map$/ // Exclude source maps from production
+      /\.map$/
     ]
   },
   rebuildConfig: {},
   makers: [
     {
-      name: '@electron-forge/maker-squirrel',
+      name: "@electron-forge/maker-squirrel",
       config: {
-        name: 'mdb',
-      },
+        name: "mdb"
+      }
     },
     {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
+      name: "@electron-forge/maker-zip",
+      platforms: ["darwin"]
     },
     {
-      name: '@electron-forge/maker-dmg',
+      name: "@electron-forge/maker-dmg",
       config: {
-        format: 'ULFO',
-      },
-    },
+        format: "ULFO"
+      }
+    }
   ],
-  plugins: [],
+  plugins: []
 };

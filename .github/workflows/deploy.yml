@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy MDB Electron
 
 on:
   push:
@@ -41,11 +41,12 @@ jobs:
       - name: Deploy to GitHub Pages # temp hosting
         if: ${{ !env.ACT }}
         id: deployment
-        uses: actions/deploy-pages@v4 # The official GitHub Pages deployment action
+        run: echo "Simulating deployment..."
+        # uses: actions/deploy-pages@v4 # The official GitHub Pages deployment action
 
   build_and_release_electron:
     name: \[Electron\] Build, Package, Release
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,22 +56,24 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-      - name: Install Dependencies
+
+      - name: Install dependencies
         run: npm install --legacy-peer-deps
-      # - name: Build AngularThe commented line `# run: npm run build:electron:prod` is likely a command that would run a script named `build:electron:prod` defined in the `package.json` file of the project. This script is typically used in Electron projects to build the application for production deployment.
 
-      #   run: npm run build:electron:prod
+      - name: Build Angular
+        run: npm run build:electron:prod
 
-      - name: Build/release Electron app
-        uses: samuelmeuli/action-electron-builder@v1
+      - name: Build/Package Electron app
+        run: npm run make
+
+      - name: Push to Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
         with:
-          # GitHub token, automatically provided to the action
-          # (No need to define this secret in the repo settings)
-          github_token: ${{ secrets.PAT_GITHUB }}
-
-          # If the commit is tagged with a version (e.g. "v1.0.0"),
-          # release the app after building
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          token: ${{ secrets.PAT_GITHUB }}
+          files: |
+            out/make/**/*.zip
+            out/make/**/*.dmg
 
   sync-to-platform:
     runs-on: ubuntu-latest
@@ -82,18 +85,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install Minifiers
-        run: npm install -g html-minifier-terser clean-css-cli terser
-
-      - name: Build Minified Assets
-        run: |
-          mkdir -p output
-          cp -r vanilla-portfolio/assets output/
-          html-minifier-terser --collapse-whitespace --remove-comments --minify-js true --minify-css true -o output/index.html vanilla-portfolio/index.html
-          cleancss -o output/styles.css vanilla-portfolio/styles.css
-          terser vanilla-portfolio/script.js --compress --mangle -o output/script.js
-          cp vanilla-portfolio/footer.js output/ 2>/dev/null || true
-
       - name: Checkout Target (mdb-platform)
         uses: actions/checkout@v4
         with:
@@ -101,28 +92,26 @@ jobs:
           token: ${{ secrets.PAT_GITHUB }}
           path: mdb-platform
 
-      - name: Create Pull Request on mdb-platform
+      - name: Update assets in mdb-platform
         run: |
-          cd mdb-platform
-          # Update assets in the subfolder
-          rm -rf mdb-overview/assets mdb-overview/index.html mdb-overview/styles.css mdb-overview/script.js mdb-overview/footer.js
-          cp -r ../output/* mdb-overview/
+          mkdir -p mdb-platform/mdb-electron
+          # Clean up old assets to ensure a clean sync
+          rm -rf mdb-platform/mdb-electron
+          # Copy everything from output to the target subfolder
+          cp -r dist/mdb-electron* mdb-platform/mdb-electron/
 
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Create Pull Request on mdb-platform
 
-          BRANCH_NAME="sync-overview-$(date +%Y%m%d%H%M%S)"
-          git checkout -b $BRANCH_NAME
-          git add .
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.PAT_GITHUB }}
+          path: mdb-platform
+          commit-message: "chore: sync assets from mdb-electron"
+          branch: user-web-app
+          delete-branch: true
+          title: "Sync: Portfolio Assets Update"
+          body: |
+            Automated PR to sync built files from mdb-electron repo.
 
-          if git diff --staged --quiet; then
-            echo "No changes to sync"
-            exit 0
-          fi
-
-          git commit -m "chore: sync assets from mdb-overview"
-          git push origin $BRANCH_NAME
-
-          gh pr create --title "Sync: Portfolio Assets Update" --body "Automated PR to sync built assets from mdb-overview repo." --base master --head $BRANCH_NAME
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB }}
+            This PR updates the build files in `mdb-electron/` subfolder.
+          base: master

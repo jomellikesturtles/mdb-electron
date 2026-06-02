@@ -1,18 +1,18 @@
-import { Component, OnInit, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DataService } from '@services/data.service';
-import { MovieService } from '@services/movie/movie.service';
 import { IpcService } from '@services/ipc.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { NavigationService } from '@core/services/navigation.service';
+import { Router } from '@angular/router';
 import { environment } from '@environments/environment';
 import { map, startWith } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { ISearchQuery } from '@models/interfaces';
-import { AuthenticationService } from "@services/authentication.service";
 import { Actions, ofActionDispatched } from "@ngxs/store";
 import { Login } from "app/store/auth/auth.state";
+import { AuthenticationService, DataService } from '@services';
+import { NavigationService } from '@core/services/navigation.service';
 import { MockDataService } from '@services/mock-data.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AppDownloadDialogComponent } from '@shared/components/app-download-dialog/app-download-dialog.component';
 
 @Component({
   selector: 'app-top-navigation',
@@ -20,7 +20,6 @@ import { MockDataService } from '@services/mock-data.service';
   styleUrls: ['./top-navigation.component.scss']
 })
 export class TopNavigationComponent implements OnInit {
-  @Input() data: Observable<any>;
   @Output() toggleSidebar = new EventEmitter<void>();
   @ViewChild('searchBar') searchBar: ElementRef;
 
@@ -37,16 +36,21 @@ export class TopNavigationComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private ipcService: IpcService,
-    private movieService: MovieService,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
     private authService: AuthenticationService,
     private $actions: Actions,
     private navigationService: NavigationService,
-    private mockDataService: MockDataService
+    private mockDataService: MockDataService,
+    private dialog: MatDialog
   ) { }
 
   isElectron = environment.runConfig.electron;
+  isMac = this.isElectron && /Mac/.test(window.navigator.platform);
+  isMacBrowser = !this.isElectron && /Mac/.test(window.navigator.platform);
+  isWindowsBrowser = !this.isElectron && /Win/.test(window.navigator.platform);
+  isLinuxBrowser = !this.isElectron && /Linux/.test(window.navigator.platform);
+  downloadUrl = 'https://github.com/jomellikesturtles/mdb-electron/releases/download/v1.0.0-alpha/mdb-darwin-arm64.zip';
+  
   status = 'LOGIN';
   browserConnection = navigator.onLine;
   currentYear = new Date().getFullYear();
@@ -212,5 +216,14 @@ export class TopNavigationComponent implements OnInit {
   }
   onExit() {
     this.ipcService.exitApp();
+  }
+
+  onDownloadApp() {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      this.dialog.open(AppDownloadDialogComponent);
+    } else if (this.isMacBrowser) {
+      window.open(this.downloadUrl, '_blank');
+    }
   }
 }

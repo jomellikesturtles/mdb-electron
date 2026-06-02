@@ -1,11 +1,37 @@
 {
   "/mdb": {
-    "## DOCKER": "",
-    "#target": "http://localhost:5001",
-    "## LOCAL": "",
     "target": "http://localhost:8082",
     "secure": false,
+    "logLevel": "debug"
+  },
+  "#/mdb": {
+    "target": "http://localhost:8086/mdb",
+    "secure": false,
     "logLevel": "debug",
-    "changeOrigin": false
+    "changeOrigin": true
+  },
+  "###/actuator": {
+    "##target": "##http://localhost:8086/mdb",
+    "##secure": false,
+    "##logLevel": "##debug",
+    "##changeOrigin": true
+  },
+  "##/v1": {
+    "target": "http://localhost:8086/mdb",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "##/auth": {
+    "target": "http://localhost:8086/mdb/v1",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "##/api": {
+    "target": "http://localhost:8086/mdb",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
   }
 }

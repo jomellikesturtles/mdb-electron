@@ -1,10 +1,13 @@
 <app-selected-list></app-selected-list>
 
 <div class="container-fluid" style='padding-top: 3vh'>
+  <mdb-button (click)="getHealth()">getHealth</mdb-button>
+  <mdb-button (click)="encrypt()">encrypt</mdb-button>
   <div *ngIf="dashboardLists">
     <div *ngFor="let list of dashboardLists">
 
-      <app-horizontal-card-list [title]='list.name' [moviesList]='list.data' [seeAllLink]='"/discover"' [queryParams]='list.queryParams' [loading]="list.loading"></app-horizontal-card-list>
+      <app-horizontal-card-list [title]='list.name' [moviesList]='list.data' [seeAllLink]='"/discover"'
+        [queryParams]='list.queryParams' [loading]="list.loading"></app-horizontal-card-list>
 
     </div>
   </div>

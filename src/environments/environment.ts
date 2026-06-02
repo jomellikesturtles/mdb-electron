@@ -6,13 +6,13 @@ enum source {
   TMDB = "TMDB", IMDB = "IMDB", MDB = "MDB", OMDB = "OMDB", Local = "local"
 }
 
-export const environment = {
+export const environment: any = {
   production: false,
   bff: {
     url: '/mdb',
     version: 'v1'
   },
-  bffBaseUrl: 'http://localhost:8080',
+  bffBaseUrl: 'http://localhost:8082',
   runConfig: {
     firebaseMode: false,
     electron: typeof window !== 'undefined' && (window as any).process && (window as any).process.type === 'renderer' || (typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().indexOf(' electron/') > -1),

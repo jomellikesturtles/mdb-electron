@@ -32,9 +32,35 @@
   display: flex;
   align-items: center;
   gap: 15px;
+
+  .mac-spacer {
+    width: 75px; // Approximate width for traffic lights
+    height: 100%;
+    -webkit-app-region: no-drag;
+  }
+
+  .hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: background 0.2s;
+    -webkit-app-region: no-drag;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    mat-icon {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
 }
 
 #app-logo {
+  -webkit-app-region: no-drag;
   h1 {
     font-family: 'Akira', 'Arial Black', sans-serif;
     font-size: 1.5rem;

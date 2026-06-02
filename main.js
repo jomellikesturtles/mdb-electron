@@ -11,7 +11,7 @@ const url = require("url");
 var { DEBUG } = require("./src/assets/scripts/shared/util");
 const path = require("path");
 const fs = require("fs");
-const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray, shell, dialog } = electron;
+const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray, shell, dialog, nativeImage } = electron;
 const IPCRendererChannel = require("./src/assets/IPCRendererChannel.json");
 const IPCMainChannel = require("./src/assets/IPCMainChannel.json");
 const configDb = new Datastore({
@@ -77,6 +77,9 @@ function createMainWindow() {
     minHeight: 700,
     show: true,
     frame: false,
+    icon: path.join(__dirname, "src/assets/icons/plex.png"),
+    titleBarStyle: isMac ? "hidden" : "default",
+    trafficLightPosition: isMac ? { x: 10, y: 10 } : undefined,
     backgroundColor: "#1e2a31",
     webPreferences: {
       experimentalFeatures: true,
@@ -137,6 +140,11 @@ function createMainWindow() {
 
   setSystemTray();
   startTorrentClient();
+
+  if (isMac) {
+    const iconImage = nativeImage.createFromPath(path.join(__dirname, "src/assets/icons/plex.png"));
+    app.dock.setIcon(iconImage);
+  }
 }
 app.setAppUserModelId(process.execPath);
 // Create window on electron initialization
@@ -214,9 +222,15 @@ ipcMain.on("splash-done", function (event, msg) {
 });
 
 function setSystemTray() {
-  // let trayIcon = `${__dirname}/dist/mdb-electron/assets/icons/chevron.png`
-  let trayIcon = appIcon;
-  mdbTray = new Tray(trayIcon);
+  const trayIconPath = path.join(__dirname, "src/assets/icons/plex.png");
+  let nimage = nativeImage.createFromPath(trayIconPath);
+
+  if (isMac) {
+    nimage = nimage.resize({ width: 18, height: 18 });
+    nimage.setTemplateImage(true);
+  }
+
+  mdbTray = new Tray(nimage);
   const trayMnu = Menu.buildFromTemplate([
     // { label: "Preferences", icon: trayIcon, enabled: false },
     // { label: "Torrent1", click: playTorrentSample },
@@ -257,6 +271,7 @@ function sendContents(channel, args) {
 function showWindow() {
   createMainWindow();
   DEBUG.log("Showing window...");
+  mainWindow.maximize();
   mainWindow.show();
   mainWindow.focus();
   if (isMac) {
@@ -272,34 +287,37 @@ ipcMain.on(IPCRendererChannel.STOP_STREAM, function (event, args) {
     procVideoService.kill();
   }
 });
+
 ipcMain.on(IPCRendererChannel.PLAY_TORRENT, function (event, args) {
-  DEBUG.log("playtorrentArgs: ", args);
-  procWebTorrent.send([IPCRendererChannel.PLAY_TORRENT, args]);
+  const hash = Array.isArray(args) ? args[0] : args;
+  DEBUG.log("playtorrentArgs (unwrapped): ", hash);
+  procWebTorrent.send(["play-torrent", hash]);
 });
 
 function startTorrentClient() {
-  procWebTorrent = forkChildProcess(
-    "src/assets/scripts/webtorrent.js",
-    [],
-    {
-      cwd: __dirname,
-      silent: false
-    }
-    // PROC_OPTION
-  );
-  // procWebTorrent.stdout.on("data", function (data) {
-  //   DEBUG.log(data.toString().slice(0, -1));
-  // });
+  DEBUG.log("Forking procWebTorrent....");
+  procWebTorrent = forkChildProcess("src/assets/scripts/webtorrent.js", [], {
+    cwd: __dirname,
+    silent: false
+  });
   procWebTorrent.on("error", (e) => printError("procWebTorrent", e));
   procWebTorrent.on("exit", function () {
     DEBUG.log("procWebTorrent ended");
   });
   /**
    * webtorrent client messages:
-   * 1. streamlink
-   * 2. progress
+   * 1. stream-link
+   * 2. stats
    */
-  procWebTorrent.on("message", (m) => sendContents(m[0], m[1]));
+  procWebTorrent.on("message", (m) => {
+    if (m[0] === "stream-link") {
+      sendContents(IPCMainChannel.STREAM_LINK, m[1]);
+    } else if (m[0] === "stats") {
+      sendContents(IPCMainChannel.STATS, m[1]);
+    } else {
+      sendContents(m[0], m[1]);
+    }
+  });
 }
 
 /* IPC Event handling
@@ -581,11 +599,32 @@ ipcMain.on("play-offline-video-stream", function (event, libraryFile) {
 });
 
 function forkChildProcess(modulePath, args, processOptions) {
-  return cp.fork(path.join(__dirname, modulePath), [args], processOptions);
+  return cp.fork(path.join(__dirname, modulePath), args, processOptions);
 }
 function printError(processName, args) {
   DEBUG.log(`${processName} in error`, args);
+  sendError(processName, args);
 }
+
+function sendError(source, error) {
+  const appError = {
+    source: source,
+    message: error.message || error.toString(),
+    stack: error.stack,
+    timestamp: Date.now()
+  };
+  DEBUG.error(`[Error][${source}]`, appError);
+  sendContents("error", appError);
+}
+
+process.on("uncaughtException", (error) => {
+  sendError("main-uncaught", error);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  sendError("main-unhandled-rejection", reason);
+});
+
 function printData(data) {
   DEBUG.log("printing data", data.toString());
 }

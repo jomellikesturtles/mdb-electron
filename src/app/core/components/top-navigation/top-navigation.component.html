@@ -2,9 +2,10 @@
 
   <!-- LEFT: Hamburger & Logo -->
   <div class="nav-left">
+    <div class="mac-spacer" *ngIf="isMac" style="width: 70px; -webkit-app-region: no-drag;"></div>
     <div class="hamburger-btn" (click)="toggleSidebar.emit()"
       style="cursor: pointer; padding: 5px; -webkit-app-region: no-drag;">
-      <!-- <img src="/assets/icons/menu.svg" alt="Menu" style="width: 24px; height: 24px; filter: invert(1);"> -->
+      <!-- <img src="assets/icons/menu.svg" alt="Menu" style="width: 24px; height: 24px; filter: invert(1);"> -->
       <!-- <mat-icon>close</mat-icon> -->
       <!-- <mat-icon>menu</mat-icon> -->
       <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="menu"></mat-icon>
@@ -24,11 +25,10 @@
     <div class="search-wrapper">
       <form class="search-form w-100">
         <!-- Search Icon (Left) -->
-        <img src="/assets/icons/magnifiying-glass.svg" class="search-icon-left" matTooltip="Search">
+        <img src="assets/icons/magnifiying-glass.svg" class="search-icon-left" matTooltip="Search">
 
         <input #searchBar type="text" class="form-control" placeholder="Search titles, people, genres..."
-          [formControl]="myControl" (keyup.enter)="onSearch(myControl.value)"
-          [matAutocomplete]="auto">
+          [formControl]="myControl" (keyup.enter)="onSearch(myControl.value)" [matAutocomplete]="auto">
 
         <!-- Clear Icon (Right, only if query has value) -->
         <mat-icon *ngIf="myControl.value" class="clear-icon" (click)="myControl.setValue(''); searchBar.focus()"
@@ -44,12 +44,23 @@
 
     <!-- Advanced Search Icon Button -->
     <button class="advanced-search-btn" (click)='onAdvancedSearch()' matTooltip="Advanced Search">
-      <img src="/assets/icons/gear.svg" style="width: 20px; height: 20px; filter: invert(0.8);">
+      <img src="assets/icons/gear.svg" style="width: 20px; height: 20px; filter: invert(0.8);">
     </button>
   </div>
 
   <!-- RIGHT: Profile & Window Controls -->
   <div class="nav-right">
+
+    <!-- Download App (Web Only) -->
+    <mdb-button *ngIf="!isElectron" 
+                variant="primary" 
+                size="sm" 
+                icon="download"
+                [disabled]="isWindowsBrowser || isLinuxBrowser"
+                [matTooltip]="(isWindowsBrowser || isLinuxBrowser) ? 'App is only available for MAC OS' : ''"
+                (onClick)="onDownloadApp()">
+      Download App
+    </mdb-button>
 
     <!-- Profile Avatar -->
     <div class="profile-avatar" style="background-image: url('/assets/offline-image/clint-eastwood.jfif');"
@@ -79,7 +90,7 @@
       </ng-template>
 
       <mat-divider></mat-divider>
-      
+
       <button mat-menu-item (click)="goToHelp()">
         <mat-icon>help</mat-icon>
         <span>Help</span>
@@ -95,15 +106,15 @@
     </mat-menu>
 
     <!-- Window Controls (Electron Only) -->
-    <div *ngIf="isElectron" class="window-controls-container">
+    <div *ngIf="isElectron && !isMac" class="window-controls-container">
       <div class="window-icon-bg" (click)="onMinimize()">
-        <img class="icon-img" src="/assets/icons/minimize.svg">
+        <img class="icon-img" src="assets/icons/minimize.svg">
       </div>
       <div class="window-icon-bg" (click)="onRestore()">
-        <img class="icon-img" src="/assets/icons/maximize.svg">
+        <img class="icon-img" src="assets/icons/maximize.svg">
       </div>
       <div class="window-icon-bg window-close" (click)="onExit()">
-        <img class="icon-img" src="/assets/icons/close.svg">
+        <img class="icon-img" src="assets/icons/close.svg">
       </div>
     </div>
 
