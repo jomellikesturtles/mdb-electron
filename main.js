@@ -11,7 +11,7 @@ const url = require("url");
 var { DEBUG } = require("./src/assets/scripts/shared/util");
 const path = require("path");
 const fs = require("fs");
-const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray, shell, dialog } = electron;
+const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray, shell, dialog, nativeImage } = electron;
 const IPCRendererChannel = require("./src/assets/IPCRendererChannel.json");
 const IPCMainChannel = require("./src/assets/IPCMainChannel.json");
 const configDb = new Datastore({
@@ -77,6 +77,7 @@ function createMainWindow() {
     minHeight: 700,
     show: true,
     frame: false,
+    icon: path.join(__dirname, "src/assets/icons/plex.png"),
     titleBarStyle: isMac ? "hidden" : "default",
     trafficLightPosition: isMac ? { x: 10, y: 10 } : undefined,
     backgroundColor: "#1e2a31",
@@ -139,6 +140,11 @@ function createMainWindow() {
 
   setSystemTray();
   startTorrentClient();
+
+  if (isMac) {
+    const iconImage = nativeImage.createFromPath(path.join(__dirname, "src/assets/icons/plex.png"));
+    app.dock.setIcon(iconImage);
+  }
 }
 app.setAppUserModelId(process.execPath);
 // Create window on electron initialization
@@ -216,9 +222,15 @@ ipcMain.on("splash-done", function (event, msg) {
 });
 
 function setSystemTray() {
-  // let trayIcon = `${__dirname}/dist/mdb-electron/assets/icons/chevron.png`
-  let trayIcon = appIcon;
-  mdbTray = new Tray(trayIcon);
+  const trayIconPath = path.join(__dirname, "src/assets/icons/plex.png");
+  let nimage = nativeImage.createFromPath(trayIconPath);
+
+  if (isMac) {
+    nimage = nimage.resize({ width: 18, height: 18 });
+    nimage.setTemplateImage(true);
+  }
+
+  mdbTray = new Tray(nimage);
   const trayMnu = Menu.buildFromTemplate([
     // { label: "Preferences", icon: trayIcon, enabled: false },
     // { label: "Torrent1", click: playTorrentSample },

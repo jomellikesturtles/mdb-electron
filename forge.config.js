@@ -1,7 +1,8 @@
 module.exports = {
   packagerConfig: {
     asar: true,
-    executableName: 'mdb',
+    executableName: "MDB Player",
+    icon: "./src/assets/icons/plex",
     ignore: [
       /^\/\.angular/,
       /^\/\.git/,
@@ -34,21 +35,21 @@ module.exports = {
   rebuildConfig: {},
   makers: [
     {
-      name: '@electron-forge/maker-squirrel',
+      name: "@electron-forge/maker-squirrel",
       config: {
-        name: 'mdb',
-      },
+        name: "mdb"
+      }
     },
     {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
+      name: "@electron-forge/maker-zip",
+      platforms: ["darwin"]
     },
     {
-      name: '@electron-forge/maker-dmg',
+      name: "@electron-forge/maker-dmg",
       config: {
-        format: 'ULFO',
-      },
-    },
+        format: "ULFO"
+      }
+    }
   ],
-  plugins: [],
+  plugins: []
 };
