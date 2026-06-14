@@ -1,9 +1,9 @@
-@import '../../../variables.scss';
+@import "../../../variables.scss";
 
 // Font Face for Logo (if available, otherwise fallback)
 @font-face {
-  font-family: 'Akira';
-  src: url('../../../../assets/fonts/akira_expanded/Akira\ Expanded\ Demo.otf');
+  font-family: "Akira";
+  src: url("../../../../assets/fonts/akira_expanded/Akira\ Expanded\ Demo.otf");
 }
 
 // Host Styling
@@ -43,18 +43,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     transition: background 0.2s;
     -webkit-app-region: no-drag;
+    // cursor: pointer;
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
     }
 
-    mat-icon {
+    .menu-icon {
       color: rgba(255, 255, 255, 0.7);
+      // font-size: 24px !important;
+      // width: 24px !important;
+      // height: 24px !important;
+      // line-height: 24px !important;
+      // display: block !important;
     }
   }
 }
@@ -62,14 +68,14 @@
 #app-logo {
   -webkit-app-region: no-drag;
   h1 {
-    font-family: 'Akira', 'Arial Black', sans-serif;
+    font-family: "Akira", "Arial Black", sans-serif;
     font-size: 1.5rem;
     color: $mdb-primary; // Netflix-style Red or $mdb-primary
     margin: 0;
     letter-spacing: 2px;
     text-transform: uppercase;
     cursor: pointer;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -140,7 +146,9 @@
     color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
     z-index: 1;
-    transition: color 0.2s, transform 0.2s;
+    transition:
+      color 0.2s,
+      transform 0.2s;
 
     &:hover {
       color: #fff;
@@ -158,7 +166,9 @@
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
@@ -199,7 +209,7 @@
   display: flex;
   align-items: center;
   margin-left: 10px;
-  
+
   .window-icon-bg {
     width: 30px;
     height: 30px;
