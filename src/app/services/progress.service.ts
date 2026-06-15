@@ -7,6 +7,7 @@ import { IMediaProgress } from '@models/media-progress';
 import { HttpUrlProviderService } from './http-url.provider.service';
 import { BaseProgressService } from './media/base-progress.service';
 import { HttpBaseService } from './http-base.service';
+import { ENDPOINT } from '@shared/endpoint.const';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class ProgressService extends BaseProgressService {
    */
   postProgress(progressBody: IMediaProgress): Observable<IMediaProgress> {
     return this.dataService.postHandle(
-      this.httpBaseService.post(this.httpUrlProvider.getBffAPI('/progress'), progressBody, 'postProgress'), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
+      this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_PROGRESS, progressBody.id), progressBody, 'postProgress'), this.ipcService.userData({ subChannel: SubChannel.LIST, operation: IpcOperations.SAVE },
         progressBody, null));
   }
 

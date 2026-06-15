@@ -8,6 +8,8 @@ export const ENDPOINT = {
   MEDIA_FAVORITE: `${MDB_API_URL}/v1/media/${REPLACE_PARAMETER}_1/favorite`,
   MEDIA_PROGRESS: `${MDB_API_URL}/v1/media/${REPLACE_PARAMETER}_1/progress`,
   MEDIA_REVIEWS: `${MDB_API_URL}/v1/media/${REPLACE_PARAMETER}_1/reviews`,
+  MEDIA_PLAYED: `${MDB_API_URL}/v1/media/${REPLACE_PARAMETER}_1/played`,
+  MEDIA_LISTS: `${MDB_API_URL}/v1/media/${REPLACE_PARAMETER}_1/lists`,
 
   STREAMS: `${MDB_API_URL}/v1/media/${REPLACE_PARAMETER}_1/streams`,
 
@@ -40,6 +42,11 @@ export const ENDPOINT = {
   RESET: `${MDB_API_URL}/v1/auth/reset`,
   REGISTER: `${MDB_API_URL}/v1/auth/register`,
   REFRESH: `${MDB_API_URL}/v1/auth/refresh`,
+  OTP_SEND: `${MDB_API_URL}/v1/auth/otp/send`,
+  OTP_VERIFY: `${MDB_API_URL}/v1/auth/otp/verify`,
+
+  ACCOUNT: `${MDB_API_URL}/v1/account`,
+  INTELLIGENCE: `${MDB_API_URL}/v1/intelligence`,
 
   ACTUATOR_HEALTH: `${MDB_API_URL}/actuator/health`,
   ACTUATOR_METRICS: `${MDB_API_URL}/actuator/metrics`,

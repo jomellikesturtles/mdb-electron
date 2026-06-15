@@ -31,6 +31,13 @@ export class RegisterResponse {
   message: string;
 }
 
+export interface OtpPayload {
+  username: string;
+  otp?: string;
+  signature?: string;
+  channel?: string;
+}
+
 @Injectable({
   providedIn: "root"
 })
@@ -115,6 +122,22 @@ export class AuthenticationService {
     );
   }
 
+  /**
+   * Sends an OTP to the user's registered channel.
+   * @param payload OTP request payload
+   */
+  sendOtp(payload: OtpPayload): Observable<OtpPayload> {
+    return this.httpBaseService.post<OtpPayload>(ENDPOINT.OTP_SEND, payload, "sendOtp");
+  }
+
+  /**
+   * Verifies the OTP provided by the user.
+   * @param payload OTP verification payload
+   */
+  verifyOtp(payload: OtpPayload): Observable<OtpPayload> {
+    return this.httpBaseService.post<OtpPayload>(ENDPOINT.OTP_VERIFY, payload, "verifyOtp");
+  }
+
 
   /**
    * Login user by first encrypting the credentials and then authenticating.
@@ -126,7 +149,7 @@ export class AuthenticationService {
 
       switchMap((encryptedPayload: string) => {
         payload.password = encryptedPayload;
-        return this.httpBaseService.post(ENDPOINT.REGISTER, payload, "login");
+        return this.httpBaseService.post(ENDPOINT.REGISTER, payload, "register");
       }),
       map((e: RegisterResponse) => {
         // this._isAuthenticated.set(true);
