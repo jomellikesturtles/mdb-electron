@@ -6,6 +6,7 @@ import ObjectUtil from '@utils/object.utils';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
 import { IBookmark } from '@services/media';
+import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
 
 @Component({
   selector: 'app-card-list',
@@ -61,47 +62,18 @@ export class CardListComponent implements OnInit, OnChanges {
     const listLength = idList.length;
     const arr2 = this.createDividedList(idList, listLength);
 
-    // const arr2 = thisidList, listLength)
     // tslint:disable-next-line:prefer-for-of
     for (let index = 0; index < arr2.length; index++) {
       const queryList = arr2[index];
 
       if (this.listType === 'none') { // all types of user data.
         this.mediaUserDataService.getMediaUserDataMultiple(queryList).subscribe((docsList: IProfileData[]) => {
-          // if (docs.isFirebaseData && docs.isFirebaseData === true) {
-          //   const localDocs: Array<QueryDocumentSnapshot<any>>[] = docs.data
-          //   if (localDocs[0].length > 0) {
-          //     localDocs[0].forEach(element => {
-          //       const movie = this.movieList.find(e => e.id === element.data().tmdbId)
-          //       movie['bookmark'] = element.data()
-          //       movie['bookmark'].id = element.id
-          //     })
-          //   }
-          //   if (localDocs[1].length > 0) {
-          //     localDocs[1].forEach(element => {
-          //       const movie = this.movieList.find(e => e.id === element.data().tmdbId)
-          //       movie['watched'] = element.data()
-          //       movie['watched'].id = element.id
-          //     })
-          //   }
-          // }
 
           if (!ObjectUtil.isEmpty(docsList)) {
-            if (this.featureToggleService.isEnabled('springMode')) {
-              this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
-                const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId);
-                movieAndUserData.userData = doc;
-              });
-            } else {
-              docsList.forEach(data => {
-
-                // validate if works with IPC
-                this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
-                  const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId);
-                  movieAndUserData.userData = doc;
-                });
-              });
-            }
+            this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
+              const doc = docsList.find((doc: IMediaUserData) => movieAndUserData.movie.tmdbId.toString() === doc.mediaId);
+              movieAndUserData.userData = doc;
+            });
           }
         });
       } else {

@@ -13,7 +13,7 @@ export abstract class BaseMediaUserDataService {
    *
    * @param idList separated by comma
    */
-  protected abstract getMediaUserDataMultiple(idList: string): Observable<any>;
+  protected abstract getMediaUserDataMultiple(idList: any[]): Observable<any>;
 
 
   protected abstract getMediaDataPaginated(type: 'id' | 'tmdbId', id: string | number): Observable<any>;

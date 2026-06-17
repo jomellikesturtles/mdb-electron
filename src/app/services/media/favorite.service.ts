@@ -7,18 +7,21 @@ import { Observable } from 'rxjs';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
 import { HttpBaseService } from '@services/http-base.service';
 import { ENDPOINT } from '@shared/endpoint.const';
+import { BaseFavoriteService } from './base-favorite.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FavoriteService {
+export class FavoriteService extends BaseFavoriteService {
 
   constructor(
     private ipcService: IpcService,
-    private bffService: MDBApiService,
-    private dataService: DataService,
-    private featureToggleService: FeatureToggleService,
-  ) { }
+    protected bffService: MDBApiService,
+    protected dataService: DataService,
+  ) {
+    super(dataService);
+
+  }
 
   save(data: string): Observable<FavoriteResponse> {
     return this.bffService.saveFavorite(data);

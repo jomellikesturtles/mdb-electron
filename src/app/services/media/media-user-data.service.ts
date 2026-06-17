@@ -7,6 +7,7 @@ import { IpcOperations, IpcService, SubChannel } from '../ipc.service';
 import { MDBApiService } from '../mdb-api.service';
 import { BaseMediaUserDataService } from './base-media-user-data.service';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
+import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
 
 /**
  * Service for user service per media id.
@@ -46,7 +47,7 @@ export class MediaUserDataService extends BaseMediaUserDataService {
    * @param idList tmdbIdList
    * @returns
    */
-  getMediaUserDataMultiple(idList: string): Observable<any[]> {
+  getMediaUserDataMultiple(idList: any[]): Observable<IMediaUserData[]> {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: SubChannel.ALL, operation: IpcOperations.FIND_ONE },
         null, { idList: idList });

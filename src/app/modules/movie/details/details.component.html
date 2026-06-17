@@ -17,14 +17,16 @@
           <div class="action-circle-buttons mt-3 justify-content-center">
             <button mat-icon-button matTooltip="Add to List" [matMenuTriggerFor]="listMenu"
               class="tmdb-circle-btn list-btn"><mat-icon>list</mat-icon></button>
+            isFavorite {{isFavorite}}
             <button mat-icon-button [class.active]="isFavorite" (click)="toggleFavorite()"
               [disabled]="isProcessingFavorite" matTooltip="Mark as favorite" class="tmdb-circle-btn fav-btn">
               <mat-icon *ngIf="!isProcessingFavorite">{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
               <mat-spinner *ngIf="isProcessingFavorite" diameter="20" class="m-auto"></mat-spinner>
             </button>
+            isBookmarked {{isBookmarked}}
             <button mat-icon-button [class.active]="isBookmarked" (click)="toggleBookmark()"
               [disabled]="isProcessingBookmark" matTooltip="Add to watchlist" class="tmdb-circle-btn bookmark-btn">
-              <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+              <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark_remove' : 'bookmark_add' }}</mat-icon>
               <mat-spinner *ngIf="isProcessingBookmark" diameter="20" class="m-auto"></mat-spinner>
             </button>
             <button mat-icon-button [class.active]="isPlayed" (click)="togglePlayed()" [disabled]="isProcessingWatched"
@@ -71,7 +73,8 @@
 
             <div class="play-actions d-flex align-items-center gap-4">
               <!-- playLinks.length {{playLinks.length}} -->
-              <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playBestPlayLink()'
+              <!-- <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playBestPlayLink()' -->
+              <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playTorrent("")'
                 [disabled]="playLinks.length <= 0">
                 WATCH NOW
               </mdb-button>

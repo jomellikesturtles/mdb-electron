@@ -7,17 +7,14 @@ export abstract class BaseFavoriteService {
     protected dataService: DataService,
   ) { }
 
-  // TO BE UNUSED
-  protected abstract toggleFavorite(movie);
-
-  protected abstract saveFavorite(data: any): Observable<any>;
+  protected abstract save(data: any): Observable<any>;
 
   /**
    * Removes watched.
    * @param type
    * @param id watched id/_id/tmdbId to remove.
    */
-  protected abstract removeFavorite(type: 'id' | 'tmdbId', id: string | number);
+  protected abstract remove(type: 'id' | 'tmdbId', id: string | number);
 
 }
 

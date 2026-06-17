@@ -15,12 +15,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ImagePreviewComponent } from '@shared/components/image-preview/image-preview.component';
 import { FeatureName, FeatureToggleService } from '@core/services/feature-toggle.service';
-import { AuthenticationService, DataService, HttpBaseService, IRawLibrary, LibraryService } from '@services';
+import { AuthenticationService, DataService, IRawLibrary, LibraryService } from '@services';
 import { BookmarkService, FavoriteService, MediaUserDataService, PlayedService, ListsService } from '@services/media';
 import { TorrentService } from '@services/torrent/torrent.service';
 import { MovieService } from '@services/movie/movie.service';
 import { LoggerService } from '@core/logger.service';
 import { NewListDialogComponent } from '@shared/components/list-dialogs/new-list-dialog.component';
+import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
 
 @Component({
   selector: 'app-details',
@@ -190,7 +191,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   getUserMovieData() {
     (this.processingVideo, this.isProcessingBookmark, (this.isProcessingWatched = true));
 
-    this.mediaUserDataService.getMediaUserData(this.movieDetails.tmdbId).subscribe((profileData: IProfileData) => {
+    this.mediaUserDataService.getMediaUserData(this.movieDetails.tmdbId).subscribe((profileData: IMediaUserData) => {
       this.isBookmarked = profileData.isBookmark;
       this.isFavorite = profileData.isFavorite;
 
@@ -378,6 +379,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param hash torrent hash
    */
   playTorrent(hash: string) {
+    hash = 'C808185A43F255625E639F65E3E57DEDD5353BD1'; // test only
     this.ipcService.getPlayTorrent(hash).then(e => {
       this.showVideo = true;
       this.streamLink = e;
