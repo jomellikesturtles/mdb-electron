@@ -3,24 +3,32 @@ import { IUserSavedData } from '@models/interfaces';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '@services/ipc.service';
 import { MDBApiService } from '../mdb-api.service';
 import { DataService } from '../data.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { CollectionName, FieldName } from '@shared/constants';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
+import { BasePlayedService } from './base-played.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PlayedService {
+export class PlayedService extends BasePlayedService {
+
+  protected setPlayed(mediaId: number): Observable<any> {
+    throw new Error('Method not implemented.');
+  }
 
   CURRENT_SUBCHANNEL = SubChannel.PLAYED;
   constructor(
     private ipcService: IpcService,
     private bffService: MDBApiService,
-    private dataService: DataService,
+    protected dataService: DataService,
     private featureToggleService: FeatureToggleService
-  ) { }
+  ) {
+    super(dataService);
 
-  getPlayed(id): Observable<any> {
+  }
+
+  get(id): Observable<any> {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.FIND_ONE },
         null, { tmdbId: id });
@@ -44,7 +52,7 @@ export class PlayedService {
         null, { tmdbIdList: idList }));
   }
 
-  savePlayed(data: Object): Observable<any> {
+  save(data: Object): Observable<any> {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.SAVE },
         data, null);
@@ -59,7 +67,7 @@ export class PlayedService {
    * @param type
    * @param id watched id/_id/tmdbId to remove.
    */
-  removePlayed(type: 'id' | 'tmdbId', id: string | number) {
+  remove(type: 'id' | 'tmdbId', id: string | number) {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.REMOVE },
         null, { [type]: id });
@@ -68,7 +76,8 @@ export class PlayedService {
       null, { [type]: id }));
   }
 
-  saveWatchedMulti(data: object[]) {
+  setPlayedMultiple(data: string) {
+    return of(null);
     // Implementation for IPC or Backend if needed
   }
 

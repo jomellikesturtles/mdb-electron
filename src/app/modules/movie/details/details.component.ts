@@ -257,9 +257,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     let res = false;
     try {
       if (this._isPlayed) {
-        res = await this.playedService.removePlayed('tmdbId', tmdbId).toPromise();
+        res = await this.playedService.remove('tmdbId', tmdbId).toPromise();
       } else {
-        res = await this.playedService.savePlayed({ tmdbId }).toPromise();
+        res = await this.playedService.save({ tmdbId }).toPromise();
       }
       this.isPlayed = res;
       this.snackBar.open(`${isAdding ? 'Marked as' : 'Removed from'} Watched`, 'Close', { duration: 3000 });

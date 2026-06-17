@@ -4,21 +4,23 @@
     class='movie-card-image-container' data-toggle="tooltip"
     title="{{movie.title}} ({{movie.releaseDate|releaseYear}})">
 
-    <div class='card-button movie-bookmark' data-toggle='tooltip' title='Toggle Bookmark'>
-      <span class='card-button-icon bookmark-icon' (click)="toggleBookmark()" *ngIf="!isProcessingBookmark"></span>
-      <div *ngIf='isProcessingBookmark'>
-        <mat-spinner [diameter]='20'></mat-spinner>
-      </div>
+    <div class='card-button movie-bookmark' [class.active]="_isBookmarked" data-toggle='tooltip' title='Toggle Bookmark'>
+      <button mat-icon-button (click)="toggleBookmark()" [disabled]="isProcessingBookmark"
+        class="tmdb-circle-btn bookmark-btn">
+        <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark_remove' : 'bookmark_add' }}</mat-icon>
+        <mat-spinner *ngIf="isProcessingBookmark" diameter="20" class="m-auto"></mat-spinner>
+      </button>
     </div>
 
     <div *ngIf="_library && _library.id" class='movie-available' data-toggle='tooltip' title='Available'>
     </div>
 
-    <div class="card-button movie-mark-favorite" data-toggle="tooltip" title="Toggle Favorite">
-      <span class="card-button-icon favorite-icon" (click)="toggleFavorite()" *ngIf="!isProcessingFavorite"></span>
-      <div *ngIf='isProcessingFavorite' class='spinner-border spinner-border-sm' role='status'>
-        <span class='sr-only'>Loading...</span>
-      </div>
+    <div class="card-button movie-mark-favorite" [class.active]="_isFavorite" data-toggle="tooltip" title="Toggle Favorite">
+      <button mat-icon-button (click)="toggleFavorite()" [disabled]="isProcessingFavorite"
+        class="tmdb-circle-btn fav-btn">
+        <mat-icon *ngIf="!isProcessingFavorite">{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+        <mat-spinner *ngIf="isProcessingFavorite" diameter="20" class="m-auto"></mat-spinner>
+      </button>
     </div>
 
     @if(isFeatureEnabled('played_status')) {

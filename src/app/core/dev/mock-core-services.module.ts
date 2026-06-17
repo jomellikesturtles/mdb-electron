@@ -15,7 +15,7 @@ import { MockListService } from "./services/mock-list.service";
 import { MockMovieService } from "./services/mock-movie.service";
 import { MockPlayedService } from "./services/mock-played.service";
 import { MockProgressService } from "./services/mock-progress.service";
-import { MockUserDataService } from "./services/mock-user-data.service";
+import { MockMediaUserDataService } from "./services/mock-user-data.service";
 import { ProfileService } from "@services/profile/profile.service";
 import { MockProfileService } from "./services/mock-profile.service";
 import { MockTorrentService } from "./services/mock-torrent.service";
@@ -27,9 +27,9 @@ import { MockAuthenticationService } from "@services/mock-authentication.service
   imports: [HttpClientModule],
   providers: [
     // { provide: AuthenticationService, useExisting: MockAuthenticationService },
-    { provide: MediaUserDataService, useExisting: MockUserDataService },
-    // { provide: BookmarkService, useExisting: MockBookmarkService },
-    // { provide: FavoriteService, useExisting: MockFavoriteService },
+    { provide: MediaUserDataService, useExisting: MockMediaUserDataService },
+    { provide: BookmarkService, useExisting: MockBookmarkService },
+    { provide: FavoriteService, useExisting: MockFavoriteService },
     { provide: ListsService, useExisting: MockListService },
     { provide: PlayedService, useExisting: MockPlayedService },
     { provide: ProgressService, useExisting: MockProgressService },

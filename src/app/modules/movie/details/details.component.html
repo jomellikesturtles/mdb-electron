@@ -26,12 +26,12 @@
             isBookmarked {{isBookmarked}}
             <button mat-icon-button [class.active]="isBookmarked" (click)="toggleBookmark()"
               [disabled]="isProcessingBookmark" matTooltip="Add to watchlist" class="tmdb-circle-btn bookmark-btn">
-              <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark_remove' : 'bookmark_add' }}</mat-icon>
+              <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark' : 'bookmark_border' }}</mat-icon>
               <mat-spinner *ngIf="isProcessingBookmark" diameter="20" class="m-auto"></mat-spinner>
             </button>
             <button mat-icon-button [class.active]="isPlayed" (click)="togglePlayed()" [disabled]="isProcessingWatched"
               matTooltip="Mark as watched" class="tmdb-circle-btn played-btn">
-              <mat-icon *ngIf="!isProcessingWatched">visibility</mat-icon>
+              <mat-icon *ngIf="!isProcessingWatched">{{isPlayed ? 'done' : 'visibility'}}</mat-icon>
               <mat-spinner *ngIf="isProcessingWatched" diameter="20" class="m-auto"></mat-spinner>
             </button>
           </div>

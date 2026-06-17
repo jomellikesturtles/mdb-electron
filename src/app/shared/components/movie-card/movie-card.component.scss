@@ -86,16 +86,23 @@
   }
 }
 
-// bookmark
 .movie-bookmark {
   top: 8px;
   right: 8px;
+  
+  &.active .bookmark-btn {
+    color: var(--mdb-bm-color);
+  }
 }
 
 // favorite
 .movie-mark-favorite {
   top: 44px;
   right: 8px;
+
+  &.active .fav-btn {
+    color: var(--mdb-fav-color);
+  }
 }
 
 .movie-mark-as-watched {

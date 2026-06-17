@@ -36,7 +36,7 @@ export class MDBApiService {
    * @param tmdbIdList list of tmdbId separated by comma
    * @returns
    */
-  getMediaUserDataInList(tmdbIdList: string): Observable<any> {
+  getMediaUserDataInList(tmdbIdList: any[]): Observable<any> {
     let payload = {
       idList: tmdbIdList
     };

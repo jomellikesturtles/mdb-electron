@@ -7,7 +7,7 @@ import { Observable, of } from "rxjs";
 
 
 @Injectable({ providedIn: "root" })
-export class MockUserDataService extends BaseMediaUserDataService {
+export class MockMediaUserDataService extends BaseMediaUserDataService {
 
 
   constructor(
@@ -17,35 +17,36 @@ export class MockUserDataService extends BaseMediaUserDataService {
     super(dataService);
   }
 
-  getMediaUserData(tmdbId: string): Observable<any | IMediaUserData | IProfileData> {
+  //  IProfileData
+  getMediaUserData(tmdbId: string): Observable<IMediaUserData> {
     this.loggerService.info('MockUserDataService getMediaUserData');
     return of(
       {
-        // "122":
-        // {
-        "favorite":
-          { "tmdbId": "122", "createdAt": "2023-01-27T16:36:28.703Z", "updatedAt": "2023-01-27T16:36:54.892Z" },
-        "listLinkMedia": {
-          "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
-        },
-        "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
+        mediaId: "550",
+        isFavorite: true,
+        isBookmark: true
+        // "listLinkMedia": {
+        //   "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
+        // },
+        // "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
         // }
       });
   }
-  getMediaUserDataMultiple(idList: string): Observable<IMediaUserData[]> {
+  getMediaUserDataMultiple(idList: any[]): Observable<IMediaUserData[]> {
     this.loggerService.info('MockUserDataService getMediaUserDataMultiple');
-    return of([
-      {
-        "122":
+    return of(
+      [
         {
-          "favorite":
-            { "tmdbId": "122", "createdAt": "2023-01-27T16:36:28.703Z", "updatedAt": "2023-01-27T16:36:54.892Z" },
-          "listLinkMedia": {
-            "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
-          },
-          "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
+          mediaId: "550",
+          isFavorite: false,
+          isBookmark: false
+          // "listLinkMedia": {
+          //   "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
+          // },
+          // "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
         }
-      }]
+        // }
+      ]
     );
   }
   getMediaDataPaginated(type: "id" | "tmdbId", id: string | number): Observable<any> {
@@ -53,28 +54,35 @@ export class MockUserDataService extends BaseMediaUserDataService {
   }
 
 
-};
+}
+
+interface IMediaUserDataArr {
+  [x: string]: IMediaUserData;
+}
 
 
-interface IMediaUserData {
-  [x: string]: {
-    favorite: {
-      tmdbId: string;
-      createdAt: string;
-      updatedAt: string;
-    };
-    listLinkMedia: {
-      listId: string;
-      tmdbId: string;
-      createdAt: string;
-      updatedAt: string;
-    };
-    progress: {
-      tmdbId: string;
-      current: number;
-      total: number;
-      _id: string;
-      updatedAt: string;
-    };
-  };
+export interface IMediaUserData {
+  isFavorite: boolean,
+  isBookmark: boolean,
+  mediaId: string;
+  // [x: string]: {
+  //   favorite: {
+  //     tmdbId: string;
+  //     createdAt: string;
+  //     updatedAt: string;
+  //   };
+  //   listLinkMedia: {
+  //     listId: string;
+  //     tmdbId: string;
+  //     createdAt: string;
+  //     updatedAt: string;
+  //   };
+  //   progress: {
+  //     tmdbId: string;
+  //     current: number;
+  //     total: number;
+  //     _id: string;
+  //     updatedAt: string;
+  //   };
+  // };
 }

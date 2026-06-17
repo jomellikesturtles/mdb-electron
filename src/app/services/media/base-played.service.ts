@@ -7,7 +7,9 @@ export abstract class BasePlayedService {
     protected dataService: DataService,
   ) { }
 
-  protected abstract setPlayed(tmdbId: number): Observable<any>;
+  protected abstract setPlayed(mediaId: number): Observable<any>;
+  protected abstract save(mediaId: number): Observable<any>;
+  protected abstract remove(mediaId: number): Observable<any>;
 
   /**
    *
@@ -15,7 +17,6 @@ export abstract class BasePlayedService {
    */
   protected abstract setPlayedMultiple(idList: string): Observable<any>;
 
-  protected abstract getMediaDataPaginated(type: 'id' | 'tmdbId', id: string | number): Observable<any>;
 
 
 }

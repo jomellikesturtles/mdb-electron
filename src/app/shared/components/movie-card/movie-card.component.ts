@@ -71,6 +71,9 @@ export class MovieCardComponent implements OnInit {
   set userData(inputData: IProfileData) {
     this._userData = inputData;
     if (!ObjectUtil.isEmpty(inputData)) {
+      this.isBookmarked = inputData.bookmark;
+      this.isFavorite = inputData.favorite;
+      this.isPlayed = inputData.played;
       if (inputData.played) {
         this.watchedPercentage = inputData.played.percentage + '%';
       }
@@ -154,19 +157,31 @@ export class MovieCardComponent implements OnInit {
     this.dataService.updatePreviewMovie(this._movie);
   }
 
-  set isBookmarked(val: number | Object) {
+  set isBookmarked(val: number | Object | boolean) {
     this.loggerService.info('set isBookmarked called');
     this._isBookmarked = this.userDataService.commonSetter(val);
   }
 
-  set isFavorite(val: number | Object) {
+  get isBookmarked(): boolean {
+    return this._isBookmarked;
+  }
+
+  set isFavorite(val: number | Object | boolean) {
     this.loggerService.info('set isFavorite called');
     this._isFavorite = this.userDataService.commonSetter(val);
   }
 
-  set isPlayed(val: number | Object) {
+  get isFavorite(): boolean {
+    return this._isFavorite;
+  }
+
+  set isPlayed(val: number | Object | boolean) {
     this.loggerService.info('set isPlayed called');
     this._isPlayed = this.userDataService.commonSetter(val);
+  }
+
+  get isPlayed(): boolean {
+    return this._isPlayed;
   }
 
   /**
@@ -187,9 +202,9 @@ export class MovieCardComponent implements OnInit {
     const tmdbId = this._movie.tmdbId;
     let res = false;
     if (this._isPlayed) {
-      res = await this.playedService.removePlayed('tmdbId', tmdbId).toPromise();
+      res = await this.playedService.removeBy('tmdbId', tmdbId).toPromise();
     } else {
-      res = await this.playedService.savePlayed({ tmdbId }).toPromise();
+      res = await this.playedService.save({ tmdbId }).toPromise();
     }
     this.isPlayed = res;
     this.procWatched = false;

@@ -369,7 +369,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       // percentage: Math.floor(this.videoPlayerElement.currentTime / this.videoPlayerElement.duration * 100)
     };
     GeneralUtil.DEBUG.log('updating watched', watchedObj);
-    this.playedService.savePlayed(watchedObj);
+    this.playedService.save(watchedObj);
   }
 
   togglePlay() {
