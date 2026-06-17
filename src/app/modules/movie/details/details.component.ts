@@ -12,7 +12,8 @@ import { MDBMovie } from '@models/mdb-movie.model';
 import GeneralUtil from '@utils/general.util';
 import { environment } from 'environments/environment';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ExternalLinkDialogComponent } from '@shared/components/external-link-dialog/external-link-dialog.component';
+import { NotificationService } from '@core/services/notification.service';
 import { ImagePreviewComponent } from '@shared/components/image-preview/image-preview.component';
 import { FeatureName, FeatureToggleService } from '@core/services/feature-toggle.service';
 import { AuthenticationService, DataService, IRawLibrary, LibraryService } from '@services';
@@ -84,7 +85,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private favoriteService: FavoriteService,
     private router: Router,
     public dialog: MatDialog,
-    private snackBar: MatSnackBar,
+    private notificationService: NotificationService,
     private bookmarkService: BookmarkService,
     private playedService: PlayedService,
     private loggerService: LoggerService,
@@ -109,12 +110,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.listsService.toggleListMembership(listId, mediaId).subscribe({
       next: () => {
         list.checked = isChecked;
-        this.snackBar.open(`${isChecked ? 'Added to' : 'Removed from'} ${list.name}`, 'Close', { duration: 3000 });
+        this.notificationService.showSuccess(`${isChecked ? 'Added to' : 'Removed from'} ${list.name}`);
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.loggerService.error(`Error toggling list: ${JSON.stringify(err)}`);
-        this.snackBar.open(`Failed to update ${list.name}`, 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+        this.notificationService.showError(`Failed to update ${list.name}`);
         this.cdr.detectChanges();
       }
     });
@@ -189,14 +190,14 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets the user's watched, bookmark, library data of the movie
    */
   getUserMovieData() {
-    (this.processingVideo, this.isProcessingBookmark, (this.isProcessingWatched = true));
+    this.processingVideo = this.isProcessingFavorite = this.isProcessingBookmark = this.isProcessingWatched = true;
 
     this.mediaUserDataService.getMediaUserData(this.movieDetails.tmdbId).subscribe((profileData: IMediaUserData) => {
       this.isBookmarked = profileData.isBookmark;
       this.isFavorite = profileData.isFavorite;
 
       GeneralUtil.DEBUG.log('usermoviedata', profileData);
-      (this.processingVideo, this.isProcessingBookmark, (this.isProcessingWatched = false));
+      this.processingVideo = this.isProcessingFavorite = this.isProcessingBookmark = this.isProcessingWatched = false;
       this.cdr.detectChanges();
     });
   }
@@ -239,12 +240,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
     bookmarkToggleFunction.subscribe(e => {
       this.isBookmarked = e.isBookmark;
       this.isProcessingBookmark = false;
-      this.snackBar.open(`${isAdding ? 'Added to' : 'Removed from'} Watchlist`, 'Close', { duration: 3000 });
+      this.notificationService.showSuccess(`${isAdding ? 'Added to' : 'Removed from'} Watchlist`);
       this.cdr.detectChanges();
     }, err => {
       this.loggerService.error(`toggleBookmark error: ${JSON.stringify(err)}`);
       this.isProcessingBookmark = false;
-      this.snackBar.open(`Failed to update Watchlist`, 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+      this.notificationService.showError(`Failed to update Watchlist`);
       this.cdr.detectChanges();
     });
 
@@ -257,16 +258,16 @@ export class DetailsComponent implements OnInit, OnDestroy {
     let res = false;
     try {
       if (this._isPlayed) {
-        res = await this.playedService.remove('tmdbId', tmdbId).toPromise();
+        res = await this.playedService.removeBy('tmdbId', tmdbId).toPromise();
       } else {
         res = await this.playedService.save({ tmdbId }).toPromise();
       }
       this.isPlayed = res;
-      this.snackBar.open(`${isAdding ? 'Marked as' : 'Removed from'} Watched`, 'Close', { duration: 3000 });
+      this.notificationService.showSuccess(`${isAdding ? 'Marked as' : 'Removed from'} Watched`);
       this.cdr.detectChanges();
     } catch (err) {
       this.loggerService.error(`togglePlayed error: ${JSON.stringify(err)}`);
-      this.snackBar.open(`Failed to update Watched status`, 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+      this.notificationService.showError(`Failed to update Watched status`);
       this.isProcessingWatched = false;
       this.cdr.detectChanges();
     }
@@ -279,11 +280,11 @@ export class DetailsComponent implements OnInit, OnDestroy {
     const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove(tmdbId) : this.favoriteService.save(tmdbId);
     favoriteToggleFunction.subscribe(e => {
       this.isFavorite = e.isFavorite;
-      this.snackBar.open(`${isAdding ? 'Added to' : 'Removed from'} Favorites`, 'Close', { duration: 3000 });
+      this.notificationService.showSuccess(`${isAdding ? 'Added to' : 'Removed from'} Favorites`);
       this.cdr.detectChanges();
     }, err => {
       this.loggerService.error(`toggleFavorite error: ${JSON.stringify(err)}`);
-      this.snackBar.open(`Failed to update Favorites`, 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+      this.notificationService.showError(`Failed to update Favorites`);
       this.isProcessingFavorite = false;
       this.cdr.detectChanges();
     }, () => {
@@ -429,10 +430,22 @@ export class DetailsComponent implements OnInit, OnDestroy {
         break;
     }
 
-    if (environment.runConfig.electron) {
-    } else {
-      window.open(url);
-    }
+    if (!url) return;
+
+    const dialogRef = this.dialog.open(ExternalLinkDialogComponent, {
+      width: '400px',
+      data: { url }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        if (environment.runConfig.electron) {
+          // Add electron logic here if needed, e.g., shell.openExternal(url)
+        } else {
+          window.open(url, '_blank');
+        }
+      }
+    });
   }
 
   /**
@@ -543,7 +556,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
           this.loggerService.info(`Creating new list: ${JSON.stringify(result)}`);
           this.listsService.createList(result).subscribe({
             next: (newList: any) => {
-              this.snackBar.open(`List "${result.name}" created successfully`, 'Close', { duration: 3000 });
+              this.notificationService.showSuccess(`List "${result.name}" created successfully`);
               if (newList && newList.id) {
                 this.userLists.push({ ...newList, checked: false });
               }
@@ -551,7 +564,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
             },
             error: (err) => {
               this.loggerService.error(`Error creating list: ${JSON.stringify(err)}`);
-              this.snackBar.open('Failed to create new list', 'Close', { duration: 3000, panelClass: ['error-snackbar'] });
+              this.notificationService.showError('Failed to create new list');
               this.cdr.detectChanges();
             }
           });

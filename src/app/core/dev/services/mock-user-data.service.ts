@@ -3,7 +3,7 @@ import { LoggerService } from "@core/logger.service";
 import { IProfileData } from "@models/profile-data.model";
 import { DataService } from "@services/data.service";
 import { BaseMediaUserDataService } from "@services/media/base-media-user-data.service";
-import { Observable, of } from "rxjs";
+import { delay, Observable, of } from "rxjs";
 
 
 @Injectable({ providedIn: "root" })
@@ -20,17 +20,18 @@ export class MockMediaUserDataService extends BaseMediaUserDataService {
   //  IProfileData
   getMediaUserData(tmdbId: string): Observable<IMediaUserData> {
     this.loggerService.info('MockUserDataService getMediaUserData');
+
     return of(
       {
         mediaId: "550",
-        isFavorite: true,
-        isBookmark: true
+        isFavorite: false,
+        isBookmark: false
         // "listLinkMedia": {
         //   "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
         // },
         // "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
         // }
-      });
+      }).pipe(delay(4000));
   }
   getMediaUserDataMultiple(idList: any[]): Observable<IMediaUserData[]> {
     this.loggerService.info('MockUserDataService getMediaUserDataMultiple');
@@ -56,9 +57,6 @@ export class MockMediaUserDataService extends BaseMediaUserDataService {
 
 }
 
-interface IMediaUserDataArr {
-  [x: string]: IMediaUserData;
-}
 
 
 export interface IMediaUserData {

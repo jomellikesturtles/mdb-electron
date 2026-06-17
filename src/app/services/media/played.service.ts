@@ -63,11 +63,18 @@ export class PlayedService extends BasePlayedService {
   }
 
   /**
-   * Removes watched.
+   * Removes watched (base class implementation).
+   */
+  public remove(mediaId: number): Observable<any> {
+    return this.removeBy('tmdbId', mediaId);
+  }
+
+  /**
+   * Removes watched by type and id.
    * @param type
    * @param id watched id/_id/tmdbId to remove.
    */
-  remove(type: 'id' | 'tmdbId', id: string | number) {
+  removeBy(type: 'id' | 'tmdbId', id: string | number) {
     if (!this.featureToggleService.isEnabled('springMode')) {
       return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.REMOVE },
         null, { [type]: id });

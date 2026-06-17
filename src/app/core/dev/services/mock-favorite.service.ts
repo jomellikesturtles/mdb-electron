@@ -3,7 +3,7 @@ import { DataService } from "@services/data.service";
 import { IpcService } from "@services/ipc.service";
 import { MDBApiService } from "@services/mdb-api.service";
 import { FavoriteResponse, FavoriteService } from "@services/media/favorite.service";
-import { Observable, of } from "rxjs";
+import { delay, Observable, of } from "rxjs";
 
 @Injectable({ providedIn: "root" })
 export class MockFavoriteService extends FavoriteService {
@@ -21,19 +21,19 @@ export class MockFavoriteService extends FavoriteService {
   //   throw new Error("Method not implemented.");
   // }
   save(mediaId: string): Observable<FavoriteResponse> {
-    return of({
+    return of<FavoriteResponse>({
       status: 'SAVED',
       isFavorite: true,
       mediaId: mediaId.toString()
-    });
+    }).pipe(delay(300));
   }
 
   remove(mediaId: string | number): Observable<FavoriteResponse> {
-    return of({
+    return of<FavoriteResponse>({
       status: 'DELETED',
       isFavorite: false,
       mediaId: mediaId.toString()
-    });
+    }).pipe(delay(300));
   }
 
 

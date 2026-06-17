@@ -1,0 +1,9 @@
+<h2 mat-dialog-title>External Link Warning</h2>
+<mat-dialog-content>
+  <p>You are about to navigate to an external website: <strong>{{data.url}}</strong></p>
+  <p>Are you sure you want to continue?</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button [mat-dialog-close]="true" color="primary">Continue</button>
+</mat-dialog-actions>

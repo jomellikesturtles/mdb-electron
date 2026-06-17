@@ -95,6 +95,7 @@ export class MovieCardComponent implements OnInit {
   isAvailable = false;
   watchedPercentage = '0%';
   isSingleClick: any;
+  defaultPoster = 'assets/offline-image/clint-eastwood.jfif'; // Using an existing placeholder from project
   private ngUnsubscribe = new Subject();
 
   constructor(

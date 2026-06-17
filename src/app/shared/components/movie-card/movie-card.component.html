@@ -1,8 +1,12 @@
 <div class='movie-card' [ngStyle]="{'width': _cardWidth}">
   <div
-    [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')','background-image':'url(https://image.tmdb.org/t/p/w185'+_movie.posterPath+')'}"
     class='movie-card-image-container' data-toggle="tooltip"
+    [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')'}"
     title="{{movie.title}} ({{movie.releaseDate|releaseYear}})">
+    <img [src]="'https://image.tmdb.org/t/p/w185'+_movie.posterPath"
+         (error)="$event.target.src = defaultPoster"
+         class="movie-poster-img"
+         alt="{{movie.title}}"/>
 
     <div class='card-button movie-bookmark' [class.active]="_isBookmarked" data-toggle='tooltip' title='Toggle Bookmark'>
       <button mat-icon-button (click)="toggleBookmark()" [disabled]="isProcessingBookmark"

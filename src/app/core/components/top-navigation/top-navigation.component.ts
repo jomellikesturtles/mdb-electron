@@ -13,6 +13,7 @@ import { NavigationService } from '@core/services/navigation.service';
 import { MockDataService } from '@services/mock-data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AppDownloadDialogComponent } from '@shared/components/app-download-dialog/app-download-dialog.component';
+import { ExternalLinkDialogComponent } from '@shared/components/external-link-dialog/external-link-dialog.component';
 
 @Component({
   selector: 'app-top-navigation',
@@ -223,7 +224,16 @@ export class TopNavigationComponent implements OnInit {
     if (isMobile) {
       this.dialog.open(AppDownloadDialogComponent);
     } else if (this.isMacBrowser) {
-      window.open(this.downloadUrl, '_blank');
+      const dialogRef = this.dialog.open(ExternalLinkDialogComponent, {
+        width: '400px',
+        data: { url: this.downloadUrl }
+      });
+
+      dialogRef.afterClosed().subscribe(confirmed => {
+        if (confirmed) {
+          window.open(this.downloadUrl, '_blank');
+        }
+      });
     }
   }
 }

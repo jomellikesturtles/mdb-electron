@@ -16,6 +16,7 @@ import { SessionExpiredDialogComponent } from './components/session-dialogs/sess
 import { SessionWarningDialogComponent } from './components/session-dialogs/session-warning-dialog.component';
 import { NewListDialogComponent } from './components/list-dialogs/new-list-dialog.component';
 import { AppDownloadDialogComponent } from './components/app-download-dialog/app-download-dialog.component';
+import { ExternalLinkDialogComponent } from './components/external-link-dialog/external-link-dialog.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { AppDownloadDialogComponent } from './components/app-download-dialog/app
     SessionExpiredDialogComponent,
     SessionWarningDialogComponent,
     NewListDialogComponent,
-    AppDownloadDialogComponent
+    AppDownloadDialogComponent,
+    ExternalLinkDialogComponent
   ],
   imports: [
     CommonModule,
@@ -59,7 +61,8 @@ import { AppDownloadDialogComponent } from './components/app-download-dialog/app
     SessionExpiredDialogComponent,
     SessionWarningDialogComponent,
     NewListDialogComponent,
-    AppDownloadDialogComponent
+    AppDownloadDialogComponent,
+    ExternalLinkDialogComponent
   ]
 })
 export class SharedModule { }
