@@ -26,7 +26,7 @@ const routes: Routes = [
   { path: 'discover', loadChildren: () => import('@modules/movie/discover/discover.module').then(m => m.DiscoverModule), canActivate: [MdbGuardGuard] },
   { path: 'library', loadChildren: () => import('@modules/person/library/library.module').then(m => m.LibraryModule), canActivate: [MdbGuardGuard] },
 
-  { path: 'results', loadChildren: () => import('@components/results/results.module').then(m => m.ResultsModule), canActivate: [MdbGuardGuard] },
+  { path: 'search', loadChildren: () => import('@components/results/results.module').then(m => m.ResultsModule), canActivate: [MdbGuardGuard] },
   { path: 'details', loadChildren: () => import('@modules/movie/details/details.module').then(m => m.DetailsModule), canActivate: [MdbGuardGuard] },
   { path: 'user', loadChildren: () => import('@modules/user/user.module').then(m => m.UserModule) },
   { path: 'advanced-find', component: AdvancedFindComponent, canActivate: [MdbGuardGuard] },

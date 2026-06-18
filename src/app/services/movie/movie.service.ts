@@ -149,12 +149,12 @@ export class MovieService extends BaseMovieService {
         }
         return fetch$.pipe(
           map((data: IRawTmdbResultObject) => {
-            return this.mapPaginatedResult(entityId, data);
+            return TmdbMapper.mapToPaginatedResults(data);
           })
         );
       },
       (data) => {
-        return { type: "NO_OP" };
+        return new AddDiscoverMovie({ id: entityId, paginatedResult: data });
       },
       refresh
     ).pipe(map((res) => (res && res.paginatedResult ? res.paginatedResult : res)));
@@ -170,7 +170,7 @@ export class MovieService extends BaseMovieService {
     let entityId = `movie:search:${myHttpParam.toString()}`;
 
     return this.getCachedOrFetch<any>(
-      MovieState.getSearchMovie(entityId),
+      MovieState.getDiscoverMovie(entityId),
       () => {
         let fetch$: Observable<any>;
         if (this.dataService.isWebApp() || navigator.onLine) {
@@ -181,16 +181,16 @@ export class MovieService extends BaseMovieService {
         return fetch$.pipe(
           first(),
           map((data: IRawTmdbResultObject) => {
-            return this.mapPaginatedResult(entityId, data);
+            return TmdbMapper.mapToPaginatedResults(data);
           })
         );
       },
       (data) => {
-        return { type: "NO_OP" };
+        return new AddDiscoverMovie({ id: entityId, paginatedResult: data });
       },
       refresh
     ).pipe(
-      map((res) => (res && res.movies ? res.movies : res))
+      map((res) => (res && res.paginatedResult ? res.paginatedResult : res))
     );
   }
 
@@ -216,12 +216,12 @@ export class MovieService extends BaseMovieService {
           .pipe(
             tap((_) => this.log("")),
             map((data: IRawTmdbResultObject) => {
-              return this.mapPaginatedResult(entityId, data);
+              return TmdbMapper.mapToPaginatedResults(data);
             })
           );
       },
       (data) => {
-        return { type: "NO_OP" };
+        return new AddDiscoverMovie({ id: entityId, paginatedResult: data });
       },
       refresh
     ).pipe(map((res) => (res && res.paginatedResult ? res.paginatedResult : res)));
@@ -243,13 +243,6 @@ export class MovieService extends BaseMovieService {
   }
 
   private mapPaginatedResult(entityId: string, rawData: IRawTmdbResultObject): IMdbMoviePaginated {
-    let newData = TmdbMapper.mapToPaginatedResults(rawData);
-
-    const store: MDBPaginatedResultModel = {
-      id: entityId,
-      paginatedResult: newData
-    };
-    this.store.dispatch(new AddDiscoverMovie(store));
-    return newData;
+    return TmdbMapper.mapToPaginatedResults(rawData);
   }
 }

@@ -1,9 +1,9 @@
 import { Component, OnInit, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IpcService } from '@services/ipc.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { environment } from '@environments/environment';
-import { map, startWith } from 'rxjs/operators';
+import { map, startWith, filter } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { ISearchQuery } from '@models/interfaces';
 import { Actions, ofActionDispatched } from "@ngxs/store";
@@ -38,6 +38,7 @@ export class TopNavigationComponent implements OnInit {
     private dataService: DataService,
     private ipcService: IpcService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private authService: AuthenticationService,
     private $actions: Actions,
     private navigationService: NavigationService,
@@ -91,6 +92,19 @@ export class TopNavigationComponent implements OnInit {
       this.isSignedIn = true;
       this.status = "";
     });
+
+    // Listen to route changes to update history if URL is edited manually
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      const q = this.activatedRoute.snapshot.queryParamMap.get('q');
+      if (q && q !== this.lastQuery) {
+        this.lastQuery = q;
+        this.myControl.setValue(q, { emitEvent: false });
+        this.updateSearchHistory(q);
+      }
+    });
+
     const e = localStorage.getItem('user');
     this.getSearchHistoryList();
     if (e === null) {
@@ -147,11 +161,18 @@ export class TopNavigationComponent implements OnInit {
     val = val.trim();
     this.searchQuery.query = val;
 
-    if (this.lastQuery === val && this.router.url === '/results') {
+    if (this.lastQuery === val && (this.router.url.startsWith('/search') || this.router.url === '/results')) {
       return;
     }
     this.lastQuery = val;
 
+    this.updateSearchHistory(val);
+    this.myControl.setValue(val, { emitEvent: false });
+    this.searchByTitle(val);
+
+  }
+
+  private updateSearchHistory(val: string) {
     // Update search history: move to front and maintain max length
     this.searchHistoryList = this.searchHistoryList.filter(q => q.toLowerCase() !== val.toLowerCase());
     this.searchHistoryList.unshift(val);
@@ -159,9 +180,6 @@ export class TopNavigationComponent implements OnInit {
       this.searchHistoryList = this.searchHistoryList.slice(0, this.SEARCH_HISTORY_MAX_LENGTH);
     }
     localStorage.setItem('mdb_search_history', JSON.stringify(this.searchHistoryList));
-    this.myControl.setValue(val, { emitEvent: false });
-    this.searchByTitle(val);
-
   }
 
   /**
@@ -172,7 +190,7 @@ export class TopNavigationComponent implements OnInit {
     this.searchQuery.query = enteredQuery;
     if (this.searchQuery.query.length > 0) {
       this.dataService.updateSearchQuery(this.searchQuery);
-      this.router.navigate(['/results']);
+      this.router.navigate(['/search'], { queryParams: { q: enteredQuery } });
     }
   }
 

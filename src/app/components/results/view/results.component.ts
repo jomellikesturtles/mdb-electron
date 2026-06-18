@@ -3,6 +3,9 @@ import { ISearchQuery, TmdbParameters, TmdbSearchMovieParameters } from '@models
 import { DataService } from '@services/data.service';
 import { MovieService } from '@services/movie/movie.service';
 import GeneralUtil from '@utils/general.util';
+import { ActivatedRoute } from '@angular/router';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-results',
@@ -23,31 +26,50 @@ export class ResultsComponent implements OnInit, OnDestroy {
   currentPage = 1;
   isProcSearching = true;
   procLoadMoreResults = false;
+  private ngUnsubscribe = new Subject();
 
   constructor(
     private dataService: DataService,
-    private movieService: MovieService) { }
+    private movieService: MovieService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
     GeneralUtil.DEBUG.log('inResutlts');
-    this.getData();
+    this.route.queryParams.pipe(takeUntil(this.ngUnsubscribe)).subscribe(params => {
+      const query = params['q'];
+      if (query) {
+        this.currentSearchQuery = query;
+        this.isProcSearching = true;
+        this.searchResults = [];
+        this.currentPage = 1;
+        this.searchQuery = { ...this.searchQuery, query: query };
+        this.getSearchResults();
+      } else {
+        this.getData();
+      }
+    });
   }
 
   ngOnDestroy(): void {
+    this.ngUnsubscribe.next(null);
+    this.ngUnsubscribe.complete();
   }
 
   /**
    * Subscribes to list of highlighted movies.
    */
   getData() {
-    this.dataService.searchQuery.subscribe(data => {
-      GeneralUtil.DEBUG.log('fromdataservice searchQuery: ', data);
-      this.isProcSearching = true;
-      this.searchResults = []; // clear for new search
-      this.currentPage = 1;
-      this.searchQuery = data;
-      this.getSearchResults();
-      this.currentSearchQuery = this.searchQuery.query;
+    this.dataService.searchQuery.pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
+      if (data && data.query && data.query !== this.currentSearchQuery) {
+        GeneralUtil.DEBUG.log('fromdataservice searchQuery: ', data);
+        this.isProcSearching = true;
+        this.searchResults = []; // clear for new search
+        this.currentPage = 1;
+        this.searchQuery = data;
+        this.getSearchResults();
+        this.currentSearchQuery = this.searchQuery.query;
+      }
     });
   }
 
