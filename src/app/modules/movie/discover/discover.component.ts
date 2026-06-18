@@ -124,8 +124,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.procLoadMoreResults = true;
     this.paramMap.set(TmdbParameters.Page, ++this.currentPage);
     this.movieService.getMoviesDiscover(this.paramMap).pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
-      this.discoverResults = data.results;
-      // this.discoverResults.push(...data.results) // for some reason this doesn't work anymore
+      this.discoverResults = [...this.discoverResults, ...data.results];
       if (data.totalPages <= this.currentPage) {
         this.hasMoreResults = false;
       }

@@ -55,9 +55,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
     const paramMap = new Map<TmdbParameters | TmdbSearchMovieParameters, any>();
     paramMap.set(TmdbSearchMovieParameters.Query, this.searchQuery.query);
     this.movieService.searchMovie(paramMap).subscribe(data => {
-      this.searchResults.push(...data.results);
-      if (data.total_pages > this.currentPage) {
+      this.searchResults = [...this.searchResults, ...data.results];
+      if (data.totalPages > this.currentPage) {
         this.hasMoreResults = true;
+      } else {
+        this.hasMoreResults = false;
       }
       this.isProcSearching = false;
     });
@@ -72,9 +74,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
     paramMap.set(TmdbParameters.Page, ++this.currentPage);
     this.procLoadMoreResults = true;
     this.movieService.searchMovie(paramMap).subscribe(data => {
-      this.searchResults = data.results;
-      // this.searchResults.push(...data.results) // for some reason this doesn't work anymore
-      if (data.total_pages <= this.currentPage) {
+      this.searchResults = [...this.searchResults, ...data.results];
+      if (data.totalPages <= this.currentPage) {
         this.hasMoreResults = false;
       }
       this.procLoadMoreResults = false;

@@ -163,7 +163,7 @@ export class MovieService extends BaseMovieService {
   searchMovie(
     paramMap: Map<TmdbParameters | TmdbSearchMovieParameters, any>,
     refresh: boolean = false
-  ): Observable<IRawTmdbResultObject> {
+  ): Observable<IMdbMoviePaginated> {
     const page = paramMap.get(TmdbSearchMovieParameters.Page) ? paramMap.get(TmdbSearchMovieParameters.Page) : 1;
     let myHttpParam = new HttpParams().append(TmdbParameters.Page, page);
     myHttpParam = GeneralUtil.appendMappedParameters(paramMap, myHttpParam);
