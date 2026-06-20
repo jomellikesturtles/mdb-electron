@@ -72,7 +72,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     { id: 4, name: 'Horror Classics', checked: false }
   ];
   private ngUnsubscribe = new Subject();
-  isAuthenticated = this.authService.isAuthenticated().valueOf();
+  isAuthenticated = this.authService.isAuthenticated;
 
   constructor(
     private activatedRoute: ActivatedRoute,

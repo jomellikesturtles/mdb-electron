@@ -30,7 +30,7 @@ export class PersonDetailsComponent implements OnInit {
   getPersonDetails(val: number | string): void {
     console.log('getting person details');
     this.personService.getPersonDetails(val).subscribe(data => {
-      console.log('got from getMovieOnline ', data);
+      console.log('got from getPersonDetails ', data);
       this.person = data;
       this.creditsCast = (data as any).movie_credits.cast;
       this.creditsCrew = (data as any).movie_credits.crew;

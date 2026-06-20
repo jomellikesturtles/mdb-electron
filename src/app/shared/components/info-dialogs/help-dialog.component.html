@@ -1,0 +1,87 @@
+<div class="mdb-dialog-container" style="width: 500px; max-width: 100%;">
+  <h2 mat-dialog-title class="dialog-title">MDB Help Center</h2>
+  
+  <mat-dialog-content class="dialog-content">
+    <mat-tab-group>
+      
+      <!-- TAB 1: FAQ -->
+      <mat-tab label="FAQ">
+        <div class="help-section">
+          <h3>How do I scan my local media?</h3>
+          <p>Go to your library scanner from the settings or navigation menu, select the folders where you keep your media files, and initiate the scan. MDB will recursively identify your files using local filenames and fetch details from TMDB.</p>
+        </div>
+        <div class="help-section">
+          <h3>Can I watch movies offline?</h3>
+          <p>Yes! Once local metadata is cached and torrents are downloaded or local streaming paths are mapped, you can access your collections without an active internet connection.</p>
+        </div>
+        <div class="help-section">
+          <h3>Where is my library data stored?</h3>
+          <p>MDB uses a local embedded NeDB database located in the application directory. All of your preferences, bookmarks, and scanned library details remain secure on your machine.</p>
+        </div>
+      </mat-tab>
+      
+      <!-- TAB 2: Keyboard Shortcuts -->
+      <mat-tab label="Shortcuts">
+        <table class="shortcuts-table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Shortcut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Focus Search Bar</td>
+              <td><kbd>/</kbd></td>
+            </tr>
+            <tr>
+              <td>Play / Pause Video</td>
+              <td><kbd>Space</kbd></td>
+            </tr>
+            <tr>
+              <td>Toggle Mute</td>
+              <td><kbd>m</kbd></td>
+            </tr>
+            <tr>
+              <td>Toggle Fullscreen</td>
+              <td><kbd>f</kbd></td>
+            </tr>
+            <tr>
+              <td>Go Back 5 Seconds</td>
+              <td><kbd>←</kbd></td>
+            </tr>
+            <tr>
+              <td>Go Forward 5 Seconds</td>
+              <td><kbd>→</kbd></td>
+            </tr>
+            <tr>
+              <td>Increase Volume</td>
+              <td><kbd>↑</kbd></td>
+            </tr>
+            <tr>
+              <td>Decrease Volume</td>
+              <td><kbd>↓</kbd></td>
+            </tr>
+          </tbody>
+        </table>
+      </mat-tab>
+      
+      <!-- TAB 3: Troubleshooting -->
+      <mat-tab label="Troubleshooting">
+        <div class="help-section">
+          <h3>Missing Movie Details?</h3>
+          <p>Make sure your file names contain the movie title followed by the release year in parenthesis (e.g. <code>The Matrix (1999).mp4</code>). This helps our parser match correctly.</p>
+        </div>
+        <div class="help-section">
+          <h3>Streaming Issues?</h3>
+          <p>If you experience buffering during torrent playback, make sure you have enough active seeders and check your network firewalls to ensure WebTorrent ports aren't blocked.</p>
+        </div>
+      </mat-tab>
+      
+    </mat-tab-group>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close class="close-btn">Close</button>
+  </mat-dialog-actions>
+</div>

@@ -14,6 +14,9 @@ import { MockDataService } from '@services/mock-data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AppDownloadDialogComponent } from '@shared/components/app-download-dialog/app-download-dialog.component';
 import { ExternalLinkDialogComponent } from '@shared/components/external-link-dialog/external-link-dialog.component';
+import { AboutDialogComponent } from '@shared/components/info-dialogs/about-dialog.component';
+import { HelpDialogComponent } from '@shared/components/info-dialogs/help-dialog.component';
+import { FeedbackDialogComponent } from '@shared/components/info-dialogs/feedback-dialog.component';
 
 @Component({
   selector: 'app-top-navigation',
@@ -53,7 +56,7 @@ export class TopNavigationComponent implements OnInit {
   isLinuxBrowser = !this.isElectron && /Linux/.test(window.navigator.platform);
   downloadUrl = 'https://github.com/jomellikesturtles/mdb-electron/releases/download/v1.0.0-alpha/mdb-darwin-arm64.zip';
   
-  status = 'LOGIN';
+  status = ''; // Initialize to empty string
   browserConnection = navigator.onLine;
   currentYear = new Date().getFullYear();
   genres = ['Action', 'Adventure', 'Documentary', 'Drama', 'Horror', 'Sci-Fi', 'Thriller'];
@@ -79,7 +82,7 @@ export class TopNavigationComponent implements OnInit {
   filteredOptions: Observable<string[]>;
   SEARCH_HISTORY_MAX_LENGTH = 8;
   voteAverageList = [];
-  isSignedIn = false;
+  isAuthenticated = this.authService.isAuthenticated;
   lastQuery = '';
 
   myControl = new FormControl();
@@ -89,8 +92,6 @@ export class TopNavigationComponent implements OnInit {
     });
 
     this.$actions.pipe(ofActionDispatched(Login)).subscribe((e) => {
-      this.isSignedIn = true;
-      this.status = "";
     });
 
     // Listen to route changes to update history if URL is edited manually
@@ -105,15 +106,7 @@ export class TopNavigationComponent implements OnInit {
       }
     });
 
-    const e = localStorage.getItem('user');
     this.getSearchHistoryList();
-    if (e === null) {
-      this.status = 'LOGIN';
-      this.isSignedIn = false;
-    } else {
-      this.isSignedIn = true;
-      this.status = '';
-    }
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(''),
       map(value => {
@@ -205,7 +198,6 @@ export class TopNavigationComponent implements OnInit {
   signOut() {
     localStorage.removeItem('user');
     this.authService.logout().subscribe((e) => {
-      this.isSignedIn = false;
       this.status = "LOGIN";
       this.router.navigate(["/user/signin"]);
     });
@@ -216,15 +208,24 @@ export class TopNavigationComponent implements OnInit {
   }
 
   goToHelp() {
-    console.log('Navigate to Help');
+    this.dialog.open(HelpDialogComponent, {
+      width: '550px',
+      disableClose: false
+    });
   }
 
   goToAbout() {
-    console.log('Navigate to About');
+    this.dialog.open(AboutDialogComponent, {
+      width: '450px',
+      disableClose: false
+    });
   }
 
   sendFeedback() {
-    console.log('Navigate to Send Feedback');
+    this.dialog.open(FeedbackDialogComponent, {
+      width: '480px',
+      disableClose: false
+    });
   }
 
   onMinimize() {

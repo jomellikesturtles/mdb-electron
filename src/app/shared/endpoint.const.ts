@@ -1,5 +1,5 @@
 export const REPLACE_PARAMETER = "mdb_parameter";
-export const MDB_API_URL = '/mdb';
+export const MDB_API_URL = 'mdb';
 export const ENDPOINT = {
   MEDIA: `${MDB_API_URL}/media/`,
   MEDIA_ID: `${MDB_API_URL}/v1/media/${REPLACE_PARAMETER}_1`,

@@ -1,0 +1,294 @@
+.mdb-dialog-container {
+  background-color: #181818;
+  color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  max-width: 100%;
+
+  .dialog-title {
+    color: #e50914;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #333333;
+    padding-bottom: 0.5rem;
+  }
+
+  .dialog-content {
+    color: #e5e5e5;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .about-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem 0;
+
+    .app-logo-large {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #e50914;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 10px rgba(229, 9, 20, 0.4);
+    }
+
+    .app-description {
+      color: #aaaaaa;
+      font-style: italic;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  mat-list {
+    width: 100%;
+    background: #202020;
+    border-radius: 6px;
+    padding: 0.5rem 0;
+    border: 1px solid #2a2a2a;
+
+    mat-list-item {
+      height: auto !important;
+      padding: 0.75rem 1rem !important;
+      border-bottom: 1px solid #2a2a2a;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      ::ng-deep .mat-list-item-content {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0 !important;
+      }
+
+      .label {
+        font-weight: 600;
+        color: #aaaaaa;
+      }
+
+      .value {
+        color: #ffffff;
+      }
+    }
+  }
+
+  .links-section {
+    width: 100%;
+    margin-top: 1.5rem;
+    text-align: left;
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 0.75rem;
+    }
+
+    .mdb-link {
+      color: #e50914;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease, text-shadow 0.2s ease;
+
+      &:hover {
+        color: #ff333d;
+        text-shadow: 0 0 8px rgba(229, 9, 20, 0.6);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .close-btn {
+    background-color: #333333;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #444444;
+    }
+  }
+}
+
+// Tabs Styling for Help Dialog
+::ng-deep {
+  .mat-mdc-tab-group {
+    background-color: transparent;
+  }
+  .mat-mdc-tab-header {
+    border-bottom: 1px solid #333333 !important;
+  }
+  .mat-mdc-tab .mdc-tab__text-label {
+    color: #aaaaaa !important;
+    font-weight: 600;
+  }
+  .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+    color: #ffffff !important;
+  }
+  .mat-mdc-tab-header .mat-mdc-tab-header-pagination {
+    display: none !important;
+  }
+  .mat-mdc-tab-group .mat-mdc-tab-body-content {
+    padding: 1rem 0;
+  }
+}
+
+// Keyboard shortcut keys styling
+kbd {
+  background-color: #333333;
+  border: 1px solid #555555;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 2px 0 0 rgba(255, 255, 255, 0.1) inset;
+  color: #ffffff;
+  display: inline-block;
+  font-family: inherit;
+  font-size: 0.85em;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 5px;
+  white-space: nowrap;
+}
+
+// Help sections & tables
+.help-section {
+  margin-bottom: 1.5rem;
+
+  h3 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    color: #cccccc;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+.shortcuts-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #2a2a2a;
+  }
+
+  th {
+    color: #e50914;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  td {
+    color: #e5e5e5;
+    font-size: 0.9rem;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+// Feedback Form Styling
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  margin-top: 0.5rem;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #cccccc;
+    }
+  }
+
+  .rating-container {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    .star-btn {
+      background: none;
+      border: none;
+      color: #444444;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.15s ease, transform 0.15s ease;
+
+      &:hover {
+        transform: scale(1.15);
+      }
+
+      &.active {
+        color: #ffb600;
+        text-shadow: 0 0 8px rgba(255, 182, 0, 0.4);
+      }
+    }
+  }
+
+  input, select, textarea {
+    background-color: #202020;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    color: #ffffff;
+    padding: 0.75rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #e50914;
+      box-shadow: 0 0 5px rgba(229, 9, 20, 0.3);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+}
+
+.submit-btn {
+  background-color: #e50914;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #ff1f29;
+    box-shadow: 0 0 8px rgba(229, 9, 20, 0.5);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

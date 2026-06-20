@@ -8,39 +8,38 @@
          class="movie-poster-img"
          alt="{{movie.title}}"/>
 
-    <div class='card-button movie-bookmark' [class.active]="_isBookmarked" data-toggle='tooltip' title='Toggle Bookmark'>
-      <button mat-icon-button (click)="toggleBookmark()" [disabled]="isProcessingBookmark"
-        class="tmdb-circle-btn bookmark-btn">
-        <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark_remove' : 'bookmark_add' }}</mat-icon>
-        <mat-spinner *ngIf="isProcessingBookmark" diameter="20" class="m-auto"></mat-spinner>
-      </button>
-    </div>
-
-    <div *ngIf="_library && _library.id" class='movie-available' data-toggle='tooltip' title='Available'>
-    </div>
-
-    <div class="card-button movie-mark-favorite" [class.active]="_isFavorite" data-toggle="tooltip" title="Toggle Favorite">
-      <button mat-icon-button (click)="toggleFavorite()" [disabled]="isProcessingFavorite"
-        class="tmdb-circle-btn fav-btn">
-        <mat-icon *ngIf="!isProcessingFavorite">{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
-        <mat-spinner *ngIf="isProcessingFavorite" diameter="20" class="m-auto"></mat-spinner>
-      </button>
-    </div>
-
-    @if(isFeatureEnabled('played_status')) {
-    <div class='card-button movie-mark-as-watched' *ngIf='!_userData?.played'>
-      <div (click)='togglePlayed()' *ngIf='!procWatched'>
-        <img class='card-button-icon' src='./assets/icons/check.svg' data-toggle='tooltip' title='Mark as watched' />
+    <ng-container *ngIf="isAuthenticated()">
+      <div class='card-button movie-bookmark' [class.active]="isBookmarked" data-toggle='tooltip' title='Toggle Bookmark'>
+        <button mat-icon-button (click)="toggleBookmark()" [disabled]="isProcessingBookmark"
+          class="tmdb-circle-btn bookmark-btn">
+          <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark_remove' : 'bookmark_add' }}</mat-icon>
+          <mat-spinner *ngIf="isProcessingBookmark" diameter="20" class="m-auto"></mat-spinner>
+        </button>
       </div>
-      <div *ngIf='procWatched'>
-        <mat-spinner [diameter]='20'></mat-spinner>
-      </div>
-    </div>
 
-    <div *ngIf="_userData?.played" [ngStyle]="{'width': watchedPercentage +'%'}" id='watchedProgressBar'
-      class='movie-progress-bar'>
-    </div>
-    }
+      <div class="card-button movie-mark-favorite" [class.active]="isFavorite" data-toggle="tooltip" title="Toggle Favorite">
+        <button mat-icon-button (click)="toggleFavorite()" [disabled]="isProcessingFavorite"
+          class="tmdb-circle-btn fav-btn">
+          <mat-icon *ngIf="!isProcessingFavorite">{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+          <mat-spinner *ngIf="isProcessingFavorite" diameter="20" class="m-auto"></mat-spinner>
+        </button>
+      </div>
+
+      @if(isFeatureEnabled('played_status')) {
+      <div class='card-button movie-mark-as-watched' *ngIf='!_userData?.played'>
+        <div (click)='togglePlayed()' *ngIf='!procWatched'>
+          <img class='card-button-icon' src='./assets/icons/check.svg' data-toggle='tooltip' title='Mark as watched' />
+        </div>
+        <div *ngIf='procWatched'>
+          <mat-spinner [diameter]='20'></mat-spinner>
+        </div>
+      </div>
+
+      <div *ngIf="_userData?.played" [ngStyle]="{'width': watchedPercentage +'%'}" id='watchedProgressBar'
+        class='movie-progress-bar'>
+      </div>
+      }
+    </ng-container>
 
     <div class="overlay overlay-add" (click)='onPreview()'></div>
   </div>

@@ -14,22 +14,22 @@
             [style.backgroundImage]="'url(https://image.tmdb.org/t/p/w500' + movieDetails.posterPath + ')'">
           </div>
 
-          <div class="action-circle-buttons mt-3 justify-content-center">
+          <div class="action-circle-buttons mt-3 justify-content-center" *ngIf="isAuthenticated()">
             <button mat-icon-button matTooltip="Add to List" [matMenuTriggerFor]="listMenu"
               class="tmdb-circle-btn list-btn"><mat-icon>list</mat-icon></button>
-            isProcessingFavorite {{isProcessingFavorite}}
+            
             <button mat-icon-button [class.active]="isFavorite" (click)="toggleFavorite()"
               [disabled]="isProcessingFavorite" matTooltip="Mark as favorite" class="tmdb-circle-btn fav-btn">
               <mat-icon *ngIf="!isProcessingFavorite">{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
               <mat-spinner *ngIf="isProcessingFavorite" diameter="20" class="m-auto"></mat-spinner>
             </button>
-            isProcessingBookmark {{isProcessingBookmark}}
+            
             <button mat-icon-button [class.active]="isBookmarked" (click)="toggleBookmark()"
               [disabled]="isProcessingBookmark" matTooltip="Add to watchlist" class="tmdb-circle-btn bookmark-btn">
               <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark_remove' : 'bookmark_add' }}</mat-icon>
               <mat-spinner *ngIf="isProcessingBookmark" diameter="20" class="m-auto"></mat-spinner>
             </button>
-            isProcessingWatched {{isProcessingWatched}}
+            
             <button mat-icon-button [class.active]="isPlayed" (click)="togglePlayed()" [disabled]="isProcessingWatched"
               matTooltip="Mark as watched" class="tmdb-circle-btn played-btn">
               <mat-icon *ngIf="!isProcessingWatched">{{isPlayed ? 'done' : 'visibility'}}</mat-icon>

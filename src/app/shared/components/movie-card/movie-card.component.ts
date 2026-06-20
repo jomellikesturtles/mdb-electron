@@ -16,6 +16,7 @@ import { PlayedService } from '@services/media/played.service';
 import { FavoriteService } from '@services/media/favorite.service';
 import { LoggerService } from '@core/logger.service';
 import { FeatureName, FeatureToggleService } from '@core/services/feature-toggle.service';
+import { AuthenticationService } from '@services';
 
 @Component({
   selector: 'app-movie-card',
@@ -96,6 +97,7 @@ export class MovieCardComponent implements OnInit {
   watchedPercentage = '0%';
   isSingleClick: any;
   defaultPoster = 'assets/offline-image/clint-eastwood.jfif'; // Using an existing placeholder from project
+  isAuthenticated = this.authService.isAuthenticated;
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -110,7 +112,8 @@ export class MovieCardComponent implements OnInit {
     private favoriteService: FavoriteService,
     private playedService: PlayedService,
     private loggerService: LoggerService,
-    private featureToggleService: FeatureToggleService
+    private featureToggleService: FeatureToggleService,
+    private authService: AuthenticationService
   ) { }
 
   ngOnInit(): void {
