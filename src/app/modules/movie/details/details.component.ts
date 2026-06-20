@@ -92,6 +92,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private authService: AuthenticationService,
     private featureToggleService: FeatureToggleService,
     private listsService: ListsService,
+    private authenticationService: AuthenticationService,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -190,43 +191,17 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * Gets the user's watched, bookmark, library data of the movie
    */
   getUserMovieData() {
+    if (!this.authenticationService.isAuthenticated()) return;
     this.processingVideo = this.isProcessingFavorite = this.isProcessingBookmark = this.isProcessingWatched = true;
 
     this.mediaUserDataService.getMediaUserData(this.movieDetails.tmdbId).subscribe((profileData: IMediaUserData) => {
-      this.isBookmarked = profileData.isBookmark;
-      this.isFavorite = profileData.isFavorite;
+      this._isBookmarked = profileData.isBookmark;
+      this._isFavorite = profileData.isFavorite;
 
       GeneralUtil.DEBUG.log('usermoviedata', profileData);
       this.processingVideo = this.isProcessingFavorite = this.isProcessingBookmark = this.isProcessingWatched = false;
       this.cdr.detectChanges();
     });
-  }
-
-  set isBookmarked(val: number | Object) {
-    this.loggerService.info('set isBookmarked called');
-    this._isBookmarked = this.mediaUserDataService.commonSetter(val);
-  }
-
-  get isBookmarked(): boolean {
-    return this._isBookmarked;
-  }
-
-  set isFavorite(val: number | Object) {
-    this.loggerService.info('set isFavorite called');
-    this._isFavorite = this.mediaUserDataService.commonSetter(val);
-  }
-
-  get isFavorite(): boolean {
-    return this._isFavorite;
-  }
-
-  set isPlayed(val: number | Object) {
-    this.loggerService.info('set isPlayed called');
-    this._isPlayed = this.mediaUserDataService.commonSetter(val);
-  }
-
-  get isPlayed(): boolean {
-    return this._isPlayed;
   }
 
   /**
@@ -238,7 +213,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     const isAdding = !this._isBookmarked;
     const bookmarkToggleFunction = this._isBookmarked ? this.bookmarkService.remove(tmdbId) : this.bookmarkService.save(tmdbId);
     bookmarkToggleFunction.subscribe(e => {
-      this.isBookmarked = e.isBookmark;
+      this._isBookmarked = e.isBookmark;
       this.isProcessingBookmark = false;
       this.notificationService.showSuccess(`${isAdding ? 'Added to' : 'Removed from'} Watchlist`);
       this.cdr.detectChanges();
@@ -262,7 +237,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
       } else {
         res = await this.playedService.save({ tmdbId }).toPromise();
       }
-      this.isPlayed = res;
+      this._isPlayed = res;
       this.notificationService.showSuccess(`${isAdding ? 'Marked as' : 'Removed from'} Watched`);
       this.cdr.detectChanges();
     } catch (err) {
@@ -279,7 +254,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     const isAdding = !this._isFavorite;
     const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove(tmdbId) : this.favoriteService.save(tmdbId);
     favoriteToggleFunction.subscribe(e => {
-      this.isFavorite = e.isFavorite;
+      this._isFavorite = e.isFavorite;
       this.notificationService.showSuccess(`${isAdding ? 'Added to' : 'Removed from'} Favorites`);
       this.cdr.detectChanges();
     }, err => {
@@ -359,16 +334,16 @@ export class DetailsComponent implements OnInit, OnDestroy {
     });
 
     let imdbId = this.movieDetails.externalIds.imdb_id;
-    this.torrentService.getTorrents(imdbId).subscribe(data => {
-      if (data) {
-        this.torrents = data.torrents;
-        this.torrents.sort(function (a, b) { return b.peers - a.peers; }); // sort by seeders
-        this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(this.torrents)];
+    // this.torrentService.getTorrents(imdbId).subscribe(data => {
+    //   if (data) {
+    //     this.torrents = data.torrents;
+    //     this.torrents.sort(function (a, b) { return b.peers - a.peers; }); // sort by seeders
+    //     this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(this.torrents)];
 
-        if (!this.bestPlayLink && this.torrents.length > 0) this.bestPlayLink = this.mapPlayLink(this.torrents[0]); // TODO: add sorting by preferred quality
-      }
-      this.processingPlayLink = false;
-    });
+    //     if (!this.bestPlayLink && this.torrents.length > 0) this.bestPlayLink = this.mapPlayLink(this.torrents[0]); // TODO: add sorting by preferred quality
+    //   }
+    //   this.processingPlayLink = false;
+    // });
   }
 
   continueWatching() {

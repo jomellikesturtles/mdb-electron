@@ -28,28 +28,28 @@ export class HttpBaseService {
 
     return this.http.get<T>(url, options).pipe(
       tap(_ => this.logger.info(`GET url=${url}`)),
-      catchError(this.handleError<T>(op))
+      // catchError(this.handleError<T>(op))
     );
   }
 
   post<T>(url: string, payload: any, operation = 'POST'): Observable<T> {
     return this.http.post<T>(url, payload, { headers: JSON_CONTENT_TYPE_HEADER }).pipe(
       tap(_ => this.logger.info(`POST url=${url}`)),
-      catchError(this.handleError<T>(operation))
+      // catchError(this.handleError<T>(operation))
     );
   }
 
   patch<T>(url: string, payload: any, operation = 'PATCH'): Observable<T> {
     return this.http.patch<T>(url, payload).pipe(
       tap(_ => this.logger.info(`PATCH url=${url}`)),
-      catchError(this.handleError<T>(operation))
+      // catchError(this.handleError<T>(operation))
     );
   }
 
   put<T>(url: string, payload: any, operation = 'PUT'): Observable<T> {
     return this.http.put<T>(url, payload).pipe(
       tap(_ => this.logger.info(`PUT url=${url}`)),
-      catchError(this.handleError<T>(operation))
+      // catchError(this.handleError<T>(operation))
     );
   }
 
@@ -57,7 +57,7 @@ export class HttpBaseService {
     return this.http.delete<T>(url, options).pipe(
       map(res => res as T),
       tap(_ => this.logger.info(`DELETE url=${url}`)),
-      catchError(this.handleError<T>(operation))
+      // catchError(this.handleError<T>(operation))
     );
   }
 

@@ -7,6 +7,7 @@ import { MediaUserDataService } from '@services/media/media-user-data.service';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
 import { IBookmark } from '@services/media';
 import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
+import { AuthenticationService } from '@services';
 
 @Component({
   selector: 'app-card-list',
@@ -39,7 +40,7 @@ export class CardListComponent implements OnInit, OnChanges {
 
   constructor(
     private mediaUserDataService: MediaUserDataService,
-    private featureToggleService: FeatureToggleService
+    private authenticationService: AuthenticationService
   ) { }
 
   ngOnInit() {
@@ -58,6 +59,7 @@ export class CardListComponent implements OnInit, OnChanges {
    * Gets the user data like: bookmark, watched, video.
    */
   getMoviesUserData() {
+    if (!this.authenticationService.isAuthenticated()) return;
     const idList = this.collectIds();
     const listLength = idList.length;
     const arr2 = this.createDividedList(idList, listLength);

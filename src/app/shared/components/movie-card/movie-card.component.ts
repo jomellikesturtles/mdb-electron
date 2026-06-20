@@ -8,7 +8,6 @@ import { TorrentService } from '@services/torrent/torrent.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MDBMovie } from '@models/mdb-movie.model';
-import { IProfileData } from '@models/profile-data.model';
 import ObjectUtil from '@utils/object.utils';
 import GeneralUtil from '@utils/general.util';
 import { BookmarkService } from '@services/media/bookmark.service';
@@ -17,6 +16,7 @@ import { FavoriteService } from '@services/media/favorite.service';
 import { LoggerService } from '@core/logger.service';
 import { FeatureName, FeatureToggleService } from '@core/services/feature-toggle.service';
 import { AuthenticationService } from '@services';
+import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
 
 @Component({
   selector: 'app-movie-card',
@@ -67,20 +67,20 @@ export class MovieCardComponent implements OnInit {
     return this._library;
   }
 
-  _userData: IProfileData;
+  _userData: IMediaUserData;
   @Input()
-  set userData(inputData: IProfileData) {
+  set userData(inputData: IMediaUserData) {
     this._userData = inputData;
     if (!ObjectUtil.isEmpty(inputData)) {
-      this.isBookmarked = inputData.bookmark;
-      this.isFavorite = inputData.favorite;
-      this.isPlayed = inputData.played;
-      if (inputData.played) {
-        this.watchedPercentage = inputData.played.percentage + '%';
+      this._isBookmarked = inputData.isBookmark;
+      this._isFavorite = inputData.isFavorite;
+      this._isPlayed = inputData.isPlayed;
+      if (inputData.progress) {
+        this.watchedPercentage = inputData.progress.percentage + '%';
       }
     }
   }
-  get userData(): IProfileData {
+  get userData(): IMediaUserData {
     return this._userData;
   }
 
@@ -161,33 +161,6 @@ export class MovieCardComponent implements OnInit {
     this.dataService.updatePreviewMovie(this._movie);
   }
 
-  set isBookmarked(val: number | Object | boolean) {
-    this.loggerService.info('set isBookmarked called');
-    this._isBookmarked = this.userDataService.commonSetter(val);
-  }
-
-  get isBookmarked(): boolean {
-    return this._isBookmarked;
-  }
-
-  set isFavorite(val: number | Object | boolean) {
-    this.loggerService.info('set isFavorite called');
-    this._isFavorite = this.userDataService.commonSetter(val);
-  }
-
-  get isFavorite(): boolean {
-    return this._isFavorite;
-  }
-
-  set isPlayed(val: number | Object | boolean) {
-    this.loggerService.info('set isPlayed called');
-    this._isPlayed = this.userDataService.commonSetter(val);
-  }
-
-  get isPlayed(): boolean {
-    return this._isPlayed;
-  }
-
   /**
    * Toggles movie from user's watchlist or bookmarks
    */
@@ -196,7 +169,7 @@ export class MovieCardComponent implements OnInit {
     const tmdbId = this._movie.tmdbId;
     const bookmarkToggleFunction = this._isBookmarked ? this.bookmarkService.remove(tmdbId) : this.bookmarkService.save(tmdbId);
     bookmarkToggleFunction.subscribe(e => {
-      this.isBookmarked = e.isBookmark;
+      this._isBookmarked = e.isBookmark;
       this.isProcessingBookmark = false;
     });
   }
@@ -210,7 +183,7 @@ export class MovieCardComponent implements OnInit {
     } else {
       res = await this.playedService.save({ tmdbId }).toPromise();
     }
-    this.isPlayed = res;
+    this._isPlayed = res;
     this.procWatched = false;
   }
 
@@ -219,7 +192,7 @@ export class MovieCardComponent implements OnInit {
     const tmdbId = this._movie.tmdbId;
     const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove(tmdbId) : this.favoriteService.save(tmdbId);
     favoriteToggleFunction.subscribe(e => {
-      this.isFavorite = e.isFavorite;
+      this._isFavorite = e.isFavorite;
       this.isProcessingFavorite = false;
     });
   }

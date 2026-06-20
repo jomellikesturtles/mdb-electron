@@ -17,22 +17,23 @@
           <div class="action-circle-buttons mt-3 justify-content-center" *ngIf="isAuthenticated()">
             <button mat-icon-button matTooltip="Add to List" [matMenuTriggerFor]="listMenu"
               class="tmdb-circle-btn list-btn"><mat-icon>list</mat-icon></button>
-            
-            <button mat-icon-button [class.active]="isFavorite" (click)="toggleFavorite()"
+
+            <button mat-icon-button [class.active]="_isFavorite" (click)="toggleFavorite()"
               [disabled]="isProcessingFavorite" matTooltip="Mark as favorite" class="tmdb-circle-btn fav-btn">
-              <mat-icon *ngIf="!isProcessingFavorite">{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+              <mat-icon *ngIf="!isProcessingFavorite">{{ _isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
               <mat-spinner *ngIf="isProcessingFavorite" diameter="20" class="m-auto"></mat-spinner>
             </button>
-            
-            <button mat-icon-button [class.active]="isBookmarked" (click)="toggleBookmark()"
+
+            <button mat-icon-button [class.active]="_isBookmarked" (click)="toggleBookmark()"
               [disabled]="isProcessingBookmark" matTooltip="Add to watchlist" class="tmdb-circle-btn bookmark-btn">
-              <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark_remove' : 'bookmark_add' }}</mat-icon>
+              <mat-icon *ngIf="!isProcessingBookmark">{{ _isBookmarked ? 'bookmark_remove' : 'bookmark_add'
+                }}</mat-icon>
               <mat-spinner *ngIf="isProcessingBookmark" diameter="20" class="m-auto"></mat-spinner>
             </button>
-            
-            <button mat-icon-button [class.active]="isPlayed" (click)="togglePlayed()" [disabled]="isProcessingWatched"
+
+            <button mat-icon-button [class.active]="_isPlayed" (click)="togglePlayed()" [disabled]="isProcessingWatched"
               matTooltip="Mark as watched" class="tmdb-circle-btn played-btn">
-              <mat-icon *ngIf="!isProcessingWatched">{{isPlayed ? 'done' : 'visibility'}}</mat-icon>
+              <mat-icon *ngIf="!isProcessingWatched">{{_isPlayed ? 'done' : 'visibility'}}</mat-icon>
               <mat-spinner *ngIf="isProcessingWatched" diameter="20" class="m-auto"></mat-spinner>
             </button>
           </div>
@@ -134,7 +135,7 @@
               <div *ngFor="let c of movieDetailsPersons.cast | slice:0:10" class="cast-card-mini"
                 (click)='goToPerson(c.id)'>
                 <div class="cast-img"
-                  [style.backgroundImage]="c.profilePath ? 'url(https://image.tmdb.org/t/p/w185' + c.profilePath + ')' : 'url(assets/offline-image/clint-eastwood.jfif)'">
+                  [style.backgroundImage]="c.profile_path ? 'url(https://image.tmdb.org/t/p/w185' + c.profile_path + ')' : 'url(assets/offline-image/clint-eastwood.jfif)'">
                 </div>
                 <div class="cast-details p-2">
                   <div class="fw-bold text-white name">{{ c.name }}</div>
@@ -142,9 +143,10 @@
                 </div>
               </div>
             </div>
-            <mdb-button variant="text" size="sm" class="mt-2" (onClick)="goToFullCredits()">Full Cast &
-              Crew</mdb-button>
+            <!-- <mdb-button id="bottomesa" variant="text" size="sm" class="mt-2" (onClick)="goToFullCredits()">Full Cast &
+              Crew</mdb-button> -->
           </div>
+
         </mat-tab>
 
         <mat-tab label="REVIEWS">

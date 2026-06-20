@@ -9,9 +9,10 @@ import { Login } from "app/store/auth/auth.state";
 import { toObservable } from "@angular/core/rxjs-interop";
 import * as openpgp from "openpgp";
 import { environment } from "@environments/environment";
+import GeneralUtil from "@utils/general.util";
 
 export class RegisterPayload {
-  username: string;
+  userName: string;
   email: string;
   password: string;
 }
@@ -182,5 +183,20 @@ export class AuthenticationService {
     });
 
     return encrypted as string;
+  }
+
+  /**
+   * Error handler.
+   * @param operation the operation
+   * @param result the result
+   */
+  protected handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      GeneralUtil.DEBUG.error(error); // log to console instead
+      this.logger.error(`${operation} failed: ${error.message}`);
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
+
   }
 }

@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { LoggerService } from "@core/logger.service";
-import { IProfileData } from "@models/profile-data.model";
 import { DataService } from "@services/data.service";
 import { BaseMediaUserDataService } from "@services/media/base-media-user-data.service";
 import { delay, Observable, of } from "rxjs";
@@ -25,7 +24,13 @@ export class MockMediaUserDataService extends BaseMediaUserDataService {
       {
         mediaId: "550",
         isFavorite: false,
-        isBookmark: false
+        isBookmark: false,
+
+        isPlayed: false,
+        progress: {
+          isCompleted: false,
+          percentage: 20.0
+        }
         // "listLinkMedia": {
         //   "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
         // },
@@ -40,13 +45,18 @@ export class MockMediaUserDataService extends BaseMediaUserDataService {
         {
           mediaId: "550",
           isFavorite: false,
-          isBookmark: false
+          isBookmark: false,
+          isPlayed: false,
+          progress: {
+            isCompleted: false,
+            percentage: 20.0
+          }
           // "listLinkMedia": {
           //   "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
           // },
           // "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
         }
-        // }
+
       ]
     );
   }
@@ -62,6 +72,11 @@ export class MockMediaUserDataService extends BaseMediaUserDataService {
 export interface IMediaUserData {
   isFavorite: boolean,
   isBookmark: boolean,
+  isPlayed: boolean,
+  progress: {
+    isCompleted: boolean,
+    percentage: number;
+  };
   mediaId: string;
   // [x: string]: {
   //   favorite: {
