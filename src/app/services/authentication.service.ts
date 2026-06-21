@@ -75,6 +75,7 @@ export class AuthenticationService {
         this._isAuthenticated.set(true);
         this.store.dispatch(new Login(payload));
         sessionStorage.setItem("token", e.authToken);
+        localStorage.setItem("user", e.username);
         this.updateExpiry();
         return e;
       })

@@ -6,6 +6,7 @@ import { ProfileService } from '@services/profile/profile.service';
 import { UserDataService } from '@services/user-data/user-data.service';
 import { IUserProfile } from '@models/user.model';
 import { Router } from '@angular/router';
+import { AuthenticationService } from '@services';
 
 @Component({
   selector: 'app-profile',
@@ -32,9 +33,11 @@ export class ProfileComponent implements OnInit {
     data: []
   };
   background: ThemePalette = undefined;
-  
+
   constructor(
     private userDataService: UserDataService,
+    // private userDataService: User,
+    private authenticationService: AuthenticationService,
     private profileService: ProfileService,
     private router: Router
   ) { }
@@ -49,12 +52,14 @@ export class ProfileComponent implements OnInit {
   }
 
   getUser() {
-    this.profileService.getProfile().subscribe(e => {
+    const username = localStorage.getItem("user");
+    this.profileService.getProfile(username?.toString(), true).subscribe(e => {
       this.userProfile = e;
       // Update stats if available in profile directly
       if (e) {
-        this.userStats.watched = e.watchedCount || 0;
-        this.userStats.bookmarked = e.bookmarkedCount || 0;
+        this.userStats.favorites = e.favorites.total || 0;
+        this.userStats.watched = e.played.total || 0;
+        this.userStats.bookmarked = e.bookmarks.total || 0;
       }
     });
   }

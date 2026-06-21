@@ -25,15 +25,9 @@ export const ENDPOINT = {
   LIST_ID_MEDIA_MEDIA_ID: `${MDB_API_URL}/list/${REPLACE_PARAMETER}_1/mediaId/${REPLACE_PARAMETER}_2`,
 
 
-  PLAYED: `${MDB_API_URL}/played`,
-  PROGRESS: `${MDB_API_URL}/progress`,
-  FAVORITES: `${MDB_API_URL}/favorites`,
-  BOOKMARKS: `${MDB_API_URL}/bookmarks`,
 
-  PROFILE: `${MDB_API_URL}/profile`,
+  PROFILE: `${MDB_API_URL}/v1/profile`,
 
-  PROFILE_BOOKMARK: `${MDB_API_URL}/profileData/bookmark`,
-  PROFILE_FAVORITE: `${MDB_API_URL}/profileData/favorite`,
   LOGIN: `${MDB_API_URL}/v1/auth/login`,
   ENCRYPT: `${MDB_API_URL}/v1/auth/encrypt`,
   DECRYPT: `${MDB_API_URL}/v1/auth/decrypt`,

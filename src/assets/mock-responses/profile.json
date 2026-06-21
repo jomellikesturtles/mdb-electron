@@ -1,7 +1,127 @@
 {
-  "username": "peterparker123",
-  "emailAddress": "peterparker123@gmail.com",
-  "watchedCount": 90,
-  "bookmarkedCount": 9,
-  "bio": "movies... I like"
+  "username": "username",
+  "name": "John Smith",
+  "avatar": "assets/offline-image/clint-eastwood.jfif",
+  "bio": "I'm the king of the world! - Titanic (1997)",
+  "isMain": true,
+  "bookmarks": {
+    "content": [
+      {
+        "id": 353,
+        "tmdbId": "936075",
+        "mediaId": "936075"
+      },
+      {
+        "id": 102,
+        "tmdbId": "551"
+      },
+      {
+        "id": 58,
+        "tmdbId": "1084242"
+      },
+      {
+        "id": 56,
+        "tmdbId": "1252037"
+      },
+      {
+        "id": 54,
+        "tmdbId": "1297842"
+      },
+      {
+        "id": 53,
+        "tmdbId": "67789"
+      },
+      {
+        "id": 52,
+        "tmdbId": "1167307"
+      },
+      {
+        "id": 2,
+        "tmdbId": "mdb_parameter_1"
+      },
+      {
+        "id": 1,
+        "tmdbId": "550",
+        "mediaId": "550"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "total": 9,
+    "totalPages": 1,
+    "sortBy": null,
+    "orderBy": null,
+    "type": null
+  },
+  "favorites": {
+    "content": [
+      {
+        "id": 853,
+        "tmdbId": "218",
+        "mediaId": "218"
+      },
+      {
+        "id": 852,
+        "tmdbId": "597",
+        "mediaId": "597"
+      },
+      {
+        "id": 651,
+        "tmdbId": "10681",
+        "mediaId": "10681"
+      },
+      {
+        "id": 601,
+        "tmdbId": "14160",
+        "mediaId": "14160"
+      },
+      {
+        "id": 551,
+        "tmdbId": "12",
+        "mediaId": "12"
+      },
+      {
+        "id": 501,
+        "tmdbId": "857",
+        "mediaId": "857"
+      },
+      {
+        "id": 451,
+        "tmdbId": "13",
+        "mediaId": "13"
+      },
+      {
+        "id": 401,
+        "tmdbId": "985",
+        "mediaId": "985"
+      },
+      {
+        "id": 351,
+        "tmdbId": "680",
+        "mediaId": "680"
+      },
+      {
+        "id": 301,
+        "tmdbId": "597",
+        "mediaId": "597"
+      },
+      {
+        "id": 153,
+        "tmdbId": "1084242",
+        "mediaId": "1084242"
+      },
+      {
+        "id": 102,
+        "tmdbId": "mdb_parameter_1"
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "total": 12,
+    "totalPages": 1,
+    "sortBy": null,
+    "orderBy": null,
+    "type": null
+  },
+  "played": null
 }

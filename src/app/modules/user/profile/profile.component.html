@@ -3,11 +3,11 @@
     <!-- User Info Column -->
     <div class="col-md-4 col-lg-3 text-center d-flex flex-column align-items-center">
       <div class="mb-3">
-        <mdb-avatar [src]="userProfile?.photoUrl" alt="Profile Photo" size="xl" [border]="true"></mdb-avatar>
+        <mdb-avatar [src]="userProfile?.avatar" alt="Profile Photo" size="xl" [border]="true"></mdb-avatar>
       </div>
       <h2 class="mb-1">{{ userProfile?.username || 'Username' }}</h2>
       <p class="text-muted mb-3">{{ userProfile?.emailAddress || 'email@example.com' }}</p>
-      
+
       <p class="mb-4 text-white-50" *ngIf="userProfile?.bio">
         {{ userProfile?.bio }}
       </p>
@@ -21,7 +21,9 @@
     <!-- Stats & Content Column -->
     <div class="col-md-8 col-lg-9">
       <!-- Stats Cards -->
-      <div class="row g-3 mb-4">
+      <div class="row g-3 mb-4" style="
+    display: flex;
+    justify-content: space-around;">
         <div class="col-6 col-sm-3">
           <mat-card class="text-center py-3">
             <h3 class="m-0 text-primary">{{ userStats.watched }}</h3>
@@ -52,12 +54,14 @@
       <mat-tab-group animationDuration="0ms" mat-align-tabs="start" class="custom-tabs">
         <mat-tab label="WATCHED">
           <div class="py-3">
-            <app-horizontal-card-list [title]='"Recently Watched"' [totalCount]='moviesWatchedList.count' [moviesList]='moviesWatchedList.data' [seeAllLink]="'/watched'"></app-horizontal-card-list>
+            <app-horizontal-card-list [title]='"Recently Watched"' [totalCount]='moviesWatchedList.count'
+              [moviesList]='moviesWatchedList.data' [seeAllLink]="'/watched'"></app-horizontal-card-list>
           </div>
         </mat-tab>
         <mat-tab label="BOOKMARKS">
           <div class="py-3">
-            <app-horizontal-card-list [title]='"Bookmarks"' [totalCount]='moviesBookmarksList.count' [moviesList]='moviesBookmarksList.data' [seeAllLink]="'/bookmarks'"></app-horizontal-card-list>
+            <app-horizontal-card-list [title]='"Bookmarks"' [totalCount]='moviesBookmarksList.count'
+              [moviesList]='moviesBookmarksList.data' [seeAllLink]="'/bookmarks'"></app-horizontal-card-list>
           </div>
         </mat-tab>
         <mat-tab label="REVIEWS">

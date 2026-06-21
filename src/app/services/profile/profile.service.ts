@@ -9,11 +9,11 @@ import { ENDPOINT } from '@shared/endpoint.const';
 })
 export class ProfileService extends BaseProfileService {
 
-  getProfile(refresh = false): Observable<IUserProfile> {
+  getProfile(username: string, refresh = false): Observable<IUserProfile> {
 
     return this.dataService.getHandle(
 
-      this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.PROFILE)), this.ipcService.getProfile());
+      this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.PROFILE, username)), this.ipcService.getProfile());
 
   }
 

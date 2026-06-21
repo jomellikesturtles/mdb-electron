@@ -37,7 +37,14 @@ export class EditProfileComponent implements OnInit {
 
   loadProfile() {
     this.loading = true;
-    this.profileService.getProfile().subscribe(
+    const username = localStorage.getItem('user');
+    if (!username) {
+      this.loading = false;
+      console.error('No username found in localStorage');
+      return;
+    }
+
+    this.profileService.getProfile(username).subscribe(
       (profile: any) => { // Type 'any' for now as service might return partial
         this.userProfile = profile;
         this.profileForm.patchValue({
@@ -62,7 +69,7 @@ export class EditProfileComponent implements OnInit {
 
     this.loading = true;
     const formValue = this.profileForm.value;
-    
+
     // Construct update object - remove empty passwords if not changing
     const updateData: any = {
       username: formValue.username,
