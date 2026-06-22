@@ -1,5 +1,5 @@
 <div class='movie-card' [ngStyle]="{'width': _cardWidth}">
-  <div class='movie-card-image-container' data-toggle="tooltip" [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')'}"
+  <div class='movie-card-image-container' [class.disable-hover]="disableHover" data-toggle="tooltip" [ngStyle]="{'height': 'calc(1.45 *'+_cardWidth+')'}"
     title="{{movie.title}} ({{movie.releaseDate|releaseYear}})">
     <img [src]="'https://image.tmdb.org/t/p/w185'+_movie.posterPath" (error)="$event.target.src = defaultPoster"
       class="movie-poster-img" alt="{{movie.title}}" />
@@ -24,13 +24,13 @@
       </div>
 
       @if(isFeatureEnabled('played_status')) {
-      <div class='card-button movie-mark-as-watched' *ngIf='!_userData?.progress.isCompleted'>
-        <div (click)='togglePlayed()' *ngIf='!procWatched'>
-          <img class='card-button-icon' src='./assets/icons/check.svg' data-toggle='tooltip' title='Mark as watched' />
-        </div>
-        <div *ngIf='procWatched'>
-          <mat-spinner [diameter]='20'></mat-spinner>
-        </div>
+      <div class="card-button movie-mark-as-watched" [class.active]="_isPlayed" data-toggle="tooltip"
+        title="Toggle Watched">
+        <button mat-icon-button (click)="togglePlayed()" [disabled]="procWatched"
+          class="tmdb-circle-btn played-btn">
+          <mat-icon *ngIf="!procWatched">{{ _isPlayed ? 'check' : 'visibility' }}</mat-icon>
+          <mat-spinner *ngIf="procWatched" diameter="20" class="m-auto"></mat-spinner>
+        </button>
       </div>
 
       <div *ngIf="_userData?.progress" [ngStyle]="{'width': watchedPercentage +'%'}" id='watchedProgressBar'

@@ -1,9 +1,4 @@
-<div class="container-fluid" style='padding-top: 10vh'>
-  <div *ngIf="browseLists">
-
-    <div *ngFor="let list of browseLists">
-      <h3>{{list.name}}</h3>
-
-    </div>
-  </div>
+<div class="container-fluid">
+  <media-grid (onLoadMore)="loadMore()" [mediaList]="mediaList" [hasMoreResults]="hasMoreResults"
+    [procLoadMoreResults]="procLoadMoreResults" [isProccessing]="isProccessing" [gridTitle]="gridTitle"></media-grid>
 </div>

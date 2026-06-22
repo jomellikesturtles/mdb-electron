@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IUserSavedData } from '@models/interfaces';
 import { IpcOperations, IpcService, IUserDataPaginated, SubChannel } from '@services/ipc.service';
-import { MDBApiService } from '../mdb-api.service';
+import { MDBApiService, PlayedResponse } from '../mdb-api.service';
 import { DataService } from '../data.service';
 import { Observable, of } from 'rxjs';
 import { CollectionName, FieldName } from '@shared/constants';
@@ -52,21 +52,24 @@ export class PlayedService extends BasePlayedService {
         null, { tmdbIdList: idList }));
   }
 
-  save(data: Object): Observable<any> {
-    if (!this.featureToggleService.isEnabled('springMode')) {
-      return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.SAVE },
-        data, null);
-    }
-    return this.dataService.getHandle(this.bffService.getMediaUserData(null),
-      this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.SAVE },
-        data, null));
+  save(id: string): Observable<PlayedResponse> {
+
+    return this.bffService.savePlayed(id);
+    // if (!this.featureToggleService.isEnabled('springMode')) {
+    //   return this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.SAVE },
+    //     data, null);
+    // }
+    // return this.dataService.getHandle(this.bffService.getMediaUserData(null),
+    //   this.ipcService.userData({ subChannel: this.CURRENT_SUBCHANNEL, operation: IpcOperations.SAVE },
+    //     data, null));
   }
 
   /**
    * Removes watched (base class implementation).
-   */
-  public remove(mediaId: number): Observable<any> {
-    return this.removeBy('tmdbId', mediaId);
+  */
+  public remove(mediaId: string | number): Observable<PlayedResponse> {
+    return this.bffService.deletePlayed(mediaId);
+    // return this.removeBy('tmdbId', mediaId);
   }
 
   /**

@@ -16,14 +16,14 @@ export class MockPlayedService extends BasePlayedService {
   protected setPlayed(tmdbId: number): Observable<any> {
     throw new Error("Method not implemented.");
   }
-  protected save(tmdbId: number): Observable<PlayedResponse> {
+  protected save(tmdbId: string | number): Observable<PlayedResponse> {
     return of({
       status: 'SAVED',
       isBookmark: true,
       mediaId: tmdbId.toString()
     });
   }
-  protected remove(tmdbId: number): Observable<PlayedResponse> {
+  protected remove(tmdbId: string | number): Observable<PlayedResponse> {
     return of({
       status: 'SAVED',
       isBookmark: true,

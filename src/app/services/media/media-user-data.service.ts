@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
 import { IMediaProgress } from '@models/media-progress';
 import { IReview } from '@models/review.model';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { DataService } from '../data.service';
 import { IpcOperations, IpcService, SubChannel } from '../ipc.service';
 import { MDBApiService } from '../mdb-api.service';
 import { BaseMediaUserDataService } from './base-media-user-data.service';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
 import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
+import { AuthenticationService } from '@services/authentication.service';
+import { HttpBaseService } from '@services/http-base.service';
+import { HttpUrlProviderService } from '@services/http-url.provider.service';
+import { ENDPOINT } from '@shared/endpoint.const';
 
 /**
  * Service for user service per media id.
@@ -21,7 +25,10 @@ export class MediaUserDataService extends BaseMediaUserDataService {
     dataService: DataService,
     private bffService: MDBApiService,
     private ipcService: IpcService,
-    private featureToggleService: FeatureToggleService
+    private featureToggleService: FeatureToggleService,
+    private httpBaseService: HttpBaseService,
+    private httpUrlProvider: HttpUrlProviderService,
+    private authenticationService: AuthenticationService
   ) {
     super(
       dataService,
@@ -59,6 +66,24 @@ export class MediaUserDataService extends BaseMediaUserDataService {
 
   getMediaDataPaginated(type: string) {
     return null;
+  }
+
+  getMediaDataPaginatedByType(
+    type: string,
+    offset = '0',
+    limit = '20',
+    orderBy = 'dateAdded',
+    sortBy = 'desc'
+  ) {
+
+    const username = localStorage.getItem("user");
+    if (!this.featureToggleService.isEnabled('springMode')) {
+      return of([]);
+    }
+
+    const params = { offset, limit, orderBy, sortBy };
+    return this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.USER_SPACE_TYPE, username, type), { params });
+
   }
 
   getMediaProgress(mediaId: number, currentUserOnly: boolean = true) {

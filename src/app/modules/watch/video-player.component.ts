@@ -359,17 +359,17 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     // cre8Ts?: number, // create timestamp
     // timestamp?: number,
     // percentage: string,
-    let watchedObj = {
-      id: '',
-      tmdbId: this.tmdbId,
-      imdbId: this.imdbId,
-      title: '',
-      percentage: this.videoPlayerElement.currentTime,
-      year: 0
-      // percentage: Math.floor(this.videoPlayerElement.currentTime / this.videoPlayerElement.duration * 100)
-    };
-    GeneralUtil.DEBUG.log('updating watched', watchedObj);
-    this.playedService.save(watchedObj);
+    // let watchedObj = {
+    //   id: '',
+    //   tmdbId: this.tmdbId,
+    //   imdbId: this.imdbId,
+    //   title: '',
+    //   percentage: this.videoPlayerElement.currentTime,
+    //   year: 0
+    //   // percentage: Math.floor(this.videoPlayerElement.currentTime / this.videoPlayerElement.duration * 100)
+    // };
+    // GeneralUtil.DEBUG.log('updating watched', watchedObj);
+    // this.playedService.save(watchedObj);
   }
 
   togglePlay() {

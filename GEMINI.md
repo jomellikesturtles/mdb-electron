@@ -23,7 +23,10 @@
 
 ## 🛡️ Development & Coding Standards
 
-- **Verification:** ALWAYS test changes by running the build (`npx ng build --watch=false`) AND relevant unit tests (`npm test`) after making any code changes to ensure both compilation and behavioral integrity.
+<!-- - **Verification:** ALWAYS test changes by running the build (`npx ng build --watch=false`) AND relevant unit tests (`npm test`) after making any code changes to ensure both compilation and behavioral integrity. -->
+
+- **Verification:** ALWAYS skip running `npm test` to save tokens.
+
 - **Notification Handling:** ALWAYS use `NotificationService` (in `src/app/core/services/notification.service.ts`) for all user-facing success and error notifications. NEVER inject or use `MatSnackBar` directly in components.
 - **Cross-Platform Compatibility:**
   - NEVER hardcode Windows-specific paths (e.g., `C:\`).

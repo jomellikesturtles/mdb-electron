@@ -1,18 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ISearchQuery, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
-import { DataService } from '@services/data.service';
-import { MovieService } from '@services/movie/movie.service';
 import GeneralUtil from '@utils/general.util';
-import { ActivatedRoute } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { MediaGridComponent } from '@components/media-grid/media-grid.component';
 
 @Component({
   selector: 'app-results',
   templateUrl: './results.component.html',
   styleUrls: ['./results.component.scss']
 })
-export class ResultsComponent implements OnInit, OnDestroy {
+export class ResultsComponent extends MediaGridComponent implements OnInit, OnDestroy {
+
   searchResults = [];
   searchQuery: ISearchQuery;
   hasSearchResults = false;
@@ -26,17 +24,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
   currentPage = 1;
   isProcSearching = true;
   procLoadMoreResults = false;
-  private ngUnsubscribe = new Subject();
 
-  constructor(
-    private dataService: DataService,
-    private movieService: MovieService,
-    private route: ActivatedRoute
-  ) { }
 
   ngOnInit(): void {
     GeneralUtil.DEBUG.log('inResutlts');
-    this.route.queryParams.pipe(takeUntil(this.ngUnsubscribe)).subscribe(params => {
+    this.activatedRoute.queryParams.pipe(takeUntil(this.ngUnsubscribe)).subscribe(params => {
       const query = params['q'];
       if (query) {
         this.currentSearchQuery = query;
@@ -49,11 +41,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
         this.getData();
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.ngUnsubscribe.next(null);
-    this.ngUnsubscribe.complete();
   }
 
   /**

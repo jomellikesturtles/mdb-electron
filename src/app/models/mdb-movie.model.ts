@@ -70,8 +70,8 @@ export class MDBMovie {
   private mapToObject(value: any, source?: string) {
 
     this.imdbId = value['imdb_id'] || value['imdbId'];
-    this.tmdbId = value['id'] || value['tmdbId'];
-    this.mdbId = value['tmdbId'] || value['id'];
+    this.tmdbId = value['id'] || value['tmdbId'] || value['mediaId'];
+    this.mdbId = value['tmdbId'] || value['id'] || value['mediaId'];
     this.title = value['title'];
     this.originalTitle = value['original_language'] || value['originalTitle'];
     this.originalLanguage = value['original_title'] || value['originalLanguage'];

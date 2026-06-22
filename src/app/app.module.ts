@@ -8,7 +8,6 @@ import { NavigationComponent } from '@components/navigation/navigation.component
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { TopNavigationComponent } from '@core/components/top-navigation/top-navigation.component';
-import { BrowseComponent } from '@modules/user/browse/browse.component';
 import { PersonDetailsComponent } from 'app/modules/person/person-details/person-details.component';
 import { environment } from '@environments/environment';
 import { NotificationComponent } from 'app/modules/events/notification/notification.component';
@@ -40,7 +39,6 @@ import { MovieState } from './store/movie/movie.state';
     BulkDownloadComponent,
     NavigationComponent,
     TopNavigationComponent,
-    BrowseComponent,
     PersonDetailsComponent,
     NotificationComponent,
     PreviewComponent,

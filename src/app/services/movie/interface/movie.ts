@@ -41,4 +41,5 @@ export interface MDBMovieDashboardModel {
     data: any;
     queryParams?: Map<any, any>;
   };
+  timestamp?: number;
 }

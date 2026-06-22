@@ -20,7 +20,7 @@
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
 
-  &:hover {
+  &:not(.disable-hover):hover {
     transform: scale(1.05);
   }
 }
@@ -86,7 +86,7 @@
   background-size: cover;
 }
 
-.movie-card-image-container:hover {
+.movie-card-image-container:not(.disable-hover):hover {
   .card-button {
     display: flex;
   }
@@ -114,6 +114,10 @@
 .movie-mark-as-watched {
   top: 80px;
   right: 8px;
+
+  &.active .played-btn {
+    color: var(--mdb-played-color);
+  }
 }
 
 .movie-highlight {

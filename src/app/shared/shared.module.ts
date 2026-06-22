@@ -20,6 +20,7 @@ import { ExternalLinkDialogComponent } from './components/external-link-dialog/e
 import { AboutDialogComponent } from './components/info-dialogs/about-dialog.component';
 import { HelpDialogComponent } from './components/info-dialogs/help-dialog.component';
 import { FeedbackDialogComponent } from './components/info-dialogs/feedback-dialog.component';
+import { MediaGridComponent } from '@components/media-grid/media-grid.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { FeedbackDialogComponent } from './components/info-dialogs/feedback-dial
     ExternalLinkDialogComponent,
     AboutDialogComponent,
     HelpDialogComponent,
-    FeedbackDialogComponent
+    FeedbackDialogComponent,
+    MediaGridComponent
   ],
   imports: [
     CommonModule,
@@ -50,6 +52,7 @@ import { FeedbackDialogComponent } from './components/info-dialogs/feedback-dial
     UiModule
   ],
   exports: [
+    MediaGridComponent,
     SelectedListComponent,
     MovieCardComponent,
     CardListComponent,

@@ -33,7 +33,7 @@
 
             <button mat-icon-button [class.active]="_isPlayed" (click)="togglePlayed()" [disabled]="isProcessingWatched"
               matTooltip="Mark as watched" class="tmdb-circle-btn played-btn">
-              <mat-icon *ngIf="!isProcessingWatched">{{_isPlayed ? 'done' : 'visibility'}}</mat-icon>
+              <mat-icon *ngIf="!isProcessingWatched">{{_isPlayed ? 'check' : 'visibility'}}</mat-icon>
               <mat-spinner *ngIf="isProcessingWatched" diameter="20" class="m-auto"></mat-spinner>
             </button>
           </div>
@@ -171,16 +171,16 @@
           </div>
         </mat-tab>
 
-        <mat-tab label="SIMILAR">
+        <mat-tab label="SIMILAR" *ngIf="movieDetails.similar?.results?.length">
           <div class="mt-4">
-            <app-horizontal-card-list [moviesList]="movieDetails.similar?.results" title=""></app-horizontal-card-list>
+            <app-horizontal-card-list [moviesList]="movieDetails.similar?.results" title="" [disableHover]="true"></app-horizontal-card-list>
           </div>
         </mat-tab>
 
-        <mat-tab label="RECOMMENDATIONS">
+        <mat-tab label="RECOMMENDATIONS" *ngIf="movieDetails.recommendations?.results?.length">
           <div class="mt-4">
             <app-horizontal-card-list [moviesList]="movieDetails.recommendations?.results"
-              title=""></app-horizontal-card-list>
+              title="" [disableHover]="true"></app-horizontal-card-list>
           </div>
         </mat-tab>
       </mat-tab-group>

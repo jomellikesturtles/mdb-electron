@@ -21,6 +21,8 @@ export class HorizontalCardListComponent implements OnInit {
   queryParams: any;
   @Input()
   loading: boolean = false;
+  @Input()
+  disableHover = false;
 
   @ViewChild('cardListContainer') cardListContainer: ElementRef;
 

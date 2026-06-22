@@ -197,6 +197,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.mediaUserDataService.getMediaUserData(this.movieDetails.tmdbId).subscribe((profileData: IMediaUserData) => {
       this._isBookmarked = profileData.isBookmark;
       this._isFavorite = profileData.isFavorite;
+      this._isPlayed = profileData.isPlayed;
 
       GeneralUtil.DEBUG.log('usermoviedata', profileData);
       this.processingVideo = this.isProcessingFavorite = this.isProcessingBookmark = this.isProcessingWatched = false;
@@ -230,22 +231,20 @@ export class DetailsComponent implements OnInit, OnDestroy {
     this.isProcessingWatched = true;
     const tmdbId = this.movieDetails.tmdbId;
     const isAdding = !this._isPlayed;
-    let res = false;
-    try {
-      if (this._isPlayed) {
-        res = await this.playedService.removeBy('tmdbId', tmdbId).toPromise();
-      } else {
-        res = await this.playedService.save({ tmdbId }).toPromise();
-      }
-      this._isPlayed = res;
-      this.notificationService.showSuccess(`${isAdding ? 'Marked as' : 'Removed from'} Watched`);
-      this.cdr.detectChanges();
-    } catch (err) {
-      this.loggerService.error(`togglePlayed error: ${JSON.stringify(err)}`);
-      this.notificationService.showError(`Failed to update Watched status`);
+
+    const playedToggleFunction = this._isFavorite ? this.playedService.remove(tmdbId) : this.playedService.save(tmdbId);
+    playedToggleFunction.subscribe(e => {
+
+      this._isPlayed = e.isPlayed;
       this.isProcessingWatched = false;
+      this.notificationService.showSuccess(`${isAdding ? 'Added to' : 'Removed from'} Watchlist`);
       this.cdr.detectChanges();
-    }
+    }, err => {
+      this.loggerService.error(`togglePlayed error: ${JSON.stringify(err)}`);
+      this.isProcessingWatched = false;
+      this.notificationService.showError(`Failed to update Watchlist`);
+      this.cdr.detectChanges();
+    });
   }
 
   toggleFavorite() {

@@ -1,7 +1,7 @@
 export const REPLACE_PARAMETER = "mdb_parameter";
 export const MDB_API_URL = 'mdb';
 export const ENDPOINT = {
-  MEDIA: `${MDB_API_URL}/media/`,
+  MEDIA: `${MDB_API_URL}/v1/media`,
   MEDIA_ID: `${MDB_API_URL}/v1/media/${REPLACE_PARAMETER}_1`,
   MEDIA_BOOKMARK: `${MDB_API_URL}/v1/media/${REPLACE_PARAMETER}_1/bookmark`,
   MEDIA_REVIEW: `${MDB_API_URL}/v1/media/${REPLACE_PARAMETER}_1/reviews`,
@@ -15,6 +15,7 @@ export const ENDPOINT = {
 
   // MEDIA_LISTS: `/media/${REPLACE_PARAMETER}_1/lists`,
   USER_ID: `${MDB_API_URL}/v1/user/${REPLACE_PARAMETER}_1`,
+  USER_SPACE_TYPE: `${MDB_API_URL}/v1/user/${REPLACE_PARAMETER}_1/${REPLACE_PARAMETER}_2`,
   USER_FAVORITES: `${MDB_API_URL}/v1/user/${REPLACE_PARAMETER}_1/favorites`,
   USER_BOOKMARKS: `${MDB_API_URL}/v1/user/${REPLACE_PARAMETER}_1/bookmarks`,
   USER_LISTS: `${MDB_API_URL}/v1/user/${REPLACE_PARAMETER}_1/lists`,
@@ -38,6 +39,10 @@ export const ENDPOINT = {
   REFRESH: `${MDB_API_URL}/v1/auth/refresh`,
   OTP_SEND: `${MDB_API_URL}/v1/auth/otp/send`,
   OTP_VERIFY: `${MDB_API_URL}/v1/auth/otp/verify`,
+
+  TMDB_SINGLE: `${MDB_API_URL}/v1/external/tmdb/movie/${REPLACE_PARAMETER}_1`,
+  TMDB_MULTI: `${MDB_API_URL}/v1/external/tmdb/movie`,
+
 
   ACCOUNT: `${MDB_API_URL}/v1/account`,
   INTELLIGENCE: `${MDB_API_URL}/v1/intelligence`,

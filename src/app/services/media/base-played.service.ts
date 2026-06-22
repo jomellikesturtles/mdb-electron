@@ -8,8 +8,8 @@ export abstract class BasePlayedService {
   ) { }
 
   protected abstract setPlayed(mediaId: number): Observable<any>;
-  protected abstract save(mediaId: number): Observable<any>;
-  protected abstract remove(mediaId: number): Observable<any>;
+  protected abstract save(mediaId: string): Observable<any>;
+  protected abstract remove(mediaId: string): Observable<any>;
 
   /**
    *

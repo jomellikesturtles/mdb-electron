@@ -25,6 +25,7 @@ import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
 })
 export class MovieCardComponent implements OnInit {
 
+  @Input() disableHover = false;
   _movie: MDBMovie;
   @Input()
   set movie(inputMessage: MDBMovie) {
@@ -70,6 +71,7 @@ export class MovieCardComponent implements OnInit {
   _userData: IMediaUserData;
   @Input()
   set userData(inputData: IMediaUserData) {
+    console.log('inputData: ', inputData);
     this._userData = inputData;
     if (!ObjectUtil.isEmpty(inputData)) {
       this._isBookmarked = inputData.isBookmark;
@@ -81,6 +83,7 @@ export class MovieCardComponent implements OnInit {
     }
   }
   get userData(): IMediaUserData {
+    console.log('_userData: ', this._userData);
     return this._userData;
   }
 
@@ -177,14 +180,14 @@ export class MovieCardComponent implements OnInit {
   async togglePlayed() {
     this.procWatched = true;
     const tmdbId = this._movie.tmdbId;
-    let res = false;
-    if (this._isPlayed) {
-      res = await this.playedService.removeBy('tmdbId', tmdbId).toPromise();
-    } else {
-      res = await this.playedService.save({ tmdbId }).toPromise();
-    }
-    this._isPlayed = res;
-    this.procWatched = false;
+    const playedToggleFunction = this._isPlayed ? this.playedService.remove(tmdbId) : this.playedService.save(tmdbId);
+    // let res = false;
+
+    playedToggleFunction.subscribe(e => {
+      this._isPlayed = e.isPlayed;
+      this.procWatched = false;
+    });
+
   }
 
   toggleFavorite() {

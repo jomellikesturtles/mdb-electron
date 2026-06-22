@@ -40,7 +40,7 @@ export class MDBApiService {
     let payload = {
       idList: tmdbIdList
     };
-    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_ID), payload, 'getMediaUserDataInList').pipe(
+    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA), payload, 'getMediaUserDataInList').pipe(
       tap(_ => this.logger.info(`getMediaUserDataInList count=${tmdbIdList.length}`))
     );
   }
@@ -67,6 +67,18 @@ export class MDBApiService {
   deleteFavorite(tmdbId: any): Observable<FavoriteResponse> {
     return this.httpBaseService.delete<FavoriteResponse>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_FAVORITE, tmdbId), {}, 'deleteFavorite').pipe(
       tap(_ => this.logger.info(`deleteFavorite id=${tmdbId}`))
+    );
+  }
+
+  savePlayed(tmdbId: any): Observable<PlayedResponse> {
+    return this.httpBaseService.put<PlayedResponse>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_PLAYED, tmdbId), { tmdbId }, 'savePlayed').pipe(
+      tap(_ => this.logger.info(`savePlayed tmdbId=${tmdbId}`))
+    );
+  }
+
+  deletePlayed(tmdbId: any): Observable<PlayedResponse> {
+    return this.httpBaseService.delete<PlayedResponse>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_PLAYED, tmdbId), {}, 'deletePlayed').pipe(
+      tap(_ => this.logger.info(`deletePlayed id=${tmdbId}`))
     );
   }
 
@@ -163,4 +175,10 @@ export class MDBApiService {
     );
   }
 
+}
+
+export interface PlayedResponse {
+  status: 'SAVED' | 'DELETED',
+  isPlayed: boolean,
+  mediaId: string;
 }

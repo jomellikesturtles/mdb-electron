@@ -17,6 +17,7 @@ import { AuthenticationService } from '@services';
 export class CardListComponent implements OnInit, OnChanges {
 
   @Input() cardWidth: string;
+  @Input() disableHover = false;
   @Input() displayMode: string = 'card-list-horizontal';
   @Input() listType: string;
   @Input() loading: boolean = false;
@@ -26,6 +27,7 @@ export class CardListComponent implements OnInit, OnChanges {
     this.movieAndUserDataList = [];
     if (inputMessage) {
       inputMessage.forEach(inputMovie => {
+        inputMovie = new MDBMovie(inputMovie);
         this.movieAndUserDataList.push({ movie: inputMovie, userData: null });
       });
     }
@@ -44,7 +46,6 @@ export class CardListComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit() {
-    this.renderHighlight();
     this.getMoviesUserData();
   }
 
@@ -78,25 +79,6 @@ export class CardListComponent implements OnInit, OnChanges {
             });
           }
         });
-      } else {
-        if (this.listType !== 'bookmark') {
-          this.mediaUserDataService.getMediaDataPaginated(queryList).subscribe(docs => {
-            const dataType = 'bookmark';
-            this.curateUserData(dataType, docs);
-          });
-        }
-        if (this.listType !== 'watched') {
-          this.mediaUserDataService.getMediaDataPaginated(queryList).subscribe(docs => {
-            const dataType = 'watched';
-            this.curateUserData(dataType, docs);
-          });
-        }
-        if (this.listType !== 'library') {
-          this.mediaUserDataService.getMediaDataPaginated(queryList).then(docs => {
-            const dataType = 'library';
-            this.curateUserData(dataType, docs);
-          });
-        }
       }
     }
   }
@@ -164,44 +146,10 @@ export class CardListComponent implements OnInit, OnChanges {
     });
   }
 
-  renderHighlight() {
-    // this.moviesList$.subscribe(moviesResult => {
-    //   console.log('moviesresult: ', moviesResult)
-
-    //   if (moviesResult.change === 'add') {
-    //     this.movieList.forEach(element => {
-    //       if (moviesResult.idChanged === element.id) {
-    //         element.isHighlighted = true
-    //       }
-    //     })
-    //   } else if (moviesResult.change === 'remove') {
-    //     this.movieList.forEach(element => {
-    //       if (moviesResult.idChanged === element.id) {
-    //         element.isHighlighted = false
-    //       }
-    //     })
-    //   } else if (moviesResult.change === 'clear') {
-    //     this.movieList.forEach(element => {
-    //       element.isHighlighted = false
-    //     })
-    //   } else if (moviesResult.change === 'watched') {
-    //     this.movieList.forEach(element => {
-    //       moviesResult.idChanged.forEach(mrId => {
-    //         if (mrId === element.id) {
-    //           // element.isWatched = true
-    //           // element.watchedProgress = "100%"
-    //           // this.cdr.detectChanges()
-    //         }
-    //       });
-    //     })
-    //   }
-    // });
-  }
-
   collectIds() {
     const idList = [];
     this.movieList.forEach(e => {
-      idList.push(e.tmdbId);
+      idList.push(e.tmdbId ?? e.id);
       // idList.push(e.id);
     }); // lodash is not faster than this.
     return idList;
