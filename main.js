@@ -300,6 +300,7 @@ function startTorrentClient() {
   procWebTorrent.on("exit", function () {
     DEBUG.log("procWebTorrent ended");
   });
+  procWebTorrent.send(["stop-stream"]);
   /**
    * webtorrent client messages:
    * 1. stream-link
