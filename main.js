@@ -263,10 +263,6 @@ function setSystemTray() {
   }
 }
 
-function sendContents(channel, args) {
-  DEBUG.log("sending...", channel, " | ", args);
-  // mainWindow.webContents.send(channel, args); // reply
-}
 // Show and Focus mainWindow
 function showWindow() {
   createMainWindow();
@@ -310,6 +306,7 @@ function startTorrentClient() {
    * 2. stats
    */
   procWebTorrent.on("message", (m) => {
+    DEBUG.log("procWebTorrent message on main: ", m);
     if (m[0] === "stream-link") {
       sendContents(IPCMainChannel.STREAM_LINK, m[1]);
     } else if (m[0] === "stats") {

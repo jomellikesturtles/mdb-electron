@@ -74,12 +74,24 @@
             </div>
 
             <div class="play-actions d-flex align-items-center gap-4">
+              playLinks {{playLinks|json}}
+              @for(playLink of playLinks; track playLink.id) {
+              <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playMovie(playLink)'>
+                @if(playLink.type == 'torrent') {
+                WATCH NOW {{playLink.quality}}
+                } @else {
+                WATCH NOW {{playLink.name}}
+
+                }
+                <!-- {{playLink.type}} -->
+              </mdb-button>
+              }
               <!-- playLinks.length {{playLinks.length}} -->
-              <!-- <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playBestPlayLink()' -->
-              <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playTorrent("")'
+              <!-- <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playTorrent("")' -->
+              <!-- <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playBestPlayLink()'
                 [disabled]="playLinks.length <= 0">
                 WATCH NOW
-              </mdb-button>
+              </mdb-button> -->
 
               <div *ngIf="movieTrailer && isFeatureEnabled('trailer')" class="trailer-link d-flex align-items-center"
                 (click)="playPreview()">

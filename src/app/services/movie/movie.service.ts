@@ -18,6 +18,8 @@ import { ITmdbVideoResult } from '@models/tmdb.model';
 import { Store } from '@ngxs/store';
 import { MovieState } from '../../store/movie/movie.state';
 import { AddMovie, AddDiscoverMovie, AddPreviewMovie } from '../../store/movie/movie.actions';
+import { StreamsState } from '../../store/streams/streams.state';
+import { AddStreams } from '../../store/streams/streams.actions';
 import { MDBPaginatedResultModel, MDBMoviePreviewModel } from './interface/movie';
 import { CacheService } from '@services/cache.service';
 import { TmdbService } from '@services/tmdb/tmdb.service';
@@ -26,6 +28,7 @@ import { DataService } from '@services/data.service';
 import { TmdbMapper } from '@utils/tmdb.mapper';
 import { HttpUrlProviderService } from '@services/http-url.provider.service';
 import { ENDPOINT } from '@shared/endpoint.const';
+import { IYTSSingleQueryResponse } from '@models';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -202,29 +205,26 @@ export class MovieService extends BaseMovieService {
     return this.httpBaseService.get<string>(filePath, { responseType: "text" as "json" });
   }
 
-  getStreams(movieId: string, refresh: boolean = false): Observable<IMdbMoviePaginated> {
+  getStreams(movieId: string, refresh: boolean = false): Observable<any> {
     const entityId = `movie:streams:${movieId}`;
     GeneralUtil.DEBUG.log(`getStreams movieId: ${movieId}`);
 
     return this.getCachedOrFetch<any>(
-      MovieState.getDiscoverMovie(entityId),
+      StreamsState.getStreams(entityId),
       () => {
-        // this.;
         return this.httpBaseService
-          // .get(`mdb/v1/media/${movieId}/streams`, {}, "getStreams")
           .get(this.httpUrlProvider.getBffAPI(ENDPOINT.STREAMS, movieId), {}, "getStreams")
           .pipe(
-            tap((_) => this.log("")),
-            map((data: IRawTmdbResultObject) => {
-              return TmdbMapper.mapToPaginatedResults(data);
+            map((data: IYTSSingleQueryResponse) => {
+              return data.data.movies[0];
             })
           );
       },
       (data) => {
-        return new AddDiscoverMovie({ id: entityId, paginatedResult: data });
+        return new AddStreams({ id: entityId, streams: data });
       },
       refresh
-    ).pipe(map((res) => (res && res.paginatedResult ? res.paginatedResult : res)));
+    );
   }
 
   private externalId(tmdbId: string): Observable<TMDB_External_Id> {

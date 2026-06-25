@@ -1,5 +1,5 @@
 
-export class IYTSSingleQuery {
+export class IYTSSingleQueryResponse {
   status: string;
   status_message: string;
   data: Data;

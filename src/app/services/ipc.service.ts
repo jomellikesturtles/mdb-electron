@@ -298,9 +298,9 @@ export class IpcService {
     if (!this.isElectron()) return Promise.resolve(null);
     return new Promise<any>((resolve, reject) => {
       try {
-        this.ipcRenderer.once(channel, (arg) => {
-          this.loggerService.info(`channel: ${JSON.stringify(channel)}  arg: ${arg}`);
-          resolve(arg);
+        this.ipcRenderer.once(channel, (received) => {
+          this.loggerService.info(`channel: ${JSON.stringify(channel)}  received: ${received}`);
+          resolve(received);
         });
       } catch (e) {
         this.loggerService.error(`listen ${JSON.stringify(channel)}  failed | ${e}`);
@@ -313,9 +313,9 @@ export class IpcService {
     if (!this.isElectron()) return Promise.resolve(null);
     const promise = new Promise<any>((resolve, reject) => {
       try {
-        this.ipcRenderer.once(channel, (arg) => {
-          this.loggerService.info(`channel: ${JSON.stringify(channel)} arg: ${arg}`);
-          resolve(arg);
+        this.ipcRenderer.once(channel, (received) => {
+          this.loggerService.info(`channel: ${JSON.stringify(channel)} received: ${received}`);
+          resolve(received);
         });
       } catch (e) {
         this.loggerService.error(`listen ${JSON.stringify(channel)} failed | ${e}`);

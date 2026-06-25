@@ -1,6 +1,6 @@
 import { GenreCodes } from '@models/interfaces';
 import { PlayLink } from '@models/playlink.model';
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { MDBTorrent } from '@models/interfaces';
 import { IpcService } from '@services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -33,7 +33,7 @@ import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
 /**
  * Get movie info, torrent, links, get if available in local
  */
-export class DetailsComponent implements OnInit, OnDestroy {
+export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   movieBackdrop;
   torrents: MDBTorrent[] = [];
@@ -61,7 +61,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   _isFavorite = false;
   movieTrailer: string;
   hasContinueWatching: boolean;
-  playLinks = [];
+  playLinks: PlayLink[] = [];
   bestPlayLink: PlayLink;
   certification: 'PG';
   userData: IProfileData = new IProfileData();
@@ -95,6 +95,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private authenticationService: AuthenticationService,
     private cdr: ChangeDetectorRef
   ) { }
+  ngAfterViewInit(): void {
+    // this.streamLink = "../../../../../../../tmp/webtorrent/Titanic (1997) [1080p] [YTS.AG]/Titanic.1997.1080p.BluRay.x264-[YTS.AG].mp4¸";
+    // this.streamLink = "http://localhost:3002/0/The.Gods.Must.Be.Crazy.1980.720p.WEBRip.x264-%5BYTS.AM%5D.mp4";
+  }
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(val => {
@@ -282,6 +286,10 @@ export class DetailsComponent implements OnInit, OnDestroy {
         this.hasData = true;
         this.movieService.getStreams(data.imdbId).subscribe((data) => {
           GeneralUtil.DEBUG.log("streams", data);
+
+          this.torrents = data.torrents;
+          this.torrents.sort(function (a, b) { return b.peers - a.peers; }); // sort by seeders
+          this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(this.torrents)];
         });
         this.cdr.detectChanges();
       });
@@ -354,7 +362,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
    * @param hash torrent hash
    */
   playTorrent(hash: string) {
-    hash = 'C808185A43F255625E639F65E3E57DEDD5353BD1'; // test only
+    // hash = 'C808185A43F255625E639F65E3E57DEDD5353BD1'; // test only
     this.ipcService.getPlayTorrent(hash).then(e => {
       this.showVideo = true;
       this.streamLink = e;

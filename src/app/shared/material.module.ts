@@ -33,7 +33,8 @@ import { MatListModule } from '@angular/material/list';
     MatCheckboxModule,
     MatTabsModule,
     MatAutocompleteModule,
-    MatListModule
+    MatListModule,
+    MatSliderModule
   ]
 })
 export class MaterialModule { }

@@ -1,5 +1,5 @@
 import GeneralUtil from "@utils/general.util";
-import { IYTSSingleQuery, YTSTorrent } from "./yts-torrent.model";
+import { IYTSSingleQueryResponse, YTSTorrent } from "./yts-torrent.model";
 
 // omdb:"N/A"; tmdb:null
 export interface IMdbMovieDetails {
@@ -304,11 +304,11 @@ export class MDBTorrentAndMovieObject {
   status: string;
   torrents: MDBTorrent[];
 
-  constructor(rawObject: IYTSSingleQuery) {
+  constructor(rawObject: IYTSSingleQueryResponse) {
     this.map(rawObject);
   }
 
-  map(rawObject: IYTSSingleQuery) {
+  map(rawObject: IYTSSingleQueryResponse) {
     const movie = rawObject.data.movies[0]; // assuming there is only 1 movie or is searched with ID
     this.id = movie.id;
     this.status = rawObject.status;

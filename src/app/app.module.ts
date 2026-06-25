@@ -32,6 +32,7 @@ import { NgxsModule } from '@ngxs/store';
 import { NgxsStoragePluginModule, StorageOption } from '@ngxs/storage-plugin';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { MovieState } from './store/movie/movie.state';
+import { StreamsState } from './store/streams/streams.state';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,7 @@ import { MovieState } from './store/movie/movie.state';
     AdvancedFindComponent,
     ImagePreviewComponent,
     KeyboardShortcutsComponent,
-    YoutubePlayerComponent,
+    YoutubePlayerComponent
   ],
   imports: [
     BrowserModule,
@@ -59,7 +60,7 @@ import { MovieState } from './store/movie/movie.state';
     ReactiveFormsModule,
     VideoPlayerModule,
     MockCoreServicesModule,
-    NgxsModule.forRoot([MovieState], {
+    NgxsModule.forRoot([MovieState, StreamsState], {
       developmentMode: !environment.production
     }),
     NgxsStoragePluginModule.forRoot({

@@ -42,7 +42,7 @@ function getOptions() {
 function playMovieTorrent(hash) {
   DEBUG.log("Starting playmovie torrent with hash: ", hash);
   if (currentStreamHash === hash) {
-    DEBUG.log("sending stream-link1", currentStreamLink);
+    DEBUG.log("sending stream-link", currentStreamLink);
     process.send(["stream-link", currentStreamLink]);
     currentStreamLink = "";
     return;

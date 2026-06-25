@@ -82,7 +82,6 @@ function criticalDownloadCycle(torrent) {
 }
 
 /**
- * TODO: get the largest video file.
  * @param {import("webtorrent").Torrent[]} torrentFiles list of files
  * returns {file, index, startSize, endSize}
  */
