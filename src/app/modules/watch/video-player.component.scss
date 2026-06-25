@@ -1,7 +1,15 @@
 .subtitle-span {
   color: white;
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.6);
   font-size: 2.5vh;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-shadow: none;
+
+  &:empty {
+    display: none;
+  }
 }
 
 .user-inactive {

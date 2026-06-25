@@ -1,7 +1,6 @@
 /*jshint esversion: 8 */
 
 const WebTorrent = require("webtorrent");
-
 // const { DEBUG } = require("../util");
 
 let DEBUG = (() => {

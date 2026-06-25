@@ -50,7 +50,7 @@
     "request": "^2.88.0",
     "subtitle": "^4.0.1",
     "uuid": "^8.3.0",
-    "webtorrent": "2.8.5"
+    "webtorrent": "^1.9.7"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^17.3.17",

@@ -87,6 +87,5 @@
       <img (click)='toggleFullScreen()' class='player-controls-icon' src='./assets/icons/fullscreen.svg'
         data-toggle='tooltip' title='Fullscreen'>
     </div>
+    <input type="file" id="subFileInput" accept=".srt" style="display: none" (change)="onFileSelected($event)">
   </div>
-
-</div>

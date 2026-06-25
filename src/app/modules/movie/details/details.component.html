@@ -1,5 +1,5 @@
 <div *ngIf="showVideo">
-  <app-video-player [streamLink]='streamLink'></app-video-player>
+  <app-video-player [streamLink]='streamLink' [title]='movieDetails.title'></app-video-player>
 </div>
 
 <!-- Header Banner (TMDB Style) -->
@@ -26,7 +26,7 @@
 
             <button mat-icon-button [class.active]="_isBookmarked" (click)="toggleBookmark()"
               [disabled]="isProcessingBookmark" matTooltip="Add to watchlist" class="tmdb-circle-btn bookmark-btn">
-              <mat-icon *ngIf="!isProcessingBookmark">{{ _isBookmarked ? 'bookmark_remove' : 'bookmark_add'
+              <mat-icon *ngIf="!isProcessingBookmark">{{ _isBookmarked ? 'bookmark' : 'bookmark_border'
                 }}</mat-icon>
               <mat-spinner *ngIf="isProcessingBookmark" diameter="20" class="m-auto"></mat-spinner>
             </button>
@@ -173,14 +173,15 @@
 
         <mat-tab label="SIMILAR" *ngIf="movieDetails.similar?.results?.length">
           <div class="mt-4">
-            <app-horizontal-card-list [moviesList]="movieDetails.similar?.results" title="" [disableHover]="true"></app-horizontal-card-list>
+            <app-horizontal-card-list [moviesList]="movieDetails.similar?.results" title=""
+              [disableHover]="true"></app-horizontal-card-list>
           </div>
         </mat-tab>
 
         <mat-tab label="RECOMMENDATIONS" *ngIf="movieDetails.recommendations?.results?.length">
           <div class="mt-4">
-            <app-horizontal-card-list [moviesList]="movieDetails.recommendations?.results"
-              title="" [disableHover]="true"></app-horizontal-card-list>
+            <app-horizontal-card-list [moviesList]="movieDetails.recommendations?.results" title=""
+              [disableHover]="true"></app-horizontal-card-list>
           </div>
         </mat-tab>
       </mat-tab-group>

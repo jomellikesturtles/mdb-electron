@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IpcService } from '@services/ipc.service';
 import { COLOR_LIST, FONT_SIZE_LIST, PERCENTAGE_LIST, RGB_COLOR_LIST } from '@shared/constants';
 import GeneralUtil from '@utils/general.util';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'mdb-video-player-controls',
@@ -78,13 +79,23 @@ export class VideoPlayerControlsComponent implements OnInit {
   }
 
   async changeCc() {
-    // let filePath = 'Aliens.Directors.Cut.1986.1080p.BRrip.x264.GAZ.YIFY.srt'
-    let filePath = ''
-    // let filePath = 'Cinema Paradiso-English.srt'
-    // filePath = '../../../../assets/tmp/' + filePath
-    filePath = await this.ipcService.changeSubtitle()
-    GeneralUtil.DEBUG.log('filePath', filePath)
-    this.onChangeSubtitleFile.emit(filePath);
+    if (environment.runConfig.electron) {
+      const filePath = await this.ipcService.changeSubtitle()
+      GeneralUtil.DEBUG.log('filePath', filePath)
+      this.onChangeSubtitleFile.emit(filePath);
+    } else {
+      const fileInput = document.getElementById('subFileInput') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.click();
+      }
+    }
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.onChangeSubtitleFile.emit(file);
+    }
   }
 
 

@@ -7,7 +7,6 @@ import { MovieService } from '@services/movie/movie.service';
 import { PlayedService } from '@services/media/played.service';
 import SubtitlesUtil from '@utils/subtitles.utils';
 import { Subtitle } from '@models/subtitle.model';
-// import { UserIdleService } from "angular-user-idle";
 import chardet from "chardet";
 import jschardet from "jschardet";
 import { environment } from 'environments/environment';
@@ -17,7 +16,7 @@ import { COLOR_LIST, FONT_SIZE_LIST } from '@shared/constants';
 import GeneralUtil from '@utils/general.util';
 import { PreferencesService } from '@services/preferences.service';
 import { IProgressBar, VideoPlayerControlsComponent } from './video-player-controls/video-player-controls.component';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-video-player',
@@ -25,10 +24,11 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./video-player.component.scss']
 })
 export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
-  @Input() streamLink: string;
+  @Input() streamLink: SafeUrl;
   @Input() id: string;
   @Input() tmdbId: number;
   @Input() imdbId: string;
+  @Input() title: string;
 
   @ViewChild('videoPlayer1', { static: true }) videoPlayer1: ElementRef;
   @ViewChild(VideoPlayerControlsComponent, { static: true }) child;
@@ -99,6 +99,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   ngOnInit() {
 
+
+    // this.streamLink = this.sanitizer.bypassSecurityTrustUrl(rawUrl);
+
     // this.streamLink = 'https://s3.eu-central-1.amazonaws.com/pipe.public.content/short.mp4' // 320p sample
     // this.streamLink = 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4' // 1080p sample
     // this.streamLink = '../../../../assets/sample movie/Ratatouille (2007) [1080p]/Ratatouille.2007.1080p.BrRip.x264.YIFY.mp4'
@@ -112,7 +115,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     //   // this.isUserInactive = true;
     // });
 
-    const root = this;
+    const prefs = this.preferencesService.getPreferences();
+    if (prefs) {
+      this.subtitleDisplaySettings = { ...prefs.subtitle };
+      this.playbackSettings = { ...prefs.playBack };
+    }
     // setTimeout(() => {
     //   root.isShowSubtitles = false;
     // }, 5000);
@@ -126,7 +133,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       GeneralUtil.DEBUG.log('2. cs:', cs);
       GeneralUtil.DEBUG.log('this.streamLink:', this.streamLink);
       // if (cs && !cs.firstChange) {
-      this.statsForNerds.source = this.streamLink;
+      this.statsForNerds.source = this.streamLink.toString();
       this.isMetadataLoaded = true;
       GeneralUtil.DEBUG.log('isMetadataLoaded true');
 
@@ -134,6 +141,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       let checkExist = setInterval(function () {
         root.videoPlayerElement = root.elementRef.nativeElement.querySelectorAll('#videoPlayer');
         if (root.videoPlayerElement.length > 0) {
+          root.canPlay = true;
           GeneralUtil.DEBUG.log("3. videoPlayer Exists!");
           root.videoPlayerEvents();
           clearInterval(checkExist);
@@ -182,7 +190,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       GeneralUtil.DEBUG.log('EVENT: canplay', e);
       this.canPlay = true;
       this.videoTime.duration = this.videoPlayerElement.duration;
-      this.togglePlay();
+      // this.togglePlay();
       this.isSeeking = false;
     });
     this.videoPlayerElement.addEventListener('durationchange', (e) => {
@@ -235,14 +243,16 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     });
     this.videoPlayerElement.addEventListener('timeupdate', (e) => {
       this.videoTime.elapsed = this.videoPlayerElement.currentTime;
-      for (let entry of this.subtitleMap.entries()) {
-        if (this.videoTime.elapsed >= this.convertToSeconds(entry[1].startTime) && this.videoTime.elapsed <= this.convertToSeconds(entry[1].endTime)) {
-          this.updateDisplaySubtitle(entry[1].captionText1, entry[1].captionText2);
+      let matched = false;
+      for (let entry of this.subtitleMap.values()) {
+        if (this.videoTime.elapsed >= this.convertToSeconds(entry.startTime) && this.videoTime.elapsed <= this.convertToSeconds(entry.endTime)) {
+          this.updateDisplaySubtitle(entry.captionText1, entry.captionText2);
+          matched = true;
           break;
-        } else {
-          this.updateDisplaySubtitle('', '');
-          // this.updateDisplaySubtitle('\uD83D\uDE00', '\uD83D\uDE00') // emoji test
         }
+      }
+      if (!matched) {
+        this.updateDisplaySubtitle('', '');
       }
     });
     this.videoPlayerElement.addEventListener('loadedmetadata', (e) => {
@@ -350,26 +360,6 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   updateWatchedStatus(val: any) {
 
-    // id: string // also use in Doc Id
-    // tmdbId: number,
-    // imdbId?: string,
-    // title: string,
-    // year: number,
-    // // id?: string,
-    // cre8Ts?: number, // create timestamp
-    // timestamp?: number,
-    // percentage: string,
-    // let watchedObj = {
-    //   id: '',
-    //   tmdbId: this.tmdbId,
-    //   imdbId: this.imdbId,
-    //   title: '',
-    //   percentage: this.videoPlayerElement.currentTime,
-    //   year: 0
-    //   // percentage: Math.floor(this.videoPlayerElement.currentTime / this.videoPlayerElement.duration * 100)
-    // };
-    // GeneralUtil.DEBUG.log('updating watched', watchedObj);
-    // this.playedService.save(watchedObj);
   }
 
   togglePlay() {
@@ -377,11 +367,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       && this.videoPlayerElement.readyState > 2;
     GeneralUtil.DEBUG.log('5. togglePlay, isPlaying: ', isPlaying);
     // safely autoplay
-    // if (!isPlaying && this.canPlay) {
-    //   this.videoPlayerElement.play();
-    // } else {
-    //   this.videoPlayerElement.pause();
-    // }
+    if (!isPlaying && this.canPlay) {
+      this.videoPlayerElement.play();
+    } else {
+      this.videoPlayerElement.pause();
+    }
   }
 
   /**
@@ -414,37 +404,72 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   /**
    * Open file selector from electron side and return fullfilepath.
    */
-  async onChangeCc(filePath) {
-
-    const fileStr = await this.movieService.getSubtitleFileString(filePath).toPromise();
-    let encodingStr = 'UTF-8';
-    try {
-      encodingStr = jschardet.detect(fileStr, { minimumThreshold: 0 }).encoding; // errors with subs with `ó`
-    } catch {
-      const encoder = new TextEncoder();
-      const encodingAlt = chardet.analyse(encoder.encode(fileStr));
-      GeneralUtil.DEBUG.log(encodingAlt);
-      if (encodingAlt.length > 1) {
-        encodingStr = encodingAlt[0].name;
-        //   encodingStr = encodingAlt[1].name
-        // } else if (encodingAlt.length === 1) {
-        //   encodingStr = encodingAlt[0].name
+  async onChangeCc(fileOrPath: any) {
+    if (environment.runConfig.electron && typeof fileOrPath === 'string') {
+      try {
+        let resultFileStr = (window as any).electron.readSubtitleFile(fileOrPath);
+        resultFileStr = resultFileStr.replace(/[\r]+/g, '');
+        this.subtitleMap = SubtitlesUtil.mapSubtitle(resultFileStr);
+        GeneralUtil.DEBUG.log("subtitleMap loaded via preload:", this.subtitleMap);
+        return;
+      } catch (err) {
+        GeneralUtil.DEBUG.error("Failed to read subtitle via preload, falling back:", err);
       }
     }
-    const file = await this.movieService.getSubtitleFile(filePath).toPromise();
 
-    let resultFileStr;
-    const fileReader = new FileReader();
+    let resultFileStr = '';
+    if (fileOrPath instanceof File) {
+      const fileReader = new FileReader();
+      const readAsBinaryPromise = (f: File) => new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsBinaryString(f);
+      });
+      const readAsTextPromise = (f: File, enc: string) => new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsText(f, enc);
+      });
 
-    fileReader.readAsText(file, encodingStr);
-    const root = this;
-    fileReader.onloadend = function (x) {
-      resultFileStr = fileReader.result;
-      GeneralUtil.DEBUG.log(resultFileStr);
+      const binaryStr = await readAsBinaryPromise(fileOrPath);
+      let encodingStr = 'UTF-8';
+      try {
+        encodingStr = jschardet.detect(binaryStr, { minimumThreshold: 0 }).encoding || 'UTF-8';
+      } catch {
+        const encoder = new TextEncoder();
+        const encodingAlt = chardet.analyse(encoder.encode(binaryStr));
+        if (encodingAlt.length > 0) {
+          encodingStr = encodingAlt[0].name;
+        }
+      }
+
+      resultFileStr = await readAsTextPromise(fileOrPath, encodingStr);
+    } else if (typeof fileOrPath === 'string') {
+      const fileStr = await this.movieService.getSubtitleFileString(fileOrPath).toPromise();
+      let encodingStr = 'UTF-8';
+      try {
+        encodingStr = jschardet.detect(fileStr, { minimumThreshold: 0 }).encoding;
+      } catch {
+        const encoder = new TextEncoder();
+        const encodingAlt = chardet.analyse(encoder.encode(fileStr));
+        if (encodingAlt.length > 1) {
+          encodingStr = encodingAlt[0].name;
+        }
+      }
+      const file = await this.movieService.getSubtitleFile(fileOrPath).toPromise();
+      const fileReader = new FileReader();
+      const readPromise = new Promise<string>((resolve) => {
+        fileReader.onload = () => resolve(fileReader.result as string);
+      });
+      fileReader.readAsText(file, encodingStr);
+      resultFileStr = await readPromise;
+    }
+
+    if (resultFileStr) {
       resultFileStr = resultFileStr.replace(/[\r]+/g, '');
-      root.subtitleMap = SubtitlesUtil.mapSubtitle(resultFileStr);
-      GeneralUtil.DEBUG.log("subtitleMap!", root.subtitleMap);
-    };
+      this.subtitleMap = SubtitlesUtil.mapSubtitle(resultFileStr);
+      GeneralUtil.DEBUG.log("subtitleMap loaded from HTTP/File:", this.subtitleMap);
+    }
   }
 
   changeVolume(source: number) {
@@ -544,14 +569,3 @@ interface Stats {
   resolution: string;
 }
 
-
-// let list = ['Luke']
-// let subtitle = 'Luke, I am your father.'
-
-// console.log(list.some(x => subtitle.includes(x)))
-
-
-// function addRef(val) {
-
-//     `<span style="cursor: pointer; color: blue"><b cursor="pointer">${val}</b></span>`
-// }

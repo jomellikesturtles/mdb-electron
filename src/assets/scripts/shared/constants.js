@@ -8,7 +8,7 @@ function getUserName() {
   return os.userInfo().username;
 }
 
-const WEBTORRENT_FULL_FILE_PATH = path.join(os.tmpdir(), "webtorrent");
+const WEBTORRENT_FULL_FILE_PATH = path.join(os.homedir(), "Movies", "mdb");
 
 const COLLECTION_NAME = Object.freeze({
   LIST: "list",
