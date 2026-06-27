@@ -32,6 +32,7 @@ export class VideoPlayerControlsComponent implements OnInit {
   @Output() onChangeFontSize = new EventEmitter<any>();
   @Output() onChangeBackgroundColor = new EventEmitter<any>();
   @Output() onChangeBackgroundOpacity = new EventEmitter<any>();
+  @Output() onAdjustFontSize = new EventEmitter<number>();
 
   fontColorsList = RGB_COLOR_LIST
   // fontColorsList = COLOR_LIST
@@ -104,6 +105,9 @@ export class VideoPlayerControlsComponent implements OnInit {
   }
   changeFontSize(size: string) {
     this.onChangeFontSize.emit(size);
+  }
+  adjustFontSize(amount: number) {
+    this.onAdjustFontSize.emit(amount);
   }
   changeBackgroundColor(color: string) {
     this.onChangeBackgroundColor.emit(color);

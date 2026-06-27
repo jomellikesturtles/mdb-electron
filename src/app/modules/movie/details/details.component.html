@@ -74,24 +74,25 @@
             </div>
 
             <div class="play-actions d-flex align-items-center gap-4">
-              playLinks {{playLinks|json}}
-              @for(playLink of playLinks; track playLink.id) {
-              <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playMovie(playLink)'>
-                @if(playLink.type == 'torrent') {
-                WATCH NOW {{playLink.quality}}
-                } @else {
-                WATCH NOW {{playLink.name}}
-
-                }
-                <!-- {{playLink.type}} -->
+              <mdb-button variant="primary" size="md" icon="play_arrow" 
+                          [disabled]="playLinks.length === 0 || isLoadingStream" 
+                          [loading]="isLoadingStream"
+                          (onClick)="playBestPlayLink()">
+                WATCH NOW {{ bestPlayLink ? (bestPlayLink.quality || bestPlayLink.name) : '' }}
               </mdb-button>
-              }
-              <!-- playLinks.length {{playLinks.length}} -->
-              <!-- <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playTorrent("")' -->
-              <!-- <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playBestPlayLink()'
-                [disabled]="playLinks.length <= 0">
-                WATCH NOW
-              </mdb-button> -->
+
+              <button mat-button [matMenuTriggerFor]="playLinksMenu" 
+                      [disabled]="playLinks.length === 0 || isLoadingStream" 
+                      class="text-white d-flex align-items-center bg-transparent border-0">
+                Sources <mat-icon>arrow_drop_down</mat-icon>
+              </button>
+
+              <mat-menu #playLinksMenu="matMenu">
+                <button mat-menu-item *ngFor="let playLink of playLinks" (click)="playMovie(playLink)">
+                  <mat-icon>{{ playLink.type === 'torrent' ? 'cloud_queue' : 'folder_open' }}</mat-icon>
+                  <span>{{ playLink.type === 'torrent' ? 'Torrent: ' + playLink.quality : 'Local: ' + playLink.name }}</span>
+                </button>
+              </mat-menu>
 
               <div *ngIf="movieTrailer && isFeatureEnabled('trailer')" class="trailer-link d-flex align-items-center"
                 (click)="playPreview()">

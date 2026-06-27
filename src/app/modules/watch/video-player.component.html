@@ -10,7 +10,7 @@
 
     <!-- top HUD -->
     <!-- back, title, -->
-    <div style='position: absolute; z-index: 21; display:flex;
+    <div [hidden]="isUserInactive" style='position: absolute; z-index: 21; display:flex;
     width: 100%; align-items: center; flex-direction: row;
     padding-left: 20px;
     height: 80px;
@@ -39,14 +39,28 @@
       <mat-spinner *ngIf='isSeeking' [diameter]='100' style='margin: auto;'></mat-spinner>
       <!-- video center icons -->
       <!-- play,pause,mute,unmute,loading -->
+      
+      <!-- BEZEL / ACTION OVERLAY -->
+      <div *ngIf="actionOverlayIcon || actionOverlayText" class="action-overlay-container">
+        <mat-icon class="action-overlay-icon">{{ actionOverlayIcon }}</mat-icon>
+        <span class="action-overlay-text">{{ actionOverlayText }}</span>
+      </div>
     </div>
 
     <!-- SUBTITLES -->
     <div style='position: absolute; z-index: 21; bottom: 100px; display:flex;
     width: 100%; align-items: center;flex-direction: column;
     text-shadow: -2px 2px 2px #000000;' [hidden]="!isShowSubtitles">
-      <span class='subtitle-span' [innerHTML]="subtitleLine1"></span><br />
-      <span class='subtitle-span' [innerHTML]="subtitleLine2"></span>
+      <span class='subtitle-span'
+            [style.fontSize]="subtitleDisplaySettings?.fontSize || '2.5vh'"
+            [style.color]="subtitleDisplaySettings?.fontColor ? 'rgba(' + subtitleDisplaySettings.fontColor + ',1)' : ''"
+            [style.backgroundColor]="subtitleDisplaySettings?.backgroundColor ? 'rgba(' + subtitleDisplaySettings.backgroundColor + ',' + (subtitleDisplaySettings.backgroundOpacity || '1') + ')' : ''"
+            [innerHTML]="subtitleLine1"></span><br />
+      <span class='subtitle-span'
+            [style.fontSize]="subtitleDisplaySettings?.fontSize || '2.5vh'"
+            [style.color]="subtitleDisplaySettings?.fontColor ? 'rgba(' + subtitleDisplaySettings.fontColor + ',1)' : ''"
+            [style.backgroundColor]="subtitleDisplaySettings?.backgroundColor ? 'rgba(' + subtitleDisplaySettings.backgroundColor + ',' + (subtitleDisplaySettings.backgroundOpacity || '1') + ')' : ''"
+            [innerHTML]="subtitleLine2"></span>
     </div>
     <!-- <app-video-player-stats [stats]='statsForNerds'>
 
@@ -64,7 +78,8 @@
       (onChangeVolume)='changeVolume($event)' (onChangeSubtitleFile)='onChangeCc($event)'
       (onChangeFontColor)='changeFontColor($event)' (onChangeFontSize)='changeFontSize($event)'
       (onChangeBackgroundColor)='changeBackgroundColor($event)'
-      (onChangeBackgroundOpacity)='changeBackgroundOpacity($event)'>
+      (onChangeBackgroundOpacity)='changeBackgroundOpacity($event)'
+      (onAdjustFontSize)='adjustSubtitleSize($event)'>
     </mdb-video-player-controls>
 
   </div>

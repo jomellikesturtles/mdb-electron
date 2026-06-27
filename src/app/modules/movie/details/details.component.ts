@@ -63,6 +63,8 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
   hasContinueWatching: boolean;
   playLinks: PlayLink[] = [];
   bestPlayLink: PlayLink;
+  isLoadingStream = false;
+  private streamTimeoutHandle: any;
   certification: 'PG';
   userData: IProfileData = new IProfileData();
   userLists = [
@@ -177,14 +179,21 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   playOfflineLibrary(val) {
+    this.startStreamLoader();
     this.libraryService.openVideoStream(val).then((e) => {
       GeneralUtil.DEBUG.log("streamlink1:", e);
-      // if (e != 0 && e != [] && e != '' && e.length > 0) {
+      this.clearStreamLoader();
       if (e) {
         this.showVideo = true;
         this.streamLink = e;
         this.cdr.detectChanges();
+      } else {
+        this.notificationService.showError('Failed to open video stream');
       }
+    }).catch(err => {
+      this.clearStreamLoader();
+      this.notificationService.showError('Failed to open video stream');
+      console.error(err);
     });
   }
 
@@ -288,8 +297,10 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
           GeneralUtil.DEBUG.log("streams", data);
 
           this.torrents = data.torrents;
-          this.torrents.sort(function (a, b) { return b.peers - a.peers; }); // sort by seeders
+          const sortedTorrents = [...this.torrents].sort((a, b) => b.peers - a.peers);
+          this.torrents = sortedTorrents;
           this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(this.torrents)];
+          this.updateBestPlayLink();
         });
         this.cdr.detectChanges();
       });
@@ -335,8 +346,8 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.libraryService.getMovieFromLibrary(this.movieDetails.tmdbId).then((libraryList: IRawLibrary[]) => {
       GeneralUtil.DEBUG.log("libraryList", libraryList);
       if (libraryList.length > 0) {
-        this.bestPlayLink = this.mapPlayLink(libraryList[0]);
         this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(libraryList)];
+        this.updateBestPlayLink();
       }
     });
 
@@ -363,18 +374,54 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   playTorrent(hash: string) {
     // hash = 'C808185A43F255625E639F65E3E57DEDD5353BD1'; // test only
+    this.startStreamLoader();
     this.ipcService.getPlayTorrent(hash).then(e => {
-      this.showVideo = true;
-      this.streamLink = e;
+      this.clearStreamLoader();
+      if (e) {
+        this.showVideo = true;
+        this.streamLink = e;
+        this.cdr.detectChanges();
+      } else {
+        this.notificationService.showError('Failed to get stream link');
+      }
+    }).catch(err => {
+      this.clearStreamLoader();
+      this.notificationService.showError('Failed to get stream link');
+      console.error(err);
     });
-    // this.ipcService.streamLink.subscribe(e => {
-    //   GeneralUtil.DEBUG.log('streamlink1:', e)
-    //   if (e != 0 && e != [] && e != '' && e.length > 0) {
-    //     GeneralUtil.DEBUG.log('streamlink2:', e)
-    //     this.showVideo = true
-    //     this.streamLink = e
-    //   }
-    // })
+  }
+
+  updateBestPlayLink() {
+    if (this.playLinks && this.playLinks.length > 0) {
+      this.bestPlayLink = this.playLinks[1] || this.playLinks[0];
+    }
+  }
+
+  startStreamLoader() {
+    this.isLoadingStream = true;
+    this.cdr.detectChanges();
+
+    if (this.streamTimeoutHandle) {
+      clearTimeout(this.streamTimeoutHandle);
+    }
+
+    this.streamTimeoutHandle = setTimeout(() => {
+      if (this.isLoadingStream) {
+        this.isLoadingStream = false;
+        this.notificationService.showError('Stream request timed out');
+        this.ipcService.stopStream();
+        this.cdr.detectChanges();
+      }
+    }, 30000);
+  }
+
+  clearStreamLoader() {
+    this.isLoadingStream = false;
+    if (this.streamTimeoutHandle) {
+      clearTimeout(this.streamTimeoutHandle);
+      this.streamTimeoutHandle = null;
+    }
+    this.cdr.detectChanges();
   }
 
   /**

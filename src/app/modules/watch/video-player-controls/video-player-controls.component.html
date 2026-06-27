@@ -37,8 +37,9 @@
         <img *ngIf="(!isMuted) || volume <= 0" class='player-controls-icon' src='./assets/icons/volume.svg'
           data-toggle='tooltip' title='Mute'>
       </div>
-      <mat-slider (input)="volumeChange($event.value)" value="volume" min="0" max="100" step="1" data-toggle='tooltip'
-        title='Change volume'></mat-slider>
+      <mat-slider min="0" max="100" step="1" data-toggle='tooltip' title='Change volume'>
+        <input matSliderThumb [value]="volume" (valueChange)="volumeChange($event)">
+      </mat-slider>
     </div>
     <div style='float:right; padding-right: 5px;'>
       <img (click)='isShowStatus=true' class='player-controls-icon' src='./assets/icons/status.svg'
@@ -69,6 +70,9 @@
         </span>
       </mat-menu>
       <mat-menu #subtitlesAppearanceFontSizeMenu="matMenu" yPosition="above">
+        <button mat-menu-item (click)="adjustFontSize(0.2)">+ Larger</button>
+        <button mat-menu-item (click)="adjustFontSize(-0.2)">- Smaller</button>
+        <mat-divider></mat-divider>
         <span *ngFor="let fontSize of fontSizeList">
           <button mat-menu-item (click)="changeFontSize(fontSize.value)">{{fontSize.label}}</button>
         </span>
