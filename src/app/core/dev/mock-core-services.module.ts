@@ -34,7 +34,7 @@ import { MockAuthenticationService } from "@services/mock-authentication.service
     // { provide: PlayedService, useExisting: MockPlayedService },
     // { provide: ProgressService, useExisting: MockProgressService },
     // { provide: MovieService, useExisting: MockMovieService },
-    { provide: ProfileService, useExisting: MockProfileService },
+    // { provide: ProfileService, useExisting: MockProfileService },
     // { provide: TorrentService, useExisting: MockTorrentService }
     { provide: LibraryService, useExisting: MockLibraryService },
 

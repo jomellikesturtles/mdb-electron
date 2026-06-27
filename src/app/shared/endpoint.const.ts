@@ -28,6 +28,7 @@ export const ENDPOINT = {
 
 
   PROFILE: `${MDB_API_URL}/v1/profile`,
+  PROFILE_AVATAR: `${MDB_API_URL}/v1/profile/${REPLACE_PARAMETER}_1/avatar`,
 
   LOGIN: `${MDB_API_URL}/v1/auth/login`,
   ENCRYPT: `${MDB_API_URL}/v1/auth/encrypt`,

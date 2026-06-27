@@ -13,7 +13,8 @@
                <div class="avatar-placeholder mb-3">
                  <img [src]="userProfile?.photoUrl || 'assets/icons/user.svg'" alt="Avatar" class="avatar-img">
                </div>
-               <mdb-button variant="outline" size="sm">Change Avatar</mdb-button>
+               <input type="file" #fileInput (change)="onAvatarSelected($event)" accept="image/*" style="display: none">
+               <mdb-button variant="outline" size="sm" [loading]="uploadingAvatar" (onClick)="onTriggerAvatarUpload(fileInput)">Change Avatar</mdb-button>
             </div>
 
             <mat-form-field appearance="outline">

@@ -20,11 +20,14 @@ export class ProfileService extends BaseProfileService {
 
 
   updateProfile(data: Partial<IUserProfile>): Observable<any> {
-
     return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.PROFILE), data);
-
   }
 
+  uploadAvatar(username: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.PROFILE_AVATAR, username), formData);
+  }
 }
 
 

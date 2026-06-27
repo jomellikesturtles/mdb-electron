@@ -33,7 +33,8 @@ export class HttpBaseService {
   }
 
   post<T>(url: string, payload: any, operation = 'POST'): Observable<T> {
-    return this.http.post<T>(url, payload, { headers: JSON_CONTENT_TYPE_HEADER }).pipe(
+    const headers = (payload instanceof FormData) ? undefined : JSON_CONTENT_TYPE_HEADER;
+    return this.http.post<T>(url, payload, headers ? { headers } : {}).pipe(
       tap(_ => this.logger.info(`POST url=${url}`)),
       // catchError(this.handleError<T>(operation))
     );
