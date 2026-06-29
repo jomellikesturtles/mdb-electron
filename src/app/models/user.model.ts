@@ -6,7 +6,7 @@ export interface IUserProfile {
   bookmarkedCount?: number;
   photoUrl?: string; // Avatar
   name?: string;
-  avatar: null;
+  avatar: string;
   isMain: boolean;
   bookmarks: UserDataDTO;
   played: UserDataDTO;

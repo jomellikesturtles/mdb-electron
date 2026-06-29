@@ -1,0 +1,148 @@
+.dialog-container {
+  background-color: #141414;
+  color: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 500px;
+  min-width: 320px;
+  font-family: 'Inter', sans-serif;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .title {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(45deg, #ffffff, #888888);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    color: #888888;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+
+    &:hover {
+      color: #ffffff;
+      transform: scale(1.1);
+    }
+  }
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+}
+
+.profiles-grid {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  width: 100px;
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.08);
+
+    .avatar-img {
+      border-color: #ffffff;
+    }
+
+    .profile-name {
+      color: #ffffff;
+    }
+  }
+
+  &.active {
+    .avatar-img {
+      border-color: #E50914; // Premium red color active border
+      box-shadow: 0 0 12px rgba(229, 9, 20, 0.5);
+    }
+
+    .profile-name {
+      color: #E50914;
+      font-weight: 700;
+    }
+  }
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 12px;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 3px solid #222222;
+  transition: border-color 0.2s;
+  background-color: #333333;
+}
+
+.active-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background-color: #E50914;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  .profile-name {
+    font-size: 0.95rem;
+    color: #aaaaaa;
+    transition: color 0.2s;
+    font-weight: 500;
+  }
+
+  .profile-role {
+    font-size: 0.75rem;
+    color: #666666;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}

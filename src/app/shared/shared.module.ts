@@ -21,6 +21,8 @@ import { AboutDialogComponent } from './components/info-dialogs/about-dialog.com
 import { HelpDialogComponent } from './components/info-dialogs/help-dialog.component';
 import { FeedbackDialogComponent } from './components/info-dialogs/feedback-dialog.component';
 import { MediaGridComponent } from '@components/media-grid/media-grid.component';
+import { ProfileSwitcherDialogComponent } from './components/profile-switcher-dialog/profile-switcher-dialog.component';
+import { GenericErrorComponent } from '@components/generic-error/generic-error.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,9 @@ import { MediaGridComponent } from '@components/media-grid/media-grid.component'
     AboutDialogComponent,
     HelpDialogComponent,
     FeedbackDialogComponent,
-    MediaGridComponent
+    MediaGridComponent,
+    ProfileSwitcherDialogComponent,
+    GenericErrorComponent
   ],
   imports: [
     CommonModule,
@@ -74,7 +78,9 @@ import { MediaGridComponent } from '@components/media-grid/media-grid.component'
     ExternalLinkDialogComponent,
     AboutDialogComponent,
     HelpDialogComponent,
-    FeedbackDialogComponent
+    FeedbackDialogComponent,
+    ProfileSwitcherDialogComponent,
+    GenericErrorComponent
   ]
 })
 export class SharedModule { }

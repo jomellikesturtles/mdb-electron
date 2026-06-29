@@ -17,6 +17,7 @@ import { ExternalLinkDialogComponent } from '@shared/components/external-link-di
 import { AboutDialogComponent } from '@shared/components/info-dialogs/about-dialog.component';
 import { HelpDialogComponent } from '@shared/components/info-dialogs/help-dialog.component';
 import { FeedbackDialogComponent } from '@shared/components/info-dialogs/feedback-dialog.component';
+import { ProfileSwitcherDialogComponent } from '@shared/components/profile-switcher-dialog/profile-switcher-dialog.component';
 
 @Component({
   selector: 'app-top-navigation',
@@ -189,6 +190,13 @@ export class TopNavigationComponent implements OnInit {
 
   goToProfile() {
     this.router.navigate(['/user/profile']);
+  }
+
+  onSwitchProfile() {
+    this.dialog.open(ProfileSwitcherDialogComponent, {
+      width: '400px',
+      disableClose: false
+    });
   }
 
   goToSettings() {

@@ -37,6 +37,59 @@ export const TROUBLE_QUOTES = [
   { title: `King Kong`, year: 1933, quote: `Oh, no, it wasn't the airplanes. It was Beauty killed the Beast` },
   { title: `Dirty Harry`, year: 1971, quote: `You've got to ask yourself one question: 'Do I feel lucky?' Well, do ya, punk?` },
   { title: `The Graduate`, year: 1967, quote: `Plastics.` },
+  { title: `Avengers: Infinity War`, year: 2018, quote: `I don't feel so good, Mr. Stark.` },
+  { title: `Cool Hand Luke`, year: 1967, quote: `What we've got here is failure to communicate.` },
+  { title: `Jaws`, year: 1975, quote: `We're going to need a bigger boat.` },
+
+  { title: `Leave the World Behind`, year: 2023, quote: `Everything is offline. Everything.` },
+  { title: `The Matrix`, year: 1999, quote: `It's the one that says 'Page not found.` },
+  { title: `Midsommar`, year: 2019, quote: `What do we do now? What do we actually do?` },
+
+
+  { title: "Feng Shui", year: 2004, quote: "Walang hihinga!" },
+  { title: "Camp Sawi", year: 2016, quote: "Gusto ko lang naman maging masaya. Ang hirap ba nun?!" },
+  { title: "Himala", year: 1982, quote: "Walang milagrong mangyayari! Tayo ang gagawa ng milagro!" },
+  { title: "Camp Sawi", year: 2016, quote: "Gusto ko lang naman maging masaya. Ang hirap ba nun?!" },
+  { title: "Judge Pao", year: 1984, quote: "Trabaho lang, walang personalan." },
+  { title: "One More Chance", year: 2007, quote: "She loved me at my worst. You had me at my best, but binalewala mo lang ang lahat." },
+  { title: "Aishite Imasu 1941: Mahal Kita", year: 2004, quote: "My brother is not a pig!" },
+
+  { title: 'The Room', year: 2003, quote: `You are tearing me apart, Lisa!`, backdrop: '' },
+
+  { title: "Starting Over Again", year: 2014, quote: "I deserved an explanation. I deserved an acceptable reason!" },
+  { title: "No Other Woman", year: 2011, quote: "Ang mundo ay isang malaking Quiapo. Maraming snatcher, maaagawan ka. Lumaban ka!" },
+  { title: "Hello, Love, Goodbye", year: 2019, quote: "Kung mahal mo ako, bakit pinapapili mo ako?" },
+  { title: "Labs Kita... Okay Ka Lang?", year: 1998, quote: "Oh yes, kaibigan mo ako. Kaibigan mo lang ako... And I'm so stupid to make the biggest mistake of falling in love with my best friend!" },
+  { title: "Heneral Luna", year: 2015, quote: "Bayan o sarili?" },
+
+  { title: "Gravity", year: 2013, quote: "I have a bad feeling about this mission." },
+  { title: "The Martian", year: 2015, quote: "I'm going to have to science the shit out of this." },
+  { title: "The IT Crowd: The Manual for Emmanuel", year: 2007, quote: "Have you tried turning it off and on again?" },
+  { title: "Chernobyl", year: 2019, quote: "Not great, not terrible." },
+
+
+  { title: "Parasite", year: 2019, quote: "Glory to the holy wifi!" },
+  { title: "Society of the Snow", year: 2023, quote: "There is no greater love than to give your life for your friends." },
+  { title: "Troll", year: 2022, quote: "If the signals are down, we have no way of knowing what's coming." },
+  { title: "Black Mirror: Bandersnatch", year: 2018, quote: "I'm not in control. Someone else is clicking the buttons." },
+  { title: "Athena", year: 2022, quote: "Shut it down! Cut the grid before they take everything!" },
+  { title: "Unlocked", year: 2023, quote: "If you lose your phone, you lose your whole life." },
+  { title: "Independence Day", year: 1996, quote: "They're using our own satellites against us. It's a countdown." },
+  { title: "The Matrix Reloaded", year: 2003, quote: "The system is failing. We are running out of time." },
+  { title: "Independence Day", year: 1996, quote: "They're using our own satellites against us. It's a countdown." },
+  { title: "The Hitchhiker's Guide to the Galaxy", year: 1979, quote: "This must be Thursday. I never could get the hang of Thursdays." },
+  { title: "Catch-22", year: 1961, quote: "That's some catch, that Catch-22." },
+
+  { title: "Neuromancer", year: 1984, quote: "The sky above the port was the color of television, tuned to a dead channel." },
+
+  { title: "Bata, Bata... Pa'no Ka Ginawa?", year: 1998, quote: "Akala mo lang wala, pero meron, meron, meron!" },
+
+  { title: "One More Chance", year: 2007, quote: "Sana ako na lang. Sana ako na lang ulit." },
+  { title: "Starting Over Again", year: 2014, quote: "Binalewala mo lang ang lahat. Iniwan mo ako nung kailangan kita." },
+  { title: "The Hows of Us", year: 2018, quote: "Pagod na pagod na ako. Hindi ko na alam kung paano pa lalaban." },
+  { title: "English Only, Please", year: 2014, quote: "Ang daling sabihing tapos na, pero ang hirap tanggaping wala na talaga." },
+  { title: "Titanic", year: 1997, quote: "I'll never let go, Jack. I'll never let go." },
+
 ];
 
 export const MOVIE_QUOTES = [

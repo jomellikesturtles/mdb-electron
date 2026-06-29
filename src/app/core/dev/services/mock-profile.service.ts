@@ -10,4 +10,8 @@ export class MockProfileService extends BaseProfileService {
     return this.httpBaseService.get('assets/mock-responses/profile.json');
   }
 
+  getProfiles(): Observable<IUserProfile[]> {
+    return this.httpBaseService.get('assets/mock-responses/profiles.json');
+  }
+
 }
