@@ -54,13 +54,6 @@ export class BookmarkService extends BaseBookmarkService {
   }
 
   /**
-   * Gets first page of bookmarks.
-   */
-  getBookmarksPaginatedFirstPage(): Promise<any> {
-    return this.ipcService.getMultiplePaginatedFirst(CollectionName.Bookmark, FieldName.TmdbId, 20);
-  }
-
-  /**
    * Gets multiple bookmarks.
    */
   getBookmarksPaginated(lastVal: string | number): Promise<any> {

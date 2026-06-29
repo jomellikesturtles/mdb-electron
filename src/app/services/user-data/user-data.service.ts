@@ -2,11 +2,10 @@ import { IUserProfile } from '@models/user.model';
 import { LibraryService } from '../library.service';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { BookmarkService } from '../media/bookmark.service';
-import { MovieService } from '../movie/movie.service';
+
 import { PlayedService, IPlayed } from '../media/played.service';
 import { IUserDataPaginated, IpcOperations, IpcService, SubChannel } from '../ipc.service';
-import { CollectionName } from '@shared/constants';
+
 import { DataService } from '@services/data.service';
 import { HttpUrlProviderService } from '@services/http-url.provider.service';
 import { ENDPOINT } from '@shared/endpoint.const';
@@ -23,10 +22,6 @@ import { IBookmark } from '@services/media';
 export class UserDataService {
 
   constructor(
-    private bookmarkService: BookmarkService,
-    private movieService: MovieService,
-    private playedService: PlayedService,
-    private libraryService: LibraryService,
     private dataService: DataService,
     private ipcService: IpcService,
     private httpUrlProvider: HttpUrlProviderService,
@@ -59,83 +54,6 @@ export class UserDataService {
         null, { tmdbId: username }));
   }
 
-  async getUserDataFirstPage(dataType: string): Promise<any> {
-    console.log('get firstpage: ', dataType);
-
-    let data: IUserDataPaginated | any = [];
-    switch (dataType) {
-      case 'bookmark':
-        const bookmarksList = await this.bookmarkService.getBookmarksPaginatedFirstPage();
-        data = bookmarksList;
-        break;
-      case 'watched':
-        const watchedList = await this.playedService.getPlayedPaginatedFirstPage();
-        data = watchedList;
-        break;
-      case 'library':
-        const videoList = await this.libraryService.getLibraryPaginatedFirstPage();
-        data = videoList;
-        break;
-      default:
-        break;
-    }
-    return new Promise(async (resolve, reject) => {
-      const moviesList = await this.getMovieListDetails(dataType, data);
-      console.log('moviesList paginated:', moviesList);
-      let data2: IUserDataPaginated = data;
-      data2.results = moviesList;
-      resolve(data2);
-    });
-  }
-
-  async getUserDataPagination(dataType: CollectionName, lastValue: any): Promise<any> {
-    console.log('get firstpage: ', dataType);
-    let dataList = [];
-    switch (dataType) {
-      case 'bookmark':
-        dataList = await this.bookmarkService.getBookmarksPaginated(lastValue);
-        break;
-      case 'watched':
-        dataList = await this.playedService.getPlayedPaginated(lastValue);
-        break;
-      case 'library':
-        dataList = await this.libraryService.getLibraryPaginated(lastValue);
-        break;
-      default:
-        break;
-    }
-    return new Promise(async (resolve, reject) => {
-      const e = await this.getMovieListDetails(dataType, dataList);
-      console.log('e:', e);
-
-      resolve(e);
-    });
-  }
-
-  /**
-   * TODO: include libraryFile/libaryObj to the list even if not identified.
-   */
-  private getMovieListDetails(dataType: string, data: IUserDataPaginated | any): Observable<any> | any {
-    return new Promise(resolve => {
-      const moviesDisplayList = [];
-      const dataDocList = data.results ? data.results : data;
-      const len = dataDocList.length;
-      let index = 0;
-      dataDocList.forEach(dataDoc => {
-        index++;
-        if (dataDoc.tmdbId > 0) {
-          this.movieService.getMovieDetails(dataDoc.tmdbId, 'videos,images,credits,similar,external_ids,recommendations').pipe().subscribe(movie => {
-            const userData = this.setDataObject(dataType, dataDoc);
-            movie[dataType] = userData;
-            moviesDisplayList.push(movie);
-            if (len === index) {
-              resolve(moviesDisplayList);
-            }
-          });
-        }
-      });
-    });
-  }
 
   /**
    * Sets the user data object to the

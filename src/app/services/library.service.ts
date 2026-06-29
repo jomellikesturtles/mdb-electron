@@ -27,10 +27,6 @@ export class LibraryService extends BaseLibraryService {
     return this.ipcService.getMoviesFromLibraryInList(idList);
   }
 
-  getLibraryPaginatedFirstPage(): Promise<any> {
-    return this.ipcService.getMultiplePaginatedFirst(CollectionName.Library, FieldName.TmdbId, 20);
-  }
-
   getLibraryPaginated(lastVal: string | number): Promise<any> {
     console.log('getVideoPaginated...', lastVal);
     return this.ipcService.getMultiplePaginated(CollectionName.Library, FieldName.TmdbId, 20, lastVal);
@@ -56,11 +52,4 @@ export interface IRawLibrary {
   year: number,
   tmdbId: number,
   _id: string;
-}
-
-interface Library {
-  type: 'movie' | 'video' | 'audio' | 'music' | 'podcast' | 'videogame',
-  source: 'local' | 'online',
-  id: string,
-  title: string;
 }

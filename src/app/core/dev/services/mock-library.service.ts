@@ -25,9 +25,6 @@ export class MockLibraryService extends BaseLibraryService {
   getMoviesFromLibraryInList(idList: number[]): Promise<any> {
     throw new Error("Method not implemented.");
   }
-  getLibraryPaginatedFirstPage(): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
   getLibraryPaginated(lastVal: string | number): Promise<any> {
     throw new Error("Method not implemented.");
   }

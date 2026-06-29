@@ -18,6 +18,10 @@ export class NavigationService {
       });
   }
 
+  get canGoBack(): boolean {
+    return this.history.length > 1;
+  }
+
   /**
    * Safely navigate back, or default to a safe root route if history is empty.
    */
