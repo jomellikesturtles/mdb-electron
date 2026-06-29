@@ -1,10 +1,11 @@
 // TODO: replacement for angular-user-idle
 
-import { Component, OnInit, Input, OnDestroy, AfterViewInit, ElementRef, OnChanges, SimpleChanges, ViewChild, PipeTransform, Pipe, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, AfterViewInit, ElementRef, OnChanges, SimpleChanges, ViewChild, PipeTransform, Pipe, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { IpcService } from '@services/ipc.service';
 import { MovieService } from '@services/movie/movie.service';
 import { PlayedService } from '@services/media/played.service';
+import { ProgressService } from '@services/progress.service';
 import SubtitlesUtil from '@utils/subtitles.utils';
 import { Subtitle } from '@models/subtitle.model';
 import chardet from "chardet";
@@ -17,6 +18,7 @@ import GeneralUtil from '@utils/general.util';
 import { PreferencesService } from '@services/preferences.service';
 import { IProgressBar, VideoPlayerControlsComponent } from './video-player-controls/video-player-controls.component';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { FeatureName, FeatureToggleService } from '@core/services/feature-toggle.service';
 
 @Component({
   selector: 'app-video-player',
@@ -29,10 +31,12 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   @Input() tmdbId: number;
   @Input() imdbId: string;
   @Input() title: string;
+  @Output() onClose = new EventEmitter<void>();
 
   @ViewChild('videoPlayer1', { static: true }) videoPlayer1: ElementRef;
   @ViewChild(VideoPlayerControlsComponent, { static: true }) child;
   @ViewChild('tooltipSpan', { static: false }) tooltipSpan: ElementRef;
+  @ViewChild('chatScrollContainer', { static: false }) chatScrollContainer: ElementRef;
 
   DEFAULT_VOLUME = 50;
   isPlaying = false;
@@ -76,10 +80,16 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   fontColorsList = COLOR_LIST;
   subtitleSpanElementsList: any[];
   fontSizeList = FONT_SIZE_LIST;
-  canPlay = false;
+  canPlay = true;
   isMetadataLoaded = false;
+  showAiChat = false;
+  aiMessages: Array<{ sender: 'user' | 'ai', text: string }> = [];
+  aiInput = '';
+  isAiTyping = false;
   isSeeking = false;
   toSeek: number = 0;
+  private lastSavedTime = 0;
+  private isSavedAsPlayed = false;
   private ngUnsubscribe = new Subject();
 
   actionOverlayText = '';
@@ -95,8 +105,94 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     private elementRef: ElementRef,
     private preferencesService: PreferencesService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private featureToggleService: FeatureToggleService,
+    private cdr: ChangeDetectorRef,
+    private progressService: ProgressService
   ) { GeneralUtil.DEBUG.log('VIDEOPLAYER CONSTRUCTOR'); }
+
+  goBack(): void {
+    if (this.onClose.observers.length > 0) {
+      this.onClose.emit();
+    } else {
+      window.history.back();
+    }
+  }
+
+  isFeatureEnabled(featureName: FeatureName): boolean {
+    return this.featureToggleService.isEnabled(featureName);
+  }
+
+  toggleAiChat() {
+    this.showAiChat = !this.showAiChat;
+    if (this.showAiChat && this.aiMessages.length === 0) {
+      this.aiMessages.push({
+        sender: 'ai',
+        text: `Hi! I'm your MDB AI Assistant. Ask me anything about "${this.title || 'this movie'}"!`
+      });
+    }
+    this.scrollToBottom();
+  }
+
+  sendAiMessage() {
+    if (!this.aiInput.trim()) return;
+    const userMsg = this.aiInput;
+    this.aiMessages.push({ sender: 'user', text: userMsg });
+    this.aiInput = '';
+    this.isAiTyping = true;
+    this.scrollToBottom();
+
+    setTimeout(() => {
+      this.isAiTyping = false;
+      this.aiMessages.push({
+        sender: 'ai',
+        text: this.getMockAiResponse(userMsg)
+      });
+      this.scrollToBottom();
+    }, 1200);
+  }
+
+  scrollToBottom() {
+    setTimeout(() => {
+      if (this.chatScrollContainer) {
+        const element = this.chatScrollContainer.nativeElement;
+        element.scrollTop = element.scrollHeight;
+      }
+    }, 100);
+  }
+
+  getMockAiResponse(query: string): string {
+    const q = query.toLowerCase();
+    const title = this.title ? this.title.toLowerCase() : 'this movie';
+
+    if (q.includes('cast') || q.includes('actor') || q.includes('who stars')) {
+      if (title.includes('jungle') || title.includes('welcome')) {
+        return `"${this.title}" features a star-studded ensemble cast including Akshay Kumar, Suniel Shetty, Arshad Warsi, Jacqueline Fernandez, Disha Patani, and Raveena Tandon.`;
+      }
+      return `This movie features a cast including the primary actors listed in the cast tab of the details page.`;
+    }
+
+    if (q.includes('director') || q.includes('directed')) {
+      if (title.includes('jungle') || title.includes('welcome')) {
+        return `"${this.title}" is directed by Ahmed Khan, with a screenplay written by Farhad Samji.`;
+      }
+      return `You can find the director listed on the movie details screen.`;
+    }
+
+    if (q.includes('plot') || q.includes('story') || q.includes('what is it about')) {
+      if (title.includes('jungle') || title.includes('welcome')) {
+        return `"${this.title}" is about a group of quirky characters who get stuck in a dangerous jungle during a chaotic mission. Filled with confusion, criminals, and hilarious situations, they must work together to survive and find their way out.`;
+      }
+      return `This movie is an exciting title on our MDB platform. Check the details page for a full plot description!`;
+    }
+
+    const defaults = [
+      `That's an interesting question about "${this.title || 'this movie'}". Based on TMDB data, it was released in ${title.includes('jungle') ? '2026' : 'the year specified in the details page'} and is highly anticipated by fans of the genre!`,
+      `I'm currently running in offline mock mode, but "${this.title || 'this movie'}" seems like an amazing watch! Let me know if you want to know about the cast or directors!`,
+      `Fun fact: "${this.title || 'this movie'}" features great cinematography and a compelling score. Is there a specific scene or plot point you're curious about?`
+    ];
+
+    return defaults[Math.floor(Math.random() * defaults.length)];
+  }
 
   onNotIdle() {
     this.isUserInactive = false;
@@ -339,7 +435,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     setInterval((e) => {
       if (root.isPlaying) {
         root.updateProgressBar();
-        // this.updateWatchedStatus(e)
+        root.updateWatchedStatus(e);
       }
     }, 500);
     // END OF MIGRATED
@@ -459,8 +555,45 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     }
   }
 
-  updateWatchedStatus(val: any) {
+  updateWatchedStatus(val?: any) {
+    if (!this.videoPlayerElement) return;
 
+    const current = Math.round(this.videoPlayerElement.currentTime);
+    const total = Math.round(this.videoPlayerElement.duration);
+    if (!total) return;
+
+    const percentage = Math.round((current / total) * 100);
+
+    // Send update if 10 seconds elapsed since last saved time
+    if (Math.abs(current - this.lastSavedTime) >= 10) {
+      this.sendProgress(current, total, percentage);
+    }
+
+    // Auto-promote to watched/played if >= 90% and not already marked
+    if (percentage >= 90 && !this.isSavedAsPlayed) {
+      this.markAsFullyWatched();
+    }
+  }
+
+  private sendProgress(current: number, total: number, percentage: number) {
+    this.lastSavedTime = current;
+    this.progressService.postProgress({
+      id: this.tmdbId,
+      current,
+      total,
+      percentage
+    }).subscribe({
+      next: () => GeneralUtil.DEBUG.log(`Progress updated: ${current}s / ${total}s (${percentage}%)`),
+      error: (err) => GeneralUtil.DEBUG.error('Error posting progress:', err)
+    });
+  }
+
+  private markAsFullyWatched() {
+    this.isSavedAsPlayed = true;
+    this.playedService.save(this.tmdbId.toString()).subscribe({
+      next: () => GeneralUtil.DEBUG.log(`Movie marked as fully watched (tmdbId=${this.tmdbId})`),
+      error: (err) => GeneralUtil.DEBUG.error('Error saving played status:', err)
+    });
   }
 
   togglePlay() {

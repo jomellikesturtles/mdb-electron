@@ -12,16 +12,14 @@
     <!-- <div [ngStyle]="{'width': progressBar?.played}"  style="height: 100%; background-color: red; ">
   </div> -->
     <!-- loaded maybe use scaleX for transform-->
-    <div [ngStyle]="{'width': progressBar?.buffered}"
-      style="height: 100%; background-color: gray; z-index: 20; left: 0; position: absolute">
+    <div [ngStyle]="{'width': progressBar?.buffered}" class="buffered-track">
     </div>
-    <div style="width: 100%; height: 100%; background-color: antiquewhite; z-index: 19; left: 0; position: absolute">
+    <div class="background-track">
     </div>
   </div>
 
-  <div id='controlsContainer'
-    style="width: 100%; height: 40px; background-color: black; z-index: 20; left: 0; position: relative; display:flex;">
-    <div style='float:left; display: flex; flex: 1; white-space: nowrap; overflow: hidden; padding-left: 5px;'>
+  <div id="controlsContainer" class="controls-container">
+    <div class="controls-left">
       <div (click)='togglePlay()'>
         <!-- videoPlayer1.paused   -->
         <div *ngIf="canPlay">
@@ -41,7 +39,7 @@
         <input matSliderThumb [value]="volume" (valueChange)="volumeChange($event)">
       </mat-slider>
     </div>
-    <div style='float:right; padding-right: 5px;'>
+    <div class="controls-right">
       <img (click)='isShowStatus=true' class='player-controls-icon' src='./assets/icons/status.svg'
         data-toggle='tooltip' title='Stats'>
       <span data-toggle='tooltip' title='Time lapsed'>{{videoTime.elapsed|toHHMMSS}}</span>/
@@ -87,6 +85,14 @@
           <button mat-menu-item (click)="changeBackgroundOpacity(p.value)">{{p.label}}</button>
         </span>
       </mat-menu>
+
+      <div *ngIf="isAskAiEnabled" class='player-controls-icon' (click)="askAi()" data-toggle='tooltip' title='Ask AI' style="display: inline-flex; align-items: center; justify-content: center; height: 40px; width: 40px; padding: 0; vertical-align: middle;">
+        <mat-icon style="color: white; font-size: 22px; width: 22px; height: 22px;">psychology</mat-icon>
+      </div>
+
+      <div class='player-controls-icon' (click)="castVideo()" data-toggle='tooltip' title='Cast to Device' style="display: inline-flex; align-items: center; justify-content: center; height: 40px; width: 40px; padding: 0; vertical-align: middle;">
+        <mat-icon style="color: white; font-size: 22px; width: 22px; height: 22px;">cast</mat-icon>
+      </div>
 
       <img (click)='toggleFullScreen()' class='player-controls-icon' src='./assets/icons/fullscreen.svg'
         data-toggle='tooltip' title='Fullscreen'>

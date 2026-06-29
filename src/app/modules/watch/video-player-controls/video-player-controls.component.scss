@@ -1,81 +1,146 @@
 #playerControlsContainer {
   width: 100%;
-  height: 45px;
+  height: 100px;
   left: 0;
   bottom: 0px;
-  position: absolute
-}
-
-.player-controls-icon {
-  height: 100%;
-  filter: invert(1) contrast(.5);
-  cursor: pointer;
-  display: inline-block;
-  width: 40px;
-  padding: 9px;
-}
-
-.player-controls-icon:hover {
-  filter: invert(1) contrast(1)
+  position: absolute;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 24px 20px 24px;
+  box-sizing: border-box;
+  z-index: 30;
 }
 
 #progressBarContainer {
   width: 100%;
-  height: 5px;
+  height: 4px;
   position: relative;
   cursor: pointer;
-  z-index: 30;
+  z-index: 31;
   text-decoration: none;
-  position: relative;
+  background: transparent;
+  margin-bottom: 12px;
+  transition: height 0.15s ease-in-out;
 }
 
-#progressBarContainer #tooltipSpan {
-  display: none;
-}
+#progressBarContainer:hover {
+  height: 6px;
+  
+  .buffered-bar {
+    background-color: #e50914; /* MDB Premium Netflix Red */
+  }
 
-.progress-bar-focus {
-  height: 8px
+  // Draw a timeline thumb
+  &::after {
+    content: '';
+    position: absolute;
+    right: auto;
+    width: 12px;
+    height: 12px;
+    background-color: #e50914;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    z-index: 32;
+  }
 }
 
 .buffered-bar {
   height: 100%;
-  background-color: red;
+  background-color: #e50914;
   z-index: 21;
   left: 0;
-  position: absolute
+  position: absolute;
+  border-radius: 2px;
+  transition: background-color 0.15s ease;
 }
 
-#progressBarContainer:hover {
-  height: 8px;
-
-  #tooltipSpan {
-    display: block;
-    position: fixed;
-    overflow: hidden;
-  }
-
-  .buffered-bar {
-    background-color: hsl(19, 100%, 50%)
-  }
+.buffered-track {
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.35);
+  z-index: 20;
+  left: 0;
+  position: absolute;
+  border-radius: 2px;
 }
 
-.user-inactive {
-  #playerControlsContainer {
-    display: none
+.background-track {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.15);
+  z-index: 19;
+  left: 0;
+  position: absolute;
+  border-radius: 2px;
+}
+
+.controls-container {
+  width: 100%;
+  height: 44px;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.controls-left, .controls-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-controls-icon {
+  height: 40px;
+  width: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  opacity: 0.8;
+
+  &[src] {
+    width: 22px;
+    height: 22px;
+    filter: invert(1);
+    display: inline-block;
+  }
+
+  img {
+    width: 22px;
+    height: 22px;
+    filter: invert(1);
+  }
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    color: white;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    opacity: 1;
   }
 }
 
 #subtitlesControl::after {
   width: 24px;
-  left: 12px;
   height: 3px;
   border-radius: 3px;
-  background-color: #f00;
+  background-color: #e50914;
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   bottom: 0;
-  border-bottom: 1px solid red;
-  filter: invert(1); // canceling parent invert
+}
+
+.user-inactive {
+  #playerControlsContainer {
+    display: none;
+  }
 }

@@ -34,5 +34,9 @@
   "sessionWarning": {
     "description": "Show 1-minute session expiration warning",
     "enabled": false
+  },
+  "askAi": {
+    "description": "Ask AI movie assistant",
+    "enabled": false
   }
 }
