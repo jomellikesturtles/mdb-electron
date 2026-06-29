@@ -36,11 +36,11 @@ export class MDBApiService {
    * @param tmdbIdList list of tmdbId separated by comma
    * @returns
    */
-  getMediaUserDataInList(tmdbIdList: string): Observable<any> {
+  getMediaUserDataInList(tmdbIdList: any[]): Observable<any> {
     let payload = {
       idList: tmdbIdList
     };
-    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_ID), payload, 'getMediaUserDataInList').pipe(
+    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA), payload, 'getMediaUserDataInList').pipe(
       tap(_ => this.logger.info(`getMediaUserDataInList count=${tmdbIdList.length}`))
     );
   }
@@ -70,6 +70,18 @@ export class MDBApiService {
     );
   }
 
+  savePlayed(tmdbId: any): Observable<PlayedResponse> {
+    return this.httpBaseService.put<PlayedResponse>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_PLAYED, tmdbId), { tmdbId }, 'savePlayed').pipe(
+      tap(_ => this.logger.info(`savePlayed tmdbId=${tmdbId}`))
+    );
+  }
+
+  deletePlayed(tmdbId: any): Observable<PlayedResponse> {
+    return this.httpBaseService.delete<PlayedResponse>(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_PLAYED, tmdbId), {}, 'deletePlayed').pipe(
+      tap(_ => this.logger.info(`deletePlayed id=${tmdbId}`))
+    );
+  }
+
   saveToList(listLinkMovie: any): Observable<any> {
     return this.httpBaseService.post(`${MDB_API_URL}/profileData/list/add`, listLinkMovie, 'saveToList').pipe(
       tap(_ => this.logger.info(`saveToList listId=${listLinkMovie.listId}`))
@@ -91,8 +103,14 @@ export class MDBApiService {
     );
   }
 
+  getMediaLists(mediaId: string): Observable<any> {
+    return this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_LISTS, mediaId), 'getMediaLists').pipe(
+      tap(_ => this.logger.info(`getMediaLists mediaId=${mediaId}`))
+    );
+  }
+
   saveMediaList(listBody: IMediaList): Observable<any> {
-    return this.httpBaseService.post(`${MDB_API_URL}/profileData/list`, listBody, 'saveMediaList').pipe(
+    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.LIST), listBody, 'saveMediaList').pipe(
       tap(_ => this.logger.info(`saveMediaList name=${listBody.title}`))
     );
   }
@@ -104,21 +122,38 @@ export class MDBApiService {
   }
 
   deleteList(listId: any): Observable<any> {
-    let params = { id: listId };
-    return this.httpBaseService.delete(`${MDB_API_URL}/profileData/list`, { params: params }, 'deleteList').pipe(
+    return this.httpBaseService.delete(this.httpUrlProvider.getBffAPI(ENDPOINT.LIST_ID, listId), {}, 'deleteList').pipe(
       tap(_ => this.logger.info(`deleteList id=${listId}`))
     );
   }
 
   saveWatched(watchedBody: any): Observable<any> {
-    return this.httpBaseService.post(`${MDB_API_URL}/profileData/watched`, watchedBody, 'saveWatched').pipe(
+    return this.httpBaseService.put(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_PLAYED, watchedBody.tmdbId), {}, 'saveWatched').pipe(
       tap(_ => this.logger.info(`saveWatched tmdbId=${watchedBody.tmdbId}`))
     );
   }
 
   deleteWatched(watchedBody: any): Observable<any> {
-    return this.httpBaseService.delete(`${MDB_API_URL}/profileData/watched`, watchedBody, 'deleteWatched').pipe(
+    return this.httpBaseService.delete(this.httpUrlProvider.getBffAPI(ENDPOINT.MEDIA_PLAYED, watchedBody.tmdbId), {}, 'deleteWatched').pipe(
       tap(_ => this.logger.info(`deleteWatched`))
+    );
+  }
+
+  getAccount(): Observable<any> {
+    return this.httpBaseService.get(ENDPOINT.ACCOUNT, 'getAccount').pipe(
+      tap(_ => this.logger.info(`getAccount`))
+    );
+  }
+
+  updateAccount(payload: any): Observable<any> {
+    return this.httpBaseService.post(ENDPOINT.ACCOUNT, payload, 'updateAccount').pipe(
+      tap(_ => this.logger.info(`updateAccount`))
+    );
+  }
+
+  getIntelligence(prompt: string): Observable<any> {
+    return this.httpBaseService.post(ENDPOINT.INTELLIGENCE, { prompt }, 'getIntelligence').pipe(
+      tap(_ => this.logger.info(`getIntelligence prompt=${prompt}`))
     );
   }
 
@@ -134,44 +169,16 @@ export class MDBApiService {
     );
   }
 
-  registerUser(payload: RegisterUser) {
-    return this.httpBaseService.post(`mdb/user/register`, payload, 'registerUser').pipe(
-      tap(_ => this.logger.info(`registerUser username=${payload.userName}`))
-    );
-  }
-
   getProfile() {
     return this.httpBaseService.get(`mdb/user/profile`, 'getProfile').pipe(
       tap(_ => this.logger.info(`getProfile`))
     );
   }
 
-  logout() {
-    return this.httpBaseService.post(`mdb/user/logout`, {}, 'logout').pipe(
-      tap(_ => this.logger.info(`logout`))
-    );
-  }
-
-  login(payload: LoginUser) {
-    return this.httpBaseService.post(`mdb/user/login`, payload, 'login').pipe(
-      tap(_ => this.logger.info(`login username=${payload.userName}`))
-    );
-  }
-
 }
 
-export interface LoginUser {
-  userName: string;
-  password: string;
-  type?: string;
-  token?: string;
-}
-export interface RegisterUser {
-  password: string;
-  userName: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  avatar: string;
-  contactNumber?: string;
+export interface PlayedResponse {
+  status: 'SAVED' | 'DELETED',
+  isPlayed: boolean,
+  mediaId: string;
 }

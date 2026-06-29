@@ -112,15 +112,6 @@ export class UserDataService {
     });
   }
 
-  commonSetter(val: number | Object) {
-    if (typeof val === 'number' && val >= 1) {
-      return false;
-    }
-    if (val && val['_id']) {
-      return true;
-    }
-  }
-
   /**
    * TODO: include libraryFile/libaryObj to the list even if not identified.
    */

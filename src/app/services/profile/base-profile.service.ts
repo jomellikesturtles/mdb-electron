@@ -21,6 +21,6 @@ export abstract class BaseProfileService {
     protected httpUrlProvider: HttpUrlProviderService
   ) { }
 
-  protected abstract getProfile(refresh: boolean): Observable<IUserProfile>;
+  protected abstract getProfile(username: string, refresh: boolean): Observable<IUserProfile>;
 
 }

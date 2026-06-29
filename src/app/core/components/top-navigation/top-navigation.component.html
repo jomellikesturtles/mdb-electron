@@ -3,16 +3,8 @@
   <!-- LEFT: Hamburger & Logo -->
   <div class="nav-left">
     <div class="mac-spacer" *ngIf="isMac" style="width: 70px; -webkit-app-region: no-drag;"></div>
-    <div class="hamburger-btn" (click)="toggleSidebar.emit()"
-      style="cursor: pointer; padding: 5px; -webkit-app-region: no-drag;">
-      <!-- <img src="assets/icons/menu.svg" alt="Menu" style="width: 24px; height: 24px; filter: invert(1);"> -->
-      <!-- <mat-icon>close</mat-icon> -->
-      <!-- <mat-icon>menu</mat-icon> -->
-      <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="menu"></mat-icon>
-
-      <!-- <span class="material-symbols-outlined">
-        menu
-      </span> -->
+    <div class="hamburger-btn" (click)="toggleSidebar.emit()" style="cursor: pointer; -webkit-app-region: no-drag;">
+      <mat-icon class="menu-icon">menu</mat-icon>
     </div>
 
     <div id='app-logo' routerLink='/dashboard' style='-webkit-app-region: no-drag;'>
@@ -52,22 +44,19 @@
   <div class="nav-right">
 
     <!-- Download App (Web Only) -->
-    <mdb-button *ngIf="!isElectron" 
-                variant="primary" 
-                size="sm" 
-                icon="download"
-                [disabled]="isWindowsBrowser || isLinuxBrowser"
-                [matTooltip]="(isWindowsBrowser || isLinuxBrowser) ? 'App is only available for MAC OS' : ''"
-                (onClick)="onDownloadApp()">
+    <mdb-button *ngIf="!isElectron" variant="primary" size="sm" icon="download"
+      [disabled]="isWindowsBrowser || isLinuxBrowser"
+      [matTooltip]="(isWindowsBrowser || isLinuxBrowser) ? 'App is only available for MAC OS' : ''"
+      (onClick)="onDownloadApp()">
       Download App
     </mdb-button>
 
     <!-- Profile Avatar -->
-    <div class="profile-avatar" style="background-image: url('/assets/offline-image/clint-eastwood.jfif');"
+    <div class="profile-avatar" style="background-image: url('/assets/images/default-avatar.jpg');"
       [matMenuTriggerFor]="profileMenu" matTooltip="Account"></div>
 
     <mat-menu #profileMenu="matMenu" xPosition="before" class="profile-menu">
-      <ng-container *ngIf="isSignedIn; else loggedOutMenu">
+      <ng-container *ngIf="isAuthenticated(); else loggedOutMenu">
         <button mat-menu-item (click)="goToProfile()">
           <mat-icon>person</mat-icon>
           <span>Profile</span>

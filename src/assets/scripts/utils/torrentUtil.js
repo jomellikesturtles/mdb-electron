@@ -1,7 +1,6 @@
 /*jshint esversion: 8 */
 
 const WebTorrent = require("webtorrent");
-
 // const { DEBUG } = require("../util");
 
 let DEBUG = (() => {
@@ -83,7 +82,6 @@ function criticalDownloadCycle(torrent) {
 }
 
 /**
- * TODO: get the largest video file.
  * @param {import("webtorrent").Torrent[]} torrentFiles list of files
  * returns {file, index, startSize, endSize}
  */

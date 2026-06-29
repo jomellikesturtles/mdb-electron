@@ -24,37 +24,37 @@ let DEBUG = (() => {
  * @param {import ("process") } process;
  */
 let processInit = (process) => {
-  // process.send =
-  //   process.send ||
-  //   function (...args) {
-  //     DEBUG.log("SIMULATING process.send", ...args);
-  //   };
-  // process.on("uncaughtException", function (error) {
-  //   DEBUG.log(process.pid, "uncaughtException ERROR: ", error.message);
-  //   DEBUG.log(process.pid, "uncaughtException ERROR: ", error.stack);
-  //   process.send("uncaughtException");
-  //   process.send(["uncaughtException", error.message]);
-  //   DEBUG.log(process.pid, "uncaughtException ERROR: ", error.stack);
-  //   // DEBUG.log(process.pid, "uncaughtException ERROR: ", error.name);
-  // });
-  // process.on("unhandledRejection", function (error) {
-  //   DEBUG.log(process.pid, "unhandledRejection ERROR: ", error);
-  //   process.send(["unhandledRejection", error.message]);
-  // });
-  // process.on("beforeExit", function (error) {
-  //   DEBUG.log(process.pid, "beforeExit...", error);
-  //   process.send(["operation-failed", "general"]);
-  // });
-  // process.on("warning", function (error) {
-  //   DEBUG.log(process.pid, "warning...", error);
-  //   process.send(["warning", "general"]);
-  // });
-  // process.on("exit", function (error) {
-  //   DEBUG.log(process.pid, "exit: ", error);
-  // });
-  // process.on("disconnect", function (error) {
-  //   DEBUG.log(process.pid, "disconnect: ", error);
-  // });
+  process.send =
+    process.send ||
+    function (...args) {
+      DEBUG.log("SIMULATING process.send", ...args);
+    };
+  process.on("uncaughtException", function (error) {
+    DEBUG.log(process.pid, "uncaughtException ERROR: ", error.message);
+    DEBUG.log(process.pid, "uncaughtException ERROR: ", error.stack);
+    process.send("uncaughtException");
+    process.send(["uncaughtException", error.message]);
+    DEBUG.log(process.pid, "uncaughtException ERROR: ", error.stack);
+    // DEBUG.log(process.pid, "uncaughtException ERROR: ", error.name);
+  });
+  process.on("unhandledRejection", function (error) {
+    DEBUG.log(process.pid, "unhandledRejection ERROR: ", error);
+    process.send(["unhandledRejection", error.message]);
+  });
+  process.on("beforeExit", function (error) {
+    DEBUG.log(process.pid, "beforeExit...", error);
+    process.send(["operation-failed", "general"]);
+  });
+  process.on("warning", function (error) {
+    DEBUG.log(process.pid, "warning...", error);
+    process.send(["warning", "general"]);
+  });
+  process.on("exit", function (error) {
+    DEBUG.log(process.pid, "exit: ", error);
+  });
+  process.on("disconnect", function (error) {
+    DEBUG.log(process.pid, "disconnect: ", error);
+  });
 };
 
 /**

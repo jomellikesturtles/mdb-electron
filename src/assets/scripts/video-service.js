@@ -6,6 +6,8 @@ let args = process.argv.slice(2);
 let idArg = args[0];
 var http = require('http');
 
+let port = '3000'
+let streamLink = `http://localhost:${port}/stream`
 let isPortOpen = false;
 const app = express();
 const DataStore = require('nedb');
@@ -40,8 +42,8 @@ var libraryFilesDb = new DataStore({
 })
 
 function openStream(libraryData) {
-  DEBUG.log(`set streaming from: localhost:3000/stream/${libraryData._id}`)
-  process.send(['stream-link', `http://localhost:3000/stream/${libraryData._id}`])
+  DEBUG.log(`set streaming from: ${streamLink}/${libraryData._id}`)
+  process.send(['stream-link', `${streamLink}/${libraryData._id}`])
   app.get(`/stream/${libraryData._id}`, function (req, res) {
     // const filePath = path.join(process.cwd(), '..', '..', '..', '..', 'A.Streetcar.Named.Desire.1951.1080p.BluRay.x264-[YTS.AM].mp4')
     // console.log('filepath: ', libraryData.fullFilePath);
@@ -76,7 +78,7 @@ function openStream(libraryData) {
 
 function openPort() {
 
-  app.listen(3000, function () {
+  app.listen(port, function () {
     DEBUG.log('listening from 3000...');
     isPortOpen = true;
   });

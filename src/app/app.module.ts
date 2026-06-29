@@ -8,7 +8,6 @@ import { NavigationComponent } from '@components/navigation/navigation.component
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { TopNavigationComponent } from '@core/components/top-navigation/top-navigation.component';
-import { BrowseComponent } from '@modules/user/browse/browse.component';
 import { PersonDetailsComponent } from 'app/modules/person/person-details/person-details.component';
 import { environment } from '@environments/environment';
 import { NotificationComponent } from 'app/modules/events/notification/notification.component';
@@ -33,6 +32,7 @@ import { NgxsModule } from '@ngxs/store';
 import { NgxsStoragePluginModule, StorageOption } from '@ngxs/storage-plugin';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { MovieState } from './store/movie/movie.state';
+import { StreamsState } from './store/streams/streams.state';
 
 @NgModule({
   declarations: [
@@ -40,7 +40,6 @@ import { MovieState } from './store/movie/movie.state';
     BulkDownloadComponent,
     NavigationComponent,
     TopNavigationComponent,
-    BrowseComponent,
     PersonDetailsComponent,
     NotificationComponent,
     PreviewComponent,
@@ -48,7 +47,7 @@ import { MovieState } from './store/movie/movie.state';
     AdvancedFindComponent,
     ImagePreviewComponent,
     KeyboardShortcutsComponent,
-    YoutubePlayerComponent,
+    YoutubePlayerComponent
   ],
   imports: [
     BrowserModule,
@@ -61,7 +60,7 @@ import { MovieState } from './store/movie/movie.state';
     ReactiveFormsModule,
     VideoPlayerModule,
     MockCoreServicesModule,
-    NgxsModule.forRoot([MovieState], {
+    NgxsModule.forRoot([MovieState, StreamsState], {
       developmentMode: !environment.production
     }),
     NgxsStoragePluginModule.forRoot({

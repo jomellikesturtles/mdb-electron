@@ -1,34 +1,40 @@
 <div class="register-container">
   <div class="background-image"></div>
   <div class="background-overlay"></div>
-  
+
   <div class="register-content">
     <mdb-card title="Sign Up" padding="lg" class="register-card">
       <form [formGroup]="signUpForm" (ngSubmit)="onSignUp()" class="register-form d-flex flex-column gap-3">
-        
-        <mdb-input label="Username" formControlName="username" placeholder="Username" 
-                   [error]="username.hasError('required') ? 'Username is required' : 
-                            username.hasError('minlength') ? 'Username must be at least 4 characters' : 
+
+        <mdb-input label="Username" formControlName="username" placeholder="Username" [error]="username.hasError('required') ? 'Username is required' :
+                            username.hasError('minlength') ? 'Username must be at least 4 characters' :
                             username.hasError('usernameUnavailable') ? 'Username already exists' : ''">
         </mdb-input>
 
         <mdb-input label="Email Address" formControlName="emailAddress" type="email" placeholder="Email Address"
-                   [error]="emailAddress.hasError('required') ? 'Email is required' : 
+          [error]="emailAddress.hasError('required') ? 'Email is required' :
                             emailAddress.hasError('email') ? 'Invalid email format' : ''">
         </mdb-input>
 
-        <mdb-input label="Password" formControlName="password" type="password" placeholder="Password"
-                   [error]="password.hasError('required') ? 'Password is required' : 
+        <mdb-input label="Password" formControlName="password" type="password" placeholder="Password" [error]="password.hasError('required') ? 'Password is required' :
                             password.hasError('minlength') ? 'Password must be at least 6 characters' : ''">
         </mdb-input>
 
-        <mdb-input label="Repeat Password" formControlName="repeatPassword" type="password" placeholder="Repeat Password"
-                   [error]="repeatPassword.hasError('required') ? 'Password is required' : ''">
+        <mdb-input label="Repeat Password" formControlName="repeatPassword" type="password"
+          placeholder="Repeat Password" [error]="repeatPassword.hasError('required') ? 'Password is required' : ''">
         </mdb-input>
 
-        <div *ngIf="signUpForm.errors?.isRepeatPassword && (repeatPassword.dirty || repeatPassword.touched)" class="text-danger small mb-2">
+        <div *ngIf="signUpForm.errors?.isRepeatPassword && (repeatPassword.dirty || repeatPassword.touched)"
+          class="text-danger small mb-2">
           Passwords do not match.
         </div>
+        <div *ngIf="formError" class="text-danger small mb-2">
+          {{formError}}
+        </div>
+        signUpForm.errors {{signUpForm.errors|json}}
+        <!-- <div *ngIf="signUpForm.errors?.isRepeatPassword && (repeatPassword.dirty || repeatPassword.touched)" class="text-danger small mb-2">
+          Passwords do not match.
+        </div> -->
 
         <mdb-button variant="primary" [fullWidth]="true" type="submit" [disabled]="!signUpForm.valid" size="lg">
           Sign Up

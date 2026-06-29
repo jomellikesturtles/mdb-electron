@@ -61,7 +61,14 @@ export class MovieState {
 
   static getDashboardMovie(id: string | number) {
     return createSelector([MovieState], (state: MovieStateModel) => {
-      return state?.dashboardMovies ? state.dashboardMovies[id] : undefined;
+      const entry = state?.dashboardMovies ? state.dashboardMovies[id] : undefined;
+      if (!entry) return undefined;
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      if (entry.timestamp && (now - entry.timestamp < oneDay)) {
+        return entry;
+      }
+      return undefined;
     });
   }
 
@@ -112,11 +119,24 @@ export class MovieState {
   @Action(AddDashboardMovie)
   addDashboardMovie(ctx: StateContext<MovieStateModel>, action: AddDashboardMovie) {
     const state = ctx.getState();
-    ctx.patchState({
-      dashboardMovies: {
-        ...state.dashboardMovies,
-        [action.payload.id]: action.payload
+    const now = Date.now();
+    const oneDay = 3 * 1000;
+    const dashboardMovies: { [id: string]: MDBMovieDashboardModel; } = {};
+
+    if (state.dashboardMovies) {
+      for (const key of Object.keys(state.dashboardMovies)) {
+        const entry = state.dashboardMovies[key];
+        if (entry && entry.timestamp && (now - entry.timestamp < oneDay)) {
+          dashboardMovies[key] = entry;
+        }
       }
-    });
+    }
+
+    dashboardMovies[action.payload.id] = {
+      ...action.payload,
+      timestamp: now
+    };
+
+    ctx.patchState({ dashboardMovies });
   }
 }

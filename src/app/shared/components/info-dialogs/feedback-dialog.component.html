@@ -1,0 +1,51 @@
+<div class="mdb-dialog-container" style="width: 450px; max-width: 100%;">
+  <h2 mat-dialog-title class="dialog-title">Send Feedback</h2>
+  
+  <mat-dialog-content class="dialog-content">
+    <form class="feedback-form" (submit)="onSubmit(); $event.preventDefault()">
+      
+      <!-- Rating -->
+      <div class="form-group">
+        <label>Overall Experience</label>
+        <div class="rating-container">
+          <button type="button" *ngFor="let star of [1, 2, 3, 4, 5]" 
+                  class="star-btn" 
+                  [class.active]="rating >= star"
+                  (click)="setRating(star)"
+                  [matTooltip]="getRatingTooltip(star)">
+            <mat-icon style="font-size: 28px; width: 28px; height: 28px;">star</mat-icon>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Category -->
+      <div class="form-group">
+        <label for="feedback-category">Category</label>
+        <select id="feedback-category" name="category" [(ngModel)]="category" required>
+          <option value="general">General Feedback</option>
+          <option value="bug">Bug Report</option>
+          <option value="feature">Feature Request</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      
+      <!-- Email (Optional) -->
+      <div class="form-group">
+        <label for="feedback-email">Email Address (Optional)</label>
+        <input type="email" id="feedback-email" name="email" [(ngModel)]="email" placeholder="your@email.com">
+      </div>
+      
+      <!-- Message -->
+      <div class="form-group">
+        <label for="feedback-message">Tell us what you think</label>
+        <textarea id="feedback-message" name="message" [(ngModel)]="message" placeholder="Describe your experience or report an issue..." required></textarea>
+      </div>
+      
+    </form>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close class="close-btn" style="margin-right: 8px;">Cancel</button>
+    <button class="submit-btn" [disabled]="!message.trim()" (click)="onSubmit()">Submit</button>
+  </mat-dialog-actions>
+</div>

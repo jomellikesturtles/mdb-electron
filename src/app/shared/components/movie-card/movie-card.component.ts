@@ -8,7 +8,6 @@ import { TorrentService } from '@services/torrent/torrent.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MDBMovie } from '@models/mdb-movie.model';
-import { IProfileData } from '@models/profile-data.model';
 import ObjectUtil from '@utils/object.utils';
 import GeneralUtil from '@utils/general.util';
 import { BookmarkService } from '@services/media/bookmark.service';
@@ -16,6 +15,8 @@ import { PlayedService } from '@services/media/played.service';
 import { FavoriteService } from '@services/media/favorite.service';
 import { LoggerService } from '@core/logger.service';
 import { FeatureName, FeatureToggleService } from '@core/services/feature-toggle.service';
+import { AuthenticationService } from '@services';
+import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
 
 @Component({
   selector: 'app-movie-card',
@@ -24,6 +25,7 @@ import { FeatureName, FeatureToggleService } from '@core/services/feature-toggle
 })
 export class MovieCardComponent implements OnInit {
 
+  @Input() disableHover = false;
   _movie: MDBMovie;
   @Input()
   set movie(inputMessage: MDBMovie) {
@@ -66,17 +68,22 @@ export class MovieCardComponent implements OnInit {
     return this._library;
   }
 
-  _userData: IProfileData;
+  _userData: IMediaUserData;
   @Input()
-  set userData(inputData: IProfileData) {
+  set userData(inputData: IMediaUserData) {
+    console.log('inputData: ', inputData);
     this._userData = inputData;
     if (!ObjectUtil.isEmpty(inputData)) {
-      if (inputData.played) {
-        this.watchedPercentage = inputData.played.percentage + '%';
+      this._isBookmarked = inputData.isBookmark;
+      this._isFavorite = inputData.isFavorite;
+      this._isPlayed = inputData.isPlayed;
+      if (inputData.progress) {
+        this.watchedPercentage = inputData.progress.percentage + '%';
       }
     }
   }
-  get userData(): IProfileData {
+  get userData(): IMediaUserData {
+    console.log('_userData: ', this._userData);
     return this._userData;
   }
 
@@ -92,6 +99,8 @@ export class MovieCardComponent implements OnInit {
   isAvailable = false;
   watchedPercentage = '0%';
   isSingleClick: any;
+  defaultPoster = 'assets/offline-image/clint-eastwood.jfif'; // Using an existing placeholder from project
+  isAuthenticated = this.authService.isAuthenticated;
   private ngUnsubscribe = new Subject();
 
   constructor(
@@ -106,7 +115,8 @@ export class MovieCardComponent implements OnInit {
     private favoriteService: FavoriteService,
     private playedService: PlayedService,
     private loggerService: LoggerService,
-    private featureToggleService: FeatureToggleService
+    private featureToggleService: FeatureToggleService,
+    private authService: AuthenticationService
   ) { }
 
   ngOnInit(): void {
@@ -154,21 +164,6 @@ export class MovieCardComponent implements OnInit {
     this.dataService.updatePreviewMovie(this._movie);
   }
 
-  set isBookmarked(val: number | Object) {
-    this.loggerService.info('set isBookmarked called');
-    this._isBookmarked = this.userDataService.commonSetter(val);
-  }
-
-  set isFavorite(val: number | Object) {
-    this.loggerService.info('set isFavorite called');
-    this._isFavorite = this.userDataService.commonSetter(val);
-  }
-
-  set isPlayed(val: number | Object) {
-    this.loggerService.info('set isPlayed called');
-    this._isPlayed = this.userDataService.commonSetter(val);
-  }
-
   /**
    * Toggles movie from user's watchlist or bookmarks
    */
@@ -177,7 +172,7 @@ export class MovieCardComponent implements OnInit {
     const tmdbId = this._movie.tmdbId;
     const bookmarkToggleFunction = this._isBookmarked ? this.bookmarkService.remove(tmdbId) : this.bookmarkService.save(tmdbId);
     bookmarkToggleFunction.subscribe(e => {
-      this.isBookmarked = e.isBookmark;
+      this._isBookmarked = e.isBookmark;
       this.isProcessingBookmark = false;
     });
   }
@@ -185,14 +180,14 @@ export class MovieCardComponent implements OnInit {
   async togglePlayed() {
     this.procWatched = true;
     const tmdbId = this._movie.tmdbId;
-    let res = false;
-    if (this._isPlayed) {
-      res = await this.playedService.removePlayed('tmdbId', tmdbId).toPromise();
-    } else {
-      res = await this.playedService.savePlayed({ tmdbId }).toPromise();
-    }
-    this.isPlayed = res;
-    this.procWatched = false;
+    const playedToggleFunction = this._isPlayed ? this.playedService.remove(tmdbId) : this.playedService.save(tmdbId);
+    // let res = false;
+
+    playedToggleFunction.subscribe(e => {
+      this._isPlayed = e.isPlayed;
+      this.procWatched = false;
+    });
+
   }
 
   toggleFavorite() {
@@ -200,7 +195,7 @@ export class MovieCardComponent implements OnInit {
     const tmdbId = this._movie.tmdbId;
     const favoriteToggleFunction = this._isFavorite ? this.favoriteService.remove(tmdbId) : this.favoriteService.save(tmdbId);
     favoriteToggleFunction.subscribe(e => {
-      this.isFavorite = e.isFavorite;
+      this._isFavorite = e.isFavorite;
       this.isProcessingFavorite = false;
     });
   }

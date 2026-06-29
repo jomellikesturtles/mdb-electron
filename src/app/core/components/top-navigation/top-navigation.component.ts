@@ -1,9 +1,9 @@
 import { Component, OnInit, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IpcService } from '@services/ipc.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { environment } from '@environments/environment';
-import { map, startWith } from 'rxjs/operators';
+import { map, startWith, filter } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { ISearchQuery } from '@models/interfaces';
 import { Actions, ofActionDispatched } from "@ngxs/store";
@@ -13,6 +13,10 @@ import { NavigationService } from '@core/services/navigation.service';
 import { MockDataService } from '@services/mock-data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AppDownloadDialogComponent } from '@shared/components/app-download-dialog/app-download-dialog.component';
+import { ExternalLinkDialogComponent } from '@shared/components/external-link-dialog/external-link-dialog.component';
+import { AboutDialogComponent } from '@shared/components/info-dialogs/about-dialog.component';
+import { HelpDialogComponent } from '@shared/components/info-dialogs/help-dialog.component';
+import { FeedbackDialogComponent } from '@shared/components/info-dialogs/feedback-dialog.component';
 
 @Component({
   selector: 'app-top-navigation',
@@ -37,6 +41,7 @@ export class TopNavigationComponent implements OnInit {
     private dataService: DataService,
     private ipcService: IpcService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private authService: AuthenticationService,
     private $actions: Actions,
     private navigationService: NavigationService,
@@ -51,7 +56,7 @@ export class TopNavigationComponent implements OnInit {
   isLinuxBrowser = !this.isElectron && /Linux/.test(window.navigator.platform);
   downloadUrl = 'https://github.com/jomellikesturtles/mdb-electron/releases/download/v1.0.0-alpha/mdb-darwin-arm64.zip';
   
-  status = 'LOGIN';
+  status = ''; // Initialize to empty string
   browserConnection = navigator.onLine;
   currentYear = new Date().getFullYear();
   genres = ['Action', 'Adventure', 'Documentary', 'Drama', 'Horror', 'Sci-Fi', 'Thriller'];
@@ -77,7 +82,7 @@ export class TopNavigationComponent implements OnInit {
   filteredOptions: Observable<string[]>;
   SEARCH_HISTORY_MAX_LENGTH = 8;
   voteAverageList = [];
-  isSignedIn = false;
+  isAuthenticated = this.authService.isAuthenticated;
   lastQuery = '';
 
   myControl = new FormControl();
@@ -87,18 +92,21 @@ export class TopNavigationComponent implements OnInit {
     });
 
     this.$actions.pipe(ofActionDispatched(Login)).subscribe((e) => {
-      this.isSignedIn = true;
-      this.status = "";
     });
-    const e = localStorage.getItem('user');
+
+    // Listen to route changes to update history if URL is edited manually
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      const q = this.activatedRoute.snapshot.queryParamMap.get('q');
+      if (q && q !== this.lastQuery) {
+        this.lastQuery = q;
+        this.myControl.setValue(q, { emitEvent: false });
+        this.updateSearchHistory(q);
+      }
+    });
+
     this.getSearchHistoryList();
-    if (e === null) {
-      this.status = 'LOGIN';
-      this.isSignedIn = false;
-    } else {
-      this.isSignedIn = true;
-      this.status = '';
-    }
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(''),
       map(value => {
@@ -146,11 +154,18 @@ export class TopNavigationComponent implements OnInit {
     val = val.trim();
     this.searchQuery.query = val;
 
-    if (this.lastQuery === val && this.router.url === '/results') {
+    if (this.lastQuery === val && (this.router.url.startsWith('/search') || this.router.url === '/results')) {
       return;
     }
     this.lastQuery = val;
 
+    this.updateSearchHistory(val);
+    this.myControl.setValue(val, { emitEvent: false });
+    this.searchByTitle(val);
+
+  }
+
+  private updateSearchHistory(val: string) {
     // Update search history: move to front and maintain max length
     this.searchHistoryList = this.searchHistoryList.filter(q => q.toLowerCase() !== val.toLowerCase());
     this.searchHistoryList.unshift(val);
@@ -158,9 +173,6 @@ export class TopNavigationComponent implements OnInit {
       this.searchHistoryList = this.searchHistoryList.slice(0, this.SEARCH_HISTORY_MAX_LENGTH);
     }
     localStorage.setItem('mdb_search_history', JSON.stringify(this.searchHistoryList));
-    this.myControl.setValue(val, { emitEvent: false });
-    this.searchByTitle(val);
-
   }
 
   /**
@@ -171,7 +183,7 @@ export class TopNavigationComponent implements OnInit {
     this.searchQuery.query = enteredQuery;
     if (this.searchQuery.query.length > 0) {
       this.dataService.updateSearchQuery(this.searchQuery);
-      this.router.navigate(['/results']);
+      this.router.navigate(['/search'], { queryParams: { q: enteredQuery } });
     }
   }
 
@@ -186,7 +198,6 @@ export class TopNavigationComponent implements OnInit {
   signOut() {
     localStorage.removeItem('user');
     this.authService.logout().subscribe((e) => {
-      this.isSignedIn = false;
       this.status = "LOGIN";
       this.router.navigate(["/user/signin"]);
     });
@@ -197,15 +208,24 @@ export class TopNavigationComponent implements OnInit {
   }
 
   goToHelp() {
-    console.log('Navigate to Help');
+    this.dialog.open(HelpDialogComponent, {
+      width: '550px',
+      disableClose: false
+    });
   }
 
   goToAbout() {
-    console.log('Navigate to About');
+    this.dialog.open(AboutDialogComponent, {
+      width: '450px',
+      disableClose: false
+    });
   }
 
   sendFeedback() {
-    console.log('Navigate to Send Feedback');
+    this.dialog.open(FeedbackDialogComponent, {
+      width: '480px',
+      disableClose: false
+    });
   }
 
   onMinimize() {
@@ -223,7 +243,16 @@ export class TopNavigationComponent implements OnInit {
     if (isMobile) {
       this.dialog.open(AppDownloadDialogComponent);
     } else if (this.isMacBrowser) {
-      window.open(this.downloadUrl, '_blank');
+      const dialogRef = this.dialog.open(ExternalLinkDialogComponent, {
+        width: '400px',
+        data: { url: this.downloadUrl }
+      });
+
+      dialogRef.afterClosed().subscribe(confirmed => {
+        if (confirmed) {
+          window.open(this.downloadUrl, '_blank');
+        }
+      });
     }
   }
 }

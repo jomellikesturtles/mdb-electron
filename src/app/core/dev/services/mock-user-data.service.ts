@@ -1,13 +1,12 @@
 import { Injectable } from "@angular/core";
 import { LoggerService } from "@core/logger.service";
-import { IProfileData } from "@models/profile-data.model";
 import { DataService } from "@services/data.service";
 import { BaseMediaUserDataService } from "@services/media/base-media-user-data.service";
-import { Observable, of } from "rxjs";
+import { delay, Observable, of } from "rxjs";
 
 
 @Injectable({ providedIn: "root" })
-export class MockUserDataService extends BaseMediaUserDataService {
+export class MockMediaUserDataService extends BaseMediaUserDataService {
 
 
   constructor(
@@ -17,35 +16,48 @@ export class MockUserDataService extends BaseMediaUserDataService {
     super(dataService);
   }
 
-  getMediaUserData(tmdbId: string): Observable<any | IMediaUserData | IProfileData> {
+  //  IProfileData
+  getMediaUserData(tmdbId: string): Observable<IMediaUserData> {
     this.loggerService.info('MockUserDataService getMediaUserData');
+
     return of(
       {
-        // "122":
-        // {
-        "favorite":
-          { "tmdbId": "122", "createdAt": "2023-01-27T16:36:28.703Z", "updatedAt": "2023-01-27T16:36:54.892Z" },
-        "listLinkMedia": {
-          "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
-        },
-        "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
-        // }
-      });
-  }
-  getMediaUserDataMultiple(idList: string): Observable<IMediaUserData[]> {
-    this.loggerService.info('MockUserDataService getMediaUserDataMultiple');
-    return of([
-      {
-        "122":
-        {
-          "favorite":
-            { "tmdbId": "122", "createdAt": "2023-01-27T16:36:28.703Z", "updatedAt": "2023-01-27T16:36:54.892Z" },
-          "listLinkMedia": {
-            "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
-          },
-          "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
+        mediaId: "550",
+        isFavorite: false,
+        isBookmark: false,
+
+        isPlayed: false,
+        progress: {
+          isCompleted: false,
+          percentage: 20.0
         }
-      }]
+        // "listLinkMedia": {
+        //   "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
+        // },
+        // "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
+        // }
+      }).pipe(delay(4000));
+  }
+  getMediaUserDataMultiple(idList: any[]): Observable<IMediaUserData[]> {
+    this.loggerService.info('MockUserDataService getMediaUserDataMultiple');
+    return of(
+      [
+        {
+          mediaId: "550",
+          isFavorite: false,
+          isBookmark: false,
+          isPlayed: false,
+          progress: {
+            isCompleted: false,
+            percentage: 20.0
+          }
+          // "listLinkMedia": {
+          //   "listId": "Bl8zwPAwNhvby8Hq", "tmdbId": "122", "createdAt": "2023- 01 - 28T09: 44: 31.269Z", "updatedAt": "2023 - 01 - 28T09: 44: 31.269Z"
+          // },
+          // "progress": { "tmdbId": "122", "current": 3022, "total": 2000, "_id": "aYSSr: 14.115Z", "updatedAt": "2023 - 01 - 27T16: 11: 06.114Z" }
+        }
+
+      ]
     );
   }
   getMediaDataPaginated(type: "id" | "tmdbId", id: string | number): Observable<any> {
@@ -53,28 +65,37 @@ export class MockUserDataService extends BaseMediaUserDataService {
   }
 
 
-};
+}
 
 
-interface IMediaUserData {
-  [x: string]: {
-    favorite: {
-      tmdbId: string;
-      createdAt: string;
-      updatedAt: string;
-    };
-    listLinkMedia: {
-      listId: string;
-      tmdbId: string;
-      createdAt: string;
-      updatedAt: string;
-    };
-    progress: {
-      tmdbId: string;
-      current: number;
-      total: number;
-      _id: string;
-      updatedAt: string;
-    };
+
+export interface IMediaUserData {
+  isFavorite: boolean,
+  isBookmark: boolean,
+  isPlayed: boolean,
+  progress: {
+    isCompleted: boolean,
+    percentage: number;
   };
+  mediaId: string;
+  // [x: string]: {
+  //   favorite: {
+  //     tmdbId: string;
+  //     createdAt: string;
+  //     updatedAt: string;
+  //   };
+  //   listLinkMedia: {
+  //     listId: string;
+  //     tmdbId: string;
+  //     createdAt: string;
+  //     updatedAt: string;
+  //   };
+  //   progress: {
+  //     tmdbId: string;
+  //     current: number;
+  //     total: number;
+  //     _id: string;
+  //     updatedAt: string;
+  //   };
+  // };
 }

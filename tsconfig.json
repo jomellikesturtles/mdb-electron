@@ -40,7 +40,8 @@
       "@shared/*": ["app/shared/*"],
       "@ui": ["app/shared/ui/index.ts"],
       "@ui/*": ["app/shared/ui/*"],
-      "@utils/*": ["app/utils/*"]
+      "@utils/*": ["app/utils/*"],
+      "@store/*": ["app/store/*"]
     }
   },
   "angularCompilerOptions": {

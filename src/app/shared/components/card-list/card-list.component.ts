@@ -6,6 +6,8 @@ import ObjectUtil from '@utils/object.utils';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
 import { FeatureToggleService } from '@core/services/feature-toggle.service';
 import { IBookmark } from '@services/media';
+import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
+import { AuthenticationService } from '@services';
 
 @Component({
   selector: 'app-card-list',
@@ -15,6 +17,7 @@ import { IBookmark } from '@services/media';
 export class CardListComponent implements OnInit, OnChanges {
 
   @Input() cardWidth: string;
+  @Input() disableHover = false;
   @Input() displayMode: string = 'card-list-horizontal';
   @Input() listType: string;
   @Input() loading: boolean = false;
@@ -24,6 +27,7 @@ export class CardListComponent implements OnInit, OnChanges {
     this.movieAndUserDataList = [];
     if (inputMessage) {
       inputMessage.forEach(inputMovie => {
+        inputMovie = new MDBMovie(inputMovie);
         this.movieAndUserDataList.push({ movie: inputMovie, userData: null });
       });
     }
@@ -38,11 +42,10 @@ export class CardListComponent implements OnInit, OnChanges {
 
   constructor(
     private mediaUserDataService: MediaUserDataService,
-    private featureToggleService: FeatureToggleService
+    private authenticationService: AuthenticationService
   ) { }
 
   ngOnInit() {
-    this.renderHighlight();
     this.getMoviesUserData();
   }
 
@@ -57,72 +60,25 @@ export class CardListComponent implements OnInit, OnChanges {
    * Gets the user data like: bookmark, watched, video.
    */
   getMoviesUserData() {
+    if (!this.authenticationService.isAuthenticated()) return;
     const idList = this.collectIds();
     const listLength = idList.length;
     const arr2 = this.createDividedList(idList, listLength);
 
-    // const arr2 = thisidList, listLength)
     // tslint:disable-next-line:prefer-for-of
     for (let index = 0; index < arr2.length; index++) {
       const queryList = arr2[index];
 
       if (this.listType === 'none') { // all types of user data.
         this.mediaUserDataService.getMediaUserDataMultiple(queryList).subscribe((docsList: IProfileData[]) => {
-          // if (docs.isFirebaseData && docs.isFirebaseData === true) {
-          //   const localDocs: Array<QueryDocumentSnapshot<any>>[] = docs.data
-          //   if (localDocs[0].length > 0) {
-          //     localDocs[0].forEach(element => {
-          //       const movie = this.movieList.find(e => e.id === element.data().tmdbId)
-          //       movie['bookmark'] = element.data()
-          //       movie['bookmark'].id = element.id
-          //     })
-          //   }
-          //   if (localDocs[1].length > 0) {
-          //     localDocs[1].forEach(element => {
-          //       const movie = this.movieList.find(e => e.id === element.data().tmdbId)
-          //       movie['watched'] = element.data()
-          //       movie['watched'].id = element.id
-          //     })
-          //   }
-          // }
 
           if (!ObjectUtil.isEmpty(docsList)) {
-            if (this.featureToggleService.isEnabled('springMode')) {
-              this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
-                const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId);
-                movieAndUserData.userData = doc;
-              });
-            } else {
-              docsList.forEach(data => {
-
-                // validate if works with IPC
-                this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
-                  const doc = docsList.find((doc: IProfileData) => movieAndUserData.movie.tmdbId === doc.tmdbId);
-                  movieAndUserData.userData = doc;
-                });
-              });
-            }
+            this.movieAndUserDataList.forEach((movieAndUserData: IMovieAndUserData) => {
+              const doc = docsList.find((doc: IMediaUserData) => movieAndUserData.movie.tmdbId.toString() === doc.mediaId);
+              movieAndUserData.userData = doc;
+            });
           }
         });
-      } else {
-        if (this.listType !== 'bookmark') {
-          this.mediaUserDataService.getMediaDataPaginated(queryList).subscribe(docs => {
-            const dataType = 'bookmark';
-            this.curateUserData(dataType, docs);
-          });
-        }
-        if (this.listType !== 'watched') {
-          this.mediaUserDataService.getMediaDataPaginated(queryList).subscribe(docs => {
-            const dataType = 'watched';
-            this.curateUserData(dataType, docs);
-          });
-        }
-        if (this.listType !== 'library') {
-          this.mediaUserDataService.getMediaDataPaginated(queryList).then(docs => {
-            const dataType = 'library';
-            this.curateUserData(dataType, docs);
-          });
-        }
       }
     }
   }
@@ -190,44 +146,10 @@ export class CardListComponent implements OnInit, OnChanges {
     });
   }
 
-  renderHighlight() {
-    // this.moviesList$.subscribe(moviesResult => {
-    //   console.log('moviesresult: ', moviesResult)
-
-    //   if (moviesResult.change === 'add') {
-    //     this.movieList.forEach(element => {
-    //       if (moviesResult.idChanged === element.id) {
-    //         element.isHighlighted = true
-    //       }
-    //     })
-    //   } else if (moviesResult.change === 'remove') {
-    //     this.movieList.forEach(element => {
-    //       if (moviesResult.idChanged === element.id) {
-    //         element.isHighlighted = false
-    //       }
-    //     })
-    //   } else if (moviesResult.change === 'clear') {
-    //     this.movieList.forEach(element => {
-    //       element.isHighlighted = false
-    //     })
-    //   } else if (moviesResult.change === 'watched') {
-    //     this.movieList.forEach(element => {
-    //       moviesResult.idChanged.forEach(mrId => {
-    //         if (mrId === element.id) {
-    //           // element.isWatched = true
-    //           // element.watchedProgress = "100%"
-    //           // this.cdr.detectChanges()
-    //         }
-    //       });
-    //     })
-    //   }
-    // });
-  }
-
   collectIds() {
     const idList = [];
     this.movieList.forEach(e => {
-      idList.push(e.tmdbId);
+      idList.push(e.tmdbId ?? e.id);
       // idList.push(e.id);
     }); // lodash is not faster than this.
     return idList;

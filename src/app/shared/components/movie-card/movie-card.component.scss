@@ -1,3 +1,9 @@
+.movie-poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .movie-card {
   margin: 5px 8px !important;
   outline: none;
@@ -14,7 +20,7 @@
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
 
-  &:hover {
+  &:not(.disable-hover):hover {
     transform: scale(1.05);
   }
 }
@@ -80,27 +86,38 @@
   background-size: cover;
 }
 
-.movie-card-image-container:hover {
+.movie-card-image-container:not(.disable-hover):hover {
   .card-button {
     display: flex;
   }
 }
 
-// bookmark
 .movie-bookmark {
   top: 8px;
   right: 8px;
+  
+  &.active .bookmark-btn {
+    color: var(--mdb-bm-color);
+  }
 }
 
 // favorite
 .movie-mark-favorite {
   top: 44px;
   right: 8px;
+
+  &.active .fav-btn {
+    color: var(--mdb-fav-color);
+  }
 }
 
 .movie-mark-as-watched {
   top: 80px;
   right: 8px;
+
+  &.active .played-btn {
+    color: var(--mdb-played-color);
+  }
 }
 
 .movie-highlight {

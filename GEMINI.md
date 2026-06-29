@@ -13,10 +13,21 @@
 - **Current State:** Transitioning from a monolithic `main.js` to a modular, feature-based architecture.
 - **Feature Isolation:** New Electron logic MUST reside in `src/electron/features/[feature-name]`.
 - **ModuleManager:** Use `src/electron/core/ModuleManager.js` for registering and initializing feature modules. Do not add business logic to `main.js`.
+- **Error Handling:** Use `NotificationService` (in `src/app/core/services/notification.service.ts`) for all user-facing success and error notifications.
 - **Refactoring Guide:** Refer to `ELECTRON_REFACTORING_GUIDE.md` for Electron/Node.js refactoring patterns and `REFACTORING_GUIDE.md` for Angular patterns.
+
+## 🧪 Testing & Mocking
+
+- **Mock Services:** Use services in `src/app/core/dev/services/` (e.g., `MockBookmarkService`, `MockPlayedService`) to provide mock responses during development.
+- **Mocking Strategy:** Mock services should extend their corresponding base service to ensure consistent interface implementation. Use `of(...)` from `rxjs` to return mock data observables.
 
 ## 🛡️ Development & Coding Standards
 
+<!-- - **Verification:** ALWAYS test changes by running the build (`npx ng build --watch=false`) AND relevant unit tests (`npm test`) after making any code changes to ensure both compilation and behavioral integrity. -->
+
+- **Verification:** ALWAYS skip running `npm test` to save tokens.
+
+- **Notification Handling:** ALWAYS use `NotificationService` (in `src/app/core/services/notification.service.ts`) for all user-facing success and error notifications. NEVER inject or use `MatSnackBar` directly in components.
 - **Cross-Platform Compatibility:**
   - NEVER hardcode Windows-specific paths (e.g., `C:\`).
   - Use `path.join()`, `os.homedir()`, and `os.tmpdir()` for all filesystem operations.

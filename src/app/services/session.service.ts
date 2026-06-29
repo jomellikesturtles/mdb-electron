@@ -82,12 +82,17 @@ export class SessionService {
       this.ngZone.run(() => {
         this.sessionExpired$.next();
       });
+    } else if (timeLeft <= this.REFRESH_THRESHOLD_MS) {
+      // Automatic refresh if active
+      this.authService.refreshToken().subscribe();
     } else if (timeLeft <= this.WARNING_THRESHOLD_MS) {
       this.ngZone.run(() => {
         this.sessionWarning$.next();
       });
     }
   }
+
+  private readonly REFRESH_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes before expiry
 
   /**
    * Initializes global event listeners for cross-window sync and sleep/wake recovery.

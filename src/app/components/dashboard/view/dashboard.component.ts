@@ -7,9 +7,9 @@ import { GENRES } from '@shared/constants';
 import GeneralUtil from '@utils/general.util';
 import { LoggerService } from '@core/logger.service';
 import { Store } from '@ngxs/store';
-import { MovieState } from '../../../store/movie/movie.state';
-import { AddDashboardMovie } from '../../../store/movie/movie.actions';
-import { ConfigurationService, HttpBaseService, HttpUrlProviderService } from '@services';
+import { MovieState } from '@store/movie/movie.state';
+import { AddDashboardMovie } from '@store/movie/movie.actions';
+import { ConfigurationService, HttpBaseService, HttpUrlProviderService, IpcService } from '@services';
 import { ENDPOINT } from '@shared/endpoint.const';
 
 @Component({
@@ -27,7 +27,6 @@ export class DashboardComponent implements OnInit {
     private loggerService: LoggerService,
     private configService: ConfigurationService,
     private httpBaseService: HttpBaseService,
-    private httpUrlProvider: HttpUrlProviderService,
     private store: Store
   ) { }
 

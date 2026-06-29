@@ -8,8 +8,9 @@
 
   <ng-template #content>
     <div id="results-panel" *ngFor="let movieAndUserData of movieAndUserDataList">
+      <!-- movieAndUserData {{movieAndUserData.userData|json}} -->
       <app-movie-card [movie]='movieAndUserData.movie' [cardWidth]='cardWidth' [library]='null'
-        [userData]='movieAndUserData.userData'>
+        [userData]='movieAndUserData.userData' [disableHover]="disableHover">
       </app-movie-card>
     </div>
   </ng-template>

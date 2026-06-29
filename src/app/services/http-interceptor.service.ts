@@ -54,7 +54,9 @@ export class HttpInterceptorService implements HttpInterceptor {
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 || error.status === 403) {
           this.authService.clearSession();
-          this.sessionService.sessionExpired$.next();
+          if ((!request.url.includes('auth/login') && !request.url.includes('auth/register'))) {
+            this.sessionService.sessionExpired$.next();
+          }
         }
         return throwError(() => error);
       })

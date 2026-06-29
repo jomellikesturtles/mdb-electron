@@ -1,5 +1,5 @@
 <div *ngIf="showVideo">
-  <app-video-player [streamLink]='streamLink'></app-video-player>
+  <app-video-player [streamLink]='streamLink' [title]='movieDetails.title'></app-video-player>
 </div>
 
 <!-- Header Banner (TMDB Style) -->
@@ -14,22 +14,26 @@
             [style.backgroundImage]="'url(https://image.tmdb.org/t/p/w500' + movieDetails.posterPath + ')'">
           </div>
 
-          <div class="action-circle-buttons mt-3 justify-content-center">
+          <div class="action-circle-buttons mt-3 justify-content-center" *ngIf="isAuthenticated()">
             <button mat-icon-button matTooltip="Add to List" [matMenuTriggerFor]="listMenu"
               class="tmdb-circle-btn list-btn"><mat-icon>list</mat-icon></button>
-            <button mat-icon-button [class.active]="isFavorite" (click)="toggleFavorite()"
+
+            <button mat-icon-button [class.active]="_isFavorite" (click)="toggleFavorite()"
               [disabled]="isProcessingFavorite" matTooltip="Mark as favorite" class="tmdb-circle-btn fav-btn">
-              <mat-icon *ngIf="!isProcessingFavorite">{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+              <mat-icon *ngIf="!isProcessingFavorite">{{ _isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
               <mat-spinner *ngIf="isProcessingFavorite" diameter="20" class="m-auto"></mat-spinner>
             </button>
-            <button mat-icon-button [class.active]="isBookmarked" (click)="toggleBookmark()"
+
+            <button mat-icon-button [class.active]="_isBookmarked" (click)="toggleBookmark()"
               [disabled]="isProcessingBookmark" matTooltip="Add to watchlist" class="tmdb-circle-btn bookmark-btn">
-              <mat-icon *ngIf="!isProcessingBookmark">{{ isBookmarked ? 'bookmark' : 'bookmark_border' }}</mat-icon>
+              <mat-icon *ngIf="!isProcessingBookmark">{{ _isBookmarked ? 'bookmark' : 'bookmark_border'
+                }}</mat-icon>
               <mat-spinner *ngIf="isProcessingBookmark" diameter="20" class="m-auto"></mat-spinner>
             </button>
-            <button mat-icon-button [class.active]="isPlayed" (click)="togglePlayed()" [disabled]="isProcessingWatched"
+
+            <button mat-icon-button [class.active]="_isPlayed" (click)="togglePlayed()" [disabled]="isProcessingWatched"
               matTooltip="Mark as watched" class="tmdb-circle-btn played-btn">
-              <mat-icon *ngIf="!isProcessingWatched">visibility</mat-icon>
+              <mat-icon *ngIf="!isProcessingWatched">{{_isPlayed ? 'check' : 'visibility'}}</mat-icon>
               <mat-spinner *ngIf="isProcessingWatched" diameter="20" class="m-auto"></mat-spinner>
             </button>
           </div>
@@ -70,11 +74,25 @@
             </div>
 
             <div class="play-actions d-flex align-items-center gap-4">
-              <!-- playLinks.length {{playLinks.length}} -->
-              <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)='playBestPlayLink()'
-                [disabled]="playLinks.length <= 0">
-                WATCH NOW
+              <mdb-button variant="primary" size="md" icon="play_arrow" 
+                          [disabled]="playLinks.length === 0 || isLoadingStream" 
+                          [loading]="isLoadingStream"
+                          (onClick)="playBestPlayLink()">
+                WATCH NOW {{ bestPlayLink ? (bestPlayLink.quality || bestPlayLink.name) : '' }}
               </mdb-button>
+
+              <button mat-button [matMenuTriggerFor]="playLinksMenu" 
+                      [disabled]="playLinks.length === 0 || isLoadingStream" 
+                      class="text-white d-flex align-items-center bg-transparent border-0">
+                Sources <mat-icon>arrow_drop_down</mat-icon>
+              </button>
+
+              <mat-menu #playLinksMenu="matMenu">
+                <button mat-menu-item *ngFor="let playLink of playLinks" (click)="playMovie(playLink)">
+                  <mat-icon>{{ playLink.type === 'torrent' ? 'cloud_queue' : 'folder_open' }}</mat-icon>
+                  <span>{{ playLink.type === 'torrent' ? 'Torrent: ' + playLink.quality : 'Local: ' + playLink.name }}</span>
+                </button>
+              </mat-menu>
 
               <div *ngIf="movieTrailer && isFeatureEnabled('trailer')" class="trailer-link d-flex align-items-center"
                 (click)="playPreview()">
@@ -130,7 +148,7 @@
               <div *ngFor="let c of movieDetailsPersons.cast | slice:0:10" class="cast-card-mini"
                 (click)='goToPerson(c.id)'>
                 <div class="cast-img"
-                  [style.backgroundImage]="c.profilePath ? 'url(https://image.tmdb.org/t/p/w185' + c.profilePath + ')' : 'url(assets/offline-image/clint-eastwood.jfif)'">
+                  [style.backgroundImage]="c.profile_path ? 'url(https://image.tmdb.org/t/p/w185' + c.profile_path + ')' : 'url(assets/offline-image/clint-eastwood.jfif)'">
                 </div>
                 <div class="cast-details p-2">
                   <div class="fw-bold text-white name">{{ c.name }}</div>
@@ -138,9 +156,10 @@
                 </div>
               </div>
             </div>
-            <mdb-button variant="text" size="sm" class="mt-2" (onClick)="goToFullCredits()">Full Cast &
-              Crew</mdb-button>
+            <!-- <mdb-button id="bottomesa" variant="text" size="sm" class="mt-2" (onClick)="goToFullCredits()">Full Cast &
+              Crew</mdb-button> -->
           </div>
+
         </mat-tab>
 
         <mat-tab label="REVIEWS">
@@ -165,16 +184,17 @@
           </div>
         </mat-tab>
 
-        <mat-tab label="SIMILAR">
+        <mat-tab label="SIMILAR" *ngIf="movieDetails.similar?.results?.length">
           <div class="mt-4">
-            <app-horizontal-card-list [moviesList]="movieDetails.similar?.results" title=""></app-horizontal-card-list>
+            <app-horizontal-card-list [moviesList]="movieDetails.similar?.results" title=""
+              [disableHover]="true"></app-horizontal-card-list>
           </div>
         </mat-tab>
 
-        <mat-tab label="RECOMMENDATIONS">
+        <mat-tab label="RECOMMENDATIONS" *ngIf="movieDetails.recommendations?.results?.length">
           <div class="mt-4">
-            <app-horizontal-card-list [moviesList]="movieDetails.recommendations?.results"
-              title=""></app-horizontal-card-list>
+            <app-horizontal-card-list [moviesList]="movieDetails.recommendations?.results" title=""
+              [disableHover]="true"></app-horizontal-card-list>
           </div>
         </mat-tab>
       </mat-tab-group>

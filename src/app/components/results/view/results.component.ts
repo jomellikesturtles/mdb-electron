@@ -1,15 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ISearchQuery, TmdbParameters, TmdbSearchMovieParameters } from '@models/interfaces';
-import { DataService } from '@services/data.service';
-import { MovieService } from '@services/movie/movie.service';
 import GeneralUtil from '@utils/general.util';
+import { takeUntil } from 'rxjs/operators';
+import { MediaGridComponent } from '@components/media-grid/media-grid.component';
 
 @Component({
   selector: 'app-results',
   templateUrl: './results.component.html',
   styleUrls: ['./results.component.scss']
 })
-export class ResultsComponent implements OnInit, OnDestroy {
+export class ResultsComponent extends MediaGridComponent implements OnInit, OnDestroy {
+
   searchResults = [];
   searchQuery: ISearchQuery;
   hasSearchResults = false;
@@ -24,30 +25,38 @@ export class ResultsComponent implements OnInit, OnDestroy {
   isProcSearching = true;
   procLoadMoreResults = false;
 
-  constructor(
-    private dataService: DataService,
-    private movieService: MovieService) { }
 
   ngOnInit(): void {
     GeneralUtil.DEBUG.log('inResutlts');
-    this.getData();
-  }
-
-  ngOnDestroy(): void {
+    this.activatedRoute.queryParams.pipe(takeUntil(this.ngUnsubscribe)).subscribe(params => {
+      const query = params['q'];
+      if (query) {
+        this.currentSearchQuery = query;
+        this.isProcSearching = true;
+        this.searchResults = [];
+        this.currentPage = 1;
+        this.searchQuery = { ...this.searchQuery, query: query };
+        this.getSearchResults();
+      } else {
+        this.getData();
+      }
+    });
   }
 
   /**
    * Subscribes to list of highlighted movies.
    */
   getData() {
-    this.dataService.searchQuery.subscribe(data => {
-      GeneralUtil.DEBUG.log('fromdataservice searchQuery: ', data);
-      this.isProcSearching = true;
-      this.searchResults = []; // clear for new search
-      this.currentPage = 1;
-      this.searchQuery = data;
-      this.getSearchResults();
-      this.currentSearchQuery = this.searchQuery.query;
+    this.dataService.searchQuery.pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
+      if (data && data.query && data.query !== this.currentSearchQuery) {
+        GeneralUtil.DEBUG.log('fromdataservice searchQuery: ', data);
+        this.isProcSearching = true;
+        this.searchResults = []; // clear for new search
+        this.currentPage = 1;
+        this.searchQuery = data;
+        this.getSearchResults();
+        this.currentSearchQuery = this.searchQuery.query;
+      }
     });
   }
 
@@ -55,9 +64,11 @@ export class ResultsComponent implements OnInit, OnDestroy {
     const paramMap = new Map<TmdbParameters | TmdbSearchMovieParameters, any>();
     paramMap.set(TmdbSearchMovieParameters.Query, this.searchQuery.query);
     this.movieService.searchMovie(paramMap).subscribe(data => {
-      this.searchResults.push(...data.results);
-      if (data.total_pages > this.currentPage) {
+      this.searchResults = [...this.searchResults, ...data.results];
+      if (data.totalPages > this.currentPage) {
         this.hasMoreResults = true;
+      } else {
+        this.hasMoreResults = false;
       }
       this.isProcSearching = false;
     });
@@ -72,9 +83,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
     paramMap.set(TmdbParameters.Page, ++this.currentPage);
     this.procLoadMoreResults = true;
     this.movieService.searchMovie(paramMap).subscribe(data => {
-      this.searchResults = data.results;
-      // this.searchResults.push(...data.results) // for some reason this doesn't work anymore
-      if (data.total_pages <= this.currentPage) {
+      this.searchResults = [...this.searchResults, ...data.results];
+      if (data.totalPages <= this.currentPage) {
         this.hasMoreResults = false;
       }
       this.procLoadMoreResults = false;

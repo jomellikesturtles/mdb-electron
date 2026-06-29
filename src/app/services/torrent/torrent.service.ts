@@ -4,7 +4,7 @@ import { map, tap } from 'rxjs/operators';
 import { MDBTorrent, MDBTorrentAndMovieObject } from '@models/interfaces';
 import { DomSanitizer } from '@angular/platform-browser';
 import { STRING_REGEX_IMDB_ID } from '../../shared/constants';
-import { IYTSSingleQuery } from '@models/yts-torrent.model';
+import { IYTSSingleQueryResponse } from '@models/yts-torrent.model';
 import GeneralUtil from '@utils/general.util';
 import { environment } from '@environments/environment';
 import { LoggerService } from '@core/logger.service';
@@ -45,17 +45,17 @@ export class TorrentService {
     // tt2015381 - guardians of the galaxy
     let url = `${this.YTS_URL}?query_term=${imdbId}`;
     return this.httpBaseService.get(url, 'getTorrentsOnline').pipe(
-      map((data: IYTSSingleQuery) => {
+      map((data: IYTSSingleQueryResponse) => {
         const newData = new MDBTorrentAndMovieObject(data);
         return newData;
       }));
   }
 
-  searchTorrentsByQuery(val: string): Observable<IYTSSingleQuery> {
+  searchTorrentsByQuery(val: string): Observable<IYTSSingleQueryResponse> {
     console.log('insearchtorentsquery');
     val = 'tt0499549';
     const url = `${this.YTS_URL}?query_term=${val}`;
-    return this.httpBaseService.get<IYTSSingleQuery>(url, 'searchTorrentsByQuery');
+    return this.httpBaseService.get<IYTSSingleQueryResponse>(url, 'searchTorrentsByQuery');
   }
 
   /**

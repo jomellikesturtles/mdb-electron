@@ -263,10 +263,6 @@ function setSystemTray() {
   }
 }
 
-function sendContents(channel, args) {
-  DEBUG.log("sending...", channel, " | ", args);
-  // mainWindow.webContents.send(channel, args); // reply
-}
 // Show and Focus mainWindow
 function showWindow() {
   createMainWindow();
@@ -304,12 +300,14 @@ function startTorrentClient() {
   procWebTorrent.on("exit", function () {
     DEBUG.log("procWebTorrent ended");
   });
+  procWebTorrent.send(["stop-stream"]);
   /**
    * webtorrent client messages:
    * 1. stream-link
    * 2. stats
    */
   procWebTorrent.on("message", (m) => {
+    DEBUG.log("procWebTorrent message on main: ", m);
     if (m[0] === "stream-link") {
       sendContents(IPCMainChannel.STREAM_LINK, m[1]);
     } else if (m[0] === "stats") {

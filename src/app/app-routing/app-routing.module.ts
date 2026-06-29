@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { BulkDownloadComponent } from 'app/modules/admin/bulk-download/bulk-download.component';
-import { BrowseComponent } from '@modules/user/browse/browse.component';
 import { PersonDetailsComponent } from 'app/modules/person/person-details/person-details.component';
 import { PreviewComponent } from '@shared/components/preview/preview.component';
 import { MdbGuardGuard } from '../mdb-guard.guard';
@@ -12,8 +11,8 @@ const routes: Routes = [
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // homepage
   // { path: '', redirectTo: '/results', pathMatch: 'full' },
   { path: 'video', loadChildren: () => import('@modules/watch/video-player.module').then(m => m.VideoPlayerModule) },
-  { path: 'browse', component: BrowseComponent, canActivate: [MdbGuardGuard] },
-  { path: 'preferences', loadChildren: () => import('app/modules/settings/preferences/preferences.module').then(m => m.PreferencesModule), canActivate: [MdbGuardGuard] },
+  { path: 'browse', loadChildren: () => import('@modules/user/browse/browse.module').then(m => m.BrowseModule) },
+  { path: 'preferences', loadChildren: () => import('@modules/settings/preferences/preferences.module').then(m => m.PreferencesModule), canActivate: [MdbGuardGuard] },
   { path: 'preferences/bulk-download', component: BulkDownloadComponent, canActivate: [MdbGuardGuard] },
 
   { path: 'person-details/:id', component: PersonDetailsComponent, canActivate: [MdbGuardGuard] },
@@ -26,7 +25,7 @@ const routes: Routes = [
   { path: 'discover', loadChildren: () => import('@modules/movie/discover/discover.module').then(m => m.DiscoverModule), canActivate: [MdbGuardGuard] },
   { path: 'library', loadChildren: () => import('@modules/person/library/library.module').then(m => m.LibraryModule), canActivate: [MdbGuardGuard] },
 
-  { path: 'results', loadChildren: () => import('@components/results/results.module').then(m => m.ResultsModule), canActivate: [MdbGuardGuard] },
+  { path: 'search', loadChildren: () => import('@components/results/results.module').then(m => m.ResultsModule), canActivate: [MdbGuardGuard] },
   { path: 'details', loadChildren: () => import('@modules/movie/details/details.module').then(m => m.DetailsModule), canActivate: [MdbGuardGuard] },
   { path: 'user', loadChildren: () => import('@modules/user/user.module').then(m => m.UserModule) },
   { path: 'advanced-find', component: AdvancedFindComponent, canActivate: [MdbGuardGuard] },

@@ -2,28 +2,32 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseProfileService } from './base-profile.service';
 import { IUserProfile } from '@models/user.model';
+import { ENDPOINT } from '@shared/endpoint.const';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService extends BaseProfileService {
 
-    getProfile(refresh = false): Observable<IUserProfile> {
+  getProfile(username: string, refresh = false): Observable<IUserProfile> {
 
-      return this.dataService.getHandle(
+    return this.dataService.getHandle(
 
-        this.httpBaseService.get(this.httpUrlProvider.getBffAPI('/profile')), this.ipcService.getProfile());
-
-    }
-
-  
-
-    updateProfile(data: Partial<IUserProfile>): Observable<any> {
-
-      return this.httpBaseService.put(this.httpUrlProvider.getBffAPI('/profile'), data);
-
-    }
+      this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.PROFILE, username)), this.ipcService.getProfile());
 
   }
 
-  
+
+
+  updateProfile(data: Partial<IUserProfile>): Observable<any> {
+    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.PROFILE), data);
+  }
+
+  uploadAvatar(username: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.PROFILE_AVATAR, username), formData);
+  }
+}
+
+

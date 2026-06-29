@@ -3,7 +3,7 @@ import { TopNavigationComponent } from './top-navigation.component';
 import { DataService, AuthenticationService } from '@services';
 import { MockDataService } from '@services/mock-data.service';
 import { IpcService } from '@services/ipc.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NavigationService } from '@core/services/navigation.service';
 import { Actions } from '@ngxs/store';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -13,6 +13,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { of, EMPTY } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { AppDownloadDialogComponent } from '@shared/components/app-download-dialog/app-download-dialog.component';
+import { AboutDialogComponent } from '@shared/components/info-dialogs/about-dialog.component';
+import { HelpDialogComponent } from '@shared/components/info-dialogs/help-dialog.component';
+import { FeedbackDialogComponent } from '@shared/components/info-dialogs/feedback-dialog.component';
 
 describe('TopNavigationComponent', () => {
   let component: TopNavigationComponent;
@@ -26,9 +29,13 @@ describe('TopNavigationComponent', () => {
   const mockActions = EMPTY;
   const mockNavigationService = { back: () => {} };
   const mockMockDataService = { getMovieGenres: () => of([]) };
+  const mockActivatedRoute = { snapshot: { queryParamMap: { get: () => '' } } };
 
   beforeEach(async () => {
     dialog = jasmine.createSpyObj('MatDialog', ['open']);
+    dialog.open.and.returnValue({
+      afterClosed: () => of(true)
+    } as any);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -42,6 +49,7 @@ describe('TopNavigationComponent', () => {
         { provide: DataService, useValue: mockDataService },
         { provide: IpcService, useValue: mockIpcService },
         { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: AuthenticationService, useValue: mockAuthService },
         { provide: Actions, useValue: mockActions },
         { provide: NavigationService, useValue: mockNavigationService },
@@ -50,6 +58,7 @@ describe('TopNavigationComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
+
 
     fixture = TestBed.createComponent(TopNavigationComponent);
     component = fixture.componentInstance;
@@ -92,4 +101,20 @@ describe('TopNavigationComponent', () => {
     component.onDownloadApp();
     expect(window.open).not.toHaveBeenCalled();
   });
+
+  it('should open help dialog when goToHelp is called', () => {
+    component.goToHelp();
+    expect(dialog.open).toHaveBeenCalledWith(HelpDialogComponent, jasmine.any(Object));
+  });
+
+  it('should open about dialog when goToAbout is called', () => {
+    component.goToAbout();
+    expect(dialog.open).toHaveBeenCalledWith(AboutDialogComponent, jasmine.any(Object));
+  });
+
+  it('should open feedback dialog when sendFeedback is called', () => {
+    component.sendFeedback();
+    expect(dialog.open).toHaveBeenCalledWith(FeedbackDialogComponent, jasmine.any(Object));
+  });
 });
+

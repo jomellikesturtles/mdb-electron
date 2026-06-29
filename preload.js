@@ -91,6 +91,20 @@ contextBridge.exposeInMainWorld("electron", {
         return ipcRenderer.invoke(channel, data);
       }
     }
+  },
+  readSubtitleFile: (filePath) => {
+    const fs = require('fs');
+    const jschardet = require('jschardet');
+    const buffer = fs.readFileSync(filePath);
+    let encodingStr = 'utf-8';
+    try {
+      const detected = jschardet.detect(buffer.toString('binary'), { minimumThreshold: 0 });
+      encodingStr = detected ? detected.encoding : 'utf-8';
+    } catch (e) {
+      console.error("[PRELOAD] Encoding detection failed:", e);
+    }
+    const decoder = new TextDecoder(encodingStr.toLowerCase());
+    return decoder.decode(buffer);
   }
 });
 

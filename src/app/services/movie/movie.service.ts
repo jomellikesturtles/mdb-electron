@@ -18,6 +18,8 @@ import { ITmdbVideoResult } from '@models/tmdb.model';
 import { Store } from '@ngxs/store';
 import { MovieState } from '../../store/movie/movie.state';
 import { AddMovie, AddDiscoverMovie, AddPreviewMovie } from '../../store/movie/movie.actions';
+import { StreamsState } from '../../store/streams/streams.state';
+import { AddStreams } from '../../store/streams/streams.actions';
 import { MDBPaginatedResultModel, MDBMoviePreviewModel } from './interface/movie';
 import { CacheService } from '@services/cache.service';
 import { TmdbService } from '@services/tmdb/tmdb.service';
@@ -26,6 +28,7 @@ import { DataService } from '@services/data.service';
 import { TmdbMapper } from '@utils/tmdb.mapper';
 import { HttpUrlProviderService } from '@services/http-url.provider.service';
 import { ENDPOINT } from '@shared/endpoint.const';
+import { IYTSSingleQueryResponse } from '@models';
 
 const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -149,12 +152,12 @@ export class MovieService extends BaseMovieService {
         }
         return fetch$.pipe(
           map((data: IRawTmdbResultObject) => {
-            return this.mapPaginatedResult(entityId, data);
+            return TmdbMapper.mapToPaginatedResults(data);
           })
         );
       },
       (data) => {
-        return { type: "NO_OP" };
+        return new AddDiscoverMovie({ id: entityId, paginatedResult: data });
       },
       refresh
     ).pipe(map((res) => (res && res.paginatedResult ? res.paginatedResult : res)));
@@ -163,14 +166,14 @@ export class MovieService extends BaseMovieService {
   searchMovie(
     paramMap: Map<TmdbParameters | TmdbSearchMovieParameters, any>,
     refresh: boolean = false
-  ): Observable<IRawTmdbResultObject> {
+  ): Observable<IMdbMoviePaginated> {
     const page = paramMap.get(TmdbSearchMovieParameters.Page) ? paramMap.get(TmdbSearchMovieParameters.Page) : 1;
     let myHttpParam = new HttpParams().append(TmdbParameters.Page, page);
     myHttpParam = GeneralUtil.appendMappedParameters(paramMap, myHttpParam);
     let entityId = `movie:search:${myHttpParam.toString()}`;
 
     return this.getCachedOrFetch<any>(
-      MovieState.getSearchMovie(entityId),
+      MovieState.getDiscoverMovie(entityId),
       () => {
         let fetch$: Observable<any>;
         if (this.dataService.isWebApp() || navigator.onLine) {
@@ -181,16 +184,16 @@ export class MovieService extends BaseMovieService {
         return fetch$.pipe(
           first(),
           map((data: IRawTmdbResultObject) => {
-            return this.mapPaginatedResult(entityId, data);
+            return TmdbMapper.mapToPaginatedResults(data);
           })
         );
       },
       (data) => {
-        return { type: "NO_OP" };
+        return new AddDiscoverMovie({ id: entityId, paginatedResult: data });
       },
       refresh
     ).pipe(
-      map((res) => (res && res.movies ? res.movies : res))
+      map((res) => (res && res.paginatedResult ? res.paginatedResult : res))
     );
   }
 
@@ -202,29 +205,26 @@ export class MovieService extends BaseMovieService {
     return this.httpBaseService.get<string>(filePath, { responseType: "text" as "json" });
   }
 
-  getStreams(movieId: string, refresh: boolean = false): Observable<IMdbMoviePaginated> {
+  getStreams(movieId: string, refresh: boolean = false): Observable<any> {
     const entityId = `movie:streams:${movieId}`;
     GeneralUtil.DEBUG.log(`getStreams movieId: ${movieId}`);
 
     return this.getCachedOrFetch<any>(
-      MovieState.getDiscoverMovie(entityId),
+      StreamsState.getStreams(entityId),
       () => {
-        // this.;
         return this.httpBaseService
-          // .get(`mdb/v1/media/${movieId}/streams`, {}, "getStreams")
           .get(this.httpUrlProvider.getBffAPI(ENDPOINT.STREAMS, movieId), {}, "getStreams")
           .pipe(
-            tap((_) => this.log("")),
-            map((data: IRawTmdbResultObject) => {
-              return this.mapPaginatedResult(entityId, data);
+            map((data: IYTSSingleQueryResponse) => {
+              return data.data.movies[0];
             })
           );
       },
       (data) => {
-        return { type: "NO_OP" };
+        return new AddStreams({ id: entityId, streams: data });
       },
       refresh
-    ).pipe(map((res) => (res && res.paginatedResult ? res.paginatedResult : res)));
+    );
   }
 
   private externalId(tmdbId: string): Observable<TMDB_External_Id> {
@@ -243,13 +243,6 @@ export class MovieService extends BaseMovieService {
   }
 
   private mapPaginatedResult(entityId: string, rawData: IRawTmdbResultObject): IMdbMoviePaginated {
-    let newData = TmdbMapper.mapToPaginatedResults(rawData);
-
-    const store: MDBPaginatedResultModel = {
-      id: entityId,
-      paginatedResult: newData
-    };
-    this.store.dispatch(new AddDiscoverMovie(store));
-    return newData;
+    return TmdbMapper.mapToPaginatedResults(rawData);
   }
 }

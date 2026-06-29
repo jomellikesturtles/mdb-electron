@@ -1,9 +1,63 @@
 .subtitle-span {
   color: white;
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.6);
   font-size: 2.5vh;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-shadow: none;
+
+  &:empty {
+    display: none;
+  }
 }
 
 .user-inactive {
   cursor: none;
+}
+
+@keyframes bezelFade {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+.action-overlay-container {
+  position: absolute;
+  z-index: 25;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  pointer-events: none;
+  animation: bezelFade 800ms ease-out forwards;
+}
+
+.action-overlay-icon {
+  font-size: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.action-overlay-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 4px;
 }

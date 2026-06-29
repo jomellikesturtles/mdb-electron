@@ -6,7 +6,7 @@ import { Observable } from "rxjs";
 @Injectable({ providedIn: "root" })
 export class MockProfileService extends BaseProfileService {
 
-  getProfile(refresh = false): Observable<IUserProfile> {
+  getProfile(username: string, refresh = false): Observable<IUserProfile> {
     return this.httpBaseService.get('assets/mock-responses/profile.json');
   }
 

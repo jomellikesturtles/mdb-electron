@@ -17,11 +17,11 @@
   },
   "direct_tmdb": {
     "description": "Call TMDB API directly from here",
-    "enabled": true
+    "enabled": false
   },
   "played_status": {
     "description": "Played/watched/progress status",
-    "enabled": false
+    "enabled": true
   },
   "trailer": {
     "description": "Play trailer button",

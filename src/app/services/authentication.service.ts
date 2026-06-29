@@ -9,9 +9,10 @@ import { Login } from "app/store/auth/auth.state";
 import { toObservable } from "@angular/core/rxjs-interop";
 import * as openpgp from "openpgp";
 import { environment } from "@environments/environment";
+import GeneralUtil from "@utils/general.util";
 
 export class RegisterPayload {
-  username: string;
+  userName: string;
   email: string;
   password: string;
 }
@@ -29,6 +30,13 @@ export class LoginResponse {
 export class RegisterResponse {
   success: boolean;
   message: string;
+}
+
+export interface OtpPayload {
+  username: string;
+  otp?: string;
+  signature?: string;
+  channel?: string;
 }
 
 @Injectable({
@@ -67,6 +75,7 @@ export class AuthenticationService {
         this._isAuthenticated.set(true);
         this.store.dispatch(new Login(payload));
         sessionStorage.setItem("token", e.authToken);
+        localStorage.setItem("user", e.username);
         this.updateExpiry();
         return e;
       })
@@ -115,6 +124,22 @@ export class AuthenticationService {
     );
   }
 
+  /**
+   * Sends an OTP to the user's registered channel.
+   * @param payload OTP request payload
+   */
+  sendOtp(payload: OtpPayload): Observable<OtpPayload> {
+    return this.httpBaseService.post<OtpPayload>(ENDPOINT.OTP_SEND, payload, "sendOtp");
+  }
+
+  /**
+   * Verifies the OTP provided by the user.
+   * @param payload OTP verification payload
+   */
+  verifyOtp(payload: OtpPayload): Observable<OtpPayload> {
+    return this.httpBaseService.post<OtpPayload>(ENDPOINT.OTP_VERIFY, payload, "verifyOtp");
+  }
+
 
   /**
    * Login user by first encrypting the credentials and then authenticating.
@@ -126,7 +151,7 @@ export class AuthenticationService {
 
       switchMap((encryptedPayload: string) => {
         payload.password = encryptedPayload;
-        return this.httpBaseService.post(ENDPOINT.REGISTER, payload, "login");
+        return this.httpBaseService.post(ENDPOINT.REGISTER, payload, "register");
       }),
       map((e: RegisterResponse) => {
         // this._isAuthenticated.set(true);
@@ -159,5 +184,20 @@ export class AuthenticationService {
     });
 
     return encrypted as string;
+  }
+
+  /**
+   * Error handler.
+   * @param operation the operation
+   * @param result the result
+   */
+  protected handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      GeneralUtil.DEBUG.error(error); // log to console instead
+      this.logger.error(`${operation} failed: ${error.message}`);
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
+
   }
 }

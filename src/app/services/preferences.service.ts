@@ -26,7 +26,7 @@ export class PreferencesService {
   pullPreferences() { }
 
   getPreferences() {
-    if (!this.preferencesV2) this.preferencesV2.next(DEFAULT_PREFERENCES);
+    if (!this.preferencesV2.value) this.preferencesV2.next(DEFAULT_PREFERENCES);
     return this.preferencesV2.value;
   }
 

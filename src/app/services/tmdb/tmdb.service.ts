@@ -10,8 +10,9 @@ import { TmdbParameters, TmdbSearchMovieParameters, IRawTmdbResultObject } from 
 import { environment } from '@environments/environment';
 import { HttpBaseService } from '@services/http-base.service';
 import GeneralUtil from '@utils/general.util';
-
-const JSON_CONTENT_TYPE_HEADER = new HttpHeaders({ 'Content-Type': 'application/json' });
+import { FeatureToggleService, FeatureName } from '@core/services/feature-toggle.service';
+import { HttpUrlProviderService } from '@services/http-url.provider.service';
+import { ENDPOINT } from '@shared/endpoint.const';
 
 @Injectable({ providedIn: 'root' })
 export class TmdbService {
@@ -20,18 +21,33 @@ export class TmdbService {
   private readonly TMDB_URL = environment.tmdb.url;
 
   constructor(
-    private httpBaseService: HttpBaseService
+    private httpBaseService: HttpBaseService,
+    private featureToggleService: FeatureToggleService,
+    private httpUrlProvider: HttpUrlProviderService,
   ) { }
 
   /**
    * Gets movie details.
    */
   getTmdbMovieDetails(tmdbId: number, appendToResponse?: string): Observable<any> {
+
     let params = this.getBaseParams();
     if (appendToResponse) {
       params = params.append(TmdbParameters.AppendToResponse, appendToResponse);
     }
-    return this.httpBaseService.get(`${this.TMDB_URL}/movie/${tmdbId}`, { params }, 'getTmdbMovieDetails');
+    return (this.featureToggleService.isEnabled('direct_tmdb')) ?
+      this.httpBaseService.get(`${this.TMDB_URL}/movie/${tmdbId}`, { params }, 'getTmdbMovieDetails')
+      :
+      this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.TMDB_SINGLE, tmdbId));
+  }
+
+  getTmdbMovieDetailsMulti(idsList: { idsList: string[]; }, appendToResponse?: string): Observable<any> {
+
+    let params = this.getBaseParams();
+    if (appendToResponse) {
+      params = params.append(TmdbParameters.AppendToResponse, appendToResponse);
+    }
+    return this.httpBaseService.post(this.httpUrlProvider.getBffAPI(ENDPOINT.TMDB_MULTI), idsList);
   }
 
   /**

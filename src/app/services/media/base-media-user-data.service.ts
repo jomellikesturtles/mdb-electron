@@ -13,23 +13,9 @@ export abstract class BaseMediaUserDataService {
    *
    * @param idList separated by comma
    */
-  protected abstract getMediaUserDataMultiple(idList: string): Observable<any>;
+  protected abstract getMediaUserDataMultiple(idList: any[]): Observable<any>;
 
 
   protected abstract getMediaDataPaginated(type: 'id' | 'tmdbId', id: string | number): Observable<any>;
-
-  commonSetter(val: number | Object | boolean): boolean {
-    if (typeof val === 'boolean') {
-      return val;
-    }
-    if (typeof val === 'number' && val >= 1) {
-      return false;
-    }
-    if (val && (val['_id'] || val['id'])) {
-      return true;
-    }
-    return false;
-  }
-
 
 }
