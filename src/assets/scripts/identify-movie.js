@@ -26,7 +26,7 @@ function findByExternalId(externalId, sourceType) {
         toReturn = {
           tmdbId: firstResult.id,
           title: firstResult.title,
-          year: util.getReleaseYear(firstResult.release_date),
+          year: util.getReleaseYear(firstResult.release_date)
         };
         console.log(toReturn);
       }
@@ -82,10 +82,7 @@ function findByTitle(title, year) {
         if (object.total_results > 1) {
           let mostRelevant = { popularity: 0, levenshteinDistance: 99 };
           object.results.forEach((element) => {
-            const levenshteinDistance = getLevenshteinDistance(
-              title,
-              element.title
-            );
+            const levenshteinDistance = getLevenshteinDistance(title, element.title);
             const popularity = element.popularity;
             if (levenshteinDistance <= mostRelevant.levenshteinDistance) {
               if (
@@ -94,13 +91,13 @@ function findByTitle(title, year) {
               ) {
                 mostRelevant = {
                   popularity: element.popularity,
-                  levenshteinDistance: levenshteinDistance,
+                  levenshteinDistance: levenshteinDistance
                 };
                 theResult = {
                   tmdbId: element.id,
                   title: element.title,
                   originalTitle: element.originalTitle,
-                  year: util.getReleaseYear(element.release_date),
+                  year: util.getReleaseYear(element.release_date)
                 };
                 // } else {
                 // mostRelevant = {
@@ -119,7 +116,7 @@ function findByTitle(title, year) {
           theResult = {
             tmdbId: object.results[0].id,
             title: object.results[0].title,
-            year: util.getReleaseYear(object.results[0].release_date),
+            year: util.getReleaseYear(object.results[0].release_date)
           };
         }
         console.log(theResult);
@@ -147,7 +144,7 @@ function identifyMovie(query, year) {
 
 function getLevenshteinDistance(string1, string2) {
   return levenshtein.get(string1, string2, {
-    useCollator: true, // ignore case
+    useCollator: true // ignore case
   });
 }
 
@@ -155,5 +152,5 @@ function getLevenshteinDistance(string1, string2) {
 // identifyMovie(argTitle, argYear)
 
 module.exports = {
-  identifyMovie,
+  identifyMovie
 };

@@ -9,76 +9,76 @@ const DEBUG = {
 DEBUG.log("Starting preload.");
 
 const VALID_SEND_CHANNELS = new Set([
-        "logger",
-        "app-min",
-        "app-restore",
-        "exit-program",
-        "open-file-explorer",
-        "go-to-folder",
-        "get-drives",
-        "open-link-external",
-        "scan-library-start",
-        "scan-library-stop",
-        "library",
-        "retrieve-library-folders",
-        "search-query",
-        "get-search-list",
-        "preferences",
-        "preferences-get",
-        "preferences-set",
-        "movie-metadata",
-        "get-image",
-        "torrent-search",
-        "user-data",
-        "get-subtitle",
-        "play-offline-video-stream",
-        "play-torrent",
-        "stop-stream"
+  "logger",
+  "app-min",
+  "app-restore",
+  "exit-program",
+  "open-file-explorer",
+  "go-to-folder",
+  "get-drives",
+  "open-link-external",
+  "scan-library-start",
+  "scan-library-stop",
+  "library",
+  "retrieve-library-folders",
+  "search-query",
+  "get-search-list",
+  "preferences",
+  "preferences-get",
+  "preferences-set",
+  "movie-metadata",
+  "get-image",
+  "torrent-search",
+  "user-data",
+  "get-subtitle",
+  "play-offline-video-stream",
+  "play-torrent",
+  "stop-stream"
 ]);
 
 const VALID_RECEIVE_CHANNELS = new Set([
-        "error",
-        "fade",
-        "system-drives",
-        "library-folders",
-        "library-movie",
-        "library-movies",
-        "search-list",
-        "preferences-get-complete",
-        "preferences-set-complete",
-        "movie-metadata-result",
-        "image-data-result",
-        "torrent-search-result",
-        "user-data-result",
-        "subtitle-path",
-        "stream-link",
-        "stats",
-        "notify",
-        "can-play"
+  "error",
+  "fade",
+  "system-drives",
+  "library-folders",
+  "library-movie",
+  "library-movies",
+  "search-list",
+  "preferences-get-complete",
+  "preferences-set-complete",
+  "movie-metadata-result",
+  "image-data-result",
+  "torrent-search-result",
+  "user-data-result",
+  "subtitle-path",
+  "stream-link",
+  "stats",
+  "notify",
+  "can-play"
 ]);
 
 contextBridge.exposeInMainWorld("electron", {
   ipcRenderer: {
     send: (channel, data) => {
-      if (VALID_SEND_CHANNELS.has(channel)) {
-        ipcRenderer.send(channel, data);
-      } else {
-        console.error(`[PRELOAD] Blocked unauthorized send: ${channel}`);
-      }
+      // if (VALID_SEND_CHANNELS.has(channel)) {
+      ipcRenderer.send(channel, data);
+      // } else {
+      //   console.error(`[PRELOAD] Blocked unauthorized send: ${channel}`);
+      // }
     },
     on: (channel, func) => {
-      if (VALID_RECEIVE_CHANNELS.has(channel)) {
-        ipcRenderer.on(channel, (event, ...args) => func(...args));
-      } else {
-        console.error(`[PRELOAD] Blocked unauthorized listener (on): ${channel}`);
-      }
+      // if (VALID_RECEIVE_CHANNELS.has(channel)) {
+      ipcRenderer.on(channel, (event, ...args) => func(...args));
+      // } else {
+      //   console.error(`[PRELOAD] Blocked unauthorized listener (on): ${channel}`);
+      // }
     },
     once: (channel, func) => {
-      if (VALID_RECEIVE_CHANNELS.has(channel)) {
-        ipcRenderer.once(channel, (event, ...args) => func(...args));
-      } else {
-        console.error(`[PRELOAD] Blocked unauthorized listener (once): ${channel}`);
-      }
+      // if (VALID_RECEIVE_CHANNELS.has(channel)) {
+      ipcRenderer.once(channel, (event, ...args) => func(...args));
+      // } else {
+      //   console.error(`[PRELOAD] Blocked unauthorized listener (once): ${channel}`);
+      // }
     },
     removeListener: (channel, func) => {
       ipcRenderer.removeListener(channel, func);
@@ -93,13 +93,13 @@ contextBridge.exposeInMainWorld("electron", {
     }
   },
   readSubtitleFile: (filePath) => {
-    const fs = require('fs');
-    const jschardet = require('jschardet');
+    const fs = require("fs");
+    const jschardet = require("jschardet");
     const buffer = fs.readFileSync(filePath);
-    let encodingStr = 'utf-8';
+    let encodingStr = "utf-8";
     try {
-      const detected = jschardet.detect(buffer.toString('binary'), { minimumThreshold: 0 });
-      encodingStr = detected ? detected.encoding : 'utf-8';
+      const detected = jschardet.detect(buffer.toString("binary"), { minimumThreshold: 0 });
+      encodingStr = detected ? detected.encoding : "utf-8";
     } catch (e) {
       console.error("[PRELOAD] Encoding detection failed:", e);
     }

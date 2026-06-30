@@ -13,6 +13,7 @@ export class MockLibraryService extends BaseLibraryService {
   }
 
   openVideoStream(id: any) {
+    return Promise.resolve('http://localhost:3002/0/The.Super.Mario.Galaxy.Movie.2026.720p.BluRay.x264.AAC-%5BYTS.BZ%5D.mp4');
     return Promise.resolve('src/assets/scripts/videoplayback.mp4');
   }
 
@@ -23,7 +24,10 @@ export class MockLibraryService extends BaseLibraryService {
   }
 
   getMoviesFromLibraryInList(idList: number[]): Promise<any> {
-    throw new Error("Method not implemented.");
+    const mockAvailable = idList
+      .filter(id => id % 2 === 0)
+      .map(id => ({ tmdbId: id, fullFilePath: 'mock-path', title: 'Mock', year: 2026, _id: '123' }));
+    return Promise.resolve(mockAvailable);
   }
   getLibraryPaginated(lastVal: string | number): Promise<any> {
     throw new Error("Method not implemented.");

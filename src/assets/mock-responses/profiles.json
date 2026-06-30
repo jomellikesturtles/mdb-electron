@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "username": "john_smith",
+    "name": "John Smith",
+    "avatar": "assets/offline-image/clint-eastwood.jfif",
+    "bio": "I'm the king of the world! - Titanic (1997)",
+    "isMain": true
+  },
+  {
+    "id": "2",
+    "username": "kids",
+    "name": "Kids Room",
+    "avatar": "assets/icons/rating-general.png",
+    "bio": "Cartoon and animations space",
+    "isMain": false
+  },
+  {
+    "id": "3",
+    "username": "guest",
+    "name": "Guest Account",
+    "avatar": "assets/icons/human.svg",
+    "bio": "Temporary streaming profile",
+    "isMain": false
+  }
+]

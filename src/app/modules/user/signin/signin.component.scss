@@ -14,15 +14,13 @@
   overflow: hidden;
 }
 
-.background-image {
+.background-video {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('../../../../assets/backdrops/gone_with_the_wind-backdrop.jpg');
-  background-size: cover;
-  background-position: center;
+  object-fit: cover;
   z-index: 0;
 }
 

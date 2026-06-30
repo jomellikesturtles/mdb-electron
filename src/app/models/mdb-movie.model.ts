@@ -41,6 +41,8 @@ export class MDBMovie {
   productionCountries: any;
   releaseDates: any;
   reviews: any;
+  isAvailable = false;
+  libraryId = false;
 
   constructor(value?: any) {
     if (value != null) {
@@ -70,7 +72,7 @@ export class MDBMovie {
   private mapToObject(value: any, source?: string) {
 
     this.imdbId = value['imdb_id'] || value['imdbId'];
-    this.tmdbId = value['id'] || value['tmdbId'] || value['mediaId'];
+    this.tmdbId = this.isFromLibraryPage(value) ? value['tmdbId'] : (value['id'] || value['tmdbId'] || value['mediaId']);
     this.mdbId = value['tmdbId'] || value['id'] || value['mediaId'];
     this.title = value['title'];
     this.originalTitle = value['original_language'] || value['originalTitle'];
@@ -86,7 +88,7 @@ export class MDBMovie {
       voteAverage: value['vote_average'] || this.nestMapper(value, 'vote', 'voteAverage'),
       voteCount: value['vote_count'] || this.nestMapper(value, 'vote', 'voteCount')
     };
-    this.releaseDate = value['release_date'] || value['releaseDate'];
+    this.releaseDate = value['release_date'] || value['releaseDate'] || (value['year'] ? value['year'].toString() : '');
     this.runtime = value['runtime'];
     this.status = value['status'];
     this.tagline = value['tagline'];
@@ -109,7 +111,12 @@ export class MDBMovie {
     this.productionCountries = value['production_countries'] || value['productionCountries'];
     this.releaseDates = value['release_dates'] || value['releaseDates'];
     this.reviews = value['reviews'];
+    this.isAvailable = value['isAvailable'] || false;
+    this.libraryId = this.isFromLibraryPage(value) ? value['id'] : null;
+  }
 
+  private isFromLibraryPage(value: any) {
+    return !!value['fullFilePath'];
   }
 }
 

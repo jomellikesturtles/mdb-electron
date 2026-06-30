@@ -41,7 +41,7 @@ class GeneralRepository {
     DEBUG.log("Creating repository for", dbName);
     this.currentDbLocalName = dbName;
     let currentDb = new DataStore({
-      filename: path.join(process.cwd(), "src", "assets", "db", `${dbName}.db`), // electron
+      filename: path.join(__dirname, "..", "db", `${dbName}.db`), // electron
       autoload: true,
       timestampData: true
     });

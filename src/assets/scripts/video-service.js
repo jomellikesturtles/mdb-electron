@@ -2,15 +2,15 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-let args = process.argv.slice(2);
+console.log('[video-service] process.argv:', process.argv);
+let args = process.argv.slice(2).filter(arg => !arg.startsWith('--'));
 let idArg = args[0];
 var http = require('http');
 
-let port = '3000'
+let port = process.env.PORT || '3000'
 let streamLink = `http://localhost:${port}/stream`
 let isPortOpen = false;
 const app = express();
-const DataStore = require('nedb');
 const libraryDbService = require('./library-db-service-2');
 process.on('uncaughtException', function (error) {
   console.log('ERROR!!!!!!!!!!!!!!!!!!!!!!!!!', error);
@@ -35,13 +35,8 @@ let DEBUG = (() => {
 
 DEBUG.log('IN VIDEO SERVICE');
 
-var libraryFilesDb = new DataStore({
-  filename: '../db/libraryFiles2.db',
-  // filename: path.join(process.cwd(), 'src', 'assets', 'db', 'libraryFiles2.db'),
-  autoload: true
-})
-
 function openStream(libraryData) {
+  DEBUG.log(`libraryData: ${libraryData}`)
   DEBUG.log(`set streaming from: ${streamLink}/${libraryData._id}`)
   process.send(['stream-link', `${streamLink}/${libraryData._id}`])
   app.get(`/stream/${libraryData._id}`, function (req, res) {
@@ -76,27 +71,59 @@ function openStream(libraryData) {
   })
 }
 
-function openPort() {
+let libraryItem = null;
+let serverStarted = false;
 
-  app.listen(port, function () {
-    DEBUG.log('listening from 3000...');
+function checkAndStart() {
+  if (libraryItem && serverStarted) {
+    openStream(libraryItem);
+  }
+}
+
+function openPort() {
+  const server = http.createServer(app);
+  
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      DEBUG.log(`Port ${port} is in use, trying next one...`);
+      port = parseInt(port, 10) + 1;
+      streamLink = `http://localhost:${port}/stream`;
+      server.listen(port);
+    } else {
+      console.error('Server error:', err);
+      process.send(['error', { source: "video-service", message: err.message, stack: err.stack }]);
+    }
+  });
+
+  server.listen(port, function () {
+    const actualPort = server.address().port;
+    DEBUG.log(`listening from ${actualPort}...`);
+    port = actualPort;
+    streamLink = `http://localhost:${port}/stream`;
     isPortOpen = true;
+    serverStarted = true;
+    checkAndStart();
   });
 }
 
 function initialize() {
+  DEBUG.log('idArg: ', idArg);
   libraryDbService.getLibraryFileById(idArg).then(libraryData => {
-  // libraryDbService.getLibraryFilesByTmdbId(parseInt(tmdbIdArg)).then(libraryData => {
     DEBUG.log('FOUND ONE DATA: ', libraryData);
-    openStream(libraryData[0])
-  })
+    if (libraryData && libraryData.length > 0) {
+      libraryItem = libraryData[0];
+      checkAndStart();
+    } else {
+      DEBUG.log('No library data found for ID:', idArg);
+    }
+  });
 }
 
 if (isPortOpen == false) {
-  openPort()
+  openPort();
 }
 
-initialize()
+initialize();
 // setTimeout(() => {
 //   testConnection()
 // }, 3000);

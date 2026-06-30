@@ -75,8 +75,9 @@ async function checkAPIConnection() {
  */
 function checkDiskSpace() {
   DEBUG.log(getFuncName(), "starting checkDiskSpace...");
+  const diskPath = process.platform === "win32" ? "C" : "/";
   return new Promise((resolve) => {
-    getFreeDiskSpace("C").then((value) => {
+    getFreeDiskSpace(diskPath).then((value) => {
       if (value >= SIZE_LIMIT) {
         DEBUG.log(value);
         resolve(true);

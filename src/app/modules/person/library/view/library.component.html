@@ -1,15 +1,20 @@
 <app-selected-list></app-selected-list>
 <div class="container-fluid">
-  <button class='btn btn-info' (click)='onScanLibrary()'>Scan library</button>
-  <div *ngIf='!hasResults'>
+  <button class='btn btn-info mb-3' (click)='onScanLibrary()'>Scan library</button>
+  <div *ngIf='!hasResults && !isFetchingData'>
     <h1 class='jumbo-message'>No offline movies found.</h1>
   </div>
   <div *ngIf='hasResults' class='movie-cards-display-grid'>
+    moviesDisplayList {{moviesDisplayList|json}}
     <app-card-list [movieList]='moviesDisplayList' [cardWidth]='cardWidth' [displayMode]='"movie-cards-display-grid"'
       [listType]='LIST_TYPE'>
     </app-card-list>
-    <div *ngIf="hasMoreResults" style='width: 100%; text-align: center; height: 80px; background-color: antiquewhite;'>
+    <div id="loadMoreResults" *ngIf='hasMoreResults && !isFetchingData'
+      style='width: 100%; text-align: center; height: 80px;'>
       <h5 class='text-hyperlink' (click)='getMoreResults()'>Load more results...</h5>
+    </div>
+    <div *ngIf='isFetchingData' class="d-flex justify-content-center p-3">
+      <mat-spinner [diameter]='20'></mat-spinner>
     </div>
   </div>
 </div>

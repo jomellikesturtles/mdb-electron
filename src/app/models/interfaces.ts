@@ -51,15 +51,6 @@ export interface IRating {
   Value: string;
 }
 
-export interface LibraryInfo {
-  tmdbId?: null | number | string;
-  imdbID?: string;
-  title?: string;
-  year?: number;
-  directoryList?: string[];
-  _id: string;
-}
-
 export interface MovieGenre {
   id: number;
   code: string;

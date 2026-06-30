@@ -54,7 +54,7 @@ export interface IRawLibrary {
   title: string,
   year: number,
   tmdbId: number,
-  _id: string;
+  id: string;
 }
 
 interface Library {

@@ -1,13 +1,11 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { PlayedService, IPlayed } from '@services/media/played.service';
-import { IProfileData } from '@models/profile-data.model';
-import { MDBMovie } from '@models/mdb-movie.model';
+import { Component, OnInit, Input, OnChanges, ChangeDetectorRef } from '@angular/core';
+import { IProfileData, MDBMovie } from '@models';
 import ObjectUtil from '@utils/object.utils';
 import { MediaUserDataService } from '@services/media/media-user-data.service';
-import { FeatureToggleService } from '@core/services/feature-toggle.service';
-import { IBookmark } from '@services/media';
 import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
-import { AuthenticationService } from '@services';
+import { AuthenticationService, LibraryService } from '@services';
+import { MovieService } from '@services/movie/movie.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-card-list',
@@ -32,21 +30,50 @@ export class CardListComponent implements OnInit, OnChanges {
       });
     }
     this._movieList = inputMessage;
+    this.checkAvailability();
   }
   get movieList(): any[] {
     return this._movieList;
   }
 
-
   movieAndUserDataList: IMovieAndUserData[] = [];
 
   constructor(
     private mediaUserDataService: MediaUserDataService,
-    private authenticationService: AuthenticationService
+    private authenticationService: AuthenticationService,
+    private libraryService: LibraryService,
+    private movieService: MovieService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
     this.getMoviesUserData();
+    this.checkAvailability();
+  }
+
+  checkAvailability() {
+    const ids = this.collectIds().map(id => parseInt(id));
+    if (ids.length === 0) return;
+
+    Promise.all([
+      this.libraryService.getMoviesFromLibraryInList(ids),
+      firstValueFrom(this.movieService.getStreamsByIdList(ids.map(id => id.toString())))
+    ]).then(([localMovies, streamMovies]) => {
+      const localIds = new Set(localMovies.map((m: any) => m.tmdbId));
+      const streamIds = new Set(streamMovies.map((m: any) => m.tmdbId));
+
+      this.movieAndUserDataList.forEach(item => {
+        const id = parseInt(item.movie.tmdbId);
+        if (localIds.has(id) || streamIds.has(id)) {
+          const updatedMovie = new MDBMovie(item.movie);
+          updatedMovie.isAvailable = true;
+          item.movie = updatedMovie;
+        }
+      });
+      this.cdr.detectChanges();
+    }).catch(err => {
+      console.error('Error resolving availability:', err);
+    });
   }
 
   ngOnChanges(changes: any): void {
@@ -81,69 +108,6 @@ export class CardListComponent implements OnInit, OnChanges {
         });
       }
     }
-  }
-
-  /**
-   * Organizes user data and binds them into movie cards.
-   */
-  curateUserData(dataType: string, docs: IProfileData[] | any): void {
-    const dataList = [];
-
-    docs.forEach(doc => {
-      const docData = doc;
-      const dTmdbId = docData.tmdbId;
-      const dTitle = docData.title;
-      const dYear = docData.year;
-      let myData;
-      switch (dataType) {
-        case 'bookmark':
-          const bm: IBookmark = {
-            id: doc.id ? doc.id : '',
-            tmdbId: dTmdbId ? dTmdbId : 0,
-            title: dTitle ? dTitle : '',
-            year: dYear ? dYear : 0
-          };
-          myData = bm;
-          break;
-        case 'watched':
-          const wtchd: IPlayed = {
-            id: doc.id ? doc.id : '',
-            tmdbId: dTmdbId ? dTmdbId : 0,
-            title: dTitle ? dTitle : '',
-            year: dYear ? parseInt(dYear, 10) : 0,
-            percentage: docData.percentage ? docData.percentage : 100
-          };
-          myData = wtchd;
-          break;
-        case 'video':
-          // const vid: IVideo = {
-          //   id: doc.id ? doc.id : '',
-          //   tmdbId: dTmdbId ? dTmdbId : 0,
-          //   title: dTitle ? dTitle : '',
-          //   year: dYear ? dYear : 0,
-          //   videoUrl: docData.videoUrl ? docData.videoUrl : ''
-          // }
-          const vid = {
-            id: doc.id,
-            tmdbId: docData.tmdbId,
-            videoUrl: docData.fullFilePath
-          };
-          myData = vid;
-          break;
-        case 'none':
-          break;
-        default:
-          break;
-      }
-      dataList.push(myData);
-    });
-    this.movieList.forEach(movie => {
-      dataList.forEach(data => {
-        if (data.tmdbId === movie.id) {
-          movie[dataType] = data;
-        }
-      });
-    });
   }
 
   collectIds() {

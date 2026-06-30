@@ -9,7 +9,7 @@ var command = args[0]
 var movie = args[1]
 
 var movieDataDb = new DataStore({
-    filename: path.join(process.cwd(), 'src', 'assets', 'db', 'movieData.db'),
+    filename: path.join(__dirname, '..', 'db', 'movieData.db'),
     autoload: true
 })
 

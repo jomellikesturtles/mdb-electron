@@ -1,7 +1,7 @@
 import { IUserSavedData } from '@models/interfaces';
 import { Injectable } from '@angular/core';
 import { IpcService } from './ipc.service';
-import { BaseLibraryService } from './base-library.service';
+import { BaseLibraryService, IRawLibrary } from './base-library.service';
 import { CollectionName, FieldName } from '@shared/constants';
 
 @Injectable({ providedIn: 'root' })
@@ -46,10 +46,3 @@ export interface IVideo extends IUserSavedData {
   timestamp?: number,
 }
 
-export interface IRawLibrary {
-  fullFilePath: string,
-  title: string,
-  year: number,
-  tmdbId: number,
-  _id: string;
-}

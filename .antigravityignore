@@ -1,0 +1,6 @@
+node_modules/
+dist/
+build/
+.agent/
+.env
+secret-keys.txt
