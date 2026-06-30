@@ -8,6 +8,7 @@ if (!util.isRegExp) {
 }
 
 const path = require('path');
+const fs = require('fs');
 
 var DataStore = require('nedb')
 var { regexify } = require('./shared/util')
@@ -301,6 +302,9 @@ function getLibraryFileById(id) {
   }
   if (typeof id === 'string') {
     id = id.trim().replace(/^['"]|['"]$/g, '');
+    if (id.endsWith(',')) {
+      id = id.slice(0, -1);
+    }
   }
   return new Promise(function (resolve, reject) {
     libraryFilesDb.loadDatabase(function (err) {
@@ -309,13 +313,39 @@ function getLibraryFileById(id) {
         return resolve([]);
       }
       console.log('[getLibraryFileById] id input:', JSON.stringify(id), 'type:', typeof id, 'length:', id ? id.length : 0);
+
+      // DIAGNOSTIC: Read file directly using fs
+      try {
+        const rawContent = fs.readFileSync(dbPath, 'utf8');
+        console.log('[getLibraryFileById] Direct FS read size:', rawContent.length, 'bytes');
+        const lines = rawContent.split('\n').filter(Boolean);
+        let foundDirectly = null;
+        for (const line of lines) {
+          try {
+            const obj = JSON.parse(line);
+            if (obj._id === id) {
+              foundDirectly = obj;
+              break;
+            }
+          } catch (e) {}
+        }
+        console.log('[getLibraryFileById] Direct FS found record:', foundDirectly);
+      } catch (fsErr) {
+        console.error('[getLibraryFileById] Direct FS read error:', fsErr);
+      }
+
       libraryFilesDb.find({ _id: id }, function (err, data) {
-        console.error('libraryFilesDb.find:', data);
-        if (!err) {
+        console.log('[getLibraryFileById] NeDB query result:', data);
+        let foundDirectly = null;
+        if (!err && data && data.length > 0) {
           resolve(data);
         } else {
-          console.log('err:', err);
-          resolve([]);
+          if (foundDirectly) {
+            console.log('[getLibraryFileById] FALLBACK: returning record found directly by FS read');
+            resolve([foundDirectly]);
+          } else {
+            resolve([]);
+          }
         }
       });
     });

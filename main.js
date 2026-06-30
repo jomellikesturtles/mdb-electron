@@ -590,7 +590,10 @@ ipcMain.on("get-subtitle", function (event, data) {
  * @param libraryFileId libraryFile Id
  */
 ipcMain.on("play-offline-video-stream", function (event, libraryFileId) {
-  DEBUG.log("procVideoService: " + event + " libraryFileId: " + libraryFileId);
+  if (Array.isArray(libraryFileId)) {
+    libraryFileId = libraryFileId[0];
+  }
+  DEBUG.log("procVideoService: " + JSON.stringify(event) + " libraryFileId: " + libraryFileId);
   if (!libraryFileId) {
     console.error("Error: play-offline-video-stream triggered with empty libraryFileId");
     return;
