@@ -1,17 +1,22 @@
 # Stage 1: Build the Angular application
-FROM node:20-alpine AS build
+FROM node:21-alpine AS build
 
 WORKDIR /app
 
+ENV NODE_OPTIONS="--max-old-space-size=8000"
+ENV ELECTRON_SKIP_BINARY_DOWNLOAD=1
+
 # Copy package files and install dependencies
 COPY package*.json ./
-RUN npm ci --legacy-peer-deps --quiet --no-audit --no-fund
+# COPY package.json ./
+RUN npm install --ignore-scripts --legacy-peer-deps --no-audit --no-fund --loglevel error --fetch-timeout=600000
+# RUN npm install` --legacy-peer-deps --quiet --no-audit --no-fund
 
 # Copy the rest of the application code
 COPY . .
 
 # Build the Angular application for production
-RUN npm run build -- --configuration production
+RUN node --max-old-space-size=8000 ./node_modules/@angular/cli/bin/ng build --configuration production
 
 # Remove source maps to reduce final image size
 RUN find dist/mdb-electron -name "*.map" -type f -delete
