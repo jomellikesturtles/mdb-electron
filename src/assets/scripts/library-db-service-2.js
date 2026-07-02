@@ -56,15 +56,31 @@ const countLibrary = function () {
  */
 function insertLibraryFiles(params) {
   libraryFilesDb.ensureIndex({ fieldName: 'fullFilePath', unique: true }, function (err) {
-  libraryFilesDb.insert(params, function (err, numReplaced) {
-    console.log('adding');
-    if (!err || (numReplaced < 1)) {
-      console.log("replaced---->" + numReplaced);
-    } else {
-      // console.log('ERR! ', err);
-    }
-  })
-})
+    libraryFilesDb.findOne({ fullFilePath: params.fullFilePath }, function (err, doc) {
+      if (!err && doc) {
+        // update existing record's title and year if they changed
+        if (doc.title !== params.title || doc.year !== params.year) {
+          libraryFilesDb.update(
+            { _id: doc._id },
+            { $set: { title: params.title, year: params.year } },
+            {},
+            function (updateErr) {
+              if (!updateErr) {
+                console.log('updated title/year for:', params.fullFilePath);
+              }
+            }
+          );
+        }
+      } else {
+        libraryFilesDb.insert(params, function (insertErr) {
+          console.log('adding');
+          if (!insertErr) {
+            console.log("added successfully");
+          }
+        });
+      }
+    });
+  });
 }
 
 /**

@@ -102,27 +102,25 @@ function addToList(folderPath, fileName) {
   saveToLibraryDb(fileInfo);
 }
 
-/**
- * Gets the movie title based on regex
- * @param {string} parentFolder
- * @param {string} fullFileName
- */
 function getTitleAndYear(parentFolder, fullFileName) {
   //1: title, 2: year, 3: extension
-  var fileTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`;
-  var folderTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*$)`;
+  var fileTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20\\d{2})).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`;
+  var folderTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20\\d{2})).*$)`;
   var titleRegex = new RegExp(fileTitleRegexStr, "gmi");
   var result = null;
   result = titleRegex.exec(fullFileName);
   if (result && result[1]) {
-    //if not blank or undefined
+    result[1] = result[1].replace(/[._]/g, ' ').trim();
     return result;
   } else {
     titleRegex = new RegExp(folderTitleRegexStr, "gmi");
     result = titleRegex.exec(parentFolder);
     if (!result) {
       //if still null or empty
-      return fullFileName.substring(0, fullFileName.lastIndexOf("."));
+      const cleanTitle = fullFileName.substring(0, fullFileName.lastIndexOf(".")).replace(/[._]/g, ' ').trim();
+      return [fullFileName, cleanTitle, undefined];
+    } else {
+      result[1] = result[1].replace(/[._]/g, ' ').trim();
     }
   }
   return result;
