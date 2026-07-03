@@ -92,13 +92,6 @@ export class PlayedService extends BasePlayedService {
   }
 
   /**
-   * Gets first page of list.
-   */
-  getPlayedPaginatedFirstPage(): Promise<IUserDataPaginated | any> {
-    return this.ipcService.getMultiplePaginatedFirst(CollectionName.Watched, FieldName.TmdbId, 20);
-  }
-
-  /**
    * Gets multiple watched.
    * @param lastVal the last value to start with.
    */

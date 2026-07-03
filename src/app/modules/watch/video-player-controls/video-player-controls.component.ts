@@ -20,6 +20,7 @@ export class VideoPlayerControlsComponent implements OnInit {
   // @Input() videoPlayer1: any // tocheck
   @Input() videoTime: IVideoTime
   @Input() progressBar: IProgressBar
+  @Input() isAskAiEnabled: boolean = true
 
   @Output() onTogglePlay = new EventEmitter<any>();
   @Output() onToggleMute = new EventEmitter<any>();
@@ -33,6 +34,7 @@ export class VideoPlayerControlsComponent implements OnInit {
   @Output() onChangeBackgroundColor = new EventEmitter<any>();
   @Output() onChangeBackgroundOpacity = new EventEmitter<any>();
   @Output() onAdjustFontSize = new EventEmitter<number>();
+  @Output() onToggleAiChat = new EventEmitter<void>();
 
   fontColorsList = RGB_COLOR_LIST
   // fontColorsList = COLOR_LIST
@@ -70,6 +72,12 @@ export class VideoPlayerControlsComponent implements OnInit {
   }
   toggleFullScreen() {
     this.onToggleFullScreen.emit()
+  }
+  askAi() {
+    this.onToggleAiChat.emit();
+  }
+  castVideo() {
+    // No-op for now
   }
   volumeChange(val) {
     this.onChangeVolume.emit(val);

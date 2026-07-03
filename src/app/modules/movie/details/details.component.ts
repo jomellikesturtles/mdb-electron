@@ -4,7 +4,6 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit } from '
 import { MDBTorrent } from '@models/interfaces';
 import { IpcService } from '@services/ipc.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TROUBLE_QUOTES } from '@shared/constants';
 import { Subject } from 'rxjs';
 import { basename } from 'path';
 import { IProfileData } from '@models/profile-data.model';
@@ -39,6 +38,8 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
   torrents: MDBTorrent[] = [];
   isAvailable = false;
   hasData = false;
+  isLoading = false;
+  hasError = false;
   streamLink = '';
   troubleQuote;
   movieDetailsPersons = {
@@ -287,22 +288,43 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   getMovieOnline(val: number) {
     GeneralUtil.DEBUG.log('getMovie initializing with value...', val);
+    this.isLoading = true;
+    this.hasError = false;
+    this.hasData = false;
+    this.cdr.detectChanges();
 
     this.movieService.getMovieDetails(val, 'videos,images,credits,similar,external_ids,recommendations,reviews')
-      .subscribe((data) => {
-        this.movieDetails = data;
-        this.loadVideoData();
-        this.hasData = true;
-        this.movieService.getStreams(data.imdbId).subscribe((data) => {
-          GeneralUtil.DEBUG.log("streams", data);
+      .subscribe({
+        next: (data) => {
+          this.movieDetails = data;
+          this.loadVideoData();
+          this.hasData = true;
+          this.isLoading = false;
+          this.hasError = false;
+          this.movieService.getStreams(data.imdbId).subscribe({
+            next: (streamsData) => {
+              GeneralUtil.DEBUG.log("streams", streamsData);
 
-          this.torrents = data.torrents;
-          const sortedTorrents = [...this.torrents].sort((a, b) => b.peers - a.peers);
-          this.torrents = sortedTorrents;
-          this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(this.torrents)];
-          this.updateBestPlayLink();
-        });
-        this.cdr.detectChanges();
+              this.torrents = streamsData.torrents;
+              const sortedTorrents = [...this.torrents].sort((a, b) => b.peers - a.peers);
+              this.torrents = sortedTorrents;
+              this.playLinks = [...this.playLinks, ...this.mapPlayLinkList(this.torrents)];
+              this.updateBestPlayLink();
+              this.cdr.detectChanges();
+            },
+            error: (err) => {
+              this.loggerService.error(`getStreams error: ${JSON.stringify(err)}`);
+              this.cdr.detectChanges();
+            }
+          });
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.loggerService.error(`getMovieDetails error: ${JSON.stringify(err)}`);
+          this.isLoading = false;
+          this.hasError = true;
+          this.cdr.detectChanges();
+        }
       });
   }
 
@@ -545,11 +567,6 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.dataService.updatePreviewMovie(this.movieDetails);
   }
 
-  getTroubleQuote() {
-    const length = TROUBLE_QUOTES.length;
-    this.troubleQuote = TROUBLE_QUOTES[Math.floor(Math.random() * (-1 - length + 1)) + length];
-  }
-
   /**
    * Converts genre code into its genre name equivalent.
    * @param genreCode genre code origin
@@ -615,7 +632,8 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   mapPlayLink(arg: IRawLibrary | MDBTorrent): PlayLink {
     let playLink = new PlayLink();
-    playLink.id = arg.hasOwnProperty('_id') ? arg['_id'] : null;
+    playLink.id = arg['id'] || arg['_id'] || null;
+    playLink.tmdbId = arg.hasOwnProperty('tmdbId') ? arg['tmdbId'] : null;
     playLink.hash = arg.hasOwnProperty('hash') ? arg['hash'] : null;
     playLink.name = arg.hasOwnProperty('name') ? arg['name'] : basename(arg['fullFilePath']);
     playLink.quality = arg.hasOwnProperty('quality') ? arg['quality'] : '';

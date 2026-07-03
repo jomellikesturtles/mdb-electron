@@ -3,6 +3,7 @@ export class PlayLink {
   name: string;
   type: 'torrent' | 'offline';
   url: string;
+  tmdbId: string;
   quality: string;
   // size?: string
   hash: string;

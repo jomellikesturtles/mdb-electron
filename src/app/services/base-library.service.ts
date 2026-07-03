@@ -28,10 +28,6 @@ export abstract class BaseLibraryService {
    */
   protected abstract getMoviesFromLibraryInList(idList: number[]): Promise<any>;
 
-  /**
-   * Gets first page of list. Gets multiple videos. Movie(s) eventually becomes available in status.
-   */
-  protected abstract getLibraryPaginatedFirstPage(): Promise<any>;
 
   /**
    * Gets multiple library.
@@ -58,7 +54,7 @@ export interface IRawLibrary {
   title: string,
   year: number,
   tmdbId: number,
-  _id: string;
+  id: string;
 }
 
 interface Library {

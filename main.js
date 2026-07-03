@@ -19,11 +19,10 @@ const configDb = new Datastore({
   autoload: true
 });
 let { onUserData } = require("./src/assets/scripts/user-media-db");
-const { onLibrary } = require("./src/assets/scripts/library-db-service");
+const { onLibrary2 } = require("./src/assets/scripts/library-db-service-2");
 const { onPreferences } = require("./src/assets/scripts/preferences-service");
 
 let procLibraryDb;
-let procSearch;
 let procTorrentSearch;
 let procVideoService;
 let offlineMovieDataService;
@@ -111,13 +110,15 @@ function createMainWindow() {
 
   app.whenReady().then(() => {
     DEBUG.log("splashWindow: ", splashWindow);
-    if (splashWindow) {
+    if (splashWindow && !splashWindow.isDestroyed()) {
       DEBUG.log("closing splash window...");
       splashWindow.close();
     }
   });
   mainWindow.webContents.once("dom-ready", function () {
-    splashWindow.close();
+    if (splashWindow && !splashWindow.isDestroyed()) {
+      splashWindow.close();
+    }
     DEBUG.log("domready");
   });
 
@@ -149,7 +150,6 @@ function createMainWindow() {
 app.setAppUserModelId(process.execPath);
 // Create window on electron initialization
 app.on("ready", showSplash);
-app.on("ready", showWindow);
 
 // Quit when all windows are closed.
 app.on("window-all-closed", function () {
@@ -161,8 +161,10 @@ app.on("window-all-closed", function () {
 app.on("before-quit", function () {
   // TODO: save changes
   globalShortcut.unregisterAll();
-  mainWindow.removeAllListeners("close");
-  mainWindow.close();
+  if (mainWindow) {
+    mainWindow.removeAllListeners("close");
+    mainWindow.close();
+  }
 });
 app.on("activate", function () {
   DEBUG.log("activate");
@@ -185,12 +187,13 @@ function showSplash() {
     transparent: false,
     alwaysOnTop: true,
     webPreferences: {
-      // preload: __dirname + "/preload.js",
-      // experimentalFeatures: true,
+      preload: path.join(__dirname, "preload-splash.js"),
       nodeIntegration: false,
+      contextIsolation: false,
+      sandbox: false,
       webSecurity: false,
-      nativeWindowOpen: true,
-      devTools: true
+      nativeWindowOpen: true
+      // devTools: true
     },
     title: "Starting MDB"
   });
@@ -202,6 +205,12 @@ function showSplash() {
       slashes: true
     })
   );
+
+  // splashWindow.webContents.openDevTools();
+
+  splashWindow.webContents.on("console-message", (event, level, message, line, sourceId) => {
+    DEBUG.log(`[Splash Console] ${message} (from ${sourceId}:${line})`);
+  });
 
   splashWindow.webContents.once("dom-ready", function () {
     DEBUG.log("Splash webcontents dom ready");
@@ -217,8 +226,12 @@ function showSplash() {
 
 ipcMain.on("splash-done", function (event, msg) {
   DEBUG.log("splash-done");
-  createMainWindow();
-  splashWindow.webContents.send("fade");
+  setTimeout(() => {
+    if (splashWindow && !splashWindow.isDestroyed()) {
+      splashWindow.webContents.send("fade");
+    }
+    createMainWindow();
+  }, 2000);
 });
 
 function setSystemTray() {
@@ -422,7 +435,7 @@ ipcMain.on(IPCRendererChannel.SCAN_LIBRARY_STOP, function (event) {
  */
 ipcMain.on("library", function (event, data) {
   DEBUG.log("on library", data);
-  onLibrary(data, mainWindow);
+  onLibrary2(data, mainWindow);
 });
 
 /**
@@ -576,8 +589,15 @@ ipcMain.on("get-subtitle", function (event, data) {
  * Gets the video by id and streams to localhost.
  * @param libraryFileId libraryFile Id
  */
-ipcMain.on("play-offline-video-stream", function (event, libraryFile) {
-  DEBUG.log("procVideoService", mediaUserData);
+ipcMain.on("play-offline-video-stream", function (event, libraryFileId) {
+  if (Array.isArray(libraryFileId)) {
+    libraryFileId = libraryFileId[0];
+  }
+  DEBUG.log("procVideoService: " + JSON.stringify(event) + " libraryFileId: " + libraryFileId);
+  if (!libraryFileId) {
+    console.error("Error: play-offline-video-stream triggered with empty libraryFileId");
+    return;
+  }
   procVideoService = forkChildProcess(
     "src/assets/scripts/video-service.js",
     [libraryFileId],

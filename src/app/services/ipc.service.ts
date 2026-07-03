@@ -10,9 +10,9 @@ import { RendererToMainChannels, MainToRendererChannels } from '../../electron/c
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, from } from 'rxjs';
-import { IRawLibrary } from './library.service';
 import { LoggerService } from '@core/logger.service';
 import { IAppError } from '@models/app-error.model';
+import { IRawLibrary } from './base-library.service';
 
 @Injectable({
   providedIn: 'root'
@@ -189,6 +189,9 @@ export class IpcService {
   }
 
   getPlayTorrent(hash: string): Promise<any> {
+    // return Promise.resolve('http://localhost:3002/0/The.School.Of.Rock.2003.1080p.BluRay.x264.YIFY.mp4');
+    // return Promise.resolve('http://localhost:3002/0/The.Super.Mario.Galaxy.Movie.2026.720p.BluRay.x264.AAC-%5BYTS.BZ%5D.mp4');
+
     if (!this.isElectron()) return Promise.resolve(null);
     this.sendToMain(RendererToMainChannels.PLAY_TORRENT, hash);
     return this.listenOnce(MainToRendererChannels.STREAM_LINK);
@@ -200,6 +203,10 @@ export class IpcService {
   }
 
   playOfflineVideo(docId): Promise<any> {
+
+    // return Promise.resolve('http://localhost:3002/0/The.Super.Mario.Galaxy.Movie.2026.720p.BluRay.x264.AAC-%5BYTS.BZ%5D.mp4');
+    // this.showVideo = true;
+    // return Promise.resolve('http://localhost:3002/0/The.School.Of.Rock.2003.1080p.BluRay.x264.YIFY.mp4');
     if (!this.isElectron()) return Promise.resolve(null);
     this.sendToMain(RendererToMainChannels.PLAY_OFFLINE_VIDEO_STREAM, docId);
     return this.listenOnce(MainToRendererChannels.STREAM_LINK);

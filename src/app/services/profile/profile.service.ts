@@ -17,6 +17,15 @@ export class ProfileService extends BaseProfileService {
 
   }
 
+  getProfiles(): Observable<IUserProfile[]> {
+    return this.httpBaseService.get(this.httpUrlProvider.getBffAPI(ENDPOINT.PROFILES));
+  }
+
+  switchProfile(profileId: string): void {
+    localStorage.setItem('active_profile_id', profileId);
+    window.location.reload();
+  }
+
 
 
   updateProfile(data: Partial<IUserProfile>): Observable<any> {

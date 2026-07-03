@@ -4,6 +4,14 @@
 // const promise = require('promise')
 // const cp = require('child_process');
 
+const util = require("util");
+if (!util.isDate) {
+  util.isDate = (obj) => Object.prototype.toString.call(obj) === '[object Date]';
+}
+if (!util.isRegExp) {
+  util.isRegExp = (obj) => Object.prototype.toString.call(obj) === '[object RegExp]';
+}
+
 /*jshint esversion: 8 */
 let args = process.argv.slice(2);
 const searchMovie = require("./search-movie");
@@ -38,11 +46,11 @@ process.on("disconnect", function (error) {
   DEBUG.log("disconnect: ", error);
 });
 
-// process.send =
-//   process.send ||
-//   function (...args) {
-//     DEBUG.log("SIMULATING process.send", ...args);
-//   };
+process.send =
+  process.send ||
+  function (...args) {
+    DEBUG.log("SIMULATING process.send", ...args);
+  };
 
 // Toy.Story.4
 /**
@@ -62,7 +70,7 @@ function addToList(folderPath, fileName) {
   const fullFilePath = path.join(folderPath, fileName);
   const stat = fs.lstatSync(fullFilePath);
   const dir = path.dirname(fullFilePath);
-  const parentFolder = folderPath.substr(folderPath.lastIndexOf("\\") + 1);
+  const parentFolder = path.basename(folderPath);
   const byteSize = stat.size;
   const extension = path.extname(fullFilePath);
   const fullFileName = path.basename(fullFilePath);
@@ -94,27 +102,25 @@ function addToList(folderPath, fileName) {
   saveToLibraryDb(fileInfo);
 }
 
-/**
- * Gets the movie title based on regex
- * @param {string} parentFolder
- * @param {string} fullFileName
- */
 function getTitleAndYear(parentFolder, fullFileName) {
   //1: title, 2: year, 3: extension
-  var fileTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`;
-  var folderTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20(?:0\\d|1[0-9]))).*$)`;
+  var fileTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20\\d{2})).*|(?:(?=bluray|\\d+p|brrip|WEBRip)..*)?[.](mkv|avi|mpe?g|mp4)$)`;
+  var folderTitleRegexStr = `^(.+?)[.( \\t]*(?:(?:(19\\d{2}|20\\d{2})).*$)`;
   var titleRegex = new RegExp(fileTitleRegexStr, "gmi");
   var result = null;
   result = titleRegex.exec(fullFileName);
   if (result && result[1]) {
-    //if not blank or undefined
+    result[1] = result[1].replace(/[._]/g, ' ').trim();
     return result;
   } else {
     titleRegex = new RegExp(folderTitleRegexStr, "gmi");
     result = titleRegex.exec(parentFolder);
     if (!result) {
       //if still null or empty
-      return fullFileName.substring(0, fullFileName.lastIndexOf("."));
+      const cleanTitle = fullFileName.substring(0, fullFileName.lastIndexOf(".")).replace(/[._]/g, ' ').trim();
+      return [fullFileName, cleanTitle, undefined];
+    } else {
+      result[1] = result[1].replace(/[._]/g, ' ').trim();
     }
   }
   return result;
@@ -149,14 +155,8 @@ function checkForSiblings(startPath) {
  * Checks if file is a video file
  */
 function isVideoFile(params) {
-  var result = false;
-  validExtensions.forEach((element) => {
-    if (params.indexOf(element) > 0) {
-      result = true;
-      return result;
-    }
-  });
-  return result;
+  const ext = path.extname(params).toLowerCase();
+  return validExtensions.includes(ext);
 }
 
 /**

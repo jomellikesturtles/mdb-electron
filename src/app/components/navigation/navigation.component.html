@@ -1,29 +1,29 @@
-<div class="layout-container">
+<div class="layout-container" [class.auth-layout]="isAuthRoute">
 
   <!-- Fixed Top Header -->
-  <div class="top-nav-wrapper">
+  <div class="top-nav-wrapper" *ngIf="!isAuthRoute">
     <app-top-navigation (toggleSidebar)="toggleSideNav()"></app-top-navigation>
   </div>
 
   <!-- Main Body (Sidebar + Content) -->
-  <div class="main-body">
+  <div class="main-body" [class.no-sidebar]="isAuthRoute">
 
     <!-- Mobile Backdrop (Click to close) -->
     <div class="mobile-backdrop" *ngIf="isMobile && isMobileOpen" (click)="toggleSideNav()"></div>
 
     <!-- Sidebar Navigation -->
-    <nav class="sidenav" [class.expanded]="isExpanded" [class.mobile-open]="isMobileOpen">
+    <nav class="sidenav" *ngIf="!isAuthRoute" [class.expanded]="isExpanded" [class.mobile-open]="isMobileOpen">
 
       <!-- Navigation Links -->
       <div class="nav-links">
 
         <!-- History / Navigation Control (Optional) -->
-        <div class="sidenav-option" (click)="goPreviousPage()" title="Go Back">
+        <div class="sidenav-option" [class.disabled]="!canGoBack" (click)="goPreviousPage()" [matTooltip]="isExpanded ? '' : 'Back'" matTooltipPosition="right">
           <img class="side-nav-icon" src="assets/icons/arrow-left.svg" alt="Back" />
           <span class="nav-label">Back</span>
         </div>
 
-        <div class="sidenav-option" (click)="goForwardPage()" title="Go Forward">
+        <div class="sidenav-option" (click)="goForwardPage()" [matTooltip]="isExpanded ? '' : 'Forward'" matTooltipPosition="right">
           <img class="side-nav-icon" src="assets/icons/arrow-right.svg" alt="Forward" />
           <span class="nav-label">Forward</span>
         </div>
@@ -31,32 +31,32 @@
         <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0;"></div>
 
         <!-- Main Routes -->
-        <a routerLink="/dashboard" routerLinkActive="router-active" class="sidenav-option" title="Home">
+        <a routerLink="/dashboard" routerLinkActive="router-active" class="sidenav-option" [matTooltip]="isExpanded ? '' : 'Home'" matTooltipPosition="right">
           <img class="side-nav-icon" src="assets/icons/home.svg" alt="Home" />
           <span class="nav-label">Home</span>
         </a>
 
-        <a routerLink="/browse/favorites" routerLinkActive="router-active" class="sidenav-option" title="Favorites">
-          <img class="side-nav-icon" src="assets/icons/globe.svg" alt="Favorites" />
+        <a routerLink="/browse/favorites" routerLinkActive="router-active" class="sidenav-option" [matTooltip]="isExpanded ? '' : 'Favorites'" matTooltipPosition="right">
+          <img class="side-nav-icon" src="assets/icons/heart.svg" alt="Favorites" />
           <span class="nav-label">Favorites</span>
         </a>
-        <a routerLink="/browse/bookmarks" routerLinkActive="router-active" class="sidenav-option" title="Bookmarks">
-          <img class="side-nav-icon" src="assets/icons/globe.svg" alt="Bookmarks" />
+        <a routerLink="/browse/bookmarks" routerLinkActive="router-active" class="sidenav-option" [matTooltip]="isExpanded ? '' : 'Bookmarks'" matTooltipPosition="right">
+          <img class="side-nav-icon" src="assets/icons/bookmark-clean.svg" alt="Bookmarks" />
           <span class="nav-label">Bookmarks</span>
         </a>
-        <a routerLink="/browse/played" routerLinkActive="router-active" class="sidenav-option" title="Played">
-          <img class="side-nav-icon" src="assets/icons/globe.svg" alt="Played" />
+        <a routerLink="/browse/played" routerLinkActive="router-active" class="sidenav-option" [matTooltip]="isExpanded ? '' : 'Played'" matTooltipPosition="right">
+          <img class="side-nav-icon" src="assets/icons/eye.svg" alt="Played" />
           <span class="nav-label">Played</span>
         </a>
 
-        <a routerLink="/library" routerLinkActive="router-active" class="sidenav-option" title="Library">
+        <a routerLink="/library" routerLinkActive="router-active" class="sidenav-option" [matTooltip]="isExpanded ? '' : 'Library'" matTooltipPosition="right">
           <img class="side-nav-icon" src="assets/icons/server.svg" alt="Library" />
           <span class="nav-label">Library</span>
         </a>
 
         <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0;"></div>
 
-        <a routerLink="/preferences" routerLinkActive="router-active" class="sidenav-option" title="Settings">
+        <a routerLink="/preferences" routerLinkActive="router-active" class="sidenav-option" [matTooltip]="isExpanded ? '' : 'Settings'" matTooltipPosition="right">
           <img class="side-nav-icon" src="assets/icons/gear.svg" alt="Settings" />
           <span class="nav-label">Settings</span>
         </a>
@@ -66,8 +66,7 @@
     </nav>
 
     <!-- Main Content Area -->
-    <main class="main-content">
-
+    <main class="main-content" [class.fullscreen-content]="isAuthRoute">
       <router-outlet></router-outlet>
     </main>
 

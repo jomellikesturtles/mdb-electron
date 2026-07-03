@@ -3,10 +3,8 @@ import {
 } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 import { ProfileService } from '@services/profile/profile.service';
-import { UserDataService } from '@services/user-data/user-data.service';
 import { IUserProfile } from '@models/user.model';
 import { Router } from '@angular/router';
-import { AuthenticationService } from '@services';
 
 @Component({
   selector: 'app-profile',
@@ -35,16 +33,12 @@ export class ProfileComponent implements OnInit {
   background: ThemePalette = undefined;
 
   constructor(
-    private userDataService: UserDataService,
-    // private userDataService: User,
-    private authenticationService: AuthenticationService,
     private profileService: ProfileService,
     private router: Router
   ) { }
 
   ngOnInit() {
     this.getUser();
-    this.getUserData();
   }
 
   ngAfterViewInit(): void {
@@ -102,19 +96,4 @@ export class ProfileComponent implements OnInit {
 
   }
 
-  getUserData() {
-    this.userDataService.getUserDataFirstPage('watched').then(e => {
-      console.log('getuserdata watched', e);
-      this.moviesWatchedList.count = e.totalResults;
-      this.moviesWatchedList.data = e.results;
-      this.userStats.watched = e.totalResults;
-    });
-    this.userDataService.getUserDataFirstPage('bookmark').then(e => {
-      console.log('getuserdata bookmark', e);
-      this.moviesBookmarksList.count = e.totalResults;
-      this.moviesBookmarksList.data = e.results;
-      this.userStats.bookmarked = e.totalResults;
-    });
-    // Add calls for favorites/reviews if available
-  }
 }

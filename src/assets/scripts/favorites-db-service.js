@@ -12,7 +12,7 @@ const { getNumberOfPages } = require("./shared/util");
 
 var favoritesDb = new DataStore({
   // filename: path.join(__dirname, '..', 'db', 'favorites.db'), // node
-  filename: path.join(process.cwd(), "src", "assets", "db", "favorites.db"),
+  filename: path.join(__dirname, "..", "db", "favorites.db"),
   autoload: true
 });
 

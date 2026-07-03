@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
-export type FeatureName = 'newSearch' | 'betaFeatures' | 'springMode' | 'torrent_flag' | 'direct_tmdb' | 'trailer' | 'played_status' | 'sessionWarning';
+export type FeatureName = 'newSearch' | 'betaFeatures' | 'springMode' | 'torrent_flag' | 'direct_tmdb' | 'trailer' | 'played_status' | 'sessionWarning' | 'askAi';
 
 interface IFeature {
   description: string;

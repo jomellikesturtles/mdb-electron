@@ -36,7 +36,7 @@ import { MockAuthenticationService } from "@services/mock-authentication.service
     // { provide: MovieService, useExisting: MockMovieService },
     // { provide: ProfileService, useExisting: MockProfileService },
     // { provide: TorrentService, useExisting: MockTorrentService }
-    { provide: LibraryService, useExisting: MockLibraryService },
+    // { provide: LibraryService, useExisting: MockLibraryService },
 
     // { provide: HTTP_INTERCEPTORS, useClass: MockInterceptorService, multi: true },
   ]

@@ -19,8 +19,6 @@ const routes: Routes = [
   { path: 'person-details', component: PersonDetailsComponent, canActivate: [MdbGuardGuard] },
   { path: 'preview', component: PreviewComponent },
 
-  { path: 'bookmarks', loadChildren: () => import('@modules/user/bookmarks/bookmarks.module').then(m => m.BookmarksModule), canLoad: [MdbGuardGuard], canActivate: [MdbGuardGuard] },
-  { path: 'watched', loadChildren: () => import('@modules/user/watched/watched.module').then(m => m.WatchedModule), canActivate: [MdbGuardGuard] },
   { path: 'dashboard', loadChildren: () => import('@components/dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [MdbGuardGuard] },
   { path: 'discover', loadChildren: () => import('@modules/movie/discover/discover.module').then(m => m.DiscoverModule), canActivate: [MdbGuardGuard] },
   { path: 'library', loadChildren: () => import('@modules/person/library/library.module').then(m => m.LibraryModule), canActivate: [MdbGuardGuard] },

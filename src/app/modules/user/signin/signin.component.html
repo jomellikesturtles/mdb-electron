@@ -1,44 +1,50 @@
 <div class="signin-container">
-  <!-- Background Image with Overlay -->
-  <div class="background-image"></div>
+  <!-- Looping Background Video backdrop -->
+  <video autoplay muted loop playsinline class="background-video">
+    <source
+      src="assets/backdrops/YTDown_YouTube_The-most-beautiful-shots-in-film-history_Media_c8rCgrGPQwM_001_1080p.mp4"
+      type="video/mp4">
+  </video>
   <div class="background-overlay"></div>
 
   <div class="signin-content">
     <mdb-card title="Sign In" padding="lg" class="signin-card">
 
-        <div *ngIf="generalError" class="signin-error-alert mb-3">
-          <mat-icon>error_outline</mat-icon>
-          <span>{{ generalError }}</span>
+      <div *ngIf="generalError" class="signin-error-alert mb-3">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ generalError }}</span>
+      </div>
+
+      <form [formGroup]="signInForm" (ngSubmit)="onSignIn()" class="signin-form d-flex flex-column gap-3">
+
+        <mdb-input label="Username or Email" formControlName="usernameEmail" placeholder="Enter your username or email"
+          error="Username or Email is required"></mdb-input>
+
+        <mdb-input label="Password" type="password" formControlName="password" placeholder="Password"
+          error="Password is required"></mdb-input>
+
+        <mdb-button variant="primary" [fullWidth]="true" type="submit" [disabled]="signInForm.invalid" size="lg">
+          Sign In
+        </mdb-button>
+
+        <div class="separator">
+          <span>OR</span>
         </div>
 
-        <form [formGroup]="signInForm" (ngSubmit)="onSignIn()" class="signin-form d-flex flex-column gap-3">
+        <button type="button" class="google-signin-btn" (click)="onSignInGoogle()">
+          <img src="assets/icons/google-logo.png" alt="Google" class="google-icon">
+          <span>Sign in with Google</span>
+        </button>
 
-          <mdb-input label="Username or Email" formControlName="usernameEmail" placeholder="Enter your username or email" error="Username or Email is required"></mdb-input>
+      </form>
 
-          <mdb-input label="Password" type="password" formControlName="password" placeholder="Password"
-            error="Password is required"></mdb-input>
-
-          <mdb-button variant="primary" [fullWidth]="true" type="submit" [disabled]="signInForm.invalid" size="lg">
-            Sign In
-          </mdb-button>
-
-          <div class="separator">
-            <span>OR</span>
-          </div>
-
-          <button type="button" class="google-signin-btn" (click)="onSignInGoogle()">
-            <img src="assets/icons/google-logo.png" alt="Google" class="google-icon">
-            <span>Sign in with Google</span>
-          </button>
-
-        </form>
-
-        <div class="signin-footer">
-          <div class="links">
-            <a routerLink="/user/reset-password" class="text-link mb-2 d-block text-center">Forgot password?</a>
-            <p class="signup-text text-center">New to MDB? <a routerLink="/user/register" class="text-link highlight">Sign up now</a></p>
-          </div>
+      <div class="signin-footer">
+        <div class="links">
+          <a routerLink="/user/reset-password" class="text-link mb-2 d-block text-center">Forgot password?</a>
+          <p class="signup-text text-center">New to MDB? <a routerLink="/user/register" class="text-link highlight">Sign
+              up now</a></p>
         </div>
+      </div>
     </mdb-card>
   </div>
 </div>

@@ -4,6 +4,9 @@
     <img [src]="'https://image.tmdb.org/t/p/w185'+_movie.posterPath" (error)="$event.target.src = defaultPoster"
       class="movie-poster-img" alt="{{movie.title}}" />
 
+    <!-- Availability Indicator (Green Dot) -->
+    <div *ngIf="_movie?.isAvailable" class="availability-dot" matTooltip="Available to watch"></div>
+
     <ng-container *ngIf="isAuthenticated()">
       <div class='card-button movie-bookmark' [class.active]="_isBookmarked" data-toggle='tooltip'
         title='Toggle Bookmark'>
@@ -38,7 +41,8 @@
       }
     </ng-container>
 
-    <div class="overlay overlay-add" (click)='onPreview()'></div>
+    <!-- <div class="overlay overlay-add" (click)='onPreview()'></div> -->
+    <div class="overlay overlay-add" (click)='onOpenMovie()'></div>
   </div>
   <div class="card-body movie-card-body">
     <div class="movie-card-text">

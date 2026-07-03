@@ -65,6 +65,10 @@ export class HttpInterceptorService implements HttpInterceptor {
 
   modifyRequest(request: HttpRequest<any>): HttpRequest<any> {
     let headers = request.headers.set('Authorization', 'Bearer ' + (sessionStorage.getItem('token')));
+    const activeProfileId = localStorage.getItem('active_profile_id');
+    if (activeProfileId) {
+      headers = headers.set('X-Profile-Id', activeProfileId);
+    }
     // request.headers.set('Access-Control-Allow-Origin', '*');
     return request.clone({
       headers,

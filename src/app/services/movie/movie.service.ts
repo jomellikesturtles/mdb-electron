@@ -227,6 +227,13 @@ export class MovieService extends BaseMovieService {
     );
   }
 
+  getStreamsByIdList(movieIdList: string[], refresh: boolean = false): Observable<any> {
+    const mockStreams = movieIdList
+      .filter((_, idx) => idx % 3 === 0)
+      .map(id => ({ tmdbId: parseInt(id), streams: [{ quality: '1080p' }] }));
+    return of(mockStreams);
+  }
+
   private externalId(tmdbId: string): Observable<TMDB_External_Id> {
     const url = `${this.TMDB_URL}/movie/${tmdbId}/external_ids?api_key=${this.TMDB_API_KEY}`;
     return this.httpBaseService.get<TMDB_External_Id>(url, 'getExternalId').pipe(tap(_ => this.log('')));

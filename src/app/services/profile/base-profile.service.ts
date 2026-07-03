@@ -22,5 +22,6 @@ export abstract class BaseProfileService {
   ) { }
 
   protected abstract getProfile(username: string, refresh: boolean): Observable<IUserProfile>;
+  protected abstract getProfiles(): Observable<IUserProfile[]>;
 
 }

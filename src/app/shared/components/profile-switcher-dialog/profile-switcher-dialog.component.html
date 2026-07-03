@@ -1,0 +1,36 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 class="title">Who's watching?</h2>
+    <button class="close-btn" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    <div *ngIf="loading" class="spinner-container">
+      <mat-spinner [diameter]="50"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading" class="profiles-grid">
+      <div *ngFor="let profile of profiles" 
+           class="profile-card" 
+           [class.active]="profile.username === activeProfileId"
+           (click)="selectProfile(profile.username)">
+        
+        <div class="avatar-wrapper">
+          <img [src]="profile.avatar || 'assets/offline-image/clint-eastwood.jfif'" 
+               alt="{{ profile.name }}" 
+               class="avatar-img" />
+          <div class="active-badge" *ngIf="profile.username === activeProfileId">
+            <mat-icon>check</mat-icon>
+          </div>
+        </div>
+
+        <div class="profile-info">
+          <span class="profile-name">{{ profile.name }}</span>
+          <span class="profile-role" *ngIf="profile.isMain">Primary</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
