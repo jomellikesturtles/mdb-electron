@@ -9,7 +9,7 @@
   },
   "springMode": {
     "description": "Call Spring API",
-    "enabled": true
+    "enabled": false
   },
   "torrent_flag": {
     "description": "Play from Torrent",
@@ -17,7 +17,7 @@
   },
   "direct_tmdb": {
     "description": "Call TMDB API directly from here",
-    "enabled": false
+    "enabled": true
   },
   "played_status": {
     "description": "Played/watched/progress status",

@@ -23,10 +23,9 @@ var libraryDbService = require("./library-db-service-2.js");
 var identifyMovie = require("./identify-movie");
 var DataStore = require("nedb");
 const { DEBUG } = require("./shared/util");
+const getUnpackedPath = (p) => p ? p.replace(/app\.asar([\/\\]|$)/, 'app.asar.unpacked$1') : p;
 var config = new DataStore({
-  // filename: "../config/config.db",// for node only
-  filename: path.join(__dirname, "..", "config", "config.db"),
-  // filename: '../config/config.db',
+  filename: getUnpackedPath(path.join(__dirname, "..", "config", "config.db")),
   autoload: true,
 });
 

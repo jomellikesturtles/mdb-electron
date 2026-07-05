@@ -23,9 +23,10 @@
   })();
 
   DEBUG.log("Splash screen starting...");
-  const prestartPath = path.join(__dirname, "src/assets/scripts/pre-start.js");
+  const getUnpackedPath = (p) => p ? p.replace(/app\.asar([\/\\]|$)/, 'app.asar.unpacked$1') : p;
+  const prestartPath = getUnpackedPath(path.join(__dirname, "src/assets/scripts/pre-start.js"));
   procPreStart = window.fork(prestartPath, null, {
-    cwd: __dirname,
+    cwd: getUnpackedPath(__dirname),
     silent: false
   });
   let currentTime = new Date();
@@ -36,9 +37,7 @@
     DEBUG.log("EXIT");
     ipcRenderer.send("splash-done");
   });
-  console.log("Sending splash-done");
 
-  ipcRenderer.send("splash-done");
   procPreStart.on("message", function (msg) {
     console.log("MSG:", msg);
     if (msg && msg.length > 1) {

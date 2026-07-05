@@ -10,9 +10,9 @@ const path = require("path");
 const DataStore = require("nedb");
 const { getNumberOfPages } = require("./shared/util");
 
+const getUnpackedPath = (p) => p ? p.replace(/app\.asar([\/\\]|$)/, 'app.asar.unpacked$1') : p;
 var favoritesDb = new DataStore({
-  // filename: path.join(__dirname, '..', 'db', 'favorites.db'), // node
-  filename: path.join(__dirname, "..", "db", "favorites.db"),
+  filename: getUnpackedPath(path.join(__dirname, "..", "db", "favorites.db")),
   autoload: true
 });
 

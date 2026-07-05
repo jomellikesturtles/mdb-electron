@@ -30,7 +30,7 @@
     "clean:install": "rm -rf node_modules && rm -rf package-lock.json && npm cache clean --force && npm install --legacy-peer-deps",
     "docs:json": "compodoc -p ./tsconfig.json -e json -d .",
     "electron-start": "electron-forge start",
-    "package": "electron-forge package",
+    "package": "rm -rf out && electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish"
   },
@@ -50,6 +50,7 @@
     "request": "^2.88.0",
     "subtitle": "^4.0.1",
     "uuid": "^8.3.0",
+    "rimraf": "^3.0.2",
     "webtorrent": "^1.9.7"
   },
   "devDependencies": {
@@ -117,7 +118,6 @@
     "path": "^0.12.7",
     "popper": "^1.0.1",
     "protractor": "~7.0.0",
-    "rimraf": "^3.0.2",
     "rxjs": "~7.5.0",
     "ts-node": "~7.0.0",
     "tsc": "^1.20150623.0",

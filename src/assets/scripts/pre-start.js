@@ -131,8 +131,10 @@ function checkTorrentFolders() {
 
 function startProc(modulePath, args) {
   DEBUG.log("ARGS: ", args);
-  return cp.fork(path.join(modulePath), args, {
-    // return cp.fork(path.join(__dirname, modulePath), args, {
+  const targetPath = modulePath.startsWith("/") || modulePath.includes("src/") 
+    ? path.resolve(modulePath)
+    : path.join(__dirname, modulePath);
+  return cp.fork(targetPath, args, {
     cwd: __dirname,
     silent: false,
   });

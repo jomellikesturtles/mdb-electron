@@ -1,6 +1,9 @@
 module.exports = {
   packagerConfig: {
-    asar: true,
+    asar: {
+      unpack: "**/node_modules/**/*",
+      unpackDir: "src/assets"
+    },
     executableName: "MDB Player",
     icon: "./src/assets/icons/plex",
     ignore: [

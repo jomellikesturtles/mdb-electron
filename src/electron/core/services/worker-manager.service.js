@@ -25,7 +25,13 @@ class WorkerClient extends EventEmitter {
     console.log(`[WorkerManager] Starting worker: ${this.name} (${this.scriptPath})`);
     
     try {
-      this.process = cp.fork(this.scriptPath, [], this.options);
+      const getUnpackedPath = (p) => p ? p.replace(/app\.asar([\/\\])/, 'app.asar.unpacked$1') : p;
+      const targetPath = getUnpackedPath(this.scriptPath);
+      const targetOptions = {
+        ...this.options,
+        cwd: getUnpackedPath(this.options.cwd || process.cwd())
+      };
+      this.process = cp.fork(targetPath, [], targetOptions);
 
       this.process.on('message', (rawMessage) => {
         const message = WorkerMessage.fromRaw(rawMessage);

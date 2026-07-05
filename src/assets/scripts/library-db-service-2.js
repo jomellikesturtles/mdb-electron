@@ -12,7 +12,8 @@ const fs = require('fs');
 
 var DataStore = require('nedb')
 var { regexify } = require('./shared/util')
-const dbPath = path.join(__dirname, '..', 'db', 'libraryFiles2.db');
+const getUnpackedPath = (p) => p ? p.replace(/app\.asar([\/\\]|$)/, 'app.asar.unpacked$1') : p;
+const dbPath = getUnpackedPath(path.join(__dirname, '..', 'db', 'libraryFiles2.db'));
 console.log('[library-db-service-2] DB Path:', dbPath);
 var libraryFilesDb = new DataStore(
   {

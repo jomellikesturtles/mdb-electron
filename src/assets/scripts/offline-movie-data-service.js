@@ -8,8 +8,9 @@ const { DEBUG } = require("./shared/util");
 var command = args[0]
 var movie = args[1]
 
+const getUnpackedPath = (p) => p ? p.replace(/app\.asar([\/\\]|$)/, 'app.asar.unpacked$1') : p;
 var movieDataDb = new DataStore({
-    filename: path.join(__dirname, '..', 'db', 'movieData.db'),
+    filename: getUnpackedPath(path.join(__dirname, '..', 'db', 'movieData.db')),
     autoload: true
 })
 
