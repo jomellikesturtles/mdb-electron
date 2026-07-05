@@ -51,6 +51,7 @@ mdb-video-player-controls {
   top: 0;
   left: 0;
   z-index: 250;
+  -webkit-app-region: no-drag;
   display: flex;
   width: 100%;
   align-items: center;
