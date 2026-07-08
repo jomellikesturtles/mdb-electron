@@ -751,6 +751,21 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     this.videoPlayerElement.muted = !this.videoPlayerElement.muted;
   }
 
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      if (file.name.toLowerCase().endsWith('.srt')) {
+        this.onChangeCc(file);
+        this.showActionOverlay('subtitles', 'Subtitle Dropped');
+      }
+    }
+  }
+
   updateProgressBar() {
     const DURATION = this.videoPlayerElement.duration;
     const BUFFERED = this.videoPlayerElement.buffered;

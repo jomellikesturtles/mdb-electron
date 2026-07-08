@@ -250,3 +250,45 @@ a {
     flex: 0 0 auto;
   }
 }
+
+// Ambient Canvas (Attract Mode) styling
+.ambient-canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  z-index: 999998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2s ease-in-out;
+
+  &.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 2.5s ease-in-out;
+
+    &.visible {
+      opacity: 1;
+    }
+  }
+}
+
+.main-ui-wrapper {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 2s ease-in-out;
+
+  &.hidden-ui {
+    opacity: 0;
+    pointer-events: none;
+  }
+}

@@ -34,6 +34,19 @@
                <mdb-button variant="outline" icon="refresh" (onClick)="onScanLibrary()">Scan Library</mdb-button>
                <mdb-button variant="danger" icon="stop" (onClick)="onStopScanLibrary()">Stop Scan</mdb-button>
             </div>
+
+            <div class="sidecar-map-container mt-3 mb-3" *ngIf="isSidecarMapEnabled && (isScanning || hasScanned)">
+              <h4 class="mb-2 d-flex align-items-center">
+                <mat-icon class="me-2" [class.animate-spin]="isScanning">autorenew</mat-icon>
+                Go CLI Sidecar Activity Map
+              </h4>
+              <div class="canvas-wrapper">
+                <canvas #sidecarCanvas width="600" height="200"></canvas>
+              </div>
+              <div class="scanned-files-log mt-2" *ngIf="lastScannedFile">
+                <span class="text-white fw-bold">Active file:</span> {{ lastScannedFile }}
+              </div>
+            </div>
             
             <mat-divider class="mb-3"></mat-divider>
             

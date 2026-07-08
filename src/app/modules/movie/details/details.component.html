@@ -60,7 +60,7 @@
   <!-- Header Banner (TMDB Style) -->
   <div class="header-banner"
     [style.backgroundImage]="'url(https://image.tmdb.org/t/p/original' + movieDetails.backdropPath + ')'">
-    <div class="header-overlay">
+    <div class="header-overlay" [style.background]="dominantGradient">
       <div class="container hero-content">
         <div class="hero-flex-row">
           <!-- Poster -->
@@ -127,11 +127,10 @@
                   <span class="score-label">Ratings</span>
                 </div>
               </div>
+              <!-- [disabled]="playLinks.length === 0 || isLoadingStream" [loading]="isLoadingStream" -->
 
               <div class="play-actions d-flex align-items-center gap-4">
-                <mdb-button variant="primary" size="md" icon="play_arrow"
-                  [disabled]="playLinks.length === 0 || isLoadingStream" [loading]="isLoadingStream"
-                  (onClick)="playBestPlayLink()">
+                <mdb-button variant="primary" size="md" icon="play_arrow" (onClick)="playBestPlayLink()">
                   WATCH NOW {{ bestPlayLink ? (bestPlayLink.quality || bestPlayLink.name) : '' }}
                 </mdb-button>
 

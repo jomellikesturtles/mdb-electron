@@ -38,5 +38,17 @@
   "askAi": {
     "description": "Ask AI movie assistant",
     "enabled": false
+  },
+  "ambientCanvas": {
+    "description": "The Ambient Canvas attract mode loop",
+    "enabled": false
+  },
+  "dynamicPosterTheming": {
+    "description": "Extract movie poster dominant colors for dynamic gradient backgrounds",
+    "enabled": false
+  },
+  "sidecarMap": {
+    "description": "Biological cell visualization mapping Go sidecar directory scans in real-time",
+    "enabled": false
   }
 }

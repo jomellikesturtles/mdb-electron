@@ -1,1 +1,13 @@
-<app-navigation></app-navigation>
+<div class="ambient-canvas-container" [class.active]="isAttractMode">
+  <video #ambientVideo 
+         [src]="ambientVideoUrl" 
+         loop 
+         muted 
+         playsinline 
+         [class.visible]="isAttractMode">
+  </video>
+</div>
+
+<div class="main-ui-wrapper" [class.hidden-ui]="isAttractMode">
+  <app-navigation></app-navigation>
+</div>

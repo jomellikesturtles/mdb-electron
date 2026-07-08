@@ -29,3 +29,53 @@ a:hover {
 mat-divider {
   border-top-color: white;
 }
+
+// Sidecar Map Visualization
+.sidecar-map-container {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+  h4 {
+    color: #e50914;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .canvas-wrapper {
+    position: relative;
+    width: 100%;
+    background: #0d0d0d;
+    border-radius: 6px;
+    border: 1px solid #222;
+    overflow: hidden;
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .scanned-files-log {
+    font-size: 0.8rem;
+    color: #aaa;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+.animate-spin {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
