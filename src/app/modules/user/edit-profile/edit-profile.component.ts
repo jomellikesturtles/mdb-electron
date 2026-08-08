@@ -13,8 +13,10 @@ import { AuthenticationService } from '@services/authentication.service';
 })
 export class EditProfileComponent implements OnInit {
   profileForm: FormGroup;
+  changePasswordForm: FormGroup;
   userProfile: IUserProfile;
   loading = false;
+  changePasswordLoading = false;
   uploadingAvatar = false;
 
   constructor(
@@ -30,9 +32,13 @@ export class EditProfileComponent implements OnInit {
       username: ['', Validators.required],
       name: [''],
       emailAddress: ['', [Validators.required, Validators.email]],
-      bio: [''],
-      password: [''], // Optional change
-      confirmPassword: ['']
+      bio: ['']
+    });
+
+    this.changePasswordForm = this.fb.group({
+      currentPassword: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
     });
 
     this.loadProfile();
@@ -73,22 +79,12 @@ export class EditProfileComponent implements OnInit {
     this.loading = true;
     const formValue = this.profileForm.value;
 
-    // Construct update object - remove empty passwords if not changing
     const updateData: any = {
       username: formValue.username,
       name: formValue.name,
       emailAddress: formValue.emailAddress,
       bio: formValue.bio
     };
-
-    if (formValue.password) {
-      if (formValue.password !== formValue.confirmPassword) {
-        this.notificationService.showError('Passwords do not match');
-        this.loading = false;
-        return;
-      }
-      updateData.password = formValue.password;
-    }
 
     this.profileService.updateProfile(updateData).subscribe(
       () => {
@@ -102,6 +98,33 @@ export class EditProfileComponent implements OnInit {
         console.error(error);
       }
     );
+  }
+
+  onChangePassword() {
+    if (this.changePasswordForm.invalid) {
+      return;
+    }
+
+    const { currentPassword, newPassword, confirmPassword } = this.changePasswordForm.value;
+
+    if (newPassword !== confirmPassword) {
+      this.notificationService.showError('Passwords do not match');
+      return;
+    }
+
+    this.changePasswordLoading = true;
+    this.authService.changePassword(currentPassword, newPassword, confirmPassword).subscribe({
+      next: () => {
+        this.changePasswordLoading = false;
+        this.notificationService.showSuccess('Password updated successfully');
+        this.changePasswordForm.reset();
+      },
+      error: (err) => {
+        this.changePasswordLoading = false;
+        this.notificationService.showError('Failed to change password');
+        console.error(err);
+      }
+    });
   }
 
   onTriggerAvatarUpload(fileInput: HTMLInputElement) {

@@ -41,6 +41,8 @@ export const ENDPOINT = {
   REFRESH: `${MDB_API_URL}/v1/auth/refresh`,
   OTP_SEND: `${MDB_API_URL}/v1/auth/otp/send`,
   OTP_VERIFY: `${MDB_API_URL}/v1/auth/otp/verify`,
+  CHANGE_PASSWORD: `${MDB_API_URL}/v1/auth/change-password`,
+  RESET_PASSWORD: `${MDB_API_URL}/v1/auth/reset-password`,
 
   TMDB_SINGLE: `${MDB_API_URL}/v1/external/tmdb/movie/${REPLACE_PARAMETER}_1`,
   TMDB_MULTI: `${MDB_API_URL}/v1/external/tmdb/movie`,

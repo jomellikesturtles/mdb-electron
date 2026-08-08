@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { repeatPasswordValidator } from '@directives/repeat-password.directive';
+import { NotificationService } from '@core/services/notification.service';
+import { AuthenticationService } from '@services/authentication.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -13,11 +15,15 @@ export class ResetPasswordComponent implements OnInit {
   resetPasswordForm: FormGroup;
   newPasswordForm: FormGroup;
   submitted = false;
+  otpSent = false;
   token: string;
 
   constructor(
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    private notificationService: NotificationService,
+    private authService: AuthenticationService
   ) { }
 
   ngOnInit() {
@@ -26,6 +32,7 @@ export class ResetPasswordComponent implements OnInit {
     });
 
     this.newPasswordForm = this.formBuilder.group({
+      otp: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       repeatPassword: ['', [Validators.required, Validators.minLength(6)]]
     }, { validators: repeatPasswordValidator });
@@ -45,8 +52,18 @@ export class ResetPasswordComponent implements OnInit {
       return;
     }
 
-    console.log('Reset Password Request for:', this.resetPasswordForm.value.email);
-    // TODO: Call service to handle password reset request
+    const email = this.resetPasswordForm.value.email;
+    this.authService.sendOtp({ username: email, channel: 'EMAIL' }).subscribe({
+      next: () => {
+        this.otpSent = true;
+        this.submitted = false;
+        this.notificationService.showSuccess('Verification code sent to your email');
+      },
+      error: (err) => {
+        this.notificationService.showError('Failed to send verification code');
+        console.error(err);
+      }
+    });
   }
 
   onNewPasswordSubmit() {
@@ -56,7 +73,28 @@ export class ResetPasswordComponent implements OnInit {
       return;
     }
 
-    console.log('Setting new password with token:', this.token);
-    // TODO: Call service to set new password
+    const email = this.resetPasswordForm.value.email;
+    const otp = this.newPasswordForm.value.otp;
+    const password = this.newPasswordForm.value.password;
+
+    this.authService.verifyOtp({ username: email, otp }).subscribe({
+      next: (response) => {
+        const signature = response.signature || '';
+        this.authService.resetPassword(email, signature, password).subscribe({
+          next: () => {
+            this.notificationService.showSuccess('Password reset successfully');
+            this.router.navigate(['/user/signin']);
+          },
+          error: (err) => {
+            this.notificationService.showError('Failed to reset password');
+            console.error(err);
+          }
+        });
+      },
+      error: (err) => {
+        this.notificationService.showError('Invalid verification code');
+        console.error(err);
+      }
+    });
   }
 }

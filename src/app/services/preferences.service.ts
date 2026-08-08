@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { IPreferences } from '@models/preferences.model';
 import { DEFAULT_PREFERENCES } from '@shared/constants';
@@ -17,7 +17,6 @@ export class PreferencesService {
     });
   }
   isGetTorrentFromMovieCard = false;
-  preferences: IPreferences;
   preferencesV2 = new BehaviorSubject<IPreferences>(DEFAULT_PREFERENCES);
   private ngUnsubscribe = new Subject();
   /**

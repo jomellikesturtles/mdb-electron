@@ -1,6 +1,6 @@
 // TODO: replacement for angular-user-idle
 
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, AfterViewInit, ElementRef, OnChanges, SimpleChanges, ViewChild, PipeTransform, Pipe, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, AfterViewInit, ElementRef, OnChanges, SimpleChanges, ViewChild, ChangeDetectorRef, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { IpcService } from '@services/ipc.service';
 import { MovieService } from '@services/movie/movie.service';
@@ -40,7 +40,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   DEFAULT_VOLUME = 50;
   isPlaying = false;
-  isMuted = false;
+  // isMuted = false;
+  isMuted = signal(false);
   volume = this.DEFAULT_VOLUME;
   videoPlayerElement;
   isShowStatus = false;
@@ -83,7 +84,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   canPlay = true;
   isMetadataLoaded = false;
   showAiChat = false;
-  aiMessages: Array<{ sender: 'user' | 'ai', text: string }> = [];
+  aiMessages: Array<{ sender: 'user' | 'ai', text: string; }> = [];
   aiInput = '';
   isAiTyping = false;
   isSeeking = false;
