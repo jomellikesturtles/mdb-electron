@@ -1,19 +1,19 @@
 
 export interface IPreferences {
-  isDarkMode: boolean;
-  isEnableCache: boolean;
-  libraryFolders: string[];
+  isDarkMode?: boolean;
+  isEnableCache?: boolean;
+  libraryFolders?: string[];
   /** torrent ratio until delete */
-  torrentSeedRatio: number;
-  autoPlayTrailer: boolean;
-  playTrailerBeforeShow: boolean;
-  subtitle: ISubtitlePreferences;
-  hotKeys: IHotkeys;
-  playBack: IPlaybackPreferences;
-  library: ILibraryPreferences,
+  torrentSeedRatio?: number;
+  autoPlayTrailer?: boolean;
+  playTrailerBeforeShow?: boolean;
+  subtitle?: ISubtitlePreferences;
+  hotKeys?: IHotkeys;
+  playBack?: IPlaybackPreferences;
+  library?: ILibraryPreferences,
   streamPreferences?: IStreamPreferences;
-  autoScan: {
-    enable: boolean;
+  autoScan?: {
+    enable?: boolean;
     frequencyUnit?: "day" | "minute" | "hour" | "week";
     frequencyValue?: number;
   };
