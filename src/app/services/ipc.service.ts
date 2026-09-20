@@ -9,7 +9,7 @@ import { environment } from '@environments/environment';
 import { RendererToMainChannels, MainToRendererChannels } from '../../electron/core/contracts/ipc-channels';
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from } from 'rxjs';
+import { BehaviorSubject, from, Subject } from 'rxjs';
 import { LoggerService } from '@core/logger.service';
 import { IAppError } from '@models/app-error.model';
 import { IRawLibrary } from './base-library.service';
@@ -28,6 +28,7 @@ export class IpcService {
   preferences = new BehaviorSubject<any>([]);
   streamLink = new BehaviorSubject<any>('');
   appErrors = new BehaviorSubject<IAppError | null>(null);
+  scannedFile$ = new Subject<string>();
   private statsForNerds = new BehaviorSubject<any>({});
   statsForNerdsSubscribable = this.statsForNerds.asObservable();
   private ipcRenderer: any;
@@ -62,6 +63,9 @@ export class IpcService {
       this.ipcRenderer.on(MainToRendererChannels.ERROR, (data: IAppError) => {
         this.appErrors.next(data);
         this.loggerService.error(`Backend Error [${data.source}]: ${data.message} ${JSON.stringify(data)}`);
+      });
+      this.ipcRenderer.on('found-video-library', (data: string) => {
+        this.scannedFile$.next(data);
       });
     } else {
       this.loggerService.warn('IpcService: Electron environment not detected. IPC features will be disabled.');
@@ -189,6 +193,7 @@ export class IpcService {
   }
 
   getPlayTorrent(hash: string): Promise<any> {
+    // return Promise.resolve('http://localhost:3002/3/WALL-E.2008.1080p.BrRip.x264.YIFY.mp4');
     // return Promise.resolve('http://localhost:3002/0/The.School.Of.Rock.2003.1080p.BluRay.x264.YIFY.mp4');
     // return Promise.resolve('http://localhost:3002/0/The.Super.Mario.Galaxy.Movie.2026.720p.BluRay.x264.AAC-%5BYTS.BZ%5D.mp4');
 

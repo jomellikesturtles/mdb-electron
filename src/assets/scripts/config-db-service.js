@@ -1,11 +1,12 @@
 var DataStore = require('nedb')
+const path = require('path');
 const { DEBUG } = require("./shared/util");
 // process.on('uncaughtException', function (error) {
 //     DEBUG.log(error);
 //     process.send(['operation-failed', 'general']); //mainWindow.webContents.send('scrape-failed', 'general');
 // });
 var configDb = new DataStore({
-  filename: '../db/config.db',
+  filename: path.join(__dirname, '../db/config.db'),
   autoload: true
 })
 

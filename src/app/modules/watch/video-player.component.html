@@ -1,6 +1,6 @@
 <div *ngIf="isMetadataLoaded" [ngClass]="{'user-inactive':isUserInactive}">
 
-  <div id='videoPlayerOuter' class="video-player-outer" (mousemove)='onNotIdle()' (keydown)="onKeyPress($event)" tabindex="1">
+  <div id='videoPlayerOuter' class="video-player-outer" (mousemove)='onNotIdle()' (keydown)="onKeyPress($event)" (dragover)="onDragOver($event)" (drop)="onDrop($event)" tabindex="1">
 
     <!-- top HUD -->
     <!-- back, title, -->

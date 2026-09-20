@@ -40,8 +40,9 @@ class GeneralRepository {
     // this.instance = this;
     DEBUG.log("Creating repository for", dbName);
     this.currentDbLocalName = dbName;
+    const getUnpackedPath = (p) => p ? p.replace(/app\.asar([\/\\]|$)/, 'app.asar.unpacked$1') : p;
     let currentDb = new DataStore({
-      filename: path.join(__dirname, "..", "db", `${dbName}.db`), // electron
+      filename: getUnpackedPath(path.join(__dirname, "..", "db", `${dbName}.db`)), // electron
       autoload: true,
       timestampData: true
     });

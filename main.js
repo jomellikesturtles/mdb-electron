@@ -14,8 +14,9 @@ const fs = require("fs");
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray, shell, dialog, nativeImage } = electron;
 const IPCRendererChannel = require("./src/assets/IPCRendererChannel.json");
 const IPCMainChannel = require("./src/assets/IPCMainChannel.json");
+const getUnpackedPath = (p) => p ? p.replace(/app\.asar([\/\\]|$)/, 'app.asar.unpacked$1') : p;
 const configDb = new Datastore({
-  filename: "src/assets/config/config.db",
+  filename: getUnpackedPath(path.join(__dirname, "src/assets/config/config.db")),
   autoload: true
 });
 let { onUserData } = require("./src/assets/scripts/user-media-db");
@@ -70,6 +71,12 @@ const PROC_OPTION = {
  * Creates the browser window
  */
 function createMainWindow() {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    DEBUG.log("[MAIN] mainWindow already exists, showing it instead.");
+    mainWindow.show();
+    mainWindow.focus();
+    return;
+  }
   DEBUG.log("[MAIN] Creating mainWindow...");
   mainWindow = new BrowserWindow({
     minWidth: 762,
@@ -92,7 +99,9 @@ function createMainWindow() {
     title: "MDB"
   });
   mainWindow.webContents.openDevTools();
-  mainWindow.setMenu(null);
+  mainWindow.webContents.on("console-message", (event, level, message, line, sourceId) => {
+    DEBUG.log(`[Main Console] ${message} (from ${sourceId}:${line})`);
+  });
   DEBUG.log("[MAIN] Loading mainWindow");
 
   // mainWindow.loadURL(`file://${__dirname}/dist/mdb-electron/index.html`); // It will load in production mode
@@ -179,8 +188,8 @@ if (!fs.existsSync(TEMP_FOLDER)) {
 
 function showSplash() {
   splashWindow = new BrowserWindow({
-    width: 600,
-    height: 400,
+    width: 1024,
+    height: 768,
     resizable: false,
     show: false,
     frame: false,
@@ -192,8 +201,8 @@ function showSplash() {
       contextIsolation: false,
       sandbox: false,
       webSecurity: false,
-      nativeWindowOpen: true
-      // devTools: true
+      nativeWindowOpen: true,
+      devTools: true
     },
     title: "Starting MDB"
   });
@@ -206,7 +215,7 @@ function showSplash() {
     })
   );
 
-  // splashWindow.webContents.openDevTools();
+  splashWindow.webContents.openDevTools();
 
   splashWindow.webContents.on("console-message", (event, level, message, line, sourceId) => {
     DEBUG.log(`[Splash Console] ${message} (from ${sourceId}:${line})`);
@@ -222,6 +231,9 @@ function showSplash() {
     DEBUG.log("Splash shown");
     splashWindow.webContents.send("fade");
   });
+  splashWindow.on("closed", function () {
+    splashWindow = null;
+  });
 }
 
 ipcMain.on("splash-done", function (event, msg) {
@@ -230,7 +242,7 @@ ipcMain.on("splash-done", function (event, msg) {
     if (splashWindow && !splashWindow.isDestroyed()) {
       splashWindow.webContents.send("fade");
     }
-    createMainWindow();
+    showWindow();
   }, 2000);
 });
 
@@ -617,7 +629,12 @@ ipcMain.on("play-offline-video-stream", function (event, libraryFileId) {
 });
 
 function forkChildProcess(modulePath, args, processOptions) {
-  return cp.fork(path.join(__dirname, modulePath), args, processOptions);
+  const getUnpackedPath = (p) => p ? p.replace(/app\.asar([\/\\]|$)/, 'app.asar.unpacked$1') : p;
+  const fullPath = path.join(__dirname, modulePath);
+  if (processOptions && processOptions.cwd) {
+    processOptions.cwd = getUnpackedPath(processOptions.cwd);
+  }
+  return cp.fork(getUnpackedPath(fullPath), args, processOptions);
 }
 function printError(processName, args) {
   DEBUG.log(`${processName} in error`, args);

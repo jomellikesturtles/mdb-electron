@@ -37,19 +37,34 @@
               <textarea matInput formControlName="bio" rows="3" placeholder="Tell us about yourself"></textarea>
             </mat-form-field>
 
-            <mat-divider class="my-3"></mat-divider>
-            <h4 class="mat-h4">Change Password</h4>
+          </form>
+
+          <mat-divider class="my-4"></mat-divider>
+          
+          <h4 class="mat-h4 mb-3">Change Password</h4>
+          <form [formGroup]="changePasswordForm" (ngSubmit)="onChangePassword()" class="d-flex flex-column gap-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Current Password</mat-label>
+              <input matInput type="password" formControlName="currentPassword">
+              <mat-error *ngIf="changePasswordForm.get('currentPassword').hasError('required')">Current password is required</mat-error>
+            </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>New Password</mat-label>
-              <input matInput type="password" formControlName="password">
+              <input matInput type="password" formControlName="newPassword">
+              <mat-error *ngIf="changePasswordForm.get('newPassword').hasError('required')">New password is required</mat-error>
+              <mat-error *ngIf="changePasswordForm.get('newPassword').hasError('minlength')">Password must be at least 6 characters</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Confirm Password</mat-label>
               <input matInput type="password" formControlName="confirmPassword">
+              <mat-error *ngIf="changePasswordForm.get('confirmPassword').hasError('required')">Confirm password is required</mat-error>
             </mat-form-field>
 
+            <div class="d-flex justify-content-end mb-3">
+              <mdb-button variant="danger" [loading]="changePasswordLoading" (onClick)="onChangePassword()">Update Password</mdb-button>
+            </div>
           </form>
         </mat-card-content>
 

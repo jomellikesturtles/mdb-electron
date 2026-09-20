@@ -256,11 +256,11 @@ export const DEFAULT_PREFERENCES: IPreferences = {
   libraryFolders: [],
   torrentSeedRatio: 0,
   subtitle: DEFAULT_SUBTITLES,
-  hotKeys: null,
+  // hotKeys: null,
   autoPlayTrailer: false,
   playTrailerBeforeShow: true,
   playBack: PLAYBACK,
-  library: null,
+  // library: null,
   autoScan: {
     enable: false,
     frequencyUnit: 'day',

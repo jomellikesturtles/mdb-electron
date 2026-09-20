@@ -172,6 +172,36 @@ export class AuthenticationService {
     this._isAuthenticated.set(false);
   }
 
+  changePassword(currentPassword: string, newPassword: string, confirmPassword: string): Observable<any> {
+    return from(Promise.all([
+      this.encryptMessage(currentPassword),
+      this.encryptMessage(newPassword),
+      this.encryptMessage(confirmPassword)
+    ])).pipe(
+      switchMap(([encCurrent, encNew, encConfirm]) => {
+        const payload = {
+          currentPassword: encCurrent,
+          newPassword: encNew,
+          confirmPassword: encConfirm
+        };
+        return this.httpBaseService.post(ENDPOINT.CHANGE_PASSWORD, payload, "changePassword");
+      })
+    );
+  }
+
+  resetPassword(email: string, signature: string, password: string): Observable<any> {
+    return from(this.encryptMessage(password)).pipe(
+      switchMap((encryptedPassword: string) => {
+        const payload = {
+          email,
+          signature,
+          password: encryptedPassword
+        };
+        return this.httpBaseService.post(ENDPOINT.RESET_PASSWORD, payload, "resetPassword");
+      })
+    );
+  }
+
   async encryptMessage(unencrptedMessage: string) {
     // Allow 1024-bit keys as the current environment key is weak
     openpgp.config.minRSABits = 1024;

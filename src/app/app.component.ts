@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from "@angular/core";
 import { WebSocketSubject, webSocket } from "rxjs/webSocket";
 import { Subscription } from "rxjs";
 import { WebSocketService } from "@services/socket.service";
@@ -19,8 +19,18 @@ import { IpcService } from "@services/ipc.service";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = "mdb-electron";
+  isAttractMode = false;
+  ambientVideoUrl = '';
+
+  @ViewChild('ambientVideo') ambientVideoRef!: ElementRef<HTMLVideoElement>;
+
+  private inactivityTimer: any;
+  // private readonly INACTIVITY_LIMIT = 180000; // 3 minutes
+  private readonly INACTIVITY_LIMIT = 3000; // 3 minutes
+  private boundResetFn = this.resetInactivityTimer.bind(this);
+
   constructor(
     private webSocketService: WebSocketService,
     private configService: ConfigurationService,
@@ -47,6 +57,10 @@ export class AppComponent implements OnInit {
     this.initSessionMonitoring();
     this.storageSyncService.initSync();
     this.initErrorMonitoring();
+    if (this.featureToggle.isEnabled('ambientCanvas')) {
+      this.initAmbientProfile();
+      this.setupInactivityListeners();
+    }
   }
 
   private initErrorMonitoring(): void {
@@ -126,4 +140,74 @@ export class AppComponent implements OnInit {
   }
 
   syncTime() { }
+
+  initAmbientProfile() {
+    const profileId = localStorage.getItem('active_profile_id') || 'john_smith';
+    switch (profileId) {
+      case 'nolan':
+        this.ambientVideoUrl = '../assets/backdrops/YTDown_YouTube_The-most-beautiful-shots-in-film-history_Media_c8rCgrGPQwM_001_1080p.mp4';
+        break;
+      case 'tarantino':
+        this.ambientVideoUrl = '../assets/backdrops/YTDown_YouTube_The-most-beautiful-shots-in-film-history_Media_c8rCgrGPQwM_001_1080p.mp4';
+        break;
+      case 'scarlett':
+        this.ambientVideoUrl = '../assets/backdrops/YTDown_YouTube_The-most-beautiful-shots-in-film-history_Media_c8rCgrGPQwM_001_1080p.mp4';
+        break;
+      default:
+        this.ambientVideoUrl = '../assets/backdrops/YTDown_YouTube_The-most-beautiful-shots-in-film-history_Media_c8rCgrGPQwM_001_1080p.mp4';
+        break;
+    }
+  }
+
+  setupInactivityListeners() {
+    window.addEventListener('mousemove', this.boundResetFn);
+    window.addEventListener('keydown', this.boundResetFn);
+    window.addEventListener('click', this.boundResetFn);
+    window.addEventListener('scroll', this.boundResetFn);
+    window.addEventListener('touchstart', this.boundResetFn);
+
+    // Initial timer start
+    this.resetInactivityTimer();
+  }
+
+  resetInactivityTimer() {
+    if (this.isAttractMode) {
+      this.isAttractMode = false;
+      if (this.ambientVideoRef?.nativeElement) {
+        this.ambientVideoRef.nativeElement.pause();
+      }
+    }
+    clearTimeout(this.inactivityTimer);
+    this.inactivityTimer = setTimeout(() => this.triggerAttractMode(), this.INACTIVITY_LIMIT);
+  }
+
+  triggerAttractMode() {
+    // Check if any video player (excluding our ambient canvas video) is currently playing
+    const videos = Array.from(document.querySelectorAll('video')).filter(
+      v => v !== this.ambientVideoRef?.nativeElement
+    );
+    const isMoviePlaying = videos.some(v => !v.paused && !v.ended && v.readyState > 2);
+
+    if (isMoviePlaying) {
+      // Re-schedule check if movie is playing
+      this.inactivityTimer = setTimeout(() => this.triggerAttractMode(), this.INACTIVITY_LIMIT);
+      return;
+    }
+
+    this.isAttractMode = true;
+    if (this.ambientVideoRef?.nativeElement) {
+      this.ambientVideoRef.nativeElement.play().catch(err => {
+        console.warn('Failed to auto-play ambient video:', err);
+      });
+    }
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('mousemove', this.boundResetFn);
+    window.removeEventListener('keydown', this.boundResetFn);
+    window.removeEventListener('click', this.boundResetFn);
+    window.removeEventListener('scroll', this.boundResetFn);
+    window.removeEventListener('touchstart', this.boundResetFn);
+    clearTimeout(this.inactivityTimer);
+  }
 }

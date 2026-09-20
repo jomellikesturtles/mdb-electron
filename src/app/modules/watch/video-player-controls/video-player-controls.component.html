@@ -35,7 +35,7 @@
         <img *ngIf="(!isMuted) || volume <= 0" class='player-controls-icon' src='./assets/icons/volume.svg'
           data-toggle='tooltip' title='Mute'>
       </div>
-      <mat-slider min="0" max="100" step="1" data-toggle='tooltip' title='Change volume'>
+      <mat-slider min="0" max="200" step="1" data-toggle='tooltip' title='Change volume'>
         <input matSliderThumb [value]="volume" (valueChange)="volumeChange($event)">
       </mat-slider>
     </div>

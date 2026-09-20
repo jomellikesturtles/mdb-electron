@@ -35,6 +35,7 @@ import { IMediaUserData } from '@core/dev/services/mock-user-data.service';
 export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   movieBackdrop;
+  dominantGradient = '';
   torrents: MDBTorrent[] = [];
   isAvailable = false;
   hasData = false;
@@ -104,6 +105,7 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    this.dominantGradient = 'radial-gradient(circle at 25% 50%, rgba(31.5, 31.5, 31.5, 0.7) 0%, rgba(20, 20, 20, 0.9) 70%, #141414 100%)';
     this.activatedRoute.params.subscribe(val => {
       this.showVideo = false;
       this.getMovieOnline(val['id']);
@@ -297,6 +299,7 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe({
         next: (data) => {
           this.movieDetails = data;
+          this.updateDominantTheme(data.posterPath);
           this.loadVideoData();
           this.hasData = true;
           this.isLoading = false;
@@ -326,6 +329,40 @@ export class DetailsComponent implements OnInit, OnDestroy, AfterViewInit {
           this.cdr.detectChanges();
         }
       });
+  }
+
+  private updateDominantTheme(posterPath: string) {
+    if (!this.featureToggleService.isEnabled('dynamicPosterTheming') || !posterPath) {
+      this.dominantGradient = 'radial-gradient(circle at 25% 50%, rgba(31.5, 31.5, 31.5, 0.7) 0%, rgba(20, 20, 20, 0.9) 70%, #141414 100%)';
+      this.cdr.detectChanges();
+      return;
+    }
+    const imageUrl = `https://image.tmdb.org/t/p/w185${posterPath}`;
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, 1, 1);
+          const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+          this.dominantGradient = `radial-gradient(circle at 25% 50%, rgba(${r}, ${g}, ${b}, 0.5) 0%, rgba(20, 20, 20, 0.85) 50%, #141414 100%)`;
+        } else {
+          this.dominantGradient = 'radial-gradient(circle at 25% 50%, rgba(31.5, 31.5, 31.5, 0.7) 0%, rgba(20, 20, 20, 0.9) 70%, #141414 100%)';
+        }
+      } catch (e) {
+        this.dominantGradient = 'radial-gradient(circle at 25% 50%, rgba(31.5, 31.5, 31.5, 0.7) 0%, rgba(20, 20, 20, 0.9) 70%, #141414 100%)';
+      }
+      this.cdr.detectChanges();
+    };
+    img.onerror = () => {
+      this.dominantGradient = 'radial-gradient(circle at 25% 50%, rgba(31.5, 31.5, 31.5, 0.7) 0%, rgba(20, 20, 20, 0.9) 70%, #141414 100%)';
+      this.cdr.detectChanges();
+    };
+    img.src = imageUrl;
   }
 
   /**

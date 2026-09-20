@@ -1,6 +1,6 @@
 // TODO: replacement for angular-user-idle
 
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, AfterViewInit, ElementRef, OnChanges, SimpleChanges, ViewChild, PipeTransform, Pipe, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, AfterViewInit, ElementRef, OnChanges, SimpleChanges, ViewChild, ChangeDetectorRef, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { IpcService } from '@services/ipc.service';
 import { MovieService } from '@services/movie/movie.service';
@@ -40,7 +40,8 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   DEFAULT_VOLUME = 50;
   isPlaying = false;
-  isMuted = false;
+  // isMuted = false;
+  isMuted = signal(false);
   volume = this.DEFAULT_VOLUME;
   videoPlayerElement;
   isShowStatus = false;
@@ -83,7 +84,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
   canPlay = true;
   isMetadataLoaded = false;
   showAiChat = false;
-  aiMessages: Array<{ sender: 'user' | 'ai', text: string }> = [];
+  aiMessages: Array<{ sender: 'user' | 'ai', text: string; }> = [];
   aiInput = '';
   isAiTyping = false;
   isSeeking = false;
@@ -94,6 +95,10 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
 
   actionOverlayText = '';
   actionOverlayIcon = '';
+  private audioContext: AudioContext;
+  private gainNode: GainNode;
+  private sourceNode: MediaElementAudioSourceNode;
+
   private overlayTimeoutHandle: any;
   private idleTimeout: any;
   private onFullscreenChangeFn: any;
@@ -316,6 +321,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
       document.removeEventListener('mozfullscreenchange', this.onFullscreenChangeFn);
       document.removeEventListener('MSFullscreenChange', this.onFullscreenChangeFn);
     }
+    if (this.audioContext) {
+      this.audioContext.close().catch(err => GeneralUtil.DEBUG.error(err));
+    }
     GeneralUtil.DEBUG.log('DESTROYED');
   }
 
@@ -408,6 +416,9 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     });
 
     this.videoPlayerElement.addEventListener('volumechange', (e) => {
+      if (this.volume > 100 && this.videoPlayerElement.volume === 1.0 && !this.videoPlayerElement.muted) {
+        return;
+      }
       this.volume = Math.round(this.videoPlayerElement.volume * 100);
       if (this.videoPlayerElement.muted || this.videoPlayerElement.volume === 0) {
         this.showActionOverlay('volume_off', 'Muted');
@@ -465,20 +476,10 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
           this.showActionOverlay(this.isShowSubtitles ? 'subtitles' : 'subtitles_off', this.isShowSubtitles ? 'Subtitles On' : 'Subtitles Off');
           break;
         case 'arrowup':
-          try {
-            this.videoPlayerElement.volume = Math.min(1, this.videoPlayerElement.volume + 0.05);
-          } catch (e) {
-            this.videoPlayerElement.volume = 1;
-          }
-          // keyCode: 38
+          this.changeVolume(Math.min(200, this.volume + 5));
           break;
         case 'arrowdown':
-          try {
-            this.videoPlayerElement.volume = Math.max(0, this.videoPlayerElement.volume - 0.05);
-          } catch (e) {
-            this.videoPlayerElement.volume = 0;
-          }
-          // keyCode: 40
+          this.changeVolume(Math.max(0, this.volume - 5));
           break;
         case 'arrowleft':
           try {
@@ -501,10 +502,10 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
           // keyCode: 39
           break;
         case 'pageup':
-          this.videoPlayerElement.volume = 1;
+          this.changeVolume(100);
           break;
         case 'pagedown':
-          this.videoPlayerElement.volume = 0;
+          this.changeVolume(0);
           break;
         // percentage of duration
         case '1':
@@ -600,6 +601,11 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     const isPlaying = this.videoPlayerElement.currentTime > 0 && !this.videoPlayerElement.paused && !this.videoPlayerElement.ended
       && this.videoPlayerElement.readyState > 2;
     GeneralUtil.DEBUG.log('5. togglePlay, isPlaying: ', isPlaying);
+
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+
     // safely autoplay
     if (!isPlaying && this.canPlay) {
       this.videoPlayerElement.play();
@@ -706,13 +712,59 @@ export class VideoPlayerComponent implements OnInit, OnDestroy, AfterViewInit, O
     }
   }
 
+  private setupWebAudio() {
+    if (this.gainNode) return;
+    try {
+      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.sourceNode = this.audioContext.createMediaElementSource(this.videoPlayerElement);
+      this.gainNode = this.audioContext.createGain();
+      this.sourceNode.connect(this.gainNode);
+      this.gainNode.connect(this.audioContext.destination);
+    } catch (e) {
+      GeneralUtil.DEBUG.error('Failed to setup Web Audio API:', e);
+    }
+  }
+
   changeVolume(source: number) {
     this.volume = source;
-    this.videoPlayerElement.volume = this.volume * 0.01;
+
+    if (this.volume > 100) {
+      this.setupWebAudio();
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+    }
+
+    if (this.gainNode) {
+      if (this.volume > 100) {
+        this.videoPlayerElement.volume = 1.0;
+        this.gainNode.gain.value = this.volume * 0.01;
+      } else {
+        this.videoPlayerElement.volume = this.volume * 0.01;
+        this.gainNode.gain.value = 1.0;
+      }
+    } else {
+      this.videoPlayerElement.volume = Math.min(100, this.volume) * 0.01;
+    }
   }
 
   toggleMute() {
     this.videoPlayerElement.muted = !this.videoPlayerElement.muted;
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      if (file.name.toLowerCase().endsWith('.srt')) {
+        this.onChangeCc(file);
+        this.showActionOverlay('subtitles', 'Subtitle Dropped');
+      }
+    }
   }
 
   updateProgressBar() {

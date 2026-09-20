@@ -51,6 +51,9 @@ async function handleData(dbRepo, headers, query, body) {
     case OPERATIONS.FIND_ONE:
       result = dbRepo.findOne(query);
       break;
+    case OPERATIONS.FIND:
+      result = dbRepo.find(query);
+      break;
     case OPERATIONS.FIND_IN_LIST:
       result = dbRepo.getInList(query.tmdbIdList);
       break;
